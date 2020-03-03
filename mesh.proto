@@ -284,6 +284,15 @@ message MyNodeInfo {
     /// # of legal channels (set at build time in the device flash image)
     int32 num_channels = 3;
 
+    /// The region code for my radio (US, CN, etc...)
+    string region = 4;
+
+    /// TBEAM, HELTEC, etc...
+    string hw_model = 5;
+
+    /// 0.0.5 etc...
+    string firmware_version = 6;
+
     /// FIXME - add useful debugging state (queue depths etc)
 }
 
