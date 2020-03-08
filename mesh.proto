@@ -275,7 +275,7 @@ Note: we don't include position or the user info, because that will come in the
 Sent to the phone in response to WantNodes.
 */
 message MyNodeInfo {
-    /// Tells the phone what our node number is, can be -1 if we've not yet joined a mesh.
+    /// Tells the phone what our node number is, default starting value is lowbyte of macaddr, but it will be fixed if that is already in use
     int32 my_node_num = 1;
 
     /// if false it would be great if the phone can help provide gps coordinates
@@ -302,7 +302,7 @@ message MyNodeInfo {
 message DeviceState {
     RadioConfig radio = 1;
 
-    /// Tells the phone what our node number is, can be -1 if we've not yet joined a mesh.
+    /// Read only settings/info about this node
     MyNodeInfo my_node = 2;
 
     /// My owner info
