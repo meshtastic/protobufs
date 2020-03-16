@@ -161,8 +161,9 @@ enum Constants {
 message ChannelSettings {
     int32 tx_power = 1;
 
-    // FIXME - change this to an integer for easier user comprehension and smaller bitsize
-    uint32 channel_num = 2;
+    // We now select channel number by hashing the name of the channel.  We do this on the device and it is opaque
+    // to the phone.  Therefore no need to show this in channel settings
+    // uint32 channel_num = 2;
 
     enum ModemConfig {
         // Note: these mappings must match ModemConfigChoice in the device code.
