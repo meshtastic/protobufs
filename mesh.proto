@@ -360,6 +360,10 @@ message MyNodeInfo {
   /// A numeric error address (nonzero if available)
   uint32 error_address = 8;
 
+  /// The total number of errors this node has ever encountered (well - since
+  /// the last time we discarded preferences)
+  uint32 error_count = 9;
+
   /// FIXME - add more useful debugging state (queue depths etc)
 }
 
