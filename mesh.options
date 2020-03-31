@@ -20,7 +20,7 @@
 *ChannelSettings.name max_size:12
 
 *MyNodeInfo.firmware_version max_size:12
-*MyNodeInfo.hw_model max_size:12
+*MyNodeInfo.hw_model max_size:16
 *MyNodeInfo.region max_size:12
 
 # MyMessage.name         max_size:40 
