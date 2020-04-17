@@ -228,26 +228,6 @@ message MeshPacket {
   ID only needs to be unique on a _per sender_ basis.   And it only
   needs to be unique for a few minutes (long enough to last for the length of
   any ACK or the completion of a mesh broadcast flood).
-
-  Rules for broadcasting (listing here for now, will move elsewhere eventually):
-
-  If to==BROADCAST and id==0, this is a simple broadcast (0 hops).  It will be
-  sent only by the current node and other nodes will not attempt to rebroadcast
-  it.
-
-  If to==BROADCAST and id!=0, this is a "naive flooding" broadcast.  The initial
-  node will send it on all local interfaces.
-
-  When other nodes receive this message, they will
-  first check if their recentBroadcasts table contains the (from, id) pair that
-  indicates this message.  If so, we've already seen it - so we discard it.  If
-  not, we add it to the table and then resend this message on all interfaces.
-  When resending we are careful to use the "from" ID of the original sender. Not
-  our own ID.  When resending we pick a random delay between 0 and 10 seconds to
-  decrease the chance of collisions with transmitters we can not even hear.
-
-  Any entries in recentBroadcasts that are older than X seconds (longer than the
-  max time a flood can take) will be discarded.
   */
   uint32 id = 6;
 }
