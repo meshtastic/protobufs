@@ -142,6 +142,15 @@ message User {
                          // phone, but added by the esp32 when broadcasting
 }
 
+/// A message used in our Dynamic Source Routing protocol (RFC 4728 based)
+message RouteDiscovery {
+
+  /**
+  The list of nodes this packet has visited so far
+  */
+  repeated int32 route = 2;
+}
+
 // The payload portion fo a packet, this is the actual bytes that are sent
 // inside a radio packet (because from/to are broken out by the comms library)
 message SubPacket {
@@ -152,32 +161,52 @@ message SubPacket {
   Data data = 3;
   User user = 4;
 
-  // FIXME, add mesh routing payloads
-
   /// Not normally used, but for testing a sender can request that recipient
   /// responds in kind (i.e. if it received a position, it should unicast back
   /// its position).
   // Note: that if you set this on a broadcast you will receive many replies.
   bool want_response = 5;
+
+  /**
+  A route request going from the requester
+  */
+  // RouteDiscovery route_request = 6;
+
+  /**
+  A route reply
+  */
+  // RouteDiscovery route_reply = 7;
+
+  /**
+  If unset treated as zero (no fowarding, send to adjacent nodes only)
+  if 1, allow hopping through one node, etc...
+
+  For our usecase real world topologies probably have a max of about 3.
+  */
+  // uint32 hop_limit = 8;
+
+  /**
+  The address of the destination node.
+  This field is is filled in by the mesh radio device software, applicaiton
+  layer software should never need it.
+  */
+  // int32 dest = 9;
 }
 
+// A full packet sent/received over the mesh
 // Note: For simplicity reasons (and that we want to keep over the radio packets
 // very small, we now assume that there is only _one_ SubPacket in each
-// MeshPacket).  That might change in the far future, but for now that's the
-// case. A packet sent over our mesh. NOTE: this raw payload does not include
-// the from and to addresses, which are stripped off and passed into the mesh
-// library code separately.
-// message MeshPayload {
-//    repeated SubPacket subPackets = 3;
-//}
-
-// A full packet sent/received over the mesh
+// MeshPacket).
 message MeshPacket {
+
   int32 from = 1;
+
+  /**
+  The (immediate) destination for this packet.  If we are using routing, the
+  final destination will be in payload.dest
+  */
   int32 to = 2;
 
-  // See note above:
-  // MeshPayload payloads = 4;
   SubPacket payload = 3;
 
   /// The time this message was received by the esp32 (secs since 1970).  Note:
