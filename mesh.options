@@ -23,6 +23,8 @@
 *MyNodeInfo.hw_model max_size:16
 *MyNodeInfo.region max_size:12
 
+*DebugString.message max_size:256
+
 # MyMessage.name         max_size:40 
 # or fixed_length or fixed_count, or max_count
 

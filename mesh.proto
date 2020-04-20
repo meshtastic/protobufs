@@ -442,6 +442,13 @@ message DeviceState {
   MeshPacket rx_text_message = 7;
 }
 
+/// Debug output from the device
+message DebugString {
+  string message = 1;
+
+  // eventually we might add source and level
+}
+
 // packets from the radio to the phone will appear on the fromRadio
 // characteristic.  It will support READ and NOTIFY.  When a new packet arrives
 // the device will notify?  possibly identify instead? it will sit in that
@@ -457,13 +464,26 @@ message FromRadio {
 
     /// Tells the phone what our node number is, can be -1 if we've not yet
     /// joined a mesh.
-    // No longer sent in fromRadio, instead there is a mynodeinfo characteristic
-    // MyNodeInfo my_info = 3;
+    // REV2: In the rev 1 API this is in the BLE mynodeinfo characteristic
+    MyNodeInfo my_info = 3;
 
     /// One packet is sent for each node in the on radio DB
-    // Note: this is no longer in FromRadio because, there is now a bluetooth
-    // nodeinfo characteristic after sending wantnodes that characteristic
-    // starts over with the first node in our DB NodeInfo node_info = 4;
+    // REV2: In the rev1 API this is available in the nodeinfo characteristic
+    // starts over with the first node in our DB
+    NodeInfo node_info = 4;
+
+    /// REV2: In rev1 this was the Owner BLE characteristic
+    User owner = 5;
+
+    /// REV2: In rev1 this was the radio BLE characteristic
+    RadioConfig radio = 6;
+
+    /// UREV2: set to send debug console output over our protobuf stream
+    DebugString debug_string = 7;
+
+    /// REV2: sent as true once the device has finished sending all of the
+    /// responses to want_config
+    bool config_complete = 8;
   }
 }
 
@@ -474,18 +494,17 @@ message ToRadio {
   oneof variant {
     MeshPacket packet = 1; // send this packet on the mesh
 
-    //
-    // Rare operations
-    //
-    // All of these have been moved to unique writable bluetooth characteristics
+    /// REV2: phone wants radio to send full node db to the phone, This is
+    /// typically the first packet sent to the radio when the phone gets a
+    /// bluetooth connection. The radio will respond by sending back a
+    /// MyNodeInfo, a owner, a radio config and a series of
+    /// FromRadio.node_infos, and config_complete
+    bool want_config = 100;
 
-    /// phone wants radio to send full node db to the phone, This is typically
-    /// the first packet sent to the radio when the phone gets a bluetooth
-    /// connection. The radio will respond by sending back a
-    /// FromRadio.my_node_num and a series of FromRadio.node_info
-    // WantNodes want_nodes = 100;
+    /// REV2: In rev1 this was the radio config characteristic
+    RadioConfig set_radio = 101; // set the radio provisioning for this node
 
-    // RadioConfig set_radio = 101; // set the radio provisioning for this node
-    // User set_owner = 102; // Set the owner for this node
+    /// REV2: In rev1 this was the owner characteristic
+    User set_owner = 102; // Set the owner for this node
   }
 }
