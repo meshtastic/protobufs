@@ -478,12 +478,14 @@ message FromRadio {
     /// REV2: In rev1 this was the radio BLE characteristic
     RadioConfig radio = 6;
 
-    /// UREV2: set to send debug console output over our protobuf stream
+    /// REV2: set to send debug console output over our protobuf stream
     DebugString debug_string = 7;
 
     /// REV2: sent as true once the device has finished sending all of the
     /// responses to want_config
-    bool config_complete = 8;
+    /// recipient should check if this ID matches our original request nonce, if
+    /// not, it means your config responses haven't started yet
+    uint32 config_complete_id = 8;
   }
 }
 
@@ -499,7 +501,10 @@ message ToRadio {
     /// bluetooth connection. The radio will respond by sending back a
     /// MyNodeInfo, a owner, a radio config and a series of
     /// FromRadio.node_infos, and config_complete
-    bool want_config = 100;
+    /// the integer you write into this field will be reported back in the
+    /// config_complete_id response this allows clients to never be confused by
+    /// a stale old partially sent config.
+    uint32 want_config_id = 100;
 
     /// REV2: In rev1 this was the radio config characteristic
     RadioConfig set_radio = 101; // set the radio provisioning for this node
