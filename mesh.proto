@@ -473,7 +473,9 @@ message FromRadio {
     NodeInfo node_info = 4;
 
     /// REV2: In rev1 this was the Owner BLE characteristic
-    User owner = 5;
+    // Note: there is no separate payload for reading the owner, it comes
+    // implicitly as part of the NodeInfo for whichever node corresponds to our
+    // device. User owner = 5;
 
     /// REV2: In rev1 this was the radio BLE characteristic
     RadioConfig radio = 6;
