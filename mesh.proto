@@ -80,8 +80,8 @@ message Data {
   enum Type {
     /// A message sent from a device outside of the mesh, in a form the mesh
     /// does not understand
-    SIGNAL_OPAQUE = 0; // NOTE: This must be 0, because it is documented in
-                       // IMeshService.aidl to be so
+    OPAQUE = 0; // NOTE: This must be 0, because it is documented in
+                // IMeshService.aidl to be so
 
     /// a simple UTF-8 text message, which even the little micros in the mesh
     /// can understand and show on their screen eventually in some circumstances
