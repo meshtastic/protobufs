@@ -488,6 +488,11 @@ message FromRadio {
     /// recipient should check if this ID matches our original request nonce, if
     /// not, it means your config responses haven't started yet
     uint32 config_complete_id = 8;
+
+    /// Sent to tell clients the radio has just rebooted.  Set to true if
+    /// present.  Not used on all transports, currently just used for the serial
+    /// console.
+    bool rebooted = 9;
   }
 }
 
