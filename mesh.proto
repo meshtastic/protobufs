@@ -216,10 +216,6 @@ message MeshPacket {
   /// of reception)
   uint32 rx_time = 4;
 
-  /// Never sent over the radio links.  Set during reception to indicate the SNR
-  /// of this packet.  Used to collect statistics on current link waulity.
-  sint32 rx_snr = 5;
-
   /**
   A unique ID for this packet.  Always 0 for no-ack packets or non broadcast
   packets (and therefore take zero bytes of space).  Otherwise a unique ID for
@@ -230,6 +226,11 @@ message MeshPacket {
   any ACK or the completion of a mesh broadcast flood).
   */
   uint32 id = 6;
+
+  /// *Never* sent over the radio links.  Set during reception to indicate the
+  /// SNR
+  /// of this packet.  Used to collect statistics on current link waulity.
+  float rx_snr = 7;
 }
 
 /// Shared constants between device and phone
@@ -355,7 +356,7 @@ message NodeInfo {
 
   /// Returns the Signal-to-noise ratio (SNR) of the last received message, as
   /// measured by the receiver. return SNR of the last received message in dB
-  int32 snr = 5;
+  float snr = 7;
 
   /// Returns the last measured frequency error.
   /// The LoRa receiver estimates the frequency offset between the receiver
@@ -365,7 +366,7 @@ message NodeInfo {
   /// local receiver's oscillator. Apparent errors may be due to the
   /// transmitter, the receiver or both. \return The estimated centre frequency
   /// offset in Hz of the last received message.
-  int32 frequency_error = 6;
+  // int32 frequency_error = 6;
 }
 
 /**
