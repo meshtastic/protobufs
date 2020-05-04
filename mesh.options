@@ -19,6 +19,10 @@
 *ChannelSettings.psk max_size:16 fixed_length:true
 *ChannelSettings.name max_size:12
 
+# The device code doesn't use this legacy field - though the apps still might
+*Position.latitude_d type:FT_IGNORE
+*Position.longitude_d type:FT_IGNORE
+
 *MyNodeInfo.firmware_version max_size:12
 *MyNodeInfo.hw_model max_size:16
 *MyNodeInfo.region max_size:12

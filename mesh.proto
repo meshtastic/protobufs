@@ -62,8 +62,23 @@ Nanopb binaries available here: https://jpa.kapsi.fi/nanopb/download/ use nanopb
 
 // a gps position
 message Position {
-  double latitude = 1;
-  double longitude = 2;
+
+  /** DEPRECATED!
+
+  This old encoding is no longer sent by device loads, but applications could
+  still keep supporting it if the prefered latitude_i is not provided.
+  Device loads greater than 0.6.2 use the _i variants only.
+
+  I've switched to ints because a: more precise and b: half the # of bytes.
+  */
+  double latitude_d = 1;
+  double longitude_d = 2;
+
+  /** The new preferred location encoding, divide by 10e-7 to get degrees in
+   * floating point */
+  int32 latitude_i = 7;
+  int32 longitude_i = 8;
+
   int32 altitude = 3;
   int32 battery_level = 4; // 1-100 (0 means not provided)
 
