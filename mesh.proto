@@ -214,6 +214,12 @@ message SubPacket {
 // MeshPacket).
 message MeshPacket {
 
+  /**
+  The sending node number.
+
+  Note: Our crypto implementation uses this field as well.  See
+  docs/software/crypto.md for details.
+  */
   int32 from = 1;
 
   /**
@@ -239,6 +245,9 @@ message MeshPacket {
   ID only needs to be unique on a _per sender_ basis.   And it only
   needs to be unique for a few minutes (long enough to last for the length of
   any ACK or the completion of a mesh broadcast flood).
+
+  Note: Our crypto implementation uses this id as well.  See
+  docs/software/crypto.md for details.
   */
   uint32 id = 6;
 
