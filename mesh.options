@@ -15,8 +15,8 @@
 # note: this payload length is ONLY the bytes that are sent inside of the radiohead packet
 *Data.payload max_size:251
 
-# 128 bit psk key (we don't use 256 bit yet because we want to keep our QR code small)
-*ChannelSettings.psk max_size:16 fixed_length:true
+# 256 bit or 128 bit psk key
+*ChannelSettings.psk max_size:32
 *ChannelSettings.name max_size:12
 
 # The device code doesn't use this legacy field - though the apps still might
