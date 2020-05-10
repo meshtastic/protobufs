@@ -228,7 +228,22 @@ message MeshPacket {
   */
   int32 to = 2;
 
-  SubPacket payload = 3;
+  /**
+  Internally to the mesh radios we will route SubPackets encrypted per 
+  docs/software/crypto.md.  However, when a particular node has the correct
+  key to decode a particular packet, it will decode the payload into a SubPacket
+  protobuf structure.  
+
+  Software outside of the device nodes will never encounter a packet where "decoded"
+  is not populated (i.e. any encryption/decryption happens before reaching the applications)
+
+  The numeric IDs for these fields were selected to keep backwards compatibility with old
+  applications.
+  */
+  oneof payload { 
+    SubPacket decoded = 3;
+    bytes encrypted = 8;
+   }
 
   /// The time this message was received by the esp32 (secs since 1970).  Note:
   /// this field is _never_ sent on the radio link itself (to save space) Times
