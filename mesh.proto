@@ -86,7 +86,7 @@ message Position {
   /// from the phone so that the local device can set its RTC If it is sent over
   /// the mesh (because there are devices on the mesh without GPS), it will only
   /// be sent by devices which has a hardware GPS clock.
-  uint32 time = 6; // seconds since 1970
+  fixed32 time = 9; // seconds since 1970
 }
 
 // a data message to forward to an external app (or possibly also be consumed
@@ -180,6 +180,7 @@ message SubPacket {
   /// responds in kind (i.e. if it received a position, it should unicast back
   /// its position).
   // Note: that if you set this on a broadcast you will receive many replies.
+  // FIXME - unify this with the new reliable messaging at the MeshPacket level
   bool want_response = 5;
 
   /**
@@ -220,13 +221,13 @@ message MeshPacket {
   Note: Our crypto implementation uses this field as well.  See
   docs/software/crypto.md for details.
   */
-  int32 from = 1;
+  uint32 from = 1;
 
   /**
   The (immediate) destination for this packet.  If we are using routing, the
   final destination will be in payload.dest
   */
-  int32 to = 2;
+  uint32 to = 2;
 
   /**
   Internally to the mesh radios we will route SubPackets encrypted per
@@ -251,7 +252,7 @@ message MeshPacket {
   /// are typically not sent over the mesh, but they will be added to any Packet
   /// (chain of SubPacket) sent to the phone (so the phone can know exact time
   /// of reception)
-  uint32 rx_time = 4;
+  fixed32 rx_time = 9;
 
   /**
   A unique ID for this packet.  Always 0 for no-ack packets or non broadcast
