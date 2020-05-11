@@ -11,6 +11,8 @@
 *DeviceState.node_db max_count:32
 *DeviceState.receive_queue max_count:32
 
+*RouteDiscovery.route max_count:8
+
 # FIXME, max out based on total SubPacket size And do fragmentation and reassembly (for larger payloads) at the Android layer, not the esp32 layer.
 # note: this payload length is ONLY the bytes that are sent inside of the radiohead packet
 *Data.payload max_size:251

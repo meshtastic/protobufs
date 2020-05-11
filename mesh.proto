@@ -180,18 +180,31 @@ message SubPacket {
   /// responds in kind (i.e. if it received a position, it should unicast back
   /// its position).
   // Note: that if you set this on a broadcast you will receive many replies.
-  // FIXME - unify this with the new reliable messaging at the MeshPacket level
+  // FIXME - unify (i.e. remove) this with the new reliable messaging at the
+  // MeshPacket level
   bool want_response = 5;
 
   /**
-  A route request going from the requester
-  */
-  // RouteDiscovery route_request = 6;
+  This packet is a requested acknoledgement indicating that we have received
+  the specified message ID.  This packet type can be used both for immediate (0
+  hops) messages or can be routed through multiple hops if dest is set.
 
-  /**
-  A route reply
+  Note: As an optimization, recipients can _also_ populate other fields in the
+  ack if they think the recipient would appreciate that extra state.
   */
-  // RouteDiscovery route_reply = 7;
+  uint32 ack_id = 10;
+
+  oneof route {
+    /**
+    A route request going from the requester
+    */
+    RouteDiscovery request = 6;
+
+    /**
+    A route reply
+    */
+    RouteDiscovery reply = 7;
+  }
 
   /**
   If unset treated as zero (no fowarding, send to adjacent nodes only)
@@ -206,7 +219,7 @@ message SubPacket {
   This field is is filled in by the mesh radio device software, applicaiton
   layer software should never need it.
   */
-  // int32 dest = 9;
+  uint32 dest = 9;
 }
 
 // A full packet sent/received over the mesh
@@ -247,13 +260,6 @@ message MeshPacket {
     bytes encrypted = 8;
   }
 
-  /// The time this message was received by the esp32 (secs since 1970).  Note:
-  /// this field is _never_ sent on the radio link itself (to save space) Times
-  /// are typically not sent over the mesh, but they will be added to any Packet
-  /// (chain of SubPacket) sent to the phone (so the phone can know exact time
-  /// of reception)
-  fixed32 rx_time = 9;
-
   /**
   A unique ID for this packet.  Always 0 for no-ack packets or non broadcast
   packets (and therefore take zero bytes of space).  Otherwise a unique ID for
@@ -267,6 +273,13 @@ message MeshPacket {
   docs/software/crypto.md for details.
   */
   uint32 id = 6;
+
+  /// The time this message was received by the esp32 (secs since 1970).  Note:
+  /// this field is _never_ sent on the radio link itself (to save space) Times
+  /// are typically not sent over the mesh, but they will be added to any Packet
+  /// (chain of SubPacket) sent to the phone (so the phone can know exact time
+  /// of reception)
+  fixed32 rx_time = 9;
 
   /// *Never* sent over the radio links.  Set during reception to indicate the
   /// SNR
@@ -388,7 +401,7 @@ group)
 
 // Full information about a node on the mesh
 message NodeInfo {
-  int32 num = 1; // the node number
+  uint32 num = 1; // the node number
   User user = 2;
 
   /// This position data will also contain a time last seen
@@ -407,6 +420,19 @@ message NodeInfo {
   /// transmitter, the receiver or both. \return The estimated centre frequency
   /// offset in Hz of the last received message.
   // int32 frequency_error = 6;
+
+  /* enum RouteState {
+    Invalid = 0;
+    Discovering = 1;
+    Valid = 2;
+  }
+
+  Not needed?
+  RouteState route = 4; */
+
+  /// Our current preferred node node for routing - might be the same as num if
+  /// we are adjacent Or zero if we don't yet know a route to this node.
+  uint32 next_hop = 5;
 }
 
 /**
