@@ -170,31 +170,13 @@ message RouteDiscovery {
 // inside a radio packet (because from/to are broken out by the comms library)
 message SubPacket {
 
-  // Typically only one of the following fields are populated, but there is no
-  // restriction wrt that
-  Position position = 1;
-  Data data = 3;
-  User user = 4;
+  // Only one of the following fields can be populated at a time
+  oneof payload {
 
-  /// Not normally used, but for testing a sender can request that recipient
-  /// responds in kind (i.e. if it received a position, it should unicast back
-  /// its position).
-  // Note: that if you set this on a broadcast you will receive many replies.
-  // FIXME - unify (i.e. remove) this with the new reliable messaging at the
-  // MeshPacket level
-  bool want_response = 5;
+    Position position = 1;
+    Data data = 3;
+    User user = 4;
 
-  /**
-  This packet is a requested acknoledgement indicating that we have received
-  the specified message ID.  This packet type can be used both for immediate (0
-  hops) messages or can be routed through multiple hops if dest is set.
-
-  Note: As an optimization, recipients can _also_ populate other fields in the
-  ack if they think the recipient would appreciate that extra state.
-  */
-  uint32 ack_id = 10;
-
-  oneof route {
     /**
     A route request going from the requester
     */
@@ -206,13 +188,29 @@ message SubPacket {
     RouteDiscovery reply = 7;
   }
 
-  /**
-  If unset treated as zero (no fowarding, send to adjacent nodes only)
-  if 1, allow hopping through one node, etc...
+  /// Not normally used, but for testing a sender can request that recipient
+  /// responds in kind (i.e. if it received a position, it should unicast back
+  /// its position).
+  // Note: that if you set this on a broadcast you will receive many replies.
+  // FIXME - unify (i.e. remove) this with the new reliable messaging at the
+  // MeshPacket level
+  bool want_response = 5;
 
-  For our usecase real world topologies probably have a max of about 3.
-  */
-  // uint32 hop_limit = 8;
+  oneof ack {
+    /**
+    This packet is a requested acknoledgement indicating that we have received
+    the specified message ID.  This packet type can be used both for immediate
+    (0 hops) messages or can be routed through multiple hops if dest is set.
+
+    Note: As an optimization, recipients can _also_ populate a field in payload
+    if they think the recipient would appreciate that extra state.
+    */
+    uint32 success_id = 10;
+
+    /** This is a nak, we failed to deliver this message.
+     */
+    uint32 fail_id = 11;
+  }
 
   /**
   The address of the destination node.
@@ -285,6 +283,16 @@ message MeshPacket {
   /// SNR
   /// of this packet.  Used to collect statistics on current link waulity.
   float rx_snr = 7;
+
+  /**
+  If unset treated as zero (no fowarding, send to adjacent nodes only)
+  if 1, allow hopping through one node, etc...
+
+  For our usecase real world topologies probably have a max of about 3.
+
+  This field is normally placed into a a couple of bits in the header.
+  */
+  uint32 hop_limit = 10;
 }
 
 /// Shared constants between device and phone

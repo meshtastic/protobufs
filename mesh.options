@@ -36,6 +36,8 @@
 *MeshPacket.encrypted max_size:256
 *MeshPacket.payload anonymous_oneof:true
 
+*SubPacket.payload anonymous_oneof:true
+
 # MyMessage.name         max_size:40 
 # or fixed_length or fixed_count, or max_count
 
