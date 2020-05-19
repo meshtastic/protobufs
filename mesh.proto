@@ -289,9 +289,18 @@ message MeshPacket {
 
   For our usecase real world topologies probably have a max of about 3.
 
-  This field is normally placed into a a couple of bits in the header.
+  This field is normally placed into a few of bits in the header.
   */
   uint32 hop_limit = 10;
+
+  /**
+  This packet is being sent as a reliable message, we would prefer it to arrive
+  at the destination.  We would like to receive a ack packet in response.
+
+  Note: This flag is normally sent in a flag bit in the header when sent over
+  the wire
+  */
+  bool want_ack = 11;
 }
 
 /// Shared constants between device and phone
@@ -600,8 +609,8 @@ Placeholder for data we will eventually set during initial programming.  This
 will allow us to stop having a load for each region.
 */
 message ManufacturingData {
-  /// The region code for my radio (US, CN, etc...)
-  string region = 1;
+  /// center frequency for the radio hardware that was stuffed
+  uint32 fradioFreq = 1;
 
   /// TBEAM, HELTEC, etc...
   string hw_model = 2;
