@@ -107,10 +107,9 @@ message Data {
     /// show user that a message has been read by the recipient, optional
     CLEAR_READACK = 2;
 
-    /// Not yet used but eventually:
-    /// SIGNAL_CLEAR_DATA = 3; // Unencrypted at the signal level, relying on
-    /// the radio crypt only (to keep size small), but contains Signal control
-    /// data radios don't care about (ie non text)
+    /// Apps will eventually be able to register their own handlers for
+    /// particular payload type codes so multiple apps can share the same radio
+    /// (this will replace OPAQUE)
   }
 
   Type typ = 1;      // required
@@ -594,4 +593,29 @@ message ToRadio {
     /// REV2: In rev1 this was the owner characteristic
     User set_owner = 102; // Set the owner for this node
   }
+}
+
+/**
+Placeholder for data we will eventually set during initial programming.  This
+will allow us to stop having a load for each region.
+*/
+message ManufacturingData {
+  /// The region code for my radio (US, CN, etc...)
+  string region = 1;
+
+  /// TBEAM, HELTEC, etc...
+  string hw_model = 2;
+
+  // Hardware version number
+  string hw_version = 3;
+
+  /**
+  This code is written during manfacturing time and allows users to confirm that
+  the initial manufacturing tests succeeded.
+
+  0 means no test performed.
+  1 means all tests passed
+  negative numbers indicate particular error codes
+  */
+  sint32 selftest_result = 4;
 }
