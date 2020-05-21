@@ -213,8 +213,12 @@ message SubPacket {
 
   /**
   The address of the destination node.
+
   This field is is filled in by the mesh radio device software, applicaiton
   layer software should never need it.
+
+  RouteDiscovery messages _must_ populate this.  Other message types might need
+  to if they are doing multihop routing.
   */
   uint32 dest = 9;
 }
@@ -296,6 +300,16 @@ message MeshPacket {
   /**
   This packet is being sent as a reliable message, we would prefer it to arrive
   at the destination.  We would like to receive a ack packet in response.
+
+  Broadcasts messages treat this flag specially: Since acks for broadcasts would
+  rapidly flood the channel, the normal ack behavior is suppressed.  Instead,
+  the original sender listens to see if at least one node is rebroadcasting this
+  packet (because naive flooding algoritm).  If it hears that the odds (given
+  typical LoRa topologies) the odds are very high that every node should
+  eventually receive the message.  So FloodingRouter.cpp generates an implicit
+  ack which is delivered to the original sender. If after some time we don't
+  hear anyone rebroadcast our packet, we will timeout and retransmit, using the
+  regular resend logic.
 
   Note: This flag is normally sent in a flag bit in the header when sent over
   the wire
