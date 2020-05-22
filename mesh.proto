@@ -475,7 +475,7 @@ Sent to the phone in response to WantNodes.
 message MyNodeInfo {
   /// Tells the phone what our node number is, default starting value is lowbyte
   /// of macaddr, but it will be fixed if that is already in use
-  int32 my_node_num = 1;
+  uint32 my_node_num = 1;
 
   /// if false it would be great if the phone can help provide gps coordinates
   bool has_gps = 2;
