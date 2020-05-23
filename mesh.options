@@ -38,6 +38,9 @@
 
 *SubPacket.payload anonymous_oneof:true
 
+# Max of three ignored nodes for our testing
+*UserPreferences.ignore_incoming max_count:3
+
 # MyMessage.name         max_size:40 
 # or fixed_length or fixed_count, or max_count
 

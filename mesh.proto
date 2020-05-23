@@ -398,6 +398,14 @@ message RadioConfig {
     // If true, we will try to capture all the packets sent on the mesh, not
     // just the ones destined to our node.
     bool promiscuous_mode = 101;
+
+    /**
+    For testing it is useful sometimes to force a node to never listen to
+    particular other nodes (simulating radio out of range). All nodenums listed
+    in ignore_incoming will have packets they send droped on receive (by
+    router.cpp)
+    */
+    repeated uint32 ignore_incoming = 102;
   }
 
   UserPreferences preferences = 1;
