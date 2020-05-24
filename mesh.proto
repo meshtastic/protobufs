@@ -173,6 +173,8 @@ enum RouteError {
 
   // We received a nak while trying to forward on your behalf
   GOT_NAK = 2;
+
+  TIMEOUT = 3;
 }
 
 // The payload portion fo a packet, this is the actual bytes that are sent
@@ -244,6 +246,12 @@ message SubPacket {
   packets small).
   */
   uint32 source = 12;
+
+  /**
+  Only used in route_error messages.  Indicates the original message ID that
+  this message is reporting failure on.
+  */
+  uint32 original_id = 2;
 }
 
 // A full packet sent/received over the mesh
