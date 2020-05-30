@@ -96,7 +96,7 @@ message Data {
     /// A message sent from a device outside of the mesh, in a form the mesh
     /// does not understand
     OPAQUE = 0; // NOTE: This must be 0, because it is documented in
-                // IMeshService.aidl to be so
+    // IMeshService.aidl to be so
 
     /// a simple UTF-8 text message, which even the little micros in the mesh
     /// can understand and show on their screen eventually in some circumstances
@@ -112,7 +112,7 @@ message Data {
     /// (this will replace OPAQUE)
   }
 
-  Type typ = 1;      // required
+  Type typ = 1; // required
   bytes payload = 2; // required
 }
 
@@ -147,13 +147,13 @@ A few nodenums are reserved and will never be requested:
 */
 message User {
   string id = 1; // a globally unique ID string for this user.  In the case of
-                 // Signal that would mean +16504442323, for the default macaddr
-                 // derived id it would be !<6 hexidecimal bytes>
-  string long_name = 2;  // A full name for this user, i.e. "Kevin Hester"
+  // Signal that would mean +16504442323, for the default macaddr
+  // derived id it would be !<6 hexidecimal bytes>
+  string long_name = 2; // A full name for this user, i.e. "Kevin Hester"
   string short_name = 3; // A VERY short name, ideally two characters.  Suitable
-                         // for a tiny OLED screen
-  bytes macaddr = 4;     // This is the addr of the radio.  Not populated by the
-                         // phone, but added by the esp32 when broadcasting
+  // for a tiny OLED screen
+  bytes macaddr = 4; // This is the addr of the radio.  Not populated by the
+  // phone, but added by the esp32 when broadcasting
 }
 
 /// A message used in our Dynamic Source Routing protocol (RFC 4728 based)
@@ -351,7 +351,7 @@ message MeshPacket {
 /// Shared constants between device and phone
 enum Constants {
   Unused = 0; // First enum must be zero, and we are just using this enum to
-              // pass int constants between two very different environments
+  // pass int constants between two very different environments
 }
 
 // Full settings (center freq, spread factor, pre-shared secret key etc...)
@@ -367,14 +367,14 @@ message ChannelSettings {
 
   enum ModemConfig {
     // Note: these mappings must match ModemConfigChoice in the device code.
-    Bw125Cr45Sf128 = 0;   ///< Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC
-                          ///< on. Default medium range
-    Bw500Cr45Sf128 = 1;   ///< Bw = 500 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC
-                          ///< on. Fast+short range
+    Bw125Cr45Sf128 = 0; ///< Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC
+    ///< on. Default medium range
+    Bw500Cr45Sf128 = 1; ///< Bw = 500 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC
+    ///< on. Fast+short range
     Bw31_25Cr48Sf512 = 2; ///< Bw = 31.25 kHz, Cr = 4/8, Sf = 512chips/symbol,
-                          ///< CRC on. Slow+long range
+    ///< CRC on. Slow+long range
     Bw125Cr48Sf4096 = 3; ///< Bw = 125 kHz, Cr = 4/8, Sf = 4096chips/symbol, CRC
-                         ///< on. Slow+long range
+    ///< on. Slow+long range
   }
 
   /// This value replaces bandwidth/spread_factor/coding_rate.  If you'd like to
@@ -545,6 +545,10 @@ message MyNodeInfo {
   /// The total number of errors this node has ever encountered (well - since
   /// the last time we discarded preferences)
   uint32 error_count = 9;
+
+  /// How many bits are used for the nodenum.  If zero it is assumed we use eight bit node nodenums
+  /// New device loads will user 32 bit nodenums.
+  uint32 nodenum_bits = 10;
 
   /// FIXME - add more useful debugging state (queue depths etc)
 }
