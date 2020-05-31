@@ -567,6 +567,11 @@ message MyNodeInfo {
   Old device loads (older that 0.6.5 do not populate this field, but all newer loads do). */
   uint32 node_num_bits = 12;
 
+  /** How long before we consider a message abandoned and we can clear our caches of any messages in flight
+  Normally quite large to handle the worst case message delivery time, 5 minutes.  Formerly called FLOOD_EXPIRE_TIME in the device code
+  */
+  uint32 message_timeout_msec = 13;
+
   /// FIXME - add more useful debugging state (queue depths etc)
 }
 
