@@ -112,7 +112,7 @@ message Data {
     /// (this will replace OPAQUE)
   }
 
-  Type typ = 1; // required
+  Type typ = 1;      // required
   bytes payload = 2; // required
 }
 
@@ -149,7 +149,7 @@ message User {
   string id = 1; // a globally unique ID string for this user.  In the case of
   // Signal that would mean +16504442323, for the default macaddr
   // derived id it would be !<6 hexidecimal bytes>
-  string long_name = 2; // A full name for this user, i.e. "Kevin Hester"
+  string long_name = 2;  // A full name for this user, i.e. "Kevin Hester"
   string short_name = 3; // A VERY short name, ideally two characters.  Suitable
   // for a tiny OLED screen
   bytes macaddr = 4; // This is the addr of the radio.  Not populated by the
@@ -546,31 +546,43 @@ message MyNodeInfo {
   /// the last time we discarded preferences)
   uint32 error_count = 9;
 
-  /** How many bits are used for the packetid.  If zero it is assumed we use eight bit packetids
-  Old device loads (older that 0.6.5 do not populate this field, but all newer loads do). */
+  /** How many bits are used for the packetid.  If zero it is assumed we use
+  eight bit packetids Old device loads (older that 0.6.5 do not populate this
+  field, but all newer loads do). */
   uint32 packet_id_bits = 10;
 
-  /** The current ID this node is using for sending new packets (exposed so that the phone
-  can self assign packet IDs if it wishes by picking packet IDs from the opposite side of the pacekt
-  ID space).
+  /** The current ID this node is using for sending new packets (exposed so that
+  the phone can self assign packet IDs if it wishes by picking packet IDs from
+  the opposite side of the pacekt ID space).
 
-  Old device loads (older that 0.6.5 do not populate this field, but all newer loads do).
+  Old device loads (older that 0.6.5 do not populate this field, but all newer
+  loads do).
 
-  FIXME: that we need to expose this is a bit of a mistake.  Really the phones should be modeled/treated
-  as 1st class nodes like any other, and the radio connected to the phone just routes like any other.
-  This would allow all sorts of clean/clever routing topologies in the future.
+  FIXME: that we need to expose this is a bit of a mistake.  Really the phones
+  should be modeled/treated as 1st class nodes like any other, and the radio
+  connected to the phone just routes like any other. This would allow all sorts
+  of clean/clever routing topologies in the future.
   **/
   uint32 current_packet_id = 11;
 
-  /** How many bits are used for the nodenum.  If zero it is assumed we use eight bit nodenums
-  New device loads will user 32 bit nodenum.
-  Old device loads (older that 0.6.5 do not populate this field, but all newer loads do). */
+  /** How many bits are used for the nodenum.  If zero it is assumed we use
+  eight bit nodenums New device loads will user 32 bit nodenum.
+  Old device loads (older that 0.6.5 do not populate this field, but all newer
+  loads do). */
   uint32 node_num_bits = 12;
 
-  /** How long before we consider a message abandoned and we can clear our caches of any messages in flight
-  Normally quite large to handle the worst case message delivery time, 5 minutes.  Formerly called FLOOD_EXPIRE_TIME in the device code
+  /** How long before we consider a message abandoned and we can clear our
+  caches of any messages in flight Normally quite large to handle the worst case
+  message delivery time, 5 minutes.  Formerly called FLOOD_EXPIRE_TIME in the
+  device code
   */
   uint32 message_timeout_msec = 13;
+
+  /** The minimum app version that can talk to this device.  Android apps should
+  compare this to their build number and if too low tell the user they must
+  update their app
+  */
+  uint32 min_app_version = 14;
 
   /// FIXME - add more useful debugging state (queue depths etc)
 }
