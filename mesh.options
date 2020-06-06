@@ -15,7 +15,7 @@
 
 # FIXME, max out based on total SubPacket size And do fragmentation and reassembly (for larger payloads) at the Android layer, not the esp32 layer.
 # note: this payload length is ONLY the bytes that are sent inside of the radiohead packet
-*Data.payload max_size:251
+*Data.payload max_size:240
 
 # 256 bit or 128 bit psk key
 *ChannelSettings.psk max_size:32

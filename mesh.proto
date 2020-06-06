@@ -266,13 +266,15 @@ message MeshPacket {
   Note: Our crypto implementation uses this field as well.  See
   docs/software/crypto.md for details.
   */
-  uint32 from = 1;
+  uint32 from = 1; // FIXME - really should be fixed32 instead, this encoding
+                   // only hurts the ble link though.
 
   /**
   The (immediate) destination for this packet.  If we are using routing, the
   final destination will be in payload.dest
   */
-  uint32 to = 2;
+  uint32 to = 2; // FIXME - really should be fixed32 instead, this encoding only
+                 // hurts the ble link though.
 
   /**
   Internally to the mesh radios we will route SubPackets encrypted per
@@ -304,7 +306,8 @@ message MeshPacket {
   Note: Our crypto implementation uses this id as well.  See
   docs/software/crypto.md for details.
   */
-  uint32 id = 6;
+  uint32 id = 6; // FIXME - really should be fixed32 instead, this encoding only
+                 // hurts the ble link though.
 
   /// The time this message was received by the esp32 (secs since 1970).  Note:
   /// this field is _never_ sent on the radio link itself (to save space) Times
