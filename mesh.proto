@@ -63,13 +63,16 @@ Nanopb binaries available here: https://jpa.kapsi.fi/nanopb/download/ use nanopb
 // a gps position
 message Position {
 
-  /** The new preferred location encoding, divide by 10e-7 to get degrees in
+  /** The new preferred location encoding, divide by 1e-7 to get degrees in
    * floating point */
   sint32 latitude_i = 7;
   sint32 longitude_i = 8;
 
+  /** In meters above MSL */
   int32 altitude = 3;
-  int32 battery_level = 4; // 1-100 (0 means not provided)
+
+  /** 1-100 (0 means not provided) */
+  int32 battery_level = 4;
 
   /// This is usually not sent over the mesh (to save space), but it is sent
   /// from the phone so that the local device can set its RTC If it is sent over
