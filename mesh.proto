@@ -354,11 +354,14 @@ enum Constants {
 // information can be encoded as a QRcode/url so that other users can configure
 // their radio to join the same channel.
 message ChannelSettings {
-  int32 tx_power = 1;
 
-  // We now select channel number by hashing the name of the channel.  We do
-  // this on the device and it is opaque to the phone.  Therefore no need to
-  // show this in channel settings uint32 channel_num = 2;
+  /**
+  If zero then, use default max legal continuous power (ie. something that won't
+  burn out the radio hardware)
+
+  In most cases you should use zero here.
+  */
+  int32 tx_power = 1;
 
   enum ModemConfig {
     // Note: these mappings must match ModemConfigChoice in the device code.
@@ -372,13 +375,28 @@ message ChannelSettings {
     ///< on. Slow+long range
   }
 
+  /// Note: This is the 'old' mechanism for specifying channel parameters.
+  /// Either modem_config or bandwidth/spreading/coding will be specified - NOT
+  /// BOTH. As a heuristic: If bandwidth is specified, do not use modem_config.
+  /// Because protobufs take ZERO space when the value is zero this works out
+  /// nicely.
+  ///
   /// This value replaces bandwidth/spread_factor/coding_rate.  If you'd like to
   /// experiment with other options add them to MeshRadio.cpp in the device
   /// code.
   ModemConfig modem_config = 3;
-  // uint32 bandwidth = 5;
-  // int32 spread_factor = 6;
-  // int32 coding_rate = 7;
+
+  /// See note above with modem_config
+  uint32 bandwidth = 6;
+  uint32 spread_factor = 7;
+  uint32 coding_rate = 8;
+
+  /**
+  A channel number between 1 and 13 (or whatever the max is in the current
+  region). If ZERO then the rule is "use the old channel name hash based
+  algoritm to derive the channel number")
+  */
+  uint32 channel_num = 9;
 
   /// A simple preshared key for now for crypto.  Must be either 0 bytes (no
   /// crypto), 16 bytes (AES128), or 32 bytes (AES256)
@@ -417,20 +435,22 @@ message RadioConfig {
     uint32 ls_secs = 10;
     uint32 min_wake_secs = 11;
 
-    /** If set, this node will try to join the specified wifi network and acquire an address via DHCP */
-    string wifi_ssid = 12; 
+    /** If set, this node will try to join the specified wifi network and
+     * acquire an address via DHCP */
+    string wifi_ssid = 12;
     /** If set, will be use to authenticate to the named wifi */
     string wifi_password = 13;
-    /** If set, the node will operate as an AP (and DHCP server), otherwise it will be a station */
+    /** If set, the node will operate as an AP (and DHCP server), otherwise it
+     * will be a station */
     bool wifi_ap_mode = 14;
 
     // If true, radio should not try to be smart about what packets to queue to
     // the phone
-    //bool keep_all_packets = 100;
+    // bool keep_all_packets = 100;
 
     // If true, we will try to capture all the packets sent on the mesh, not
     // just the ones destined to our node.
-    //bool promiscuous_mode = 101;
+    // bool promiscuous_mode = 101;
 
     /**
     For testing it is useful sometimes to force a node to never listen to
@@ -617,7 +637,8 @@ message DeviceState {
   /// so we can show it on the screen.  Might be null
   MeshPacket rx_text_message = 7;
 
-  /// Used only during development.  Indicates developer is testing and changes should never be saved to flash.
+  /// Used only during development.  Indicates developer is testing and changes
+  /// should never be saved to flash.
   bool no_save = 9;
 }
 
