@@ -364,7 +364,8 @@ Where X is a letter from A-Z (base 26) representing a hash of the PSK for this
 channel - so that if the user changes anything about the channel (which does
 force a new PSK) this letter will also change. Thus preventing user confusion if
 two friends try to type in a channel name of "BobsChan" and then can't talk
-because their PSKs will be different.
+because their PSKs will be different.  The PSK is hashed into this letter by
+"0x41 + [xor all bytes of the psk ] modulo 26"
 
 This also allows the option of someday if people have the PSK off (zero), the
 users COULD type in a channel name and be able to talk.
@@ -406,8 +407,23 @@ message ChannelSettings {
   ModemConfig modem_config = 3;
 
   /// See note above with modem_config
+  /**
+  Bandwidth in MHz
+  Certain bandwidth numbers are 'special' and will be converted to the
+  appropriate floating point value: 31 -> 31.25MHz
+  */
   uint32 bandwidth = 6;
+
+  /**
+  A number from 7 to 12.  Indicates number of chirps per symbol as
+  1<<spread_factor.
+  */
   uint32 spread_factor = 7;
+
+  /**
+  The denominator of the coding rate.  ie for 4/8, the value is 8. 5/8 the value
+  is 5.
+  */
   uint32 coding_rate = 8;
 
   /**
