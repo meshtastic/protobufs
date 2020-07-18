@@ -349,10 +349,29 @@ enum Constants {
   // pass int constants between two very different environments
 }
 
-// Full settings (center freq, spread factor, pre-shared secret key etc...)
-// needed to configure a radio for speaking on a particlar channel This
-// information can be encoded as a QRcode/url so that other users can configure
-// their radio to join the same channel.
+/** Full settings (center freq, spread factor, pre-shared secret key etc...)
+needed to configure a radio for speaking on a particlar channel This
+information can be encoded as a QRcode/url so that other users can configure
+their radio to join the same channel.
+
+A note aboute how channel names are shown to users:
+
+#channelname-Xy
+
+# is a prefix used to indicate this is a channel name (idea from @professr).
+
+Where X is a letter from A-Z (base 26) representing a hash of the PSK for this
+channel - so that if the user changes anything about the channel (which does
+force a new PSK) this letter will also change. Thus preventing user confusion if
+two friends try to type in a channel name of "BobsChan" and then can't talk
+because their PSKs will be different.
+
+This also allows the option of someday if people have the PSK off (zero), the
+users COULD type in a channel name and be able to talk.
+
+Y is a lower case letter from a-z that represents the channel 'speed' settings
+(for some future definition of speed)
+*/
 message ChannelSettings {
 
   /**
