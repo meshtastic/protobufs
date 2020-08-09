@@ -401,9 +401,9 @@ message ChannelSettings {
   /// Because protobufs take ZERO space when the value is zero this works out
   /// nicely.
   ///
-  /// This value replaces bandwidth/spread_factor/coding_rate.  If you'd like to
-  /// experiment with other options add them to MeshRadio.cpp in the device
-  /// code.
+  /// This value is replaced by bandwidth/spread_factor/coding_rate.  If you'd
+  /// like to experiment with other options add them to MeshRadio.cpp in the
+  /// device code.
   ModemConfig modem_config = 3;
 
   /// See note above with modem_config
