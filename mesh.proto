@@ -675,6 +675,10 @@ message DeviceState {
   /// Used only during development.  Indicates developer is testing and changes
   /// should never be saved to flash.
   bool no_save = 9;
+
+  /// Some GPSes seem to have bogus settings from the factory, so we always do
+  /// one factory reset
+  bool did_gps_reset = 10;
 }
 
 /// Debug output from the device
