@@ -21,6 +21,7 @@
 
 *UserPreferences.wifi_ssid max_size:33
 *UserPreferences.wifi_password max_size:64
+*UserPreferences.region max_size:6
 
 # 256 bit or 128 bit psk key
 *ChannelSettings.psk max_size:32
