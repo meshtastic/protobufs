@@ -457,6 +457,30 @@ message ChannelSettings {
   string name = 5;
 }
 
+/**
+  The frequency/regulatory region the user has selected.
+
+  Note: In 1.0 builds (which must still be supported by the android app for a
+  long time) this field will be unpopulated.
+
+  If firmware is ever upgraded from an old 1.0ish build, the old
+  MyNodeInfo.region string will be used to set UserPreferences.region and the
+  old value will be no longer set.
+*/
+enum RegionCode {
+  Unset = 0;
+  US = 1;
+  EU433 = 2;
+  EU865 = 3;
+  CN = 4;
+  JP = 5;
+  ANZ = 6;
+  KR = 7;
+  TW = 8;
+
+  // Add new regions here
+}
+
 // The entire set of user settable/readable settings for our radio device.
 // Includes both the current channel settings and any preferences the user has
 // set for behavior of their node
@@ -495,7 +519,7 @@ message RadioConfig {
     bool wifi_ap_mode = 14;
 
     /// The region code for my radio (US, CN, EU433, etc...)
-    string region = 15;
+    RegionCode region = 15;
 
     /**
     This setting is never saved to disk, but if set, all device settings will be
@@ -604,7 +628,14 @@ message MyNodeInfo {
   /// # of legal channels (set at build time in the device flash image)
   int32 num_channels = 3;
 
-  /// The region code for my radio (US, CN, etc...)
+  /** The region code for my radio (US, CN, etc...)
+  Note: This string is deprecated.  The 1.0 builds populate it based on the
+  flashed firmware name.  But for newer builds this string will be unpopulated
+  (missing/null).  For those builds you should instead look at the new
+  read/write region enum in UserSettings 
+  
+  The format of this string was 1.0-US or 1.0-CN etc.. Or empty string if unset.
+  */
   string region = 4;
 
   /// TBEAM, HELTEC, etc...
