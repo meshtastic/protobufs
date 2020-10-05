@@ -570,9 +570,9 @@ message RadioConfig {
 
      or a very large value (maxint) to update only once at boot.
     */
-    uint32 gps_update_rate = 34;
+    uint32 gps_update_interval = 34;
 
-    /** How long should we try to get our position during each gps_update_rate attempt?  (in seconds)
+    /** How long should we try to get our position during each gps_update_interval attempt?  (in seconds)
     Or if zero, use the default of 30 seconds.
     If we don't get a new gps fix in that time, the gps will be put into sleep until  the next gps_update_rate
     window. 
