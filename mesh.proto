@@ -501,7 +501,7 @@ enum GpsOperation {
   GpsOpMobile = 2;
 
   // We should only use the GPS to get time (no location data should be acquired/stored)
-  // Once we have the time we treat gps_update_rate as MAXINT (i.e. sleep forever)
+  // Once we have the time we treat gps_update_interval as MAXINT (i.e. sleep forever)
   GpsOpTimeOnly = 3;
 
   // GPS is always turned off - this mode is not recommended - use GpsOpTimeOnly instead
@@ -518,7 +518,7 @@ enum LocationSharing {
   // We are sharing our location
   LocEnabled = 1;
 
-  // We are not sharing our location
+  // We are not sharing our location (if the unit has a GPS it will default to only get time - i.e. GpsOpTimeOnly)
   LocDisabled = 2;
 }
 
