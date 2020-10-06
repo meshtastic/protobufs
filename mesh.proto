@@ -562,9 +562,28 @@ message RadioConfig {
     /// The region code for my radio (US, CN, EU433, etc...)
     RegionCode region = 15;
 
+    /**
+    Are we operating as a router.  Changes behavior in the following ways:
+    FIXME
+    */
+    bool is_router = 37;
+
+    /**
+    If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in
+    we should try to minimize power consumption as much as possible.  Often combined with is_router.
+    */
+    bool is_low_power = 38;
+
+    /**
+    This setting is never saved to disk, but if set, all device settings will be
+    returned to factory defaults.  (Region, serial number etc... will be
+    preserved)
+    */
+    bool factory_reset = 100;
+
     LocationSharing location_share = 32;
     GpsOperation gps_operation = 33;
-
+    
     /** How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode?
      or zero for the default of once every 30 seconds
 
@@ -578,19 +597,6 @@ message RadioConfig {
     window. 
     */
     uint32 gps_attempt_time = 36;
-
-    /**
-    Are we operating as a router.  Changes behavior in the following ways:
-    FIXME
-    */
-    bool is_router = 37;
-
-    /**
-    This setting is never saved to disk, but if set, all device settings will be
-    returned to factory defaults.  (Region, serial number etc... will be
-    preserved)
-    */
-    bool factory_reset = 100;
 
     // If true, radio should not try to be smart about what packets to queue to
     // the phone
