@@ -541,14 +541,14 @@ message RadioConfig {
     uint32 num_missed_to_fail = 3;
 
     /// see sw-design.md
-    uint32 wait_bluetooth_secs = 4;
-    uint32 screen_on_secs = 5;
-    uint32 phone_timeout_secs = 6;
-    uint32 phone_sds_timeout_sec = 7;
-    uint32 mesh_sds_timeout_secs = 8;
-    uint32 sds_secs = 9;
-    uint32 ls_secs = 10;
-    uint32 min_wake_secs = 11;
+    uint32 wait_bluetooth_secs = 4; // 0 for default of 2 minutes
+    uint32 screen_on_secs = 5; // 0 for default of one minute
+    uint32 phone_timeout_secs = 6; // 0 for default of 15 minutes
+    uint32 phone_sds_timeout_sec = 7; // 0 for default of two hours, MAXUINT for disabled
+    uint32 mesh_sds_timeout_secs = 8; // 0 for default of two hours, MAXUINT for disabled
+    uint32 sds_secs = 9; // 0 for default of one year
+    uint32 ls_secs = 10; // 0 for default of 3600
+    uint32 min_wake_secs = 11; // 0 for default of 10 seconds
 
     /** If set, this node will try to join the specified wifi network and
      * acquire an address via DHCP */
@@ -562,9 +562,28 @@ message RadioConfig {
     /// The region code for my radio (US, CN, EU433, etc...)
     RegionCode region = 15;
 
+    /**
+    Are we operating as a router.  Changes behavior in the following ways:
+    FIXME
+    */
+    bool is_router = 37;
+
+    /**
+    If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in
+    we should try to minimize power consumption as much as possible.  Often combined with is_router.
+    */
+    bool is_low_power = 38;
+
+    /**
+    This setting is never saved to disk, but if set, all device settings will be
+    returned to factory defaults.  (Region, serial number etc... will be
+    preserved)
+    */
+    bool factory_reset = 100;
+
     LocationSharing location_share = 32;
     GpsOperation gps_operation = 33;
-
+    
     /** How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode?
      or zero for the default of once every 30 seconds
 
@@ -578,13 +597,6 @@ message RadioConfig {
     window. 
     */
     uint32 gps_attempt_time = 36;
-
-    /**
-    This setting is never saved to disk, but if set, all device settings will be
-    returned to factory defaults.  (Region, serial number etc... will be
-    preserved)
-    */
-    bool factory_reset = 100;
 
     // If true, radio should not try to be smart about what packets to queue to
     // the phone
