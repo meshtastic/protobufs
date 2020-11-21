@@ -347,6 +347,12 @@ message MeshPacket {
 enum Constants {
   Unused = 0; // First enum must be zero, and we are just using this enum to
   // pass int constants between two very different environments
+
+  /** From mesh.options
+     note: this payload length is ONLY the bytes that are sent inside of the radiohead packet
+    Data.payload max_size:240
+    */
+  DATA_PAYLOAD_LEN = 240;
 }
 
 /** Full settings (center freq, spread factor, pre-shared secret key etc...)
