@@ -547,7 +547,7 @@ message RadioConfig {
     uint32 num_missed_to_fail = 3;
 
     /// see sw-design.md
-    uint32 wait_bluetooth_secs = 4; // 0 for default of 2 minutes
+    uint32 wait_bluetooth_secs = 4; // 0 for default of 1 minute
     uint32 screen_on_secs = 5; // 0 for default of one minute
     uint32 phone_timeout_secs = 6; // 0 for default of 15 minutes
     uint32 phone_sds_timeout_sec = 7; // 0 for default of two hours, MAXUINT for disabled
