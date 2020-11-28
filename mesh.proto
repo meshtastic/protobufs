@@ -162,9 +162,13 @@ message SubPacket {
   // Only one of the following fields can be populated at a time
   oneof payload {
 
-    Position position = 1;
+    /// Prior to 1.20 positions were communicated as a special payload type, now they are GPS_POSITION_APP Data
+    Position position = 1 [deprecated = true];
+
     Data data = 3;
-    User user = 4;
+
+    /// Prior to 1.20 positions were communicated as a special payload type, now they are MESH_USERINFO_APP
+    User user = 4 [deprecated = true];
 
     /**
     A route request going from the requester
