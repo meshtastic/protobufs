@@ -6,6 +6,9 @@ syntax = "proto3";
 
 option java_package = "com.geeksville.mesh";
 option java_outer_classname = "MeshProtos";
+option optimize_for = LITE_RUNTIME;
+
+import "portnums.proto";
 
 /**
 MESH RADIO PROTOCOL
@@ -82,29 +85,12 @@ message Position {
 }
 
 // a data message to forward to an external app (or possibly also be consumed
-// internally in the case of CLEAR_TEXT and CLEAR_READACK
+// internally in the case of CLEAR_TEXT and CLEAR_READACK)
 message Data {
-  enum Type {
-    /// A message sent from a device outside of the mesh, in a form the mesh
-    /// does not understand
-    OPAQUE = 0; // NOTE: This must be 0, because it is documented in
-    // IMeshService.aidl to be so
 
-    /// a simple UTF-8 text message, which even the little micros in the mesh
-    /// can understand and show on their screen eventually in some circumstances
-    /// even signal might send messages in this form (see below)
-    CLEAR_TEXT = 1;
+  // formerly named typ and of type Type
+  PortNum portnum = 1;
 
-    /// a message receive acknowledgement, sent in cleartext - allows radio to
-    /// show user that a message has been read by the recipient, optional
-    CLEAR_READACK = 2;
-
-    /// Apps will eventually be able to register their own handlers for
-    /// particular payload type codes so multiple apps can share the same radio
-    /// (this will replace OPAQUE)
-  }
-
-  Type typ = 1;      // required
   bytes payload = 2; // required
 }
 
