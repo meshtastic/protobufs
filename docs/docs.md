@@ -68,8 +68,8 @@ needed to configure a radio for speaking on a particlar channel This
 information can be encoded as a QRcode/url so that other users can configure
 their radio to join the same channel.
 A note aboute how channel names are shown to users:
-#channelname-Xy
-# is a prefix used to indicate this is a channel name (idea from @professr).
+channelname-Xy
+poundsymbol is a prefix used to indicate this is a channel name (idea from @professr).
 Where X is a letter from A-Z (base 26) representing a hash of the PSK for this
 channel - so that if the user changes anything about the channel (which does
 force a new PSK) this letter will also change. Thus preventing user confusion if
@@ -365,18 +365,10 @@ inside a radio packet (because from/to are broken out by the comms library)
 | route_reply | [RouteDiscovery](#RouteDiscovery) |  | A route reply |
 | route_error | [RouteError](#RouteError) |  | A failure in a routed message |
 | want_response | [bool](#bool) |  | Not normally used, but for testing a sender can request that recipient / responds in kind (i.e. if it received a position, it should unicast back / its position). Note: that if you set this on a broadcast you will receive many replies. FIXME - unify (i.e. remove) this with the new reliable messaging at the MeshPacket level |
-| success_id | [uint32](#uint32) |  | This packet is a requested acknoledgement indicating that we have received the specified message ID. This packet type can be used both for immediate (0 hops) messages or can be routed through multiple hops if dest is set.
-
-Note: As an optimization, recipients can _also_ populate a field in payload if they think the recipient would appreciate that extra state. |
+| success_id | [uint32](#uint32) |  | This packet is a requested acknoledgement indicating that we have received the specified message ID. This packet type can be used both for immediate (0 hops) messages or can be routed through multiple hops if dest is set. Note: As an optimization, recipients can _also_ populate a field in payload if they think the recipient would appreciate that extra state. |
 | fail_id | [uint32](#uint32) |  | This is a nak, we failed to deliver this message. |
-| dest | [uint32](#uint32) |  | The address of the destination node.
-
-This field is is filled in by the mesh radio device software, applicaiton layer software should never need it.
-
-RouteDiscovery messages _must_ populate this. Other message types might need to if they are doing multihop routing. |
-| source | [uint32](#uint32) |  | The address of the original sender for this message.
-
-This field should _only_ be populated for reliable multihop packets (to keep packets small). |
+| dest | [uint32](#uint32) |  | The address of the destination node. This field is is filled in by the mesh radio device software, applicaiton layer software should never need it. RouteDiscovery messages _must_ populate this. Other message types might need to if they are doing multihop routing. |
+| source | [uint32](#uint32) |  | The address of the original sender for this message. This field should _only_ be populated for reliable multihop packets (to keep packets small). |
 | original_id | [uint32](#uint32) |  | Only used in route_error messages. Indicates the original message ID that this message is reporting failure on. |
 
 
@@ -407,9 +399,9 @@ characteristic.  Once the write completes the phone can assume it is handled.
 
 ### User
 Broadcast when a newly powered mesh node wants to find a node num it can use
-// Sent from the phone over bluetooth to set the user id for the owner of this
+Sent from the phone over bluetooth to set the user id for the owner of this
 node.
-// Also sent from nodes to each other when a new node signs on (so all clients
+Also sent from nodes to each other when a new node signs on (so all clients
 can have this info)
 
 The algorithm is as follows:
@@ -438,13 +430,9 @@ A few nodenums are reserved and will never be requested:
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | [string](#string) |  | a globally unique ID string for this user. In the case of |
-| long_name | [string](#string) |  | Signal that would mean &#43;16504442323, for the default macaddr derived id it would be !&lt;6 hexidecimal bytes&gt;
-
-A full name for this user, i.e. &#34;Kevin Hester&#34; |
+| long_name | [string](#string) |  | A full name for this user, i.e. &#34;Kevin Hester&#34; |
 | short_name | [string](#string) |  | A VERY short name, ideally two characters. Suitable |
-| macaddr | [bytes](#bytes) |  | for a tiny OLED screen
-
-This is the addr of the radio. Not populated by the |
+| macaddr | [bytes](#bytes) |  | This is the addr of the radio. Not populated by the |
 
 
 
@@ -462,15 +450,9 @@ Note: these mappings must match ModemConfigChoice in the device code.
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | Bw125Cr45Sf128 | 0 | &lt; Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC |
-| Bw500Cr45Sf128 | 1 | &lt; on. Default medium range
-
-/&lt; Bw = 500 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC |
-| Bw31_25Cr48Sf512 | 2 | &lt; on. Fast&#43;short range
-
-/&lt; Bw = 31.25 kHz, Cr = 4/8, Sf = 512chips/symbol, |
-| Bw125Cr48Sf4096 | 3 | &lt; CRC on. Slow&#43;long range
-
-/&lt; Bw = 125 kHz, Cr = 4/8, Sf = 4096chips/symbol, CRC |
+| Bw500Cr45Sf128 | 1 | &lt; Bw = 500 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC |
+| Bw31_25Cr48Sf512 | 2 | &lt; Bw = 31.25 kHz, Cr = 4/8, Sf = 512chips/symbol, |
+| Bw125Cr48Sf4096 | 3 | &lt; Bw = 125 kHz, Cr = 4/8, Sf = 4096chips/symbol, CRC |
 
 
 

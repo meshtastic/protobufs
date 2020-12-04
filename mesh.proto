@@ -62,9 +62,9 @@ message Data {
 }
 
 /* Broadcast when a newly powered mesh node wants to find a node num it can use
-// Sent from the phone over bluetooth to set the user id for the owner of this
+Sent from the phone over bluetooth to set the user id for the owner of this
 node.
-// Also sent from nodes to each other when a new node signs on (so all clients
+Also sent from nodes to each other when a new node signs on (so all clients
 can have this info)
 
 The algorithm is as follows:
@@ -94,9 +94,12 @@ message User {
   string id = 1; // a globally unique ID string for this user.  In the case of
   // Signal that would mean +16504442323, for the default macaddr
   // derived id it would be !<6 hexidecimal bytes>
+
   string long_name = 2;  // A full name for this user, i.e. "Kevin Hester"
+
   string short_name = 3; // A VERY short name, ideally two characters.  Suitable
   // for a tiny OLED screen
+
   bytes macaddr = 4; // This is the addr of the radio.  Not populated by the
   // phone, but added by the esp32 when broadcasting
 }
@@ -166,7 +169,6 @@ message SubPacket {
     This packet is a requested acknoledgement indicating that we have received
     the specified message ID.  This packet type can be used both for immediate
     (0 hops) messages or can be routed through multiple hops if dest is set.
-
     Note: As an optimization, recipients can _also_ populate a field in payload
     if they think the recipient would appreciate that extra state.
     */
@@ -179,10 +181,8 @@ message SubPacket {
 
   /**
   The address of the destination node.
-
   This field is is filled in by the mesh radio device software, applicaiton
   layer software should never need it.
-
   RouteDiscovery messages _must_ populate this.  Other message types might need
   to if they are doing multihop routing.
   */
@@ -190,7 +190,6 @@ message SubPacket {
 
   /**
   The address of the original sender for this message.
-
   This field should _only_ be populated for reliable multihop packets (to keep
   packets small).
   */
@@ -337,14 +336,17 @@ message ChannelSettings {
   Note: these mappings must match ModemConfigChoice in the device code.
   */
   enum ModemConfig {
-    Bw125Cr45Sf128 = 0 ; ///< Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC
-    ///< on. Default medium range
-    Bw500Cr45Sf128 = 1; ///< Bw = 500 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC
-    ///< on. Fast+short range
-    Bw31_25Cr48Sf512 = 2; ///< Bw = 31.25 kHz, Cr = 4/8, Sf = 512chips/symbol,
+    Bw125Cr45Sf128 = 0 ; // < Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC
+    // < on. Default medium range
+
+    Bw500Cr45Sf128 = 1; // < Bw = 500 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC
+    // < on. Fast+short range
+
+    Bw31_25Cr48Sf512 = 2; // < Bw = 31.25 kHz, Cr = 4/8, Sf = 512chips/symbol,
     ///< CRC on. Slow+long range
-    Bw125Cr48Sf4096 = 3; ///< Bw = 125 kHz, Cr = 4/8, Sf = 4096chips/symbol, CRC
-    ///< on. Slow+long range
+
+    Bw125Cr48Sf4096 = 3; // < Bw = 125 kHz, Cr = 4/8, Sf = 4096chips/symbol, CRC
+    // < on. Slow+long range
   } 
 
   /// Note: This is the 'old' mechanism for specifying channel parameters.
