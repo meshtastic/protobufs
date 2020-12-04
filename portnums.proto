@@ -22,31 +22,39 @@ syntax = "proto3";
 
 */
 enum PortNum {
-    /// Deprecated: do not use in new code (formerly called OPAQUE)
-    /// A message sent from a device outside of the mesh, in a form the mesh
-    /// does not understand
-    UNKNOWN_APP = 0; // NOTE: This must be 0, because it is documented in
-    // IMeshService.aidl to be so
+    /** Deprecated: do not use in new code (formerly called OPAQUE)
+    A message sent from a device outside of the mesh, in a form the mesh
+    does not understand 
+    NOTE: This must be 0, because it is documented in IMeshService.aidl to be so
+    */
+    UNKNOWN_APP = 0; 
   
-    /// a simple UTF-8 text message, which even the little micros in the mesh
-    /// can understand and show on their screen eventually in some circumstances
-    /// even signal might send messages in this form (see below)
-    /// Formerly called CLEAR_TEXT
+    /** a simple UTF-8 text message, which even the little micros in the mesh
+     can understand and show on their screen eventually in some circumstances
+     even signal might send messages in this form (see below)
+     Formerly called CLEAR_TEXT */
     TEXT_MESSAGE_APP = 1;
   
-    /// a message receive acknowledgement, sent in cleartext - allows radio to
-    /// show user that a message has been read by the recipient, optional
-    // Note: this concept has been removed for now.  Once READACK is implemented, use the 
-    // new packet type/port number stuff?
-    // CLEAR_READACK = 2;
+    /** a message receive acknowledgement, sent in cleartext - allows radio to
+     show user that a message has been read by the recipient, optional
+     
+     Note: this concept has been removed for now.  Once READACK is implemented, use the 
+     new packet type/port number stuff?
 
-    // Future standard app IDs
-    GPIO_APP = 2;
+     @exclude
+
+     CLEAR_READACK = 2;
+     */
+
+    /** The built-in position messaging app */
     POSITION_APP = 3;
+
+    /** Future standard app IDs */ 
+    GPIO_APP = 2;
     MESH_USERINFO_APP = 4;
 
-    /// Private applications should use portnums >= 256.  To simplify initial development and testing you can use "PRIVATE_APP"
-    /// in your code without needing to rebuild protobuf files (via bin/regin_protos.sh)
+    /** Private applications should use portnums >= 256.  To simplify initial development and testing you can use "PRIVATE_APP"
+     in your code without needing to rebuild protobuf files (via bin/regin_protos.sh) */
     PRIVATE_APP = 256;
 
     IP_TUNNEL_APP = 1024;

@@ -1,60 +1,20 @@
 syntax = "proto3";
-// per https://developers.google.com/protocol-buffers/docs/proto3
+/** 
+Meshtastic protobufs
 
-// We are not placing any of these defs inside a package, because if you do the
-// resulting nanopb version is super verbose package mesh;
+For more information on protobufs (and tools to use them with the language of
+your choice) see
+https://developers.google.com/protocol-buffers/docs/proto3
 
-option java_package = "com.geeksville.mesh";
-option java_outer_classname = "MeshProtos";
-option optimize_for = LITE_RUNTIME;
+We are not placing any of these defs inside a package, because if you do the
+resulting nanopb version is super verbose package mesh.
 
-import "portnums.proto";
-
-/**
-MESH RADIO PROTOCOL
-
-Old TODO notes on the mesh radio protocol, merge into real docs below...
-
-for each named group we have a pre-shared key known by all group members and
-wrapped around the device. you can only be in one group at a time (FIXME?!) To
-join the group we read a qr code with the preshared key and ParamsCodeEnum. that
-gets sent via bluetooth to the device.  ParamsCodeEnum maps to a set of various
-radio params (regulatory region, center freq, SF, bandwidth, bitrate, power
-etc...) so all members of the mesh can have their radios set the same way.
-
-once in that group, we can talk between 254 node numbers.
-to get our node number (and announce our presence in the channel) we pick a
-random node number and broadcast as that node with WANT-NODENUM(my globally
-unique name).  If anyone on the channel has seen someone _else_ using that name
-within the last 24 hrs(?) they reply with DENY-NODENUM. Note: we might receive
-multiple denies.  Note: this allows others to speak up for some other node that
-might be saving battery right now. Any time we hear from another node (for any
-message type), we add that node number to the unpickable list.  To dramatically
-decrease the odds a node number we request is already used by someone. If no one
-denies within TBD seconds, we assume that we have that node number.  As long as
-we keep talking to folks at least once every 24 hrs, others should remember we
-have it.
-
-Once we have a node number we can broadcast POSITION-UPDATE(my globally unique
-name, lat, lon, alt, amt battery remaining).  All receivers will use this to a)
-update the mapping of who is at what node nums, b) the time of last rx, c)
-position.  If we haven't heard from that node in a while we reply to that node
-(only) with our current POSITION_UPDATE state - so that node (presumably just
-rejoined the network) can build a map of all participants.
-
-We will periodically broadcast POSITION-UPDATE as needed based on distance moved
-or a periodic minimum heartbeat.
-
-If user wants to send a text they can SEND_TEXT(dest user, short text message).
-Dest user is a node number, or 0xff for broadcast.
-*/
-
-/*
 Protobuf build instructions:
 
+To build java classes for reading writing:
 protoc -I=. --java_out /tmp mesh.proto
 
-To generate Nanopb c code
+To generate Nanopb c code:
 /home/kevinh/packages/nanopb-0.4.0-linux-x86/generator-bin/protoc
 --nanopb_out=/tmp -I=app/src/main/proto mesh.proto
 
@@ -62,6 +22,12 @@ Nanopb binaries available here: https://jpa.kapsi.fi/nanopb/download/ use nanopb
 0.4.0
 
 */
+
+option java_package = "com.geeksville.mesh";
+option java_outer_classname = "MeshProtos";
+option optimize_for = LITE_RUNTIME;
+
+import "portnums.proto";
 
 // a gps position
 message Position {
@@ -81,7 +47,8 @@ message Position {
   /// from the phone so that the local device can set its RTC If it is sent over
   /// the mesh (because there are devices on the mesh without GPS), it will only
   /// be sent by devices which has a hardware GPS clock.
-  fixed32 time = 9; // seconds since 1970
+  /// seconds since 1970
+  fixed32 time = 9; 
 }
 
 // a data message to forward to an external app (or possibly also be consumed
@@ -244,30 +211,29 @@ message MeshPacket {
 
   /**
   The sending node number.
-
   Note: Our crypto implementation uses this field as well.  See
   docs/software/crypto.md for details.
+  FIXME - really should be fixed32 instead, this encoding
+  only hurts the ble link though.
   */
-  uint32 from = 1; // FIXME - really should be fixed32 instead, this encoding
-                   // only hurts the ble link though.
+  uint32 from = 1; 
 
   /**
   The (immediate) destination for this packet.  If we are using routing, the
   final destination will be in payload.dest
+  FIXME - really should be fixed32 instead, this encoding only
+  hurts the ble link though.
   */
-  uint32 to = 2; // FIXME - really should be fixed32 instead, this encoding only
-                 // hurts the ble link though.
+  uint32 to = 2;
 
   /**
   Internally to the mesh radios we will route SubPackets encrypted per
   docs/software/crypto.md.  However, when a particular node has the correct
   key to decode a particular packet, it will decode the payload into a SubPacket
   protobuf structure.
-
   Software outside of the device nodes will never encounter a packet where
   "decoded" is not populated (i.e. any encryption/decryption happens before
   reaching the applications)
-
   The numeric IDs for these fields were selected to keep backwards compatibility
   with old applications.
   */
@@ -280,16 +246,15 @@ message MeshPacket {
   A unique ID for this packet.  Always 0 for no-ack packets or non broadcast
   packets (and therefore take zero bytes of space).  Otherwise a unique ID for
   this packet.  Useful for flooding algorithms.
-
   ID only needs to be unique on a _per sender_ basis.   And it only
   needs to be unique for a few minutes (long enough to last for the length of
   any ACK or the completion of a mesh broadcast flood).
-
   Note: Our crypto implementation uses this id as well.  See
   docs/software/crypto.md for details.
+  FIXME - really should be fixed32 instead, this encoding only
+  hurts the ble link though.
   */
-  uint32 id = 6; // FIXME - really should be fixed32 instead, this encoding only
-                 // hurts the ble link though.
+  uint32 id = 6; 
 
   /// The time this message was received by the esp32 (secs since 1970).  Note:
   /// this field is _never_ sent on the radio link itself (to save space) Times
@@ -306,9 +271,7 @@ message MeshPacket {
   /**
   If unset treated as zero (no fowarding, send to adjacent nodes only)
   if 1, allow hopping through one node, etc...
-
   For our usecase real world topologies probably have a max of about 3.
-
   This field is normally placed into a few of bits in the header.
   */
   uint32 hop_limit = 10;
@@ -316,7 +279,6 @@ message MeshPacket {
   /**
   This packet is being sent as a reliable message, we would prefer it to arrive
   at the destination.  We would like to receive a ack packet in response.
-
   Broadcasts messages treat this flag specially: Since acks for broadcasts would
   rapidly flood the channel, the normal ack behavior is suppressed.  Instead,
   the original sender listens to see if at least one node is rebroadcasting this
@@ -326,7 +288,6 @@ message MeshPacket {
   ack which is delivered to the original sender. If after some time we don't
   hear anyone rebroadcast our packet, we will timeout and retransmit, using the
   regular resend logic.
-
   Note: This flag is normally sent in a flag bit in the header when sent over
   the wire
   */
@@ -349,23 +310,17 @@ enum Constants {
 needed to configure a radio for speaking on a particlar channel This
 information can be encoded as a QRcode/url so that other users can configure
 their radio to join the same channel.
-
 A note aboute how channel names are shown to users:
-
-#channelname-Xy
-
-# is a prefix used to indicate this is a channel name (idea from @professr).
-
+channelname-Xy
+poundsymbol is a prefix used to indicate this is a channel name (idea from @professr).
 Where X is a letter from A-Z (base 26) representing a hash of the PSK for this
 channel - so that if the user changes anything about the channel (which does
 force a new PSK) this letter will also change. Thus preventing user confusion if
 two friends try to type in a channel name of "BobsChan" and then can't talk
 because their PSKs will be different.  The PSK is hashed into this letter by
 "0x41 + [xor all bytes of the psk ] modulo 26"
-
 This also allows the option of someday if people have the PSK off (zero), the
 users COULD type in a channel name and be able to talk.
-
 Y is a lower case letter from a-z that represents the channel 'speed' settings
 (for some future definition of speed)
 */
@@ -374,14 +329,15 @@ message ChannelSettings {
   /**
   If zero then, use default max legal continuous power (ie. something that won't
   burn out the radio hardware)
-
   In most cases you should use zero here.
   */
   int32 tx_power = 1;
 
+  /** Standard predefined channel settings 
+  Note: these mappings must match ModemConfigChoice in the device code.
+  */
   enum ModemConfig {
-    // Note: these mappings must match ModemConfigChoice in the device code.
-    Bw125Cr45Sf128 = 0; ///< Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC
+    Bw125Cr45Sf128 = 0 ; ///< Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC
     ///< on. Default medium range
     Bw500Cr45Sf128 = 1; ///< Bw = 500 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC
     ///< on. Fast+short range
@@ -389,20 +345,18 @@ message ChannelSettings {
     ///< CRC on. Slow+long range
     Bw125Cr48Sf4096 = 3; ///< Bw = 125 kHz, Cr = 4/8, Sf = 4096chips/symbol, CRC
     ///< on. Slow+long range
-  }
+  } 
 
   /// Note: This is the 'old' mechanism for specifying channel parameters.
   /// Either modem_config or bandwidth/spreading/coding will be specified - NOT
   /// BOTH. As a heuristic: If bandwidth is specified, do not use modem_config.
   /// Because protobufs take ZERO space when the value is zero this works out
   /// nicely.
-  ///
   /// This value is replaced by bandwidth/spread_factor/coding_rate.  If you'd
   /// like to experiment with other options add them to MeshRadio.cpp in the
   /// device code.
-  ModemConfig modem_config = 3;
+  ModemConfig modem_config = 3 [deprecated = true];
 
-  /// See note above with modem_config
   /**
   Bandwidth in MHz
   Certain bandwidth numbers are 'special' and will be converted to the
@@ -426,19 +380,15 @@ message ChannelSettings {
   A channel number between 1 and 13 (or whatever the max is in the current
   region). If ZERO then the rule is "use the old channel name hash based
   algoritm to derive the channel number")
-
   If using the hash algorithm the channel number will be: hash(channel_name) %
   NUM_CHANNELS (Where num channels depends on the regulatory region).
   NUM_CHANNELS_US is 13, for other values see MeshRadio.h in the device code.
-
-  // hash a string into an integer - djb2 by Dan Bernstein. -
-  // http://www.cse.yorku.ca/~oz/hash.html
+  hash a string into an integer - djb2 by Dan Bernstein. -
+  http://www.cse.yorku.ca/~oz/hash.html
   unsigned long hash(char *str) {
     unsigned long hash = 5381; int c;
-
     while ((c = *str++) != 0)
       hash = ((hash << 5) + hash) + (unsigned char) c;
-
     return hash;
   }
   */
@@ -523,6 +473,7 @@ enum LocationSharing {
 // set for behavior of their node
 message RadioConfig {
 
+  /// see sw-design.md for more information on these preferences
   message UserPreferences {
     // We should send our position this often (but only if it has changed
     // significantly)
@@ -536,7 +487,6 @@ message RadioConfig {
     /// offline (defaults to 3 - to allow for some lost packets)
     uint32 num_missed_to_fail = 3;
 
-    /// see sw-design.md
     uint32 wait_bluetooth_secs = 4; // 0 for default of 1 minute
     uint32 screen_on_secs = 5; // 0 for default of one minute
     uint32 phone_timeout_secs = 6; // 0 for default of 15 minutes
@@ -582,7 +532,6 @@ message RadioConfig {
     
     /** How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode?
      or zero for the default of once every 30 seconds
-
      or a very large value (maxint) to update only once at boot.
     */
     uint32 gps_update_interval = 34;
@@ -690,8 +639,7 @@ message MyNodeInfo {
 
   /**
   Note: this bool no longer means "we have our own GPS".  Because gps_operation is more advanced,
-  but we'd like old phone apps to keep working.  So for legacy reasons we set this flag as follows:
-  
+  but we'd like old phone apps to keep working.  So for legacy reasons we set this flag as follows:  
   if false it would be great if the phone can help provide gps coordinates.  If true we don't need location
   assistance from the phone.
   */
@@ -704,8 +652,7 @@ message MyNodeInfo {
   Note: This string is deprecated.  The 1.0 builds populate it based on the
   flashed firmware name.  But for newer builds this string will be unpopulated
   (missing/null).  For those builds you should instead look at the new
-  read/write region enum in UserSettings 
-  
+  read/write region enum in UserSettings   
   The format of this string was 1.0-US or 1.0-CN etc.. Or empty string if unset.
   */
   string region = 4;
@@ -739,10 +686,8 @@ message MyNodeInfo {
   /** The current ID this node is using for sending new packets (exposed so that
   the phone can self assign packet IDs if it wishes by picking packet IDs from
   the opposite side of the pacekt ID space).
-
   Old device loads (older that 0.6.5 do not populate this field, but all newer
   loads do).
-
   FIXME: that we need to expose this is a bit of a mistake.  Really the phones
   should be modeled/treated as 1st class nodes like any other, and the radio
   connected to the phone just routes like any other. This would allow all sorts
@@ -791,21 +736,21 @@ message DeviceState {
   /// Received packets saved for delivery to the phone
   repeated MeshPacket receive_queue = 5;
 
-  /// A version integer used to invalidate old save files when we make
-  /// incompatible changes This integer is set at build time and is private to
-  /// NodeDB.cpp in the device code.
+  /** A version integer used to invalidate old save files when we make
+  incompatible changes This integer is set at build time and is private to
+  NodeDB.cpp in the device code. */
   uint32 version = 8;
 
-  /// We keep the last received text message (only) stored in the device flash,
-  /// so we can show it on the screen.  Might be null
+  // We keep the last received text message (only) stored in the device flash,
+  // so we can show it on the screen.  Might be null
   MeshPacket rx_text_message = 7;
 
-  /// Used only during development.  Indicates developer is testing and changes
-  /// should never be saved to flash.
+  // Used only during development.  Indicates developer is testing and changes
+  // should never be saved to flash.
   bool no_save = 9;
 
-  /// Some GPSes seem to have bogus settings from the factory, so we always do
-  /// one factory reset
+  // Some GPSes seem to have bogus settings from the factory, so we always do
+  // one factory reset
   bool did_gps_reset = 11;
 }
 
@@ -818,9 +763,9 @@ message DebugString {
 
 // packets from the radio to the phone will appear on the fromRadio
 // characteristic.  It will support READ and NOTIFY.  When a new packet arrives
-// the device will notify?  possibly identify instead? it will sit in that
+// the device will BLE notify?  it will sit in that
 // descriptor until consumed by the phone, at which point the next item in the
-// FIFO will be populated.  FIXME
+// FIFO will be populated.
 message FromRadio {
   // The packet num, used to allow the phone to request missing read packets
   // from the FIFO, see our bluetooth docs
@@ -829,36 +774,29 @@ message FromRadio {
   oneof variant {
     MeshPacket packet = 2;
 
-    /// Tells the phone what our node number is, can be -1 if we've not yet
-    /// joined a mesh.
-    // REV2: In the rev 1 API this is in the BLE mynodeinfo characteristic
+    // Tells the phone what our node number is, can be -1 if we've not yet
+    // joined a mesh.
     MyNodeInfo my_info = 3;
 
-    /// One packet is sent for each node in the on radio DB
-    // REV2: In the rev1 API this is available in the nodeinfo characteristic
+    // One packet is sent for each node in the on radio DB
     // starts over with the first node in our DB
     NodeInfo node_info = 4;
 
-    /// REV2: In rev1 this was the Owner BLE characteristic
-    // Note: there is no separate payload for reading the owner, it comes
-    // implicitly as part of the NodeInfo for whichever node corresponds to our
-    // device. User owner = 5;
-
-    /// REV2: In rev1 this was the radio BLE characteristic
+    // In rev1 this was the radio BLE characteristic
     RadioConfig radio = 6;
 
-    /// REV2: set to send debug console output over our protobuf stream
+    // set to send debug console output over our protobuf stream
     DebugString debug_string = 7;
 
-    /// REV2: sent as true once the device has finished sending all of the
-    /// responses to want_config
-    /// recipient should check if this ID matches our original request nonce, if
-    /// not, it means your config responses haven't started yet
+    // sent as true once the device has finished sending all of the
+    // responses to want_config
+    // recipient should check if this ID matches our original request nonce, if
+    // not, it means your config responses haven't started yet
     uint32 config_complete_id = 8;
 
-    /// Sent to tell clients the radio has just rebooted.  Set to true if
-    /// present.  Not used on all transports, currently just used for the serial
-    /// console.
+    // Sent to tell clients the radio has just rebooted.  Set to true if
+    // present.  Not used on all transports, currently just used for the serial
+    // console.
     bool rebooted = 9;
   }
 }
@@ -870,45 +808,22 @@ message ToRadio {
   oneof variant {
     MeshPacket packet = 1; // send this packet on the mesh
 
-    /// REV2: phone wants radio to send full node db to the phone, This is
-    /// typically the first packet sent to the radio when the phone gets a
-    /// bluetooth connection. The radio will respond by sending back a
-    /// MyNodeInfo, a owner, a radio config and a series of
-    /// FromRadio.node_infos, and config_complete
-    /// the integer you write into this field will be reported back in the
-    /// config_complete_id response this allows clients to never be confused by
-    /// a stale old partially sent config.
+    /** phone wants radio to send full node db to the phone, This is
+    typically the first packet sent to the radio when the phone gets a
+    bluetooth connection. The radio will respond by sending back a
+    MyNodeInfo, a owner, a radio config and a series of
+    FromRadio.node_infos, and config_complete
+    the integer you write into this field will be reported back in the
+    config_complete_id response this allows clients to never be confused by
+    a stale old partially sent config. */
     uint32 want_config_id = 100;
 
-    /// REV2: In rev1 this was the radio config characteristic
-    RadioConfig set_radio = 101; // set the radio provisioning for this node
+    // set the radio provisioning for this node
+    RadioConfig set_radio = 101; 
 
-    /// REV2: In rev1 this was the owner characteristic
-    User set_owner = 102; // Set the owner for this node
+    // Set the owner for this node
+    User set_owner = 102; 
   }
 }
 
-/**
-Placeholder for data we will eventually set during initial programming.  This
-will allow us to stop having a load for each region.
-*/
-message ManufacturingData {
-  /// center frequency for the radio hardware that was stuffed
-  uint32 fradioFreq = 1;
 
-  /// TBEAM, HELTEC, etc...
-  string hw_model = 2;
-
-  // Hardware version number
-  string hw_version = 3;
-
-  /**
-  This code is written during manfacturing time and allows users to confirm that
-  the initial manufacturing tests succeeded.
-
-  0 means no test performed.
-  1 means all tests passed
-  negative numbers indicate particular error codes
-  */
-  sint32 selftest_result = 4;
-}
