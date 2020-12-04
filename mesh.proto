@@ -62,9 +62,9 @@ message Data {
 }
 
 /* Broadcast when a newly powered mesh node wants to find a node num it can use
-Sent from the phone over bluetooth to set the user id for the owner of this
+// Sent from the phone over bluetooth to set the user id for the owner of this
 node.
-Also sent from nodes to each other when a new node signs on (so all clients
+// Also sent from nodes to each other when a new node signs on (so all clients
 can have this info)
 
 The algorithm is as follows:
