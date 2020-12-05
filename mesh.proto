@@ -594,7 +594,7 @@ group)
 // Full information about a node on the mesh
 message NodeInfo {
   uint32 num = 1; // the node number
-  User user = 2;
+  User user = 2; // The user info for this node
 
   /// This position data will also contain a time last seen
   Position position = 3;

@@ -250,7 +250,7 @@ Full information about a node on the mesh
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | num | [uint32](#uint32) |  | the node number |
-| user | [User](#User) |  |  |
+| user | [User](#User) |  | The user info for this node |
 | position | [Position](#Position) |  | This position data will also contain a time last seen |
 | snr | [float](#float) |  | Returns the Signal-to-noise ratio (SNR) of the last received message, as / measured by the receiver. return SNR of the last received message in dB |
 | next_hop | [uint32](#uint32) |  | Our current preferred node node for routing - might be the same as num if / we are adjacent Or zero if we don&#39;t yet know a route to this node. |
@@ -399,9 +399,9 @@ characteristic.  Once the write completes the phone can assume it is handled.
 
 ### User
 Broadcast when a newly powered mesh node wants to find a node num it can use
-Sent from the phone over bluetooth to set the user id for the owner of this
+// Sent from the phone over bluetooth to set the user id for the owner of this
 node.
-Also sent from nodes to each other when a new node signs on (so all clients
+// Also sent from nodes to each other when a new node signs on (so all clients
 can have this info)
 
 The algorithm is as follows:
@@ -579,11 +579,11 @@ This change is backwards compatible by treating the legacy OPAQUE/CLEAR_TEXT val
 | ---- | ------ | ----------- |
 | UNKNOWN_APP | 0 | Deprecated: do not use in new code (formerly called OPAQUE) A message sent from a device outside of the mesh, in a form the mesh does not understand NOTE: This must be 0, because it is documented in IMeshService.aidl to be so |
 | TEXT_MESSAGE_APP | 1 | a simple UTF-8 text message, which even the little micros in the mesh can understand and show on their screen eventually in some circumstances even signal might send messages in this form (see below) Formerly called CLEAR_TEXT |
+| GPIO_APP | 2 | Reserved for a future built-in GPIO app |
 | POSITION_APP | 3 | The built-in position messaging app |
-| GPIO_APP | 2 | Future standard app IDs |
-| MESH_USERINFO_APP | 4 |  |
+| MESH_USERINFO_APP | 4 | The built-in user info app |
 | PRIVATE_APP | 256 | Private applications should use portnums &gt;= 256. To simplify initial development and testing you can use &#34;PRIVATE_APP&#34; in your code without needing to rebuild protobuf files (via bin/regin_protos.sh) |
-| IP_TUNNEL_APP | 1024 |  |
+| IP_TUNNEL_APP | 1024 | 1024-66559 Are reserved for use by IP tunneling (see FIXME for more information) |
 
 
  
