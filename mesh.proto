@@ -91,17 +91,22 @@ A few nodenums are reserved and will never be requested:
 
 */
 message User {
-  string id = 1; // a globally unique ID string for this user.  In the case of
+
+  // a globally unique ID string for this user.  In the case of
   // Signal that would mean +16504442323, for the default macaddr
   // derived id it would be !<6 hexidecimal bytes>
-
-  string long_name = 2;  // A full name for this user, i.e. "Kevin Hester"
-
-  string short_name = 3; // A VERY short name, ideally two characters.  Suitable
+  string id = 1; 
+  
+  // A full name for this user, i.e. "Kevin Hester"
+  string long_name = 2;  
+  
+  // A VERY short name, ideally two characters.  Suitable
   // for a tiny OLED screen
-
-  bytes macaddr = 4; // This is the addr of the radio.  Not populated by the
+  string short_name = 3; 
+  
+  // This is the addr of the radio.  Not populated by the
   // phone, but added by the esp32 when broadcasting
+  bytes macaddr = 4; 
 }
 
 /// A message used in our Dynamic Source Routing protocol (RFC 4728 based)
@@ -295,9 +300,11 @@ message MeshPacket {
 
 /// Shared constants between device and phone
 enum Constants {
-  Unused = 0; // First enum must be zero, and we are just using this enum to
-  // pass int constants between two very different environments
 
+  // First enum must be zero, and we are just using this enum to
+  // pass int constants between two very different environments
+  Unused = 0; 
+  
   /** From mesh.options
      note: this payload length is ONLY the bytes that are sent inside of the radiohead packet
     Data.payload max_size:240
