@@ -429,10 +429,10 @@ A few nodenums are reserved and will never be requested:
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [string](#string) |  | a globally unique ID string for this user. In the case of |
+| id | [string](#string) |  | a globally unique ID string for this user. In the case of Signal that would mean &#43;16504442323, for the default macaddr derived id it would be !&lt;6 hexidecimal bytes&gt; |
 | long_name | [string](#string) |  | A full name for this user, i.e. &#34;Kevin Hester&#34; |
-| short_name | [string](#string) |  | A VERY short name, ideally two characters. Suitable |
-| macaddr | [bytes](#bytes) |  | This is the addr of the radio. Not populated by the |
+| short_name | [string](#string) |  | A VERY short name, ideally two characters. Suitable for a tiny OLED screen |
+| macaddr | [bytes](#bytes) |  | This is the addr of the radio. Not populated by the phone, but added by the esp32 when broadcasting |
 
 
 
@@ -463,7 +463,7 @@ Shared constants between device and phone
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| Unused | 0 | First enum must be zero, and we are just using this enum to |
+| Unused | 0 | First enum must be zero, and we are just using this enum to pass int constants between two very different environments |
 | DATA_PAYLOAD_LEN | 240 | From mesh.options note: this payload length is ONLY the bytes that are sent inside of the radiohead packet Data.payload max_size:240 |
 
 
@@ -581,7 +581,7 @@ This change is backwards compatible by treating the legacy OPAQUE/CLEAR_TEXT val
 | TEXT_MESSAGE_APP | 1 | a simple UTF-8 text message, which even the little micros in the mesh can understand and show on their screen eventually in some circumstances even signal might send messages in this form (see below) Formerly called CLEAR_TEXT |
 | GPIO_APP | 2 | Reserved for a future built-in GPIO app |
 | POSITION_APP | 3 | The built-in position messaging app |
-| MESH_USERINFO_APP | 4 | The built-in user info app |
+| NODEINFO_APP | 4 | The built-in user info app |
 | PRIVATE_APP | 256 | Private applications should use portnums &gt;= 256. To simplify initial development and testing you can use &#34;PRIVATE_APP&#34; in your code without needing to rebuild protobuf files (via bin/regin_protos.sh) |
 | IP_TUNNEL_APP | 1024 | 1024-66559 Are reserved for use by IP tunneling (see FIXME for more information) |
 
