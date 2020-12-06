@@ -30,6 +30,11 @@
 - [portnums.proto](#portnums.proto)
     - [PortNum](#.PortNum)
   
+- [remote_hardware.proto](#remote_hardware.proto)
+    - [HardwareMessage](#.HardwareMessage)
+  
+    - [HardwareMessage.MessageType](#.HardwareMessage.MessageType)
+  
 - [Scalar Value Types](#scalar-value-types)
 
 
@@ -364,7 +369,7 @@ inside a radio packet (because from/to are broken out by the comms library)
 | route_request | [RouteDiscovery](#RouteDiscovery) |  | A route request going from the requester |
 | route_reply | [RouteDiscovery](#RouteDiscovery) |  | A route reply |
 | route_error | [RouteError](#RouteError) |  | A failure in a routed message |
-| want_response | [bool](#bool) |  | Not normally used, but for testing a sender can request that recipient / responds in kind (i.e. if it received a position, it should unicast back / its position). Note: that if you set this on a broadcast you will receive many replies. FIXME - unify (i.e. remove) this with the new reliable messaging at the MeshPacket level |
+| want_response | [bool](#bool) |  | Not normally used, but for testing a sender can request that recipient responds in kind (i.e. if it received a position, it should unicast back its position). Note: that if you set this on a broadcast you will receive many replies. |
 | success_id | [uint32](#uint32) |  | This packet is a requested acknoledgement indicating that we have received the specified message ID. This packet type can be used both for immediate (0 hops) messages or can be routed through multiple hops if dest is set. Note: As an optimization, recipients can _also_ populate a field in payload if they think the recipient would appreciate that extra state. |
 | fail_id | [uint32](#uint32) |  | This is a nak, we failed to deliver this message. |
 | dest | [uint32](#uint32) |  | The address of the destination node. This field is is filled in by the mesh radio device software, applicaiton layer software should never need it. RouteDiscovery messages _must_ populate this. Other message types might need to if they are doing multihop routing. |
@@ -579,11 +584,70 @@ This change is backwards compatible by treating the legacy OPAQUE/CLEAR_TEXT val
 | ---- | ------ | ----------- |
 | UNKNOWN_APP | 0 | Deprecated: do not use in new code (formerly called OPAQUE) A message sent from a device outside of the mesh, in a form the mesh does not understand NOTE: This must be 0, because it is documented in IMeshService.aidl to be so |
 | TEXT_MESSAGE_APP | 1 | a simple UTF-8 text message, which even the little micros in the mesh can understand and show on their screen eventually in some circumstances even signal might send messages in this form (see below) Formerly called CLEAR_TEXT |
-| GPIO_APP | 2 | Reserved for a future built-in GPIO app |
-| POSITION_APP | 3 | The built-in position messaging app |
-| NODEINFO_APP | 4 | The built-in user info app |
+| REMOTE_HARDWARE_APP | 2 | Reserved for built-in GPIO/example app. See remote_hardware.proto/HardwareMessage for details on the message sent/received to this port number |
+| POSITION_APP | 3 | The built-in position messaging app. See Position for details on the message sent to this port number. |
+| NODEINFO_APP | 4 | The built-in user info app. See User for details on the message sent to this port number. |
 | PRIVATE_APP | 256 | Private applications should use portnums &gt;= 256. To simplify initial development and testing you can use &#34;PRIVATE_APP&#34; in your code without needing to rebuild protobuf files (via bin/regin_protos.sh) |
 | IP_TUNNEL_APP | 1024 | 1024-66559 Are reserved for use by IP tunneling (see FIXME for more information) |
+
+
+ 
+
+ 
+
+ 
+
+
+
+<a name="remote_hardware.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## remote_hardware.proto
+
+
+
+<a name=".HardwareMessage"></a>
+
+### HardwareMessage
+A example app to show off the plugin system. This message is used for REMOTE_HARDWARE_APP PortNums.
+
+Also provides easy remote access to any GPIO.  
+
+In the future other remote hardware operations can be added based on user interest 
+(i.e. serial output, spi/i2c input/output).
+
+FIXME - currently this feature is turned on by default which is dangerous because no security yet (beyond the channel
+channel mechanism).  It should be off by default and then protected based on some TBD mechanism (a special channel?)
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| typ | [HardwareMessage.MessageType](#HardwareMessage.MessageType) |  | What type of HardwareMessage is this? |
+| gpio_mask | [uint64](#uint64) |  | What gpios are we changing. Not used for all MessageTypes, see MessageType for details |
+| gpio_value | [uint64](#uint64) |  | For gpios that were listed in gpio_mask as valid, what are the signal levels for those gpios. Not used for all MessageTypes, see MessageType for details |
+
+
+
+
+
+ 
+
+
+<a name=".HardwareMessage.MessageType"></a>
+
+### HardwareMessage.MessageType
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| UNSET | 0 | Unset/unused |
+| WRITE_GPIOS | 1 | Set gpio gpios based on gpio_mask/gpio_value |
+| WATCH_GPIOS | 2 | We are now interested in watching the gpio_mask gpios. If the selected gpios change, please broadcast GPIOS_CHANGED.
+
+Will implicitly change the gpios requested to be INPUT gpios. |
+| GPIOS_CHANGED | 3 | The gpios listed in gpio_mask have changed, the new values are listed in gpio_value |
+| READ_GPIOS | 4 | Read the gpios specified in gpio_mask, send back a READ_GPIOS_REPLY reply with gpio_value populated |
+| READ_GPIOS_REPLY | 5 | A reply to READ_GPIOS. gpio_mask and gpio_value will be populated |
 
 
  

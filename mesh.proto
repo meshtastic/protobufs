@@ -29,7 +29,8 @@ option optimize_for = LITE_RUNTIME;
 
 import "portnums.proto";
 
-// a gps position
+/** a gps position
+*/
 message Position {
 
   /** The new preferred location encoding, divide by 1e-7 to get degrees in
@@ -161,12 +162,10 @@ message SubPacket {
     RouteError route_error = 13;
   }
 
-  /// Not normally used, but for testing a sender can request that recipient
-  /// responds in kind (i.e. if it received a position, it should unicast back
-  /// its position).
+  // Not normally used, but for testing a sender can request that recipient
+  // responds in kind (i.e. if it received a position, it should unicast back
+  // its position).
   // Note: that if you set this on a broadcast you will receive many replies.
-  // FIXME - unify (i.e. remove) this with the new reliable messaging at the
-  // MeshPacket level
   bool want_response = 5;
 
   oneof ack {
