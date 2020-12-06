@@ -234,7 +234,7 @@ Sent to the phone in response to WantNodes.
 | current_packet_id | [uint32](#uint32) |  | The current ID this node is using for sending new packets (exposed so that the phone can self assign packet IDs if it wishes by picking packet IDs from the opposite side of the pacekt ID space). Old device loads (older that 0.6.5 do not populate this field, but all newer loads do). FIXME: that we need to expose this is a bit of a mistake. Really the phones should be modeled/treated as 1st class nodes like any other, and the radio connected to the phone just routes like any other. This would allow all sorts of clean/clever routing topologies in the future. |
 | node_num_bits | [uint32](#uint32) |  | How many bits are used for the nodenum. If zero it is assumed we use eight bit nodenums New device loads will user 32 bit nodenum. Old device loads (older that 0.6.5 do not populate this field, but all newer loads do). |
 | message_timeout_msec | [uint32](#uint32) |  | How long before we consider a message abandoned and we can clear our caches of any messages in flight Normally quite large to handle the worst case message delivery time, 5 minutes. Formerly called FLOOD_EXPIRE_TIME in the device code |
-| min_app_version | [uint32](#uint32) |  | The minimum app version that can talk to this device. Android apps should compare this to their build number and if too low tell the user they must update their app |
+| min_app_version | [uint32](#uint32) |  | The minimum app version that can talk to this device. Phone/PC apps should compare this to their build number and if too low tell the user they must update their app |
 
 
 

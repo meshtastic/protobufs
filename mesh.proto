@@ -717,7 +717,7 @@ message MyNodeInfo {
   */
   uint32 message_timeout_msec = 13;
 
-  /** The minimum app version that can talk to this device.  Android apps should
+  /** The minimum app version that can talk to this device.  Phone/PC apps should
   compare this to their build number and if too low tell the user they must
   update their app
   */
