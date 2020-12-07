@@ -1,5 +1,9 @@
 syntax = "proto3";
 
+option java_package = "com.geeksville.mesh";
+option java_outer_classname = "Portnums";
+option optimize_for = LITE_RUNTIME;
+
 /** 
   For any new 'apps' that run on the device or via sister apps on phones/PCs they should pick and use a
   unique 'portnum' for their application.
