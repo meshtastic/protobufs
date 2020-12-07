@@ -12,7 +12,7 @@ channel mechanism).  It should be off by default and then protected based on som
 once multichannel support is included?)
 */
 message HardwareMessage {
-    enum MessageType {
+    enum Type {
         /** Unset/unused */
         UNSET = 0;
 
@@ -37,7 +37,7 @@ message HardwareMessage {
     }
 
     /** What type of HardwareMessage is this? */
-    MessageType typ = 1;
+    Type typ = 1;
 
     /** What gpios are we changing. Not used for all MessageTypes, see MessageType for details */
     uint64 gpio_mask = 2;

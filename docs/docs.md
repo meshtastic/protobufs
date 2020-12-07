@@ -33,7 +33,7 @@
 - [remote_hardware.proto](#remote_hardware.proto)
     - [HardwareMessage](#.HardwareMessage)
   
-    - [HardwareMessage.MessageType](#.HardwareMessage.MessageType)
+    - [HardwareMessage.Type](#.HardwareMessage.Type)
   
 - [Scalar Value Types](#scalar-value-types)
 
@@ -616,13 +616,14 @@ Also provides easy remote access to any GPIO.
 In the future other remote hardware operations can be added based on user interest 
 (i.e. serial output, spi/i2c input/output).
 
-FIXME - currently this feature is turned on by default which is dangerous because no security yet (beyond the channel
-channel mechanism).  It should be off by default and then protected based on some TBD mechanism (a special channel?)
+FIXME - currently this feature is turned on by default which is dangerous because no security yet (beyond the 
+channel mechanism).  It should be off by default and then protected based on some TBD mechanism (a special channel
+once multichannel support is included?)
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| typ | [HardwareMessage.MessageType](#HardwareMessage.MessageType) |  | What type of HardwareMessage is this? |
+| typ | [HardwareMessage.Type](#HardwareMessage.Type) |  | What type of HardwareMessage is this? |
 | gpio_mask | [uint64](#uint64) |  | What gpios are we changing. Not used for all MessageTypes, see MessageType for details |
 | gpio_value | [uint64](#uint64) |  | For gpios that were listed in gpio_mask as valid, what are the signal levels for those gpios. Not used for all MessageTypes, see MessageType for details |
 
@@ -633,9 +634,9 @@ channel mechanism).  It should be off by default and then protected based on som
  
 
 
-<a name=".HardwareMessage.MessageType"></a>
+<a name=".HardwareMessage.Type"></a>
 
-### HardwareMessage.MessageType
+### HardwareMessage.Type
 
 
 | Name | Number | Description |
