@@ -543,6 +543,13 @@ message RadioConfig {
     */
     bool factory_reset = 100;
 
+    /**
+    By default we turn off logging as soon as an API client connects (to keep
+    shared serial link quiet).  Set this to true to leave the debug log outputting
+    even when API is active.
+    */
+    bool debug_log_enabled = 101;
+
     LocationSharing location_share = 32;
     GpsOperation gps_operation = 33;
     

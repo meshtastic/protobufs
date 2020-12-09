@@ -327,7 +327,11 @@ see sw-design.md for more information on these preferences
 | region | [RegionCode](#RegionCode) |  | The region code for my radio (US, CN, EU433, etc...) |
 | is_router | [bool](#bool) |  | Are we operating as a router. Changes behavior in the following ways: FIXME |
 | is_low_power | [bool](#bool) |  | If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in we should try to minimize power consumption as much as possible. Often combined with is_router. |
+| fixed_position | [bool](#bool) |  | If set, this node is at a fixed position. We will generate GPS position updates at the regular interval, but use whatever the last lat/lon/alt we have for the node.
+
+The lat/lon/alt can be set by an internal GPS or with the help of the app. |
 | factory_reset | [bool](#bool) |  | This setting is never saved to disk, but if set, all device settings will be returned to factory defaults. (Region, serial number etc... will be preserved) |
+| debug_log_enabled | [bool](#bool) |  | By default we turn off logging as soon as an API client connects (to keep shared serial link quiet). Set this to true to leave the debug log outputting even when API is active. |
 | location_share | [LocationSharing](#LocationSharing) |  |  |
 | gps_operation | [GpsOperation](#GpsOperation) |  |  |
 | gps_update_interval | [uint32](#uint32) |  | How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode? or zero for the default of once every 30 seconds or a very large value (maxint) to update only once at boot. |
