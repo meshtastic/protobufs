@@ -529,6 +529,14 @@ message RadioConfig {
     bool is_low_power = 38;
 
     /**
+    If set, this node is at a fixed position.  We will generate GPS position updates
+    at the regular interval, but use whatever the last lat/lon/alt we have for the node.
+
+    The lat/lon/alt can be set by an internal GPS or with the help of the app.
+    */
+    bool fixed_position = 39;
+
+    /**
     This setting is never saved to disk, but if set, all device settings will be
     returned to factory defaults.  (Region, serial number etc... will be
     preserved)
