@@ -352,7 +352,7 @@ message ChannelSettings {
     ///< CRC on. Slow+long range (275 bps)
 
     Bw125Cr48Sf4096 = 3; // < Bw = 125 kHz, Cr = 4/8, Sf(12) = 4096chips/symbol, CRC
-    // < on. Slow+long range (46 bps)
+    // < on. Slow+long range (183 bps)
   } 
 
   /// Note: This is the 'old' mechanism for specifying channel parameters.
