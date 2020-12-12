@@ -342,17 +342,17 @@ message ChannelSettings {
   Note: these mappings must match ModemConfigChoice in the device code.
   */
   enum ModemConfig {
-    Bw125Cr45Sf128 = 0 ; // < Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC
-    // < on. Default medium range
+    Bw125Cr45Sf128 = 0 ; // < Bw = 125 kHz, Cr = 4/5, Sf(7) = 128chips/symbol, CRC
+    // < on. Default medium range (5.469 kbps)
 
-    Bw500Cr45Sf128 = 1; // < Bw = 500 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC
-    // < on. Fast+short range
+    Bw500Cr45Sf128 = 1; // < Bw = 500 kHz, Cr = 4/5, Sf(7) = 128chips/symbol, CRC
+    // < on. Fast+short range (21.875 kbps)
 
-    Bw31_25Cr48Sf512 = 2; // < Bw = 31.25 kHz, Cr = 4/8, Sf = 512chips/symbol,
-    ///< CRC on. Slow+long range
+    Bw31_25Cr48Sf512 = 2; // < Bw = 31.25 kHz, Cr = 4/8, Sf(9) = 512chips/symbol,
+    ///< CRC on. Slow+long range (275 bps)
 
-    Bw125Cr48Sf4096 = 3; // < Bw = 125 kHz, Cr = 4/8, Sf = 4096chips/symbol, CRC
-    // < on. Slow+long range
+    Bw125Cr48Sf4096 = 3; // < Bw = 125 kHz, Cr = 4/8, Sf(12) = 4096chips/symbol, CRC
+    // < on. Slow+long range (46 bps)
   } 
 
   /// Note: This is the 'old' mechanism for specifying channel parameters.
