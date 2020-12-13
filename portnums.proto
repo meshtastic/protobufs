@@ -4,76 +4,83 @@ option java_package = "com.geeksville.mesh";
 option java_outer_classname = "Portnums";
 option optimize_for = LITE_RUNTIME;
 
-/** 
-  For any new 'apps' that run on the device or via sister apps on phones/PCs they should pick and use a
-  unique 'portnum' for their application.
-
-  If you are making a new app using meshtastic, please send in a pull request to add your 'portnum' to this
-  master table.  PortNums should be assigned in the following range:
-
-  0-63   Core Meshtastic use, do not use for third party apps
-  64-127 Registered 3rd party apps, send in a pull request that adds a new entry to portnums.proto to 
-         register your application
-  256-511 Use one of these portnums for your private applications that you don't want to register publically
-  1024-66559 Are reserved for use by IP tunneling (see FIXME for more information)
-
-  All other values are reserved.
-
-  Note: This was formerly a Type enum named 'typ' with the same id #
-  
-  We have change to this 'portnum' based scheme for specifying app handlers for particular payloads.  
-  This change is backwards compatible by treating the legacy OPAQUE/CLEAR_TEXT values identically.
-
-*/
+/*
+ * For any new 'apps' that run on the device or via sister apps on phones/PCs they should pick and use a unique 'portnum' for their application.
+ *
+ * If you are making a new app using meshtastic, please send in a pull request to add your 'portnum' to this master table.
+ * PortNums should be assigned in the following range:
+ *
+ * 0-63   Core Meshtastic use, do not use for third party apps
+ * 64-127 Registered 3rd party apps, send in a pull request that adds a new entry to portnums.proto to 
+ *        register your application
+ * 256-511 Use one of these portnums for your private applications that you don't want to register publically
+ * 1024-66559 Are reserved for use by IP tunneling (see FIXME for more information)
+ *
+ * All other values are reserved.
+ *
+ * Note: This was formerly a Type enum named 'typ' with the same id #
+ *
+ * We have change to this 'portnum' based scheme for specifying app handlers for particular payloads.  
+ * This change is backwards compatible by treating the legacy OPAQUE/CLEAR_TEXT values identically.
+ */
 enum PortNum {
-    /** Deprecated: do not use in new code (formerly called OPAQUE)
-    A message sent from a device outside of the mesh, in a form the mesh
-    does not understand 
-    NOTE: This must be 0, because it is documented in IMeshService.aidl to be so
-    */
+
+    /*
+     * Deprecated: do not use in new code (formerly called OPAQUE)
+     * A message sent from a device outside of the mesh, in a form the mesh does not understand 
+     * NOTE: This must be 0, because it is documented in IMeshService.aidl to be so
+     */
     UNKNOWN_APP = 0; 
   
-    /** a simple UTF-8 text message, which even the little micros in the mesh
-     can understand and show on their screen eventually in some circumstances
-     even signal might send messages in this form (see below)
-     Formerly called CLEAR_TEXT */
+    /*
+     * A simple UTF-8 text message, which even the little micros in the mesh
+     * can understand and show on their screen eventually in some circumstances
+     * even signal might send messages in this form (see below)
+     * Formerly called CLEAR_TEXT
+     */
     TEXT_MESSAGE_APP = 1;
   
-    /** a message receive acknowledgement, sent in cleartext - allows radio to
-     show user that a message has been read by the recipient, optional
-     
-     Note: this concept has been removed for now.  Once READACK is implemented, use the 
-     new packet type/port number stuff?
-
-     @exclude
-
-     CLEAR_READACK = 2;
-     */
-
-    /** Reserved for built-in GPIO/example app.
-    See remote_hardware.proto/HardwareMessage for details on the message sent/received to this port number
-    */ 
+    /*
+     * A message receive acknowledgement, sent in cleartext - allows radio to
+     * show user that a message has been read by the recipient, optional
+     *
+     * Note: this concept has been removed for now.  Once READACK is implemented, use the 
+     * new packet type/port number stuff?
+     *
+     * @exclude
+     *
+     * CLEAR_READACK = 2;
+     *
+     * Reserved for built-in GPIO/example app.
+     * See remote_hardware.proto/HardwareMessage for details on the message sent/received to this port number
+     */ 
     REMOTE_HARDWARE_APP = 2;
 
-    /** The built-in position messaging app.
-    See Position for details on the message sent to this port number.
-    */
+    /*
+     * The built-in position messaging app.
+     * See Position for details on the message sent to this port number.
+     */
     POSITION_APP = 3;
 
-    /** The built-in user info app.
-    See User for details on the message sent to this port number.
-    */
+    /*
+     * The built-in user info app.
+     * See User for details on the message sent to this port number.
+     */
     NODEINFO_APP = 4;
 
-    /** Provides a 'ping' service that replies to any packet it receives.  Also this serves as a
-    small example plugin.
-    */
+    /*
+     * Provides a 'ping' service that replies to any packet it receives.  Also this serves as a small example plugin.
+     */
     REPLY_APP = 32;
 
-    /** Private applications should use portnums >= 256.  To simplify initial development and testing you can use "PRIVATE_APP"
-     in your code without needing to rebuild protobuf files (via bin/regin_protos.sh) */
+    /*
+     * Private applications should use portnums >= 256.  To simplify initial development and testing you can use "PRIVATE_APP"
+     * in your code without needing to rebuild protobuf files (via bin/regin_protos.sh)
+     */
     PRIVATE_APP = 256;
 
-    /** 1024-66559 Are reserved for use by IP tunneling (see FIXME for more information) */
+    /*
+     * 1024-66559 Are reserved for use by IP tunneling (see FIXME for more information)
+     */
     IP_TUNNEL_APP = 1024;
   }

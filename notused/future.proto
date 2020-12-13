@@ -1,29 +1,37 @@
 syntax = "proto3";
 
-/** This file documents protobufs that are being considered but are not yet in use
-*/
+/*
+ * This file documents protobufs that are being considered but are not yet in use
+ */
 
-/**
-Placeholder for data we will eventually set during initial programming.  This
-will allow us to stop having a load for each region.
-*/
+/*
+ * Placeholder for data we will eventually set during initial programming.  This
+ * will allow us to stop having a load for each region.
+ */
 message ManufacturingData {
-  /// center frequency for the radio hardware that was stuffed
-  uint32 fradioFreq = 1;
 
-  /// TBEAM, HELTEC, etc...
+  /*
+   * center frequency for the radio hardware that was stuffed
+   */
+   uint32 fradioFreq = 1;
+
+   /*
+   * TBEAM, HELTEC, etc...
+   */
   string hw_model = 2;
 
-  // Hardware version number
+  /*
+   * Hardware version number
+   */
   string hw_version = 3;
 
-  /**
-  This code is written during manfacturing time and allows users to confirm that
-  the initial manufacturing tests succeeded.
-
-  0 means no test performed.
-  1 means all tests passed
-  negative numbers indicate particular error codes
-  */
+  /*
+   * This code is written during manfacturing time and allows users to confirm that
+   * the initial manufacturing tests succeeded.
+   *
+   * 0 means no test performed.
+   * 1 means all tests passed
+   * negative numbers indicate particular error codes
+   */
   sint32 selftest_result = 4;
 }
