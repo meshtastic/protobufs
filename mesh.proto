@@ -355,15 +355,15 @@ message ChannelSettings {
     // < on. Slow+long range
   } 
 
-  /// Note: This is the 'old' mechanism for specifying channel parameters.
-  /// Either modem_config or bandwidth/spreading/coding will be specified - NOT
-  /// BOTH. As a heuristic: If bandwidth is specified, do not use modem_config.
-  /// Because protobufs take ZERO space when the value is zero this works out
-  /// nicely.
-  /// This value is replaced by bandwidth/spread_factor/coding_rate.  If you'd
-  /// like to experiment with other options add them to MeshRadio.cpp in the
-  /// device code.
-  ModemConfig modem_config = 3 [deprecated = true];
+  // Note: This is the 'old' mechanism for specifying channel parameters.
+  // Either modem_config or bandwidth/spreading/coding will be specified - NOT
+  // BOTH. As a heuristic: If bandwidth is specified, do not use modem_config.
+  // Because protobufs take ZERO space when the value is zero this works out
+  // nicely.
+  // This value is replaced by bandwidth/spread_factor/coding_rate.  If you'd
+  // like to experiment with other options add them to MeshRadio.cpp in the
+  // device code.
+  ModemConfig modem_config = 3;
 
   /**
   Bandwidth in MHz
@@ -402,12 +402,20 @@ message ChannelSettings {
   */
   uint32 channel_num = 9;
 
-  /// A simple preshared key for now for crypto.  Must be either 0 bytes (no
-  /// crypto), 16 bytes (AES128), or 32 bytes (AES256)
+  // A simple preshared key for now for crypto.  Must be either 0 bytes (no
+  // crypto), 16 bytes (AES128), or 32 bytes (AES256)
+  // A special shorthand is used for 1 byte long psks.  These psks should be treated as only minimally secure,
+  // because they are listed in this source code.  Those bytes are mapped using the following scheme:
+  // 0 = No crypto
+  // 1 = The special default channel key: {0xd4, 0xf1, 0xbb, 0x3a, 0x20, 0x29, 0x07, 0x59, 0xf0, 0xbc, 0xff, 0xab, 0xcf, 0x4e, 0x69, 0xbf}
+  // 2 through 10 = The default channel key, except with 1 through 9 added to the last byte
   bytes psk = 4;
 
-  /// A SHORT name that will be packed into the URL.  Less than 12 bytes.
-  /// Something for end users to call the channel
+  // A SHORT name that will be packed into the URL.  Less than 12 bytes.
+  // Something for end users to call the channel
+  // If this is the empty string it is assumed that this channel is the special (minimially secure) "Default"
+  // channel.  In user interfaces it should be rendered as a local language translation of "Default".  For channel_num
+  // hashing empty string will be treated as "Default"
   string name = 5;
 }
 
