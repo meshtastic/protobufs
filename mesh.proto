@@ -344,11 +344,11 @@ message ChannelSettings {
   enum ModemConfig {
     Bw125Cr45Sf128 = 0 ; // < Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC
     // < on. Medium range
-    // The english default channel name for this setting is "MediumRange"
+    // The english default channel name for this setting is "Medium"
 
     Bw500Cr45Sf128 = 1; // < Bw = 500 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC
     // < on. Fast+short range
-    // The english default channel name for this setting is "Fast"
+    // The english default channel name for this setting is "ShortFast"
 
     Bw31_25Cr48Sf512 = 2; // < Bw = 31.25 kHz, Cr = 4/8, Sf = 512chips/symbol,
     ///< CRC on. Slow+long range
@@ -356,8 +356,8 @@ message ChannelSettings {
 
     Bw125Cr48Sf4096 = 3; // < Bw = 125 kHz, Cr = 4/8, Sf = 4096chips/symbol, CRC
     // < on. Slow+long range **This is the default channel settting**
-    // The english default channel name for this setting is "LongRange"
-    // If old applications try to set the name to "Default" we will change it to "LongRange"
+    // The english default channel name for this setting is "LongSlow"
+    // If old applications try to set the name to "Default" we will change it to "LongSlow"
   } 
 
   // Note: This is the 'old' mechanism for specifying channel parameters.
