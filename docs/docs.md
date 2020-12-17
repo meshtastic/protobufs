@@ -201,6 +201,7 @@ MeshPacket).
 | ----- | ---- | ----- | ----------- |
 | from | [uint32](#uint32) |  | The sending node number. Note: Our crypto implementation uses this field as well. See docs/software/crypto.md for details. FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
 | to | [uint32](#uint32) |  | The (immediate) destination for this packet. If we are using routing, the final destination will be in payload.dest FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
+| channel_index | [uint32](#uint32) |  | If set, this indicates the index in the secondary_channels table that this packet was sent/received on. If unset, packet was on the primary channel. |
 | decoded | [SubPacket](#SubPacket) |  |  |
 | encrypted | [bytes](#bytes) |  |  |
 | id | [uint32](#uint32) |  | A unique ID for this packet. Always 0 for no-ack packets or non broadcast packets (and therefore take zero bytes of space). Otherwise a unique ID for this packet. Useful for flooding algorithms. ID only needs to be unique on a _per sender_ basis. And it only needs to be unique for a few minutes (long enough to last for the length of any ACK or the completion of a mesh broadcast flood). Note: Our crypto implementation uses this id as well. See docs/software/crypto.md for details. FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
@@ -296,6 +297,7 @@ set for behavior of their node
 | ----- | ---- | ----- | ----------- |
 | preferences | [RadioConfig.UserPreferences](#RadioConfig.UserPreferences) |  |  |
 | channel_settings | [ChannelSettings](#ChannelSettings) |  |  |
+| secondary_channels | [ChannelSettings](#ChannelSettings) | repeated | Secondary channels are only used for encryption/decryption/authentication purposes. Their radio settings (freq etc) are ignored, only psk is used. |
 
 
 
@@ -310,7 +312,7 @@ see sw-design.md for more information on these preferences
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| position_broadcast_secs | [uint32](#uint32) |  | We should send our position this often (but only if it has changed significantly) |
+| position_broadcast_secs | [uint32](#uint32) |  | We should send our position this often (but only if it has changed significantly). Defaults to 15 minutes |
 | send_owner_interval | [uint32](#uint32) |  | Send our owner info at least this often (also we always send once at boot - to rejoin the mesh) |
 | num_missed_to_fail | [uint32](#uint32) |  | If we miss this many owner messages from a node, we declare the node / offline (defaults to 3 - to allow for some lost packets) |
 | wait_bluetooth_secs | [uint32](#uint32) |  | 0 for default of 1 minute |
@@ -334,7 +336,7 @@ The lat/lon/alt can be set by an internal GPS or with the help of the app. |
 | debug_log_enabled | [bool](#bool) |  | By default we turn off logging as soon as an API client connects (to keep shared serial link quiet). Set this to true to leave the debug log outputting even when API is active. |
 | location_share | [LocationSharing](#LocationSharing) |  |  |
 | gps_operation | [GpsOperation](#GpsOperation) |  |  |
-| gps_update_interval | [uint32](#uint32) |  | How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode? or zero for the default of once every 30 seconds or a very large value (maxint) to update only once at boot. |
+| gps_update_interval | [uint32](#uint32) |  | How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode? or zero for the default of once every 120 seconds or a very large value (maxint) to update only once at boot. |
 | gps_attempt_time | [uint32](#uint32) |  | How long should we try to get our position during each gps_update_interval attempt? (in seconds) Or if zero, use the default of 30 seconds. If we don&#39;t get a new gps fix in that time, the gps will be put into sleep until the next gps_update_rate window. |
 | ignore_incoming | [uint32](#uint32) | repeated | For testing it is useful sometimes to force a node to never listen to particular other nodes (simulating radio out of range). All nodenums listed in ignore_incoming will have packets they send droped on receive (by router.cpp) |
 

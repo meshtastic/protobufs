@@ -230,6 +230,12 @@ message MeshPacket {
   uint32 to = 2;
 
   /**
+  If set, this indicates the index in the secondary_channels table that this packet 
+  was sent/received on.  If unset, packet was on the primary channel.
+  */
+  uint32 channel_index = 4;
+
+  /**
   Internally to the mesh radios we will route SubPackets encrypted per
   docs/software/crypto.md.  However, when a particular node has the correct
   key to decode a particular packet, it will decode the payload into a SubPacket
@@ -499,7 +505,7 @@ message RadioConfig {
   /// see sw-design.md for more information on these preferences
   message UserPreferences {
     // We should send our position this often (but only if it has changed
-    // significantly)
+    // significantly).  Defaults to 15 minutes
     uint32 position_broadcast_secs = 1;
 
     // Send our owner info at least this often (also we always send once at boot
@@ -569,7 +575,7 @@ message RadioConfig {
     GpsOperation gps_operation = 33;
     
     /** How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode?
-     or zero for the default of once every 30 seconds
+     or zero for the default of once every 120 seconds
      or a very large value (maxint) to update only once at boot.
     */
     uint32 gps_update_interval = 34;
@@ -600,6 +606,11 @@ message RadioConfig {
 
   UserPreferences preferences = 1;
   ChannelSettings channel_settings = 2;
+
+  /** Secondary channels are only used for encryption/decryption/authentication purposes.  Their radio settings (freq etc)
+  are ignored, only psk is used.
+  */
+  repeated ChannelSettings secondary_channels = 3;
 }
 
 /**

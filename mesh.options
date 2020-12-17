@@ -27,6 +27,8 @@
 *ChannelSettings.psk max_size:32
 *ChannelSettings.name max_size:12
 
+*RadioConfig.secondary_channels max_count:4
+
 *MyNodeInfo.firmware_version max_size:12
 *MyNodeInfo.hw_model max_size:16
 *MyNodeInfo.region max_size:12
