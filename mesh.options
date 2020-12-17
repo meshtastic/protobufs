@@ -13,6 +13,8 @@
 # FIXME - max_count is actually 32 but we save/load this as one long string of preencoded MeshPacket bytes - not a big array in RAM
 *DeviceState.receive_queue max_count:1
 
+*DeviceState.secondary_channels max_count:4
+
 *RouteDiscovery.route max_count:8
 
 # FIXME, max out based on total SubPacket size And do fragmentation and reassembly (for larger payloads) at the Android layer, not the esp32 layer.
@@ -26,8 +28,6 @@
 # 256 bit or 128 bit psk key
 *ChannelSettings.psk max_size:32
 *ChannelSettings.name max_size:12
-
-*RadioConfig.secondary_channels max_count:4
 
 *MyNodeInfo.firmware_version max_size:12
 *MyNodeInfo.hw_model max_size:16

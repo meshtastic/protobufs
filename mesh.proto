@@ -606,11 +606,6 @@ message RadioConfig {
 
   UserPreferences preferences = 1;
   ChannelSettings channel_settings = 2;
-
-  /** Secondary channels are only used for encryption/decryption/authentication purposes.  Their radio settings (freq etc)
-  are ignored, only psk is used.
-  */
-  repeated ChannelSettings secondary_channels = 3;
 }
 
 /**
@@ -801,6 +796,13 @@ message DeviceState {
   // Some GPSes seem to have bogus settings from the factory, so we always do
   // one factory reset
   bool did_gps_reset = 11;
+
+  /** Secondary channels are only used for encryption/decryption/authentication purposes.  Their radio settings (freq etc)
+  are ignored, only psk is used.
+
+  Note: this is not kept inside of RadioConfig because that would make ToRadio/FromRadio worse case > 512 bytes (to big for BLE)
+  */
+  repeated ChannelSettings secondary_channels = 12;
 }
 
 /// Debug output from the device
@@ -847,6 +849,9 @@ message FromRadio {
     // present.  Not used on all transports, currently just used for the serial
     // console.
     bool rebooted = 9;
+
+    // One of the secondary channels, they are all sent during config download
+    ChannelSettings secondary_channel = 10;
   }
 }
 

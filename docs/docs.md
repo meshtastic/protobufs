@@ -156,6 +156,9 @@ the receive queue and use the preferences store for the other stuff
 | rx_text_message | [MeshPacket](#MeshPacket) |  | We keep the last received text message (only) stored in the device flash, so we can show it on the screen. Might be null |
 | no_save | [bool](#bool) |  | Used only during development. Indicates developer is testing and changes should never be saved to flash. |
 | did_gps_reset | [bool](#bool) |  | Some GPSes seem to have bogus settings from the factory, so we always do one factory reset |
+| secondary_channels | [ChannelSettings](#ChannelSettings) | repeated | Secondary channels are only used for encryption/decryption/authentication purposes. Their radio settings (freq etc) are ignored, only psk is used.
+
+Note: this is not kept inside of RadioConfig because that would make ToRadio/FromRadio worse case &gt; 512 bytes (to big for BLE) |
 
 
 
@@ -182,6 +185,7 @@ FIFO will be populated.
 | debug_string | [DebugString](#DebugString) |  | set to send debug console output over our protobuf stream |
 | config_complete_id | [uint32](#uint32) |  | sent as true once the device has finished sending all of the responses to want_config recipient should check if this ID matches our original request nonce, if not, it means your config responses haven&#39;t started yet |
 | rebooted | [bool](#bool) |  | Sent to tell clients the radio has just rebooted. Set to true if present. Not used on all transports, currently just used for the serial console. |
+| secondary_channel | [ChannelSettings](#ChannelSettings) |  | One of the secondary channels, they are all sent during config download |
 
 
 
@@ -297,7 +301,6 @@ set for behavior of their node
 | ----- | ---- | ----- | ----------- |
 | preferences | [RadioConfig.UserPreferences](#RadioConfig.UserPreferences) |  |  |
 | channel_settings | [ChannelSettings](#ChannelSettings) |  |  |
-| secondary_channels | [ChannelSettings](#ChannelSettings) | repeated | Secondary channels are only used for encryption/decryption/authentication purposes. Their radio settings (freq etc) are ignored, only psk is used. |
 
 
 
