@@ -516,20 +516,22 @@ message RadioConfig {
     /// offline (defaults to 3 - to allow for some lost packets)
     uint32 num_missed_to_fail = 3;
 
-    uint32 wait_bluetooth_secs = 4; // 0 for default of 1 minute
-    uint32 screen_on_secs = 5; // 0 for default of one minute
-    uint32 phone_timeout_secs = 6; // 0 for default of 15 minutes
-    uint32 phone_sds_timeout_sec = 7; // 0 for default of two hours, MAXUINT for disabled
-    uint32 mesh_sds_timeout_secs = 8; // 0 for default of two hours, MAXUINT for disabled
-    uint32 sds_secs = 9; // 0 for default of one year
-    uint32 ls_secs = 10; // 0 for default of 3600
-    uint32 min_wake_secs = 11; // 0 for default of 10 seconds
+    uint32 wait_bluetooth_secs = 4; // Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 1 minute
+    uint32 screen_on_secs = 5; // Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of one minute
+    uint32 phone_timeout_secs = 6; // Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 15 minutes
+    uint32 phone_sds_timeout_sec = 7; // Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details.  0 for default of two hours, MAXUINT for disabled
+    uint32 mesh_sds_timeout_secs = 8; // Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of two hours, MAXUINT for disabled
+    uint32 sds_secs = 9; // Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of one year
+    uint32 ls_secs = 10; // Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 3600
+    uint32 min_wake_secs = 11; // Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details.  0 for default of 10 seconds
 
     /** If set, this node will try to join the specified wifi network and
      * acquire an address via DHCP */
     string wifi_ssid = 12;
+    
     /** If set, will be use to authenticate to the named wifi */
     string wifi_password = 13;
+
     /** If set, the node will operate as an AP (and DHCP server), otherwise it
      * will be a station */
     bool wifi_ap_mode = 14;
@@ -539,7 +541,9 @@ message RadioConfig {
 
     /**
     Are we operating as a router.  Changes behavior in the following ways:
-    FIXME
+    The device will only sleep for critically low battery level (i.e. always tries to stay alive for the mesh)
+    In the future routing decisions will preferentially route packets through nodes with this attribute (because assumed
+    good line of sight)
     */
     bool is_router = 37;
 
@@ -552,7 +556,6 @@ message RadioConfig {
     /**
     If set, this node is at a fixed position.  We will generate GPS position updates
     at the regular interval, but use whatever the last lat/lon/alt we have for the node.
-
     The lat/lon/alt can be set by an internal GPS or with the help of the app.
     */
     bool fixed_position = 39;
@@ -571,7 +574,15 @@ message RadioConfig {
     */
     bool debug_log_enabled = 101;
 
+    /**
+    How our location is shared with other nodes (or the local phone)
+    */
     LocationSharing location_share = 32;
+
+    /**
+    How the GPS hardware in this unit is operated.
+    Note: This is independent of how our location is shared with other devices.  For that see LocationSharing
+    */
     GpsOperation gps_operation = 33;
     
     /** How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode?

@@ -318,27 +318,25 @@ see sw-design.md for more information on these preferences
 | position_broadcast_secs | [uint32](#uint32) |  | We should send our position this often (but only if it has changed significantly). Defaults to 15 minutes |
 | send_owner_interval | [uint32](#uint32) |  | Send our owner info at least this often (also we always send once at boot - to rejoin the mesh) |
 | num_missed_to_fail | [uint32](#uint32) |  | If we miss this many owner messages from a node, we declare the node / offline (defaults to 3 - to allow for some lost packets) |
-| wait_bluetooth_secs | [uint32](#uint32) |  | 0 for default of 1 minute |
-| screen_on_secs | [uint32](#uint32) |  | 0 for default of one minute |
-| phone_timeout_secs | [uint32](#uint32) |  | 0 for default of 15 minutes |
-| phone_sds_timeout_sec | [uint32](#uint32) |  | 0 for default of two hours, MAXUINT for disabled |
-| mesh_sds_timeout_secs | [uint32](#uint32) |  | 0 for default of two hours, MAXUINT for disabled |
-| sds_secs | [uint32](#uint32) |  | 0 for default of one year |
-| ls_secs | [uint32](#uint32) |  | 0 for default of 3600 |
-| min_wake_secs | [uint32](#uint32) |  | 0 for default of 10 seconds |
+| wait_bluetooth_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 1 minute |
+| screen_on_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of one minute |
+| phone_timeout_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 15 minutes |
+| phone_sds_timeout_sec | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of two hours, MAXUINT for disabled |
+| mesh_sds_timeout_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of two hours, MAXUINT for disabled |
+| sds_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of one year |
+| ls_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 3600 |
+| min_wake_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 10 seconds |
 | wifi_ssid | [string](#string) |  | If set, this node will try to join the specified wifi network and acquire an address via DHCP |
 | wifi_password | [string](#string) |  | If set, will be use to authenticate to the named wifi |
 | wifi_ap_mode | [bool](#bool) |  | If set, the node will operate as an AP (and DHCP server), otherwise it will be a station |
 | region | [RegionCode](#RegionCode) |  | The region code for my radio (US, CN, EU433, etc...) |
-| is_router | [bool](#bool) |  | Are we operating as a router. Changes behavior in the following ways: FIXME |
+| is_router | [bool](#bool) |  | Are we operating as a router. Changes behavior in the following ways: The device will only sleep for critically low battery level (i.e. always tries to stay alive for the mesh) In the future routing decisions will preferentially route packets through nodes with this attribute (because assumed good line of sight) |
 | is_low_power | [bool](#bool) |  | If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in we should try to minimize power consumption as much as possible. Often combined with is_router. |
-| fixed_position | [bool](#bool) |  | If set, this node is at a fixed position. We will generate GPS position updates at the regular interval, but use whatever the last lat/lon/alt we have for the node.
-
-The lat/lon/alt can be set by an internal GPS or with the help of the app. |
+| fixed_position | [bool](#bool) |  | If set, this node is at a fixed position. We will generate GPS position updates at the regular interval, but use whatever the last lat/lon/alt we have for the node. The lat/lon/alt can be set by an internal GPS or with the help of the app. |
 | factory_reset | [bool](#bool) |  | This setting is never saved to disk, but if set, all device settings will be returned to factory defaults. (Region, serial number etc... will be preserved) |
 | debug_log_enabled | [bool](#bool) |  | By default we turn off logging as soon as an API client connects (to keep shared serial link quiet). Set this to true to leave the debug log outputting even when API is active. |
-| location_share | [LocationSharing](#LocationSharing) |  |  |
-| gps_operation | [GpsOperation](#GpsOperation) |  |  |
+| location_share | [LocationSharing](#LocationSharing) |  | How our location is shared with other nodes (or the local phone) |
+| gps_operation | [GpsOperation](#GpsOperation) |  | How the GPS hardware in this unit is operated. Note: This is independent of how our location is shared with other devices. For that see LocationSharing |
 | gps_update_interval | [uint32](#uint32) |  | How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode? or zero for the default of once every 120 seconds or a very large value (maxint) to update only once at boot. |
 | gps_attempt_time | [uint32](#uint32) |  | How long should we try to get our position during each gps_update_interval attempt? (in seconds) Or if zero, use the default of 30 seconds. If we don&#39;t get a new gps fix in that time, the gps will be put into sleep until the next gps_update_rate window. |
 | ignore_incoming | [uint32](#uint32) | repeated | For testing it is useful sometimes to force a node to never listen to particular other nodes (simulating radio out of range). All nodenums listed in ignore_incoming will have packets they send droped on receive (by router.cpp) |
