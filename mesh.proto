@@ -549,7 +549,8 @@ message RadioConfig {
 
     /**
     If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in
-    we should try to minimize power consumption as much as possible.  Often combined with is_router.
+    we should try to minimize power consumption as much as possible.  YOU DO NOT NEED TO SET THIS IF YOU'VE
+    set is_router (it is implied in that case).
     */
     bool is_low_power = 38;
 
