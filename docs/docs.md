@@ -317,7 +317,6 @@ see sw-design.md for more information on these preferences
 | ----- | ---- | ----- | ----------- |
 | position_broadcast_secs | [uint32](#uint32) |  | We should send our position this often (but only if it has changed significantly). Defaults to 15 minutes |
 | send_owner_interval | [uint32](#uint32) |  | Send our owner info at least this often (also we always send once at boot - to rejoin the mesh) |
-| num_missed_to_fail | [uint32](#uint32) |  | If we miss this many owner messages from a node, we declare the node / offline (defaults to 3 - to allow for some lost packets) |
 | wait_bluetooth_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 1 minute |
 | screen_on_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of one minute |
 | phone_timeout_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 15 minutes |

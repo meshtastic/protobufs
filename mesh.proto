@@ -513,8 +513,8 @@ message RadioConfig {
     uint32 send_owner_interval = 2;
 
     /// If we miss this many owner messages from a node, we declare the node
-    /// offline (defaults to 3 - to allow for some lost packets)
-    uint32 num_missed_to_fail = 3;
+    /// offline (defaults to 3 - to allow for some lost packets) (FIXME not yet used)
+    // uint32 num_missed_to_fail = 3;
 
     uint32 wait_bluetooth_secs = 4; // Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 1 minute
     uint32 screen_on_secs = 5; // Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of one minute
