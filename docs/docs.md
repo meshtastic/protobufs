@@ -6,9 +6,9 @@
 - [mesh.proto](#mesh.proto)
     - [ChannelSettings](#.ChannelSettings)
     - [Data](#.Data)
-    - [DebugString](#.DebugString)
     - [DeviceState](#.DeviceState)
     - [FromRadio](#.FromRadio)
+    - [LogRecord](#.LogRecord)
     - [MeshPacket](#.MeshPacket)
     - [MyNodeInfo](#.MyNodeInfo)
     - [NodeInfo](#.NodeInfo)
@@ -24,6 +24,7 @@
     - [Constants](#.Constants)
     - [GpsOperation](#.GpsOperation)
     - [LocationSharing](#.LocationSharing)
+    - [LogRecord.Level](#.LogRecord.Level)
     - [RegionCode](#.RegionCode)
     - [RouteError](#.RouteError)
   
@@ -120,21 +121,6 @@ internally in the case of CLEAR_TEXT and CLEAR_READACK)
 
 
 
-<a name=".DebugString"></a>
-
-### DebugString
-Debug output from the device
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| message | [string](#string) |  |  |
-
-
-
-
-
-
 <a name=".DeviceState"></a>
 
 ### DeviceState
@@ -182,10 +168,33 @@ FIFO will be populated.
 | my_info | [MyNodeInfo](#MyNodeInfo) |  | Tells the phone what our node number is, can be -1 if we&#39;ve not yet joined a mesh. |
 | node_info | [NodeInfo](#NodeInfo) |  | One packet is sent for each node in the on radio DB starts over with the first node in our DB |
 | radio | [RadioConfig](#RadioConfig) |  | In rev1 this was the radio BLE characteristic |
-| debug_string | [DebugString](#DebugString) |  | set to send debug console output over our protobuf stream |
+| log_record | [LogRecord](#LogRecord) |  | set to send debug console output over our protobuf stream |
 | config_complete_id | [uint32](#uint32) |  | sent as true once the device has finished sending all of the responses to want_config recipient should check if this ID matches our original request nonce, if not, it means your config responses haven&#39;t started yet |
 | rebooted | [bool](#bool) |  | Sent to tell clients the radio has just rebooted. Set to true if present. Not used on all transports, currently just used for the serial console. |
 | secondary_channel | [ChannelSettings](#ChannelSettings) |  | One of the secondary channels, they are all sent during config download |
+
+
+
+
+
+
+<a name=".LogRecord"></a>
+
+### LogRecord
+Debug output from the device.
+
+To minimize the size of records inside the device code, if a time/source/level is not set 
+on the message it is assumed to be a contuinuation of the previously sent message.  This allows
+the device code to use fixed maxlen 64 byte strings for messages, and then extend as needed by
+emitting multiple records.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| message | [string](#string) |  |  |
+| time | [fixed32](#fixed32) |  | Seconds since 1970 - or 0 for unknown/unset |
+| source | [string](#string) |  | Usually based on thread name - if known |
+| level | [LogRecord.Level](#LogRecord.Level) |  | Not yet set |
 
 
 
@@ -505,6 +514,23 @@ How our location is shared with other nodes (or the local phone)
 | LocUnset | 0 | This is the default and treated as LocEnabled) |
 | LocEnabled | 1 | We are sharing our location |
 | LocDisabled | 2 | We are not sharing our location (if the unit has a GPS it will default to only get time - i.e. GpsOpTimeOnly) |
+
+
+
+<a name=".LogRecord.Level"></a>
+
+### LogRecord.Level
+Log levels, chosen to match python logging conventions.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| UNSET | 0 |  |
+| CRITICAL | 50 |  |
+| ERROR | 40 |  |
+| WARNING | 30 |  |
+| INFO | 20 |  |
+| DEBUG | 10 |  |
+| TRACE | 5 |  |
 
 
 
