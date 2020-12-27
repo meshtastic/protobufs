@@ -506,6 +506,7 @@ post on the meshtastic.discourse.group and we&#39;ll try to help.
 | Unspecified | 4 | Not normally used |
 | UBloxInitFailed | 5 | We failed while configuring a UBlox GPS |
 | NoAXP192 | 6 | This board was expected to have a power management chip and it is missing or broken |
+| InvalidRadioSetting | 7 | The channel tried to set a radio setting which is not supported by this chipset, radio comms settings are now undefined. |
 
 
 

@@ -689,23 +689,27 @@ message NodeInfo {
 enum CriticalErrorCode { 
   None = 0;
 
-  /// A software bug was detected while trying to send lora
+  // A software bug was detected while trying to send lora
   TxWatchdog = 1;
 
-  /// A software bug was detected on entry to sleep
+  // A software bug was detected on entry to sleep
   SleepEnterWait = 2; 
 
-  /// No Lora radio hardware could be found
+  // No Lora radio hardware could be found
   NoRadio = 3;
 
-  /// Not normally used
+  // Not normally used
   Unspecified = 4;
 
-  /// We failed while configuring a UBlox GPS
+  // We failed while configuring a UBlox GPS
   UBloxInitFailed = 5;
 
-  /// This board was expected to have a power management chip and it is missing or broken
+  // This board was expected to have a power management chip and it is missing or broken
   NoAXP192 = 6;
+
+  // The channel tried to set a radio setting which is not supported by this chipset, 
+  // radio comms settings are now undefined.
+  InvalidRadioSetting = 7;
 }
 
 /**
