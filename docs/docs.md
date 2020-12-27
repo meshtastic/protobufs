@@ -339,7 +339,7 @@ see sw-design.md for more information on these preferences
 | wifi_ap_mode | [bool](#bool) |  | If set, the node will operate as an AP (and DHCP server), otherwise it will be a station |
 | region | [RegionCode](#RegionCode) |  | The region code for my radio (US, CN, EU433, etc...) |
 | is_router | [bool](#bool) |  | Are we operating as a router. Changes behavior in the following ways: The device will only sleep for critically low battery level (i.e. always tries to stay alive for the mesh) In the future routing decisions will preferentially route packets through nodes with this attribute (because assumed good line of sight) |
-| is_low_power | [bool](#bool) |  | If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in we should try to minimize power consumption as much as possible. Often combined with is_router. |
+| is_low_power | [bool](#bool) |  | If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in we should try to minimize power consumption as much as possible. YOU DO NOT NEED TO SET THIS IF YOU&#39;VE set is_router (it is implied in that case). |
 | fixed_position | [bool](#bool) |  | If set, this node is at a fixed position. We will generate GPS position updates at the regular interval, but use whatever the last lat/lon/alt we have for the node. The lat/lon/alt can be set by an internal GPS or with the help of the app. |
 | factory_reset | [bool](#bool) |  | This setting is never saved to disk, but if set, all device settings will be returned to factory defaults. (Region, serial number etc... will be preserved) |
 | debug_log_enabled | [bool](#bool) |  | By default we turn off logging as soon as an API client connects (to keep shared serial link quiet). Set this to true to leave the debug log outputting even when API is active. |
@@ -603,7 +603,6 @@ master table.  PortNums should be assigned in the following range:
 64-127 Registered 3rd party apps, send in a pull request that adds a new entry to portnums.proto to 
 register your application
 256-511 Use one of these portnums for your private applications that you don&#39;t want to register publically
-1024-66559 Are reserved for use by IP tunneling (see FIXME for more information)
 
 All other values are reserved.
 
@@ -620,8 +619,8 @@ This change is backwards compatible by treating the legacy OPAQUE/CLEAR_TEXT val
 | POSITION_APP | 3 | The built-in position messaging app. See Position for details on the message sent to this port number. |
 | NODEINFO_APP | 4 | The built-in user info app. See User for details on the message sent to this port number. |
 | REPLY_APP | 32 | Provides a &#39;ping&#39; service that replies to any packet it receives. Also this serves as a small example plugin. |
+| IP_TUNNEL_APP | 33 | Used for the python IP tunnel feature |
 | PRIVATE_APP | 256 | Private applications should use portnums &gt;= 256. To simplify initial development and testing you can use &#34;PRIVATE_APP&#34; in your code without needing to rebuild protobuf files (via bin/regin_protos.sh) |
-| IP_TUNNEL_APP | 1024 | 1024-66559 Are reserved for use by IP tunneling (see FIXME for more information) |
 
 
  
