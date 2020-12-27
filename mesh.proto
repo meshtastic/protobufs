@@ -681,6 +681,33 @@ message NodeInfo {
   uint32 next_hop = 5;
 }
 
+/** Error codes for critical errors
+ * 
+ * The device might report these fault codes on the screen.  If you encounter a fault code, please
+ * post on the meshtastic.discourse.group and we'll try to help.
+ */
+enum CriticalErrorCode { 
+  None = 0;
+
+  /// A software bug was detected while trying to send lora
+  TxWatchdog = 1;
+
+  /// A software bug was detected on entry to sleep
+  SleepEnterWait = 2; 
+
+  /// No Lora radio hardware could be found
+  NoRadio = 3;
+
+  /// Not normally used
+  Unspecified = 4;
+
+  /// We failed while configuring a UBlox GPS
+  UBloxInitFailed = 5;
+
+  /// This board was expected to have a power management chip and it is missing or broken
+  NoAXP192 = 6;
+}
+
 /**
 Unique local debugging info for this node
 
@@ -725,7 +752,7 @@ message MyNodeInfo {
   /// field will be cleared after the phone reads MyNodeInfo (i.e. it will only
   /// be reported once) a numeric error code to go with error message, zero
   /// means no error
-  uint32 error_code = 7;
+  CriticalErrorCode error_code = 7;
 
   /// A numeric error address (nonzero if available)
   uint32 error_address = 8;

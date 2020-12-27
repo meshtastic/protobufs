@@ -22,6 +22,7 @@
   
     - [ChannelSettings.ModemConfig](#.ChannelSettings.ModemConfig)
     - [Constants](#.Constants)
+    - [CriticalErrorCode](#.CriticalErrorCode)
     - [GpsOperation](#.GpsOperation)
     - [LocationSharing](#.LocationSharing)
     - [LogRecord.Level](#.LogRecord.Level)
@@ -246,7 +247,7 @@ Sent to the phone in response to WantNodes.
 | region | [string](#string) |  | The region code for my radio (US, CN, etc...) Note: This string is deprecated. The 1.0 builds populate it based on the flashed firmware name. But for newer builds this string will be unpopulated (missing/null). For those builds you should instead look at the new read/write region enum in UserSettings The format of this string was 1.0-US or 1.0-CN etc.. Or empty string if unset. |
 | hw_model | [string](#string) |  | TBEAM, HELTEC, etc... |
 | firmware_version | [string](#string) |  | 0.0.5 etc... |
-| error_code | [uint32](#uint32) |  | An error message we&#39;d like to report back to the mothership through / analytics. It indicates a serious bug occurred on the device, the device / coped with it, but we still want to tell the devs about the bug. This / field will be cleared after the phone reads MyNodeInfo (i.e. it will only / be reported once) a numeric error code to go with error message, zero / means no error |
+| error_code | [CriticalErrorCode](#CriticalErrorCode) |  | An error message we&#39;d like to report back to the mothership through / analytics. It indicates a serious bug occurred on the device, the device / coped with it, but we still want to tell the devs about the bug. This / field will be cleared after the phone reads MyNodeInfo (i.e. it will only / be reported once) a numeric error code to go with error message, zero / means no error |
 | error_address | [uint32](#uint32) |  | A numeric error address (nonzero if available) |
 | error_count | [uint32](#uint32) |  | The total number of errors this node has ever encountered (well - since / the last time we discarded preferences) |
 | packet_id_bits | [uint32](#uint32) |  | How many bits are used for the packetid. If zero it is assumed we use eight bit packetids Old device loads (older that 0.6.5 do not populate this field, but all newer loads do). |
@@ -485,6 +486,26 @@ Shared constants between device and phone
 | ---- | ------ | ----------- |
 | Unused | 0 | First enum must be zero, and we are just using this enum to pass int constants between two very different environments |
 | DATA_PAYLOAD_LEN | 240 | From mesh.options note: this payload length is ONLY the bytes that are sent inside of the radiohead packet Data.payload max_size:240 |
+
+
+
+<a name=".CriticalErrorCode"></a>
+
+### CriticalErrorCode
+Error codes for critical errors
+
+The device might report these fault codes on the screen.  If you encounter a fault code, please
+post on the meshtastic.discourse.group and we&#39;ll try to help.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| None | 0 |  |
+| TxWatchdog | 1 | A software bug was detected while trying to send lora |
+| SleepEnterWait | 2 | A software bug was detected on entry to sleep |
+| NoRadio | 3 | No Lora radio hardware could be found |
+| Unspecified | 4 | Not normally used |
+| UBloxInitFailed | 5 | We failed while configuring a UBlox GPS |
+| NoAXP192 | 6 | This board was expected to have a power management chip and it is missing or broken |
 
 
 
