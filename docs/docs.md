@@ -3,10 +3,12 @@
 
 ## Table of Contents
 
+- [deviceonly.proto](#deviceonly.proto)
+    - [DeviceState](#.DeviceState)
+  
 - [mesh.proto](#mesh.proto)
     - [ChannelSettings](#.ChannelSettings)
     - [Data](#.Data)
-    - [DeviceState](#.DeviceState)
     - [FromRadio](#.FromRadio)
     - [LogRecord](#.LogRecord)
     - [MeshPacket](#.MeshPacket)
@@ -38,6 +40,50 @@
     - [HardwareMessage.Type](#.HardwareMessage.Type)
   
 - [Scalar Value Types](#scalar-value-types)
+
+
+
+<a name="deviceonly.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## deviceonly.proto
+
+
+
+<a name=".DeviceState"></a>
+
+### DeviceState
+This message is never sent over the wire, but it is used for serializing DB
+state to flash in the device code
+FIXME, since we write this each time we enter deep sleep (and have infinite
+flash) it would be better to use some sort of append only data structure for
+the receive queue and use the preferences store for the other stuff
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| radio | [RadioConfig](#RadioConfig) |  |  |
+| my_node | [MyNodeInfo](#MyNodeInfo) |  | Read only settings/info about this node |
+| owner | [User](#User) |  | My owner info |
+| node_db | [NodeInfo](#NodeInfo) | repeated |  |
+| receive_queue | [MeshPacket](#MeshPacket) | repeated | Received packets saved for delivery to the phone |
+| version | [uint32](#uint32) |  | A version integer used to invalidate old save files when we make incompatible changes This integer is set at build time and is private to NodeDB.cpp in the device code. |
+| rx_text_message | [MeshPacket](#MeshPacket) |  | We keep the last received text message (only) stored in the device flash, so we can show it on the screen. Might be null |
+| no_save | [bool](#bool) |  | Used only during development. Indicates developer is testing and changes should never be saved to flash. |
+| did_gps_reset | [bool](#bool) |  | Some GPSes seem to have bogus settings from the factory, so we always do one factory reset |
+| secondary_channels | [ChannelSettings](#ChannelSettings) | repeated | Secondary channels are only used for encryption/decryption/authentication purposes. Their radio settings (freq etc) are ignored, only psk is used. Note: this is not kept inside of RadioConfig because that would make ToRadio/FromRadio worse case &gt; 512 bytes (to big for BLE) |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+ 
 
 
 
@@ -74,6 +120,7 @@ Full settings (center freq, spread factor, pre-shared secret key etc...)
 needed to configure a radio for speaking on a particlar channel This
 information can be encoded as a QRcode/url so that other users can configure
 their radio to join the same channel.
+
 A note aboute how channel names are shown to users:
 channelname-Xy
 poundsymbol is a prefix used to indicate this is a channel name (idea from @professr).
@@ -88,6 +135,11 @@ users COULD type in a channel name and be able to talk.
 Y is a lower case letter from a-z that represents the channel &#39;speed&#39; settings
 (for some future definition of speed)
 
+FIXME: Add description of multi-channel support and how primary vs secondary channels 
+are used.
+FIXME: explain how apps use channels for security.  explain how remote settings and 
+remote gpio are managed as an example
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -99,6 +151,9 @@ Y is a lower case letter from a-z that represents the channel &#39;speed&#39; se
 | channel_num | [uint32](#uint32) |  | A channel number between 1 and 13 (or whatever the max is in the current region). If ZERO then the rule is &#34;use the old channel name hash based algoritm to derive the channel number&#34;) If using the hash algorithm the channel number will be: hash(channel_name) % NUM_CHANNELS (Where num channels depends on the regulatory region). NUM_CHANNELS_US is 13, for other values see MeshRadio.h in the device code. hash a string into an integer - djb2 by Dan Bernstein. - http://www.cse.yorku.ca/~oz/hash.html unsigned long hash(char *str) { unsigned long hash = 5381; int c; while ((c = *str&#43;&#43;) != 0) hash = ((hash &lt;&lt; 5) &#43; hash) &#43; (unsigned char) c; return hash; } |
 | psk | [bytes](#bytes) |  | A simple preshared key for now for crypto. Must be either 0 bytes (no crypto), 16 bytes (AES128), or 32 bytes (AES256) A special shorthand is used for 1 byte long psks. These psks should be treated as only minimally secure, because they are listed in this source code. Those bytes are mapped using the following scheme: 0 = No crypto 1 = The special default channel key: {0xd4, 0xf1, 0xbb, 0x3a, 0x20, 0x29, 0x07, 0x59, 0xf0, 0xbc, 0xff, 0xab, 0xcf, 0x4e, 0x69, 0xbf} 2 through 10 = The default channel key, except with 1 through 9 added to the last byte |
 | name | [string](#string) |  | A SHORT name that will be packed into the URL. Less than 12 bytes. Something for end users to call the channel If this is the empty string it is assumed that this channel is the special (minimially secure) &#34;Default&#34; channel. In user interfaces it should be rendered as a local language translation of &#34;X&#34;. For channel_num hashing empty string will be treated as &#34;X&#34;. Where &#34;X&#34; is selected based on the english words listed above for ModemConfig |
+| id | [fixed32](#fixed32) |  | Used to construct a globally unique channel ID. The full globally unique ID will be: &#34;name.id&#34; where ID is shown as base36. Assuming that the number of meshtastic users is below 20K (true for a long time) the chance of this 64 bit random number colliding with anyone else is super low. And the penalty for collision is low as well, it just means that anyone trying to decrypt channel messages might need to try multiple candidate channels. Any time a non wire compatible change is made to a channel, this field should be regenerated. There are a small number of &#39;special&#39; globally known (and fairly) insecure standard channels. Those channels do not have a numeric id included in the settings, but instead it is pulled from a table of well known IDs. (see Well Known Channels FIXME) |
+| uplink_enabled | [bool](#bool) |  | If true, messages on the mesh will be sent to the *public* internet by any gateway ndoe |
+| downlink_enabled | [bool](#bool) |  | If true, messages seen on the internet will be forwarded to the local mesh. |
 
 
 
@@ -116,36 +171,6 @@ internally in the case of CLEAR_TEXT and CLEAR_READACK)
 | ----- | ---- | ----- | ----------- |
 | portnum | [PortNum](#PortNum) |  | formerly named typ and of type Type |
 | payload | [bytes](#bytes) |  | required |
-
-
-
-
-
-
-<a name=".DeviceState"></a>
-
-### DeviceState
-This message is never sent over the wire, but it is used for serializing DB
-state to flash in the device code
-FIXME, since we write this each time we enter deep sleep (and have infinite
-flash) it would be better to use some sort of append only data structure for
-the receive queue and use the preferences store for the other stuff
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| radio | [RadioConfig](#RadioConfig) |  |  |
-| my_node | [MyNodeInfo](#MyNodeInfo) |  | Read only settings/info about this node |
-| owner | [User](#User) |  | My owner info |
-| node_db | [NodeInfo](#NodeInfo) | repeated |  |
-| receive_queue | [MeshPacket](#MeshPacket) | repeated | Received packets saved for delivery to the phone |
-| version | [uint32](#uint32) |  | A version integer used to invalidate old save files when we make incompatible changes This integer is set at build time and is private to NodeDB.cpp in the device code. |
-| rx_text_message | [MeshPacket](#MeshPacket) |  | We keep the last received text message (only) stored in the device flash, so we can show it on the screen. Might be null |
-| no_save | [bool](#bool) |  | Used only during development. Indicates developer is testing and changes should never be saved to flash. |
-| did_gps_reset | [bool](#bool) |  | Some GPSes seem to have bogus settings from the factory, so we always do one factory reset |
-| secondary_channels | [ChannelSettings](#ChannelSettings) | repeated | Secondary channels are only used for encryption/decryption/authentication purposes. Their radio settings (freq etc) are ignored, only psk is used.
-
-Note: this is not kept inside of RadioConfig because that would make ToRadio/FromRadio worse case &gt; 512 bytes (to big for BLE) |
 
 
 
@@ -172,7 +197,7 @@ FIFO will be populated.
 | log_record | [LogRecord](#LogRecord) |  | set to send debug console output over our protobuf stream |
 | config_complete_id | [uint32](#uint32) |  | sent as true once the device has finished sending all of the responses to want_config recipient should check if this ID matches our original request nonce, if not, it means your config responses haven&#39;t started yet |
 | rebooted | [bool](#bool) |  | Sent to tell clients the radio has just rebooted. Set to true if present. Not used on all transports, currently just used for the serial console. |
-| secondary_channel | [ChannelSettings](#ChannelSettings) |  | One of the secondary channels, they are all sent during config download |
+| channel | [ChannelSettings](#ChannelSettings) |  | One of the channels, they are all sent during config download The first channel is the &#34;primary&#34; channel all other channels are secondary channels The primary channel is also sent as part of RadioConfig (which is deprecated, but to support older clients) |
 
 
 
@@ -215,7 +240,7 @@ MeshPacket).
 | ----- | ---- | ----- | ----------- |
 | from | [uint32](#uint32) |  | The sending node number. Note: Our crypto implementation uses this field as well. See docs/software/crypto.md for details. FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
 | to | [uint32](#uint32) |  | The (immediate) destination for this packet. If we are using routing, the final destination will be in payload.dest FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
-| channel_index | [uint32](#uint32) |  | If set, this indicates the index in the secondary_channels table that this packet was sent/received on. If unset, packet was on the primary channel. |
+| channel_index | [uint32](#uint32) |  | If set, this indicates the index in the secondary_channels table that this packet was sent/received on. If unset, packet was on the primary channel. A particular node might know only a subset of channels in use on the mesh. Therefore channel_index is inherently a local concept and meaningless to send between nodes. |
 | decoded | [SubPacket](#SubPacket) |  |  |
 | encrypted | [bytes](#bytes) |  |  |
 | id | [uint32](#uint32) |  | A unique ID for this packet. Always 0 for no-ack packets or non broadcast packets (and therefore take zero bytes of space). Otherwise a unique ID for this packet. Useful for flooding algorithms. ID only needs to be unique on a _per sender_ basis. And it only needs to be unique for a few minutes (long enough to last for the length of any ACK or the completion of a mesh broadcast flood). Note: Our crypto implementation uses this id as well. See docs/software/crypto.md for details. FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
@@ -310,7 +335,7 @@ set for behavior of their node
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | preferences | [RadioConfig.UserPreferences](#RadioConfig.UserPreferences) |  |  |
-| channel_settings | [ChannelSettings](#ChannelSettings) |  |  |
+| channel_settings | [ChannelSettings](#ChannelSettings) |  | The preferred way to find channel settings is now in FromRadio. |
 
 
 
@@ -379,12 +404,12 @@ inside a radio packet (because from/to are broken out by the comms library)
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| position | [Position](#Position) |  | Prior to 1.20 positions were communicated as a special payload type, now they are GPS_POSITION_APP Data |
 | data | [Data](#Data) |  |  |
-| user | [User](#User) |  | Prior to 1.20 positions were communicated as a special payload type, now they are MESH_USERINFO_APP |
-| route_request | [RouteDiscovery](#RouteDiscovery) |  | A route request going from the requester |
+| route_request | [RouteDiscovery](#RouteDiscovery) |  | A route request going from the requester FIXME - these route messages should be moved into regular data packets and use the regular on device plugin mechanism. |
 | route_reply | [RouteDiscovery](#RouteDiscovery) |  | A route reply |
 | route_error | [RouteError](#RouteError) |  | A failure in a routed message |
+| position | [Position](#Position) |  | Prior to 1.20 positions were communicated as a special payload type, now they are GPS_POSITION_APP Data |
+| user | [User](#User) |  | Prior to 1.20 positions were communicated as a special payload type, now they are MESH_USERINFO_APP |
 | want_response | [bool](#bool) |  | Not normally used, but for testing a sender can request that recipient responds in kind (i.e. if it received a position, it should unicast back its position). Note: that if you set this on a broadcast you will receive many replies. |
 | success_id | [uint32](#uint32) |  | This packet is a requested acknoledgement indicating that we have received the specified message ID. This packet type can be used both for immediate (0 hops) messages or can be routed through multiple hops if dest is set. Note: As an optimization, recipients can _also_ populate a field in payload if they think the recipient would appreciate that extra state. |
 | fail_id | [uint32](#uint32) |  | This is a nak, we failed to deliver this message. |
@@ -410,6 +435,7 @@ characteristic.  Once the write completes the phone can assume it is handled.
 | want_config_id | [uint32](#uint32) |  | phone wants radio to send full node db to the phone, This is typically the first packet sent to the radio when the phone gets a bluetooth connection. The radio will respond by sending back a MyNodeInfo, a owner, a radio config and a series of FromRadio.node_infos, and config_complete the integer you write into this field will be reported back in the config_complete_id response this allows clients to never be confused by a stale old partially sent config. |
 | set_radio | [RadioConfig](#RadioConfig) |  | set the radio provisioning for this node |
 | set_owner | [User](#User) |  | Set the owner for this node |
+| set_channel | [ChannelSettings](#ChannelSettings) |  | Set channels (using the new API). The first sent channel is assumed to be channel index 0 the &#34;primary channel&#34;. Following records are secondary channels. |
 
 
 

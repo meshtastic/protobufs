@@ -138,16 +138,12 @@ message SubPacket {
   // Only one of the following fields can be populated at a time
   oneof payload {
 
-    /// Prior to 1.20 positions were communicated as a special payload type, now they are GPS_POSITION_APP Data
-    Position position = 1 [deprecated = true];
-
     Data data = 3;
-
-    /// Prior to 1.20 positions were communicated as a special payload type, now they are MESH_USERINFO_APP
-    User user = 4 [deprecated = true];
 
     /**
     A route request going from the requester
+    FIXME - these route messages should be moved into regular data packets and use the regular on
+    device plugin mechanism.
     */
     RouteDiscovery route_request = 6;
 
@@ -160,6 +156,12 @@ message SubPacket {
     A failure in a routed message
     */
     RouteError route_error = 13;
+
+    // Prior to 1.20 positions were communicated as a special payload type, now they are GPS_POSITION_APP Data
+    Position position = 1 [deprecated = true];
+
+    // Prior to 1.20 positions were communicated as a special payload type, now they are MESH_USERINFO_APP
+    User user = 4 [deprecated = true];    
   }
 
   // Not normally used, but for testing a sender can request that recipient
@@ -232,6 +234,8 @@ message MeshPacket {
   /**
   If set, this indicates the index in the secondary_channels table that this packet 
   was sent/received on.  If unset, packet was on the primary channel.
+  A particular node might know only a subset of channels in use on the mesh.  Therefore channel_index
+  is inherently a local concept and meaningless to send between nodes.
   */
   uint32 channel_index = 4;
 
@@ -321,6 +325,7 @@ enum Constants {
 needed to configure a radio for speaking on a particlar channel This
 information can be encoded as a QRcode/url so that other users can configure
 their radio to join the same channel.
+
 A note aboute how channel names are shown to users:
 channelname-Xy
 poundsymbol is a prefix used to indicate this is a channel name (idea from @professr).
@@ -334,6 +339,11 @@ This also allows the option of someday if people have the PSK off (zero), the
 users COULD type in a channel name and be able to talk.
 Y is a lower case letter from a-z that represents the channel 'speed' settings
 (for some future definition of speed)
+
+FIXME: Add description of multi-channel support and how primary vs secondary channels 
+are used.
+FIXME: explain how apps use channels for security.  explain how remote settings and 
+remote gpio are managed as an example
 */
 message ChannelSettings {
 
@@ -428,8 +438,24 @@ message ChannelSettings {
   // channel.  In user interfaces it should be rendered as a local language translation of "X".  For channel_num
   // hashing empty string will be treated as "X".
   // Where "X" is selected based on the english words listed above for ModemConfig
-  // 
   string name = 5;
+
+  // Used to construct a globally unique channel ID.  The full globally unique ID will be: "name.id"
+  // where ID is shown as base36.  Assuming that the number of meshtastic users is below 20K (true for a long time)
+  // the chance of this 64 bit random number colliding with anyone else is super low.  And the penalty for
+  // collision is low as well, it just means that anyone trying to decrypt channel messages might need to
+  // try multiple candidate channels.
+  // Any time a non wire compatible change is made to a channel, this field should be regenerated.
+  // There are a small number of 'special' globally known (and fairly) insecure standard channels.  
+  // Those channels do not have a numeric id included in the settings, but instead it is pulled from
+  // a table of well known IDs.  (see Well Known Channels FIXME)
+  fixed32 id = 10;
+
+  // If true, messages on the mesh will be sent to the *public* internet by any gateway ndoe
+  bool uplink_enabled = 16;
+
+  // If true, messages seen on the internet will be forwarded to the local mesh.
+  bool downlink_enabled = 17;
 }
 
 /**
@@ -617,7 +643,9 @@ message RadioConfig {
   }
 
   UserPreferences preferences = 1;
-  ChannelSettings channel_settings = 2;
+
+  // The preferred way to find channel settings is now in FromRadio. 
+  ChannelSettings channel_settings = 2 [ deprecated = true ];
 }
 
 /**
@@ -804,50 +832,6 @@ message MyNodeInfo {
   /// FIXME - add more useful debugging state (queue depths etc)
 }
 
-// This message is never sent over the wire, but it is used for serializing DB
-// state to flash in the device code
-// FIXME, since we write this each time we enter deep sleep (and have infinite
-// flash) it would be better to use some sort of append only data structure for
-// the receive queue and use the preferences store for the other stuff
-message DeviceState {
-  RadioConfig radio = 1;
-
-  /// Read only settings/info about this node
-  MyNodeInfo my_node = 2;
-
-  /// My owner info
-  User owner = 3;
-
-  repeated NodeInfo node_db = 4;
-
-  /// Received packets saved for delivery to the phone
-  repeated MeshPacket receive_queue = 5;
-
-  /** A version integer used to invalidate old save files when we make
-  incompatible changes This integer is set at build time and is private to
-  NodeDB.cpp in the device code. */
-  uint32 version = 8;
-
-  // We keep the last received text message (only) stored in the device flash,
-  // so we can show it on the screen.  Might be null
-  MeshPacket rx_text_message = 7;
-
-  // Used only during development.  Indicates developer is testing and changes
-  // should never be saved to flash.
-  bool no_save = 9;
-
-  // Some GPSes seem to have bogus settings from the factory, so we always do
-  // one factory reset
-  bool did_gps_reset = 11;
-
-  /** Secondary channels are only used for encryption/decryption/authentication purposes.  Their radio settings (freq etc)
-  are ignored, only psk is used.
-
-  Note: this is not kept inside of RadioConfig because that would make ToRadio/FromRadio worse case > 512 bytes (to big for BLE)
-  */
-  repeated ChannelSettings secondary_channels = 12;
-}
-
 /** Debug output from the device.
 
   To minimize the size of records inside the device code, if a time/source/level is not set 
@@ -918,8 +902,11 @@ message FromRadio {
     // console.
     bool rebooted = 9;
 
-    // One of the secondary channels, they are all sent during config download
-    ChannelSettings secondary_channel = 10;
+    // One of the channels, they are all sent during config download
+    // The first channel is the "primary" channel all other channels are secondary channels
+    // The primary channel is also sent as part of RadioConfig (which is deprecated, but to support
+    // older clients)
+    ChannelSettings channel = 10;
   }
 }
 
@@ -945,6 +932,10 @@ message ToRadio {
 
     // Set the owner for this node
     User set_owner = 102; 
+
+    // Set channels (using the new API).  The first sent channel is assumed to be channel
+    // index 0 the "primary channel".  Following records are secondary channels.
+    ChannelSettings set_channel = 103;
   }
 }
 
