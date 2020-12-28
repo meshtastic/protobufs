@@ -3,6 +3,9 @@
 
 ## Table of Contents
 
+- [apponly.proto](#apponly.proto)
+    - [ServiceEnvelope](#.ServiceEnvelope)
+  
 - [deviceonly.proto](#deviceonly.proto)
     - [DeviceState](#.DeviceState)
   
@@ -40,6 +43,39 @@
     - [HardwareMessage.Type](#.HardwareMessage.Type)
   
 - [Scalar Value Types](#scalar-value-types)
+
+
+
+<a name="apponly.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## apponly.proto
+
+
+
+<a name=".ServiceEnvelope"></a>
+
+### ServiceEnvelope
+This message wraps a MeshPacket with extra metadata about the sender and how it arrived.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| packet | [MeshPacket](#MeshPacket) |  | The (probably encrypted) packet |
+| channel_id | [string](#string) |  | The global channel ID it was sent on |
+| mesh_id | [string](#string) |  | The sending mesh. FIXME, is this necessary? can we use this to authenticate/prevent fake nodeid impersonation for senders - i.e. use mesh id (which is authenticated) &#43; local node id as the globally trusted nodenum |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+ 
 
 
 
