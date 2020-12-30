@@ -63,7 +63,7 @@ This message wraps a MeshPacket with extra metadata about the sender and how it 
 | ----- | ---- | ----- | ----------- |
 | packet | [MeshPacket](#MeshPacket) |  | The (probably encrypted) packet |
 | channel_id | [string](#string) |  | The global channel ID it was sent on |
-| mesh_id | [string](#string) |  | The sending mesh. FIXME, is this necessary? can we use this to authenticate/prevent fake nodeid impersonation for senders - i.e. use mesh id (which is authenticated) &#43; local node id as the globally trusted nodenum |
+| gateway_id | [string](#string) |  | The sending gateway. Can we use this to authenticate/prevent fake nodeid impersonation for senders? - i.e. use gateway/mesh id (which is authenticated) &#43; local node id as the globally trusted nodenum |
 
 
 
