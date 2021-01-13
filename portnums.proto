@@ -79,6 +79,9 @@ enum PortNum {
     
     Plugin is disabled by default can be turned on by setting SERIALPLUGIN_ENABLED = 1 in
     SerialPlugh.cpp.
+    
+    Maintained by Jm Casler (MC Hamster) : jm@casler.org
+    
     */
     SERIAL_APP = 64;
 
