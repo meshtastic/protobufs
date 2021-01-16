@@ -667,6 +667,18 @@ message RadioConfig {
     router.cpp)
     */
     repeated uint32 ignore_incoming = 103;
+    
+    /**
+    Preferences for the SerialPlugin
+    
+    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+    */
+    bool serialplugin_enabled = 120;
+    bool serialplugin_echo = 121;
+    uint32 serialplugin_rxd = 122;
+    uint32 serialplugin_txd = 123;
+    uint32 serialplugin_timeout = 124;
+    
   }
 
   UserPreferences preferences = 1;
