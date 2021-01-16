@@ -483,6 +483,30 @@ enum RegionCode {
 }
 
 /**
+  Sets the charge control current of devices with a battery charger that can be
+  configured. This is passed into the axp power management chip like on the tbeam.
+*/
+enum ChargeCurrent {
+  Unset = 0;
+  100MA = 1;
+  190MA = 2;
+  280MA = 3;
+  360MA = 4;
+  450MA = 5;
+  550MA = 6;
+  630MA = 7;
+  700MA = 8;
+  780MA = 9;
+  880MA = 10;
+  960MA = 11;
+  1000MA = 12;
+  1080MA = 13;
+  1160MA = 14;
+  1240MA = 15;
+  1320MA = 16;
+}
+
+/**
   How the GPS hardware in this unit is operated.
 
   Note: This is independent of how our location is shared with other devices.  For that see LocationSharing
@@ -564,6 +588,9 @@ message RadioConfig {
 
     /// The region code for my radio (US, CN, EU433, etc...)
     RegionCode region = 15;
+
+    /** Sets the current of the battery charger */
+    ChargeCurrent charge_current = 16;
 
     /**
     Are we operating as a router.  Changes behavior in the following ways:
