@@ -6,18 +6,24 @@ option optimize_for = LITE_RUNTIME;
 
 import "mesh.proto";
 
-/**
-This message wraps a MeshPacket with extra metadata about the sender and how it arrived.
-*/
+/*
+ * This message wraps a MeshPacket with extra metadata about the sender and how it arrived.
+ */
 message ServiceEnvelope {
-    /** The (probably encrypted) packet */
+    /*
+     * The (probably encrypted) packet
+     */
     MeshPacket packet = 1;
 
-    /** The global channel ID it was sent on */
+    /*
+     * The global channel ID it was sent on
+     */
     string channel_id = 2;
 
-    /** The sending gateway. Can we use this to authenticate/prevent fake
-    nodeid impersonation for senders? - i.e. use gateway/mesh id (which is authenticated) + local node id as
-    the globally trusted nodenum */
+    /*
+     * The sending gateway. Can we use this to authenticate/prevent fake
+     * nodeid impersonation for senders? - i.e. use gateway/mesh id (which is authenticated) + local node id as
+     * the globally trusted nodenum
+     */
     string gateway_id = 3;
 }

@@ -57,8 +57,10 @@ message Position {
   fixed32 time = 9; 
 }
 
-// a data message to forward to an external app (or possibly also be consumed
-// internally in the case of CLEAR_TEXT and CLEAR_READACK)
+/*
+ * a data message to forward to an external app (or possibly also be consumed
+ * internally in the case of CLEAR_TEXT and CLEAR_READACK)
+ */
 message Data {
 
   /*
@@ -181,10 +183,14 @@ message SubPacket {
      */
     RouteError route_error = 13;
 
-    // Prior to 1.20 positions were communicated as a special payload type, now they are GPS_POSITION_APP Data
+    /*
+     * Prior to 1.20 positions were communicated as a special payload type, now they are GPS_POSITION_APP Data
+     */
     Position position = 1 [deprecated = true];
 
-    // Prior to 1.20 positions were communicated as a special payload type, now they are MESH_USERINFO_APP
+    /*
+     * Prior to 1.20 positions were communicated as a special payload type, now they are MESH_USERINFO_APP
+     */
     User user = 4 [deprecated = true];    
   }
 
@@ -1184,10 +1190,10 @@ message ToRadio {
      */
     User set_owner = 102; 
 
-    // Set channels (using the new API).  The first sent channel is assumed to be channel
-    // index 0 the "primary channel".  Following records are secondary channels.
+    /*
+     * Set channels (using the new API).  The first sent channel is assumed to be channel
+     * index 0 the "primary channel".  Following records are secondary channels.
+     */
     ChannelSettings set_channel = 103;
   }
 }
-
-
