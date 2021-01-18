@@ -1,0 +1,7 @@
+message EnvironmentalMeasurement {
+
+  int32 temperature = 1; 
+  int32 relative_humidity = 2;
+  int32 barometric_pressure = 3;
+
+}
