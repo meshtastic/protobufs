@@ -819,7 +819,18 @@ message RadioConfig {
     uint32 serialplugin_rxd = 122;
     uint32 serialplugin_txd = 123;
     uint32 serialplugin_timeout = 124;
+    uint32 serialplugin_mode = 125;
+
+    /**
+    Preferences for the ExternalNotificationPlugin
     
+    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+    */
+    bool externalnotificationplugin_enabled = 126;
+    uint32 externalnotificationplugin_output = 127;
+    uint32 externalnotificationplugin_output_ms = 128;
+    uint32 externalnotificationplugin_mode = 129;
+
   }
 
   UserPreferences preferences = 1;
