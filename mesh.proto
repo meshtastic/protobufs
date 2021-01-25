@@ -826,10 +826,12 @@ message RadioConfig {
     
     FIXME - Move this out of UserPreferences and into a section for plugin configuration.
     */
-    bool externalnotificationplugin_enabled = 126;
-    uint32 externalnotificationplugin_output = 127;
-    uint32 externalnotificationplugin_output_ms = 128;
-    uint32 externalnotificationplugin_mode = 129;
+    bool ext_notification_plugin_enabled = 126;
+    uint32 ext_notification_plugin_output_ms = 127;
+    uint32 ext_notification_plugin_output = 128;
+    bool ext_notification_plugin_active = 129;
+    bool ext_notification_plugin_alert_message = 130;
+    bool ext_notification_plugin_alert_bell = 131;
 
   }
 
