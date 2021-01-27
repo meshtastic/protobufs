@@ -958,6 +958,11 @@ enum CriticalErrorCode {
    * radio comms settings are now undefined.
    */
   InvalidRadioSetting = 7;
+
+  // Radio transmit hardware failure. We sent data to the radio chip, but it didn't
+  // reply with an interrupt.
+  TransmitFailed = 8;
+
 }
 
 /*
