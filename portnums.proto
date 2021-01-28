@@ -88,12 +88,11 @@ enum PortNum {
     SERIAL_APP = 64;
 
     /*
-     * Provides a mechanism for external notifications. eg:
-     *     LED, Buzzer, Fog Horn or anything else
+     * STORE_REQUEST_APP (Work in Progress)
      *
      * Maintained by Jm Casler (MC Hamster) : jm@casler.org
      */
-    EXTERNAL_NOTIFICATION_APP = 65;
+    STORE_REQUEST_APP = 65;
 
     /*
      * Private applications should use portnums >= 256.
