@@ -26,6 +26,7 @@
     - [User](#.User)
   
     - [ChannelSettings.ModemConfig](#.ChannelSettings.ModemConfig)
+    - [ChargeCurrent](#.ChargeCurrent)
     - [Constants](#.Constants)
     - [CriticalErrorCode](#.CriticalErrorCode)
     - [GpsOperation](#.GpsOperation)
@@ -106,7 +107,7 @@ the receive queue and use the preferences store for the other stuff
 | version | [uint32](#uint32) |  | A version integer used to invalidate old save files when we make incompatible changes This integer is set at build time and is private to NodeDB.cpp in the device code. |
 | rx_text_message | [MeshPacket](#MeshPacket) |  | We keep the last received text message (only) stored in the device flash, so we can show it on the screen. Might be null |
 | no_save | [bool](#bool) |  | Used only during development. Indicates developer is testing and changes should never be saved to flash. |
-| did_gps_reset | [bool](#bool) |  | Some GPSes seem to have bogus settings from the factory, so we always do one factory reset |
+| did_gps_reset | [bool](#bool) |  | Some GPSes seem to have bogus settings from the factory, so we always do one factory reset. |
 | secondary_channels | [ChannelSettings](#ChannelSettings) | repeated | Secondary channels are only used for encryption/decryption/authentication purposes. Their radio settings (freq etc) are ignored, only psk is used. Note: this is not kept inside of RadioConfig because that would make ToRadio/FromRadio worse case &gt; 512 bytes (to big for BLE) |
 
 
@@ -129,8 +130,7 @@ the receive queue and use the preferences store for the other stuff
 ## mesh.proto
 Meshtastic protobufs
 
-For more information on protobufs (and tools to use them with the language of
-your choice) see
+For more information on protobufs (and tools to use them with the language of your choice) see
 https://developers.google.com/protocol-buffers/docs/proto3
 
 We are not placing any of these defs inside a package, because if you do the
@@ -142,11 +142,9 @@ To build java classes for reading writing:
 protoc -I=. --java_out /tmp mesh.proto
 
 To generate Nanopb c code:
-/home/kevinh/packages/nanopb-0.4.0-linux-x86/generator-bin/protoc
---nanopb_out=/tmp -I=app/src/main/proto mesh.proto
+/home/kevinh/packages/nanopb-0.4.0-linux-x86/generator-bin/protoc --nanopb_out=/tmp -I=app/src/main/proto mesh.proto
 
-Nanopb binaries available here: https://jpa.kapsi.fi/nanopb/download/ use nanopb
-0.4.0
+Nanopb binaries available here: https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.0
 
 
 <a name=".ChannelSettings"></a>
@@ -156,9 +154,7 @@ Full settings (center freq, spread factor, pre-shared secret key etc...)
 needed to configure a radio for speaking on a particlar channel This
 information can be encoded as a QRcode/url so that other users can configure
 their radio to join the same channel.
-
-A note aboute how channel names are shown to users:
-channelname-Xy
+A note aboute how channel names are shown to users: channelname-Xy
 poundsymbol is a prefix used to indicate this is a channel name (idea from @professr).
 Where X is a letter from A-Z (base 26) representing a hash of the PSK for this
 channel - so that if the user changes anything about the channel (which does
@@ -171,8 +167,7 @@ users COULD type in a channel name and be able to talk.
 Y is a lower case letter from a-z that represents the channel &#39;speed&#39; settings
 (for some future definition of speed)
 
-FIXME: Add description of multi-channel support and how primary vs secondary channels 
-are used.
+FIXME: Add description of multi-channel support and how primary vs secondary channels are used.
 FIXME: explain how apps use channels for security.  explain how remote settings and 
 remote gpio are managed as an example
 
@@ -205,8 +200,8 @@ internally in the case of CLEAR_TEXT and CLEAR_READACK)
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| portnum | [PortNum](#PortNum) |  | formerly named typ and of type Type |
-| payload | [bytes](#bytes) |  | required |
+| portnum | [PortNum](#PortNum) |  | Formerly named typ and of type Type |
+| payload | [bytes](#bytes) |  | Required |
 
 
 
@@ -216,11 +211,9 @@ internally in the case of CLEAR_TEXT and CLEAR_READACK)
 <a name=".FromRadio"></a>
 
 ### FromRadio
-packets from the radio to the phone will appear on the fromRadio
-characteristic.  It will support READ and NOTIFY.  When a new packet arrives
-the device will BLE notify?  it will sit in that
-descriptor until consumed by the phone, at which point the next item in the
-FIFO will be populated.
+Packets from the radio to the phone will appear on the fromRadio characteristic.
+It will support READ and NOTIFY. When a new packet arrives the device will BLE notify?
+It will sit in that descriptor until consumed by the phone, at which point the next item in the FIFO will be populated.
 
 
 | Field | Type | Label | Description |
@@ -231,7 +224,7 @@ FIFO will be populated.
 | node_info | [NodeInfo](#NodeInfo) |  | One packet is sent for each node in the on radio DB starts over with the first node in our DB |
 | radio | [RadioConfig](#RadioConfig) |  | In rev1 this was the radio BLE characteristic |
 | log_record | [LogRecord](#LogRecord) |  | set to send debug console output over our protobuf stream |
-| config_complete_id | [uint32](#uint32) |  | sent as true once the device has finished sending all of the responses to want_config recipient should check if this ID matches our original request nonce, if not, it means your config responses haven&#39;t started yet |
+| config_complete_id | [uint32](#uint32) |  | sent as true once the device has finished sending all of the responses to want_config recipient should check if this ID matches our original request nonce, if not, it means your config responses haven&#39;t started yet. |
 | rebooted | [bool](#bool) |  | Sent to tell clients the radio has just rebooted. Set to true if present. Not used on all transports, currently just used for the serial console. |
 | channel | [ChannelSettings](#ChannelSettings) |  | One of the channels, they are all sent during config download The first channel is the &#34;primary&#34; channel all other channels are secondary channels The primary channel is also sent as part of RadioConfig (which is deprecated, but to support older clients) |
 
@@ -268,8 +261,7 @@ emitting multiple records.
 ### MeshPacket
 A full packet sent/received over the mesh
 Note: For simplicity reasons (and that we want to keep over the radio packets
-very small, we now assume that there is only _one_ SubPacket in each
-MeshPacket).
+very small, we now assume that there is only _one_ SubPacket in each MeshPacket).
 
 
 | Field | Type | Label | Description |
@@ -279,9 +271,9 @@ MeshPacket).
 | channel_index | [uint32](#uint32) |  | If set, this indicates the index in the secondary_channels table that this packet was sent/received on. If unset, packet was on the primary channel. A particular node might know only a subset of channels in use on the mesh. Therefore channel_index is inherently a local concept and meaningless to send between nodes. |
 | decoded | [SubPacket](#SubPacket) |  |  |
 | encrypted | [bytes](#bytes) |  |  |
-| id | [uint32](#uint32) |  | A unique ID for this packet. Always 0 for no-ack packets or non broadcast packets (and therefore take zero bytes of space). Otherwise a unique ID for this packet. Useful for flooding algorithms. ID only needs to be unique on a _per sender_ basis. And it only needs to be unique for a few minutes (long enough to last for the length of any ACK or the completion of a mesh broadcast flood). Note: Our crypto implementation uses this id as well. See docs/software/crypto.md for details. FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
-| rx_time | [fixed32](#fixed32) |  | The time this message was received by the esp32 (secs since 1970). Note: / this field is _never_ sent on the radio link itself (to save space) Times / are typically not sent over the mesh, but they will be added to any Packet / (chain of SubPacket) sent to the phone (so the phone can know exact time / of reception) |
-| rx_snr | [float](#float) |  | Never* sent over the radio links. Set during reception to indicate the / SNR / of this packet. Used to collect statistics on current link waulity. |
+| id | [uint32](#uint32) |  | A unique ID for this packet. Always 0 for no-ack packets or non broadcast packets (and therefore take zero bytes of space). Otherwise a unique ID for this packet, useful for flooding algorithms. ID only needs to be unique on a _per sender_ basis, and it only needs to be unique for a few minutes (long enough to last for the length of any ACK or the completion of a mesh broadcast flood). Note: Our crypto implementation uses this id as well. See docs/software/crypto.md for details. FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
+| rx_time | [fixed32](#fixed32) |  | The time this message was received by the esp32 (secs since 1970). Note: this field is _never_ sent on the radio link itself (to save space) Times are typically not sent over the mesh, but they will be added to any Packet (chain of SubPacket) sent to the phone (so the phone can know exact time of reception) |
+| rx_snr | [float](#float) |  | Never* sent over the radio links. Set during reception to indicate the SNR of this packet. Used to collect statistics on current link waulity. |
 | hop_limit | [uint32](#uint32) |  | If unset treated as zero (no fowarding, send to adjacent nodes only) if 1, allow hopping through one node, etc... For our usecase real world topologies probably have a max of about 3. This field is normally placed into a few of bits in the header. |
 | want_ack | [bool](#bool) |  | This packet is being sent as a reliable message, we would prefer it to arrive at the destination. We would like to receive a ack packet in response. Broadcasts messages treat this flag specially: Since acks for broadcasts would rapidly flood the channel, the normal ack behavior is suppressed. Instead, the original sender listens to see if at least one node is rebroadcasting this packet (because naive flooding algoritm). If it hears that the odds (given typical LoRa topologies) the odds are very high that every node should eventually receive the message. So FloodingRouter.cpp generates an implicit ack which is delivered to the original sender. If after some time we don&#39;t hear anyone rebroadcast our packet, we will timeout and retransmit, using the regular resend logic. Note: This flag is normally sent in a flag bit in the header when sent over the wire |
 
@@ -294,23 +286,21 @@ MeshPacket).
 
 ### MyNodeInfo
 Unique local debugging info for this node
-
 Note: we don&#39;t include position or the user info, because that will come in the
-
 Sent to the phone in response to WantNodes.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| my_node_num | [uint32](#uint32) |  | Tells the phone what our node number is, default starting value is lowbyte / of macaddr, but it will be fixed if that is already in use |
+| my_node_num | [uint32](#uint32) |  | Tells the phone what our node number is, default starting value is lowbyte of macaddr, but it will be fixed if that is already in use |
 | has_gps | [bool](#bool) |  | Note: this bool no longer means &#34;we have our own GPS&#34;. Because gps_operation is more advanced, but we&#39;d like old phone apps to keep working. So for legacy reasons we set this flag as follows: if false it would be great if the phone can help provide gps coordinates. If true we don&#39;t need location assistance from the phone. |
 | num_channels | [int32](#int32) |  | # of legal channels (set at build time in the device flash image) |
 | region | [string](#string) |  | The region code for my radio (US, CN, etc...) Note: This string is deprecated. The 1.0 builds populate it based on the flashed firmware name. But for newer builds this string will be unpopulated (missing/null). For those builds you should instead look at the new read/write region enum in UserSettings The format of this string was 1.0-US or 1.0-CN etc.. Or empty string if unset. |
 | hw_model | [string](#string) |  | TBEAM, HELTEC, etc... |
 | firmware_version | [string](#string) |  | 0.0.5 etc... |
-| error_code | [CriticalErrorCode](#CriticalErrorCode) |  | An error message we&#39;d like to report back to the mothership through / analytics. It indicates a serious bug occurred on the device, the device / coped with it, but we still want to tell the devs about the bug. This / field will be cleared after the phone reads MyNodeInfo (i.e. it will only / be reported once) a numeric error code to go with error message, zero / means no error |
+| error_code | [CriticalErrorCode](#CriticalErrorCode) |  | An error message we&#39;d like to report back to the mothership through analytics. It indicates a serious bug occurred on the device, the device coped with it, but we still want to tell the devs about the bug. This field will be cleared after the phone reads MyNodeInfo (i.e. it will onlybe reported once) a numeric error code to go with error message, zero means no error |
 | error_address | [uint32](#uint32) |  | A numeric error address (nonzero if available) |
-| error_count | [uint32](#uint32) |  | The total number of errors this node has ever encountered (well - since / the last time we discarded preferences) |
+| error_count | [uint32](#uint32) |  | The total number of errors this node has ever encountered (well - since the last time we discarded preferences) |
 | packet_id_bits | [uint32](#uint32) |  | How many bits are used for the packetid. If zero it is assumed we use eight bit packetids Old device loads (older that 0.6.5 do not populate this field, but all newer loads do). |
 | current_packet_id | [uint32](#uint32) |  | The current ID this node is using for sending new packets (exposed so that the phone can self assign packet IDs if it wishes by picking packet IDs from the opposite side of the pacekt ID space). Old device loads (older that 0.6.5 do not populate this field, but all newer loads do). FIXME: that we need to expose this is a bit of a mistake. Really the phones should be modeled/treated as 1st class nodes like any other, and the radio connected to the phone just routes like any other. This would allow all sorts of clean/clever routing topologies in the future. |
 | node_num_bits | [uint32](#uint32) |  | How many bits are used for the nodenum. If zero it is assumed we use eight bit nodenums New device loads will user 32 bit nodenum. Old device loads (older that 0.6.5 do not populate this field, but all newer loads do). |
@@ -325,6 +315,26 @@ Sent to the phone in response to WantNodes.
 <a name=".NodeInfo"></a>
 
 ### NodeInfo
+The bluetooth to device link:
+
+Old BTLE protocol docs from TODO, merge in above and make real docs...
+
+use protocol buffers, and NanoPB
+
+messages from device to phone:
+POSITION_UPDATE (..., time)
+TEXT_RECEIVED(from, text, time)
+OPAQUE_RECEIVED(from, payload, time) (for signal messages or other applications)
+
+messages from phone to device:
+SET_MYID(id, human readable long, human readable short) (send down the unique ID
+string used for this node, a human readable string shown for that id, and a very
+short human readable string suitable for oled screen) SEND_OPAQUE(dest, payload)
+(for signal messages or other applications) SEND_TEXT(dest, text) Get all
+nodes() (returns list of nodes, with full info, last time seen, loc, battery
+level etc) SET_CONFIG (switches device to a new set of radio params and
+preshared key, drops all existing nodes, force our node to rejoin this new group)
+
 Full information about a node on the mesh
 
 
@@ -333,8 +343,14 @@ Full information about a node on the mesh
 | num | [uint32](#uint32) |  | the node number |
 | user | [User](#User) |  | The user info for this node |
 | position | [Position](#Position) |  | This position data will also contain a time last seen |
-| snr | [float](#float) |  | Returns the Signal-to-noise ratio (SNR) of the last received message, as / measured by the receiver. return SNR of the last received message in dB |
-| next_hop | [uint32](#uint32) |  | Our current preferred node node for routing - might be the same as num if / we are adjacent Or zero if we don&#39;t yet know a route to this node. |
+| snr | [float](#float) |  | Returns the Signal-to-noise ratio (SNR) of the last received message, as measured by the receiver. Return SNR of the last received message in dB |
+| next_hop | [uint32](#uint32) |  | Returns the last measured frequency error. The LoRa receiver estimates the frequency offset between the receiver centre frequency and that of the received LoRa signal. This function returns the estimates offset (in Hz) of the last received message. Caution: this measurement is not absolute, but is measured relative to the local receiver&#39;s oscillator. Apparent errors may be due to the transmitter, the receiver or both. \return The estimated centre frequency offset in Hz of the last received message. int32 frequency_error = 6;
+
+enum RouteState { Invalid = 0; Discovering = 1; Valid = 2; }
+
+Not needed? RouteState route = 4;
+
+Our current preferred node node for routing - might be the same as num if we are adjacent Or zero if we don&#39;t yet know a route to this node. |
 
 
 
@@ -353,7 +369,7 @@ a gps position
 | longitude_i | [sint32](#sint32) |  |  |
 | altitude | [int32](#int32) |  | In meters above MSL |
 | battery_level | [int32](#int32) |  | 1-100 (0 means not provided) |
-| time | [fixed32](#fixed32) |  | This is usually not sent over the mesh (to save space), but it is sent / from the phone so that the local device can set its RTC If it is sent over / the mesh (because there are devices on the mesh without GPS), it will only / be sent by devices which has a hardware GPS clock. / seconds since 1970 |
+| time | [fixed32](#fixed32) |  | This is usually not sent over the mesh (to save space), but it is sent from the phone so that the local device can set its RTC If it is sent over the mesh (because there are devices on the mesh without GPS), it will only be sent by devices which has a hardware GPS clock. seconds since 1970 |
 
 
 
@@ -386,7 +402,7 @@ see sw-design.md for more information on these preferences
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| position_broadcast_secs | [uint32](#uint32) |  | We should send our position this often (but only if it has changed significantly). Defaults to 15 minutes |
+| position_broadcast_secs | [uint32](#uint32) |  | We should send our position this often (but only if it has changed significantly) Defaults to 15 minutes |
 | send_owner_interval | [uint32](#uint32) |  | Send our owner info at least this often (also we always send once at boot - to rejoin the mesh) |
 | wait_bluetooth_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 1 minute |
 | screen_on_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of one minute |
@@ -400,6 +416,7 @@ see sw-design.md for more information on these preferences
 | wifi_password | [string](#string) |  | If set, will be use to authenticate to the named wifi |
 | wifi_ap_mode | [bool](#bool) |  | If set, the node will operate as an AP (and DHCP server), otherwise it will be a station |
 | region | [RegionCode](#RegionCode) |  | The region code for my radio (US, CN, EU433, etc...) |
+| charge_current | [ChargeCurrent](#ChargeCurrent) |  | Sets the current of the battery charger |
 | is_router | [bool](#bool) |  | Are we operating as a router. Changes behavior in the following ways: The device will only sleep for critically low battery level (i.e. always tries to stay alive for the mesh) In the future routing decisions will preferentially route packets through nodes with this attribute (because assumed good line of sight) |
 | is_low_power | [bool](#bool) |  | If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in we should try to minimize power consumption as much as possible. YOU DO NOT NEED TO SET THIS IF YOU&#39;VE set is_router (it is implied in that case). |
 | fixed_position | [bool](#bool) |  | If set, this node is at a fixed position. We will generate GPS position updates at the regular interval, but use whatever the last lat/lon/alt we have for the node. The lat/lon/alt can be set by an internal GPS or with the help of the app. |
@@ -407,9 +424,29 @@ see sw-design.md for more information on these preferences
 | debug_log_enabled | [bool](#bool) |  | By default we turn off logging as soon as an API client connects (to keep shared serial link quiet). Set this to true to leave the debug log outputting even when API is active. |
 | location_share | [LocationSharing](#LocationSharing) |  | How our location is shared with other nodes (or the local phone) |
 | gps_operation | [GpsOperation](#GpsOperation) |  | How the GPS hardware in this unit is operated. Note: This is independent of how our location is shared with other devices. For that see LocationSharing |
-| gps_update_interval | [uint32](#uint32) |  | How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode? or zero for the default of once every 120 seconds or a very large value (maxint) to update only once at boot. |
+| gps_update_interval | [uint32](#uint32) |  | How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode? or zero for the default of once every 30 seconds or a very large value (maxint) to update only once at boot. |
 | gps_attempt_time | [uint32](#uint32) |  | How long should we try to get our position during each gps_update_interval attempt? (in seconds) Or if zero, use the default of 30 seconds. If we don&#39;t get a new gps fix in that time, the gps will be put into sleep until the next gps_update_rate window. |
-| ignore_incoming | [uint32](#uint32) | repeated | For testing it is useful sometimes to force a node to never listen to particular other nodes (simulating radio out of range). All nodenums listed in ignore_incoming will have packets they send droped on receive (by router.cpp) |
+| ignore_incoming | [uint32](#uint32) | repeated | If true, radio should not try to be smart about what packets to queue to the phone bool keep_all_packets = 101;
+
+If true, we will try to capture all the packets sent on the mesh, not just the ones destined to our node. bool promiscuous_mode = 102;
+
+For testing it is useful sometimes to force a node to never listen to particular other nodes (simulating radio out of range). All nodenums listed in ignore_incoming will have packets they send droped on receive (by router.cpp) |
+| serialplugin_enabled | [bool](#bool) |  | Preferences for the SerialPlugin
+
+FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
+| serialplugin_echo | [bool](#bool) |  |  |
+| serialplugin_rxd | [uint32](#uint32) |  |  |
+| serialplugin_txd | [uint32](#uint32) |  |  |
+| serialplugin_timeout | [uint32](#uint32) |  |  |
+| serialplugin_mode | [uint32](#uint32) |  |  |
+| ext_notification_plugin_enabled | [bool](#bool) |  | Preferences for the ExternalNotificationPlugin
+
+FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
+| ext_notification_plugin_output_ms | [uint32](#uint32) |  |  |
+| ext_notification_plugin_output | [uint32](#uint32) |  |  |
+| ext_notification_plugin_active | [bool](#bool) |  |  |
+| ext_notification_plugin_alert_message | [bool](#bool) |  |  |
+| ext_notification_plugin_alert_bell | [bool](#bool) |  |  |
 
 
 
@@ -446,7 +483,7 @@ inside a radio packet (because from/to are broken out by the comms library)
 | route_error | [RouteError](#RouteError) |  | A failure in a routed message |
 | position | [Position](#Position) |  | Prior to 1.20 positions were communicated as a special payload type, now they are GPS_POSITION_APP Data |
 | user | [User](#User) |  | Prior to 1.20 positions were communicated as a special payload type, now they are MESH_USERINFO_APP |
-| want_response | [bool](#bool) |  | Not normally used, but for testing a sender can request that recipient responds in kind (i.e. if it received a position, it should unicast back its position). Note: that if you set this on a broadcast you will receive many replies. |
+| want_response | [bool](#bool) |  | Not normally used, but for testing a sender can request that recipient responds in kind (i.e. if it received a position, it should unicast back it&#39;s position). Note: that if you set this on a broadcast you will receive many replies. |
 | success_id | [uint32](#uint32) |  | This packet is a requested acknoledgement indicating that we have received the specified message ID. This packet type can be used both for immediate (0 hops) messages or can be routed through multiple hops if dest is set. Note: As an optimization, recipients can _also_ populate a field in payload if they think the recipient would appreciate that extra state. |
 | fail_id | [uint32](#uint32) |  | This is a nak, we failed to deliver this message. |
 | dest | [uint32](#uint32) |  | The address of the destination node. This field is is filled in by the mesh radio device software, applicaiton layer software should never need it. RouteDiscovery messages _must_ populate this. Other message types might need to if they are doing multihop routing. |
@@ -461,8 +498,8 @@ inside a radio packet (because from/to are broken out by the comms library)
 <a name=".ToRadio"></a>
 
 ### ToRadio
-packets/commands to the radio will be written (reliably) to the toRadio
-characteristic.  Once the write completes the phone can assume it is handled.
+packets/commands to the radio will be written (reliably) to the toRadio characteristic.
+Once the write completes the phone can assume it is handled.
 
 
 | Field | Type | Label | Description |
@@ -482,15 +519,12 @@ characteristic.  Once the write completes the phone can assume it is handled.
 
 ### User
 Broadcast when a newly powered mesh node wants to find a node num it can use
-// Sent from the phone over bluetooth to set the user id for the owner of this
-node.
-// Also sent from nodes to each other when a new node signs on (so all clients
-can have this info)
+Sent from the phone over bluetooth to set the user id for the owner of this node.
+Also sent from nodes to each other when a new node signs on (so all clients can have this info)
 
 The algorithm is as follows:
 when a node starts up, it broadcasts their user and the normal flow is for all
-other nodes to reply with their User as well (so the new node can build its node
-db)
+other nodes to reply with their User as well (so the new node can build its nodedb)
 If a node ever receives a User (not just the first broadcast) message where
 the sender node number equals our node number, that indicates a collision has
 occurred and the following steps should happen:
@@ -512,7 +546,7 @@ A few nodenums are reserved and will never be requested:
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [string](#string) |  | a globally unique ID string for this user. In the case of Signal that would mean &#43;16504442323, for the default macaddr derived id it would be !&lt;6 hexidecimal bytes&gt; |
+| id | [string](#string) |  | A globally unique ID string for this user. In the case of Signal that would mean &#43;16504442323, for the default macaddr derived id it would be !&lt;6 hexidecimal bytes&gt; |
 | long_name | [string](#string) |  | A full name for this user, i.e. &#34;Kevin Hester&#34; |
 | short_name | [string](#string) |  | A VERY short name, ideally two characters. Suitable for a tiny OLED screen |
 | macaddr | [bytes](#bytes) |  | This is the addr of the radio. Not populated by the phone, but added by the esp32 when broadcasting |
@@ -532,10 +566,38 @@ Note: these mappings must match ModemConfigChoice in the device code.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| Bw125Cr45Sf128 | 0 | &lt; Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC |
-| Bw500Cr45Sf128 | 1 | &lt; Bw = 500 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC |
-| Bw31_25Cr48Sf512 | 2 | &lt; Bw = 31.25 kHz, Cr = 4/8, Sf = 512chips/symbol, |
-| Bw125Cr48Sf4096 | 3 | &lt; Bw = 125 kHz, Cr = 4/8, Sf = 4096chips/symbol, CRC |
+| Bw125Cr45Sf128 | 0 | &lt; Bw = 125 kHz, Cr = 4/5, Sf(7) = 128chips/symbol, CRC &lt; on. Default medium range (5.469 kbps) |
+| Bw500Cr45Sf128 | 1 | &lt; Bw = 500 kHz, Cr = 4/5, Sf(7) = 128chips/symbol, CRC &lt; on. Fast&#43;short range (21.875 kbps) |
+| Bw31_25Cr48Sf512 | 2 | &lt; Bw = 31.25 kHz, Cr = 4/8, Sf(9) = 512chips/symbol, &lt; CRC on. Slow&#43;long range (275 bps) |
+| Bw125Cr48Sf4096 | 3 | &lt; Bw = 125 kHz, Cr = 4/8, Sf(12) = 4096chips/symbol, CRC &lt; on. Slow&#43;long range (183 bps) |
+
+
+
+<a name=".ChargeCurrent"></a>
+
+### ChargeCurrent
+Sets the charge control current of devices with a battery charger that can be
+configured. This is passed into the axp power management chip like on the tbeam.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| MAUnset | 0 |  |
+| MA100 | 1 |  |
+| MA190 | 2 |  |
+| MA280 | 3 |  |
+| MA360 | 4 |  |
+| MA450 | 5 |  |
+| MA550 | 6 |  |
+| MA630 | 7 |  |
+| MA700 | 8 |  |
+| MA780 | 9 |  |
+| MA880 | 10 |  |
+| MA960 | 11 |  |
+| MA1000 | 12 |  |
+| MA1080 | 13 |  |
+| MA1160 | 14 |  |
+| MA1240 | 15 |  |
+| MA1320 | 16 |  |
 
 
 
@@ -569,7 +631,7 @@ post on the meshtastic.discourse.group and we&#39;ll try to help.
 | UBloxInitFailed | 5 | We failed while configuring a UBlox GPS |
 | NoAXP192 | 6 | This board was expected to have a power management chip and it is missing or broken |
 | InvalidRadioSetting | 7 | The channel tried to set a radio setting which is not supported by this chipset, radio comms settings are now undefined. |
-| TransmitFailed | 8 | Radio transmit hardware failure. We sent data to the radio chip, but it didn't reply with an interrupt. |
+| TransmitFailed | 8 | Radio transmit hardware failure. We sent data to the radio chip, but it didn&#39;t reply with an interrupt. |
 
 
 
@@ -577,12 +639,14 @@ post on the meshtastic.discourse.group and we&#39;ll try to help.
 
 ### GpsOperation
 How the GPS hardware in this unit is operated.
-
 Note: This is independent of how our location is shared with other devices.  For that see LocationSharing
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | GpsOpUnset | 0 | This is treated as GpsOpMobile - it is the default settting |
+| GpsOpStationary | 1 | Note: This mode was removed, because it is identical go GpsOpMobile with a gps_update_rate of once per day
+
+This node is mostly stationary, we should try to get location only once per day, Once we have that position we should turn the GPS to sleep mode This is the recommendated configuration for stationary &#39;router&#39; nodes |
 | GpsOpMobile | 2 | This node is mobile and we should get GPS position at a rate governed by gps_update_rate |
 | GpsOpTimeOnly | 3 | We should only use the GPS to get time (no location data should be acquired/stored) Once we have the time we treat gps_update_interval as MAXINT (i.e. sleep forever) |
 | GpsOpDisabled | 4 | GPS is always turned off - this mode is not recommended - use GpsOpTimeOnly instead |
@@ -685,8 +749,7 @@ If you are making a new app using meshtastic, please send in a pull request to a
 master table.  PortNums should be assigned in the following range:
 
 0-63   Core Meshtastic use, do not use for third party apps
-64-127 Registered 3rd party apps, send in a pull request that adds a new entry to portnums.proto to 
-register your application
+64-127 Registered 3rd party apps, send in a pull request that adds a new entry to portnums.proto to  register your application
 256-511 Use one of these portnums for your private applications that you don&#39;t want to register publically
 
 All other values are reserved.
@@ -699,13 +762,28 @@ This change is backwards compatible by treating the legacy OPAQUE/CLEAR_TEXT val
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | UNKNOWN_APP | 0 | Deprecated: do not use in new code (formerly called OPAQUE) A message sent from a device outside of the mesh, in a form the mesh does not understand NOTE: This must be 0, because it is documented in IMeshService.aidl to be so |
-| TEXT_MESSAGE_APP | 1 | a simple UTF-8 text message, which even the little micros in the mesh can understand and show on their screen eventually in some circumstances even signal might send messages in this form (see below) Formerly called CLEAR_TEXT |
-| REMOTE_HARDWARE_APP | 2 | Reserved for built-in GPIO/example app. See remote_hardware.proto/HardwareMessage for details on the message sent/received to this port number |
+| TEXT_MESSAGE_APP | 1 | A simple UTF-8 text message, which even the little micros in the mesh can understand and show on their screen eventually in some circumstances even signal might send messages in this form (see below) Formerly called CLEAR_TEXT |
+| REMOTE_HARDWARE_APP | 2 | A message receive acknowledgement, sent in cleartext - allows radio to show user that a message has been read by the recipient, optional
+
+Note: this concept has been removed for now. Once READACK is implemented, use the new packet type/port number stuff?
+
+@exclude
+
+CLEAR_READACK = 2;
+
+Reserved for built-in GPIO/example app. See remote_hardware.proto/HardwareMessage for details on the message sent/received to this port number |
 | POSITION_APP | 3 | The built-in position messaging app. See Position for details on the message sent to this port number. |
 | NODEINFO_APP | 4 | The built-in user info app. See User for details on the message sent to this port number. |
 | REPLY_APP | 32 | Provides a &#39;ping&#39; service that replies to any packet it receives. Also this serves as a small example plugin. |
 | IP_TUNNEL_APP | 33 | Used for the python IP tunnel feature |
+| SERIAL_APP | 64 | Provides a hardware serial interface to send and receive from the Meshtastic network. Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network. Maximum packet size of 240 bytes.
+
+Maintained by Jm Casler (MC Hamster) : jm@casler.org |
+| STORE_REQUEST_APP | 65 | STORE_REQUEST_APP (Work in Progress)
+
+Maintained by Jm Casler (MC Hamster) : jm@casler.org |
 | PRIVATE_APP | 256 | Private applications should use portnums &gt;= 256. To simplify initial development and testing you can use &#34;PRIVATE_APP&#34; in your code without needing to rebuild protobuf files (via bin/regin_protos.sh) |
+| ATAK_FORWARDER | 257 | ATAK Forwarder Plugin https://github.com/paulmandal/atak-forwarder |
 
 
  
@@ -730,12 +808,10 @@ A example app to show off the plugin system. This message is used for REMOTE_HAR
 
 Also provides easy remote access to any GPIO.  
 
-In the future other remote hardware operations can be added based on user interest 
-(i.e. serial output, spi/i2c input/output).
+In the future other remote hardware operations can be added based on user interest (i.e. serial output, spi/i2c input/output).
 
-FIXME - currently this feature is turned on by default which is dangerous because no security yet (beyond the 
-channel mechanism).  It should be off by default and then protected based on some TBD mechanism (a special channel
-once multichannel support is included?)
+FIXME - currently this feature is turned on by default which is dangerous because no security yet (beyond the channel mechanism).
+It should be off by default and then protected based on some TBD mechanism (a special channel once multichannel support is included?)
 
 
 | Field | Type | Label | Description |
