@@ -162,7 +162,7 @@ message SubPacket {
   /*
    * Only one of the following fields can be populated at a time
    */
-  oneof payload {
+  oneof payloadVariant {
 
     Data data = 3;
 
@@ -201,7 +201,7 @@ message SubPacket {
    */
   bool want_response = 5;
 
-  oneof ack {
+  oneof ackVariant {
     /*
      * This packet is a requested acknoledgement indicating that we have received
      * the specified message ID.  This packet type can be used both for immediate
@@ -281,7 +281,7 @@ message MeshPacket {
    * The numeric IDs for these fields were selected to keep backwards compatibility with old applications.
    */
   
-  oneof payload {
+  oneof payloadVariant {
     SubPacket decoded = 3;
     bytes encrypted = 8;
   }
@@ -1128,7 +1128,7 @@ message FromRadio {
    */
   uint32 num = 1;
 
-  oneof variant {
+  oneof payloadVariant {
 
     MeshPacket packet = 2;
 
@@ -1181,7 +1181,7 @@ message FromRadio {
  */
 message ToRadio {
 
-  oneof variant {
+  oneof payloadVariant {
 
     /*
      * send this packet on the mesh
