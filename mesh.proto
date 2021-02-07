@@ -136,8 +136,9 @@ message RouteDiscovery {
   repeated int32 route = 2;
 }
 
-enum RouteError {
+enum ErrorReason {
 
+  /** This message is not a failure */
   NONE = 0;
 
   /*
@@ -151,6 +152,9 @@ enum RouteError {
   GOT_NAK = 2;
 
   TIMEOUT = 3;
+
+  /* No suitable interface could be found for delivering this packet */
+  NO_INTERFACE = 4;
 }
 
 /*
@@ -179,9 +183,10 @@ message SubPacket {
     RouteDiscovery route_reply = 7;
 
     /*
-     * A failure in a routed message
+     * A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide
+     * details on the type of failure).
      */
-    RouteError route_error = 13;
+    ErrorReason error_reason = 13;
 
     /*
      * Prior to 1.20 positions were communicated as a special payload type, now they are GPS_POSITION_APP Data
