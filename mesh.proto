@@ -845,6 +845,21 @@ message RadioConfig {
     bool ext_notification_plugin_alert_message = 130;
     bool ext_notification_plugin_alert_bell = 131;
 
+    /**
+    Preferences for the RangeTestPlugin
+    
+    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+    */
+    bool range_test_plugin_enabled = 132;
+    bool range_test_plugin_sender = 133;
+
+    /**
+    Preferences for the StoreForwardPlugin
+    
+    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+    */
+    bool store_forward_plugin_enabled = 136;
+    bool store_forward_plugin_records = 137;
   }
 
   UserPreferences preferences = 1;
