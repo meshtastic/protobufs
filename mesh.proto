@@ -136,9 +136,13 @@ message RouteDiscovery {
   repeated int32 route = 2;
 }
 
+/*
+  * A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide
+  * details on the type of failure).
+  */
 enum ErrorReason {
 
-  /** This message is not a failure */
+  /* This message is not a failure */
   NONE = 0;
 
   /*
@@ -155,6 +159,9 @@ enum ErrorReason {
 
   /* No suitable interface could be found for delivering this packet */
   NO_INTERFACE = 4;
+
+  /* We reached the max retransmission count (typically for naive flood routing) */
+  MAX_RETRANSMIT = 5;
 }
 
 /*
