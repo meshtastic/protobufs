@@ -796,6 +796,9 @@ Maintained by Jm Casler (MC Hamster) : jm@casler.org |
 | STORE_FORWARD_APP | 65 | STORE_FORWARD_APP (Work in Progress)
 
 Maintained by Jm Casler (MC Hamster) : jm@casler.org |
+| RANGE_TEST_APP | 66 | STORE_FORWARD_APP (Work in Progress)
+
+Maintained by Jm Casler (MC Hamster) : jm@casler.org |
 | PRIVATE_APP | 256 | Private applications should use portnums &gt;= 256. To simplify initial development and testing you can use &#34;PRIVATE_APP&#34; in your code without needing to rebuild protobuf files (via bin/regin_protos.sh) |
 | ATAK_FORWARDER | 257 | ATAK Forwarder Plugin https://github.com/paulmandal/atak-forwarder |
 
