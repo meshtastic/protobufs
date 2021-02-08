@@ -7,14 +7,6 @@
 *User.long_name max_size:40
 *User.short_name max_size:5
 
-# FIXME pick a higher number someday? or do dynamic alloc in nanopb?
-*DeviceState.node_db max_count:32
-
-# FIXME - max_count is actually 32 but we save/load this as one long string of preencoded MeshPacket bytes - not a big array in RAM
-*DeviceState.receive_queue max_count:1
-
-*DeviceState.secondary_channels max_count:4
-
 *RouteDiscovery.route max_count:8
 
 # FIXME, max out based on total SubPacket size And do fragmentation and reassembly (for larger payloads) at the Android layer, not the esp32 layer.
@@ -44,6 +36,9 @@
 
 # Max of three ignored nodes for our testing
 *UserPreferences.ignore_incoming max_count:3
+
+*LogRecord.message max_size:64
+*LogRecord.source max_size:8
 
 # MyMessage.name         max_size:40 
 # or fixed_length or fixed_count, or max_count

@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+option java_package = "com.geeksville.mesh";
+option java_outer_classname = "DeviceOnly";
+option optimize_for = LITE_RUNTIME;
+
+import "mesh.proto";
+
+/*
+ * This message is never sent over the wire, but it is used for serializing DB
+ * state to flash in the device code
+ * FIXME, since we write this each time we enter deep sleep (and have infinite
+ * flash) it would be better to use some sort of append only data structure for
+ * the receive queue and use the preferences store for the other stuff
+ */
+message DeviceState {
+    RadioConfig radio = 1;
+  
+    /*
+     * Read only settings/info about this node
+     */
+    MyNodeInfo my_node = 2;
+  
+    /*
+     * My owner info
+     */
+    User owner = 3;
+  
+    repeated NodeInfo node_db = 4;
+  
+    /*
+     * Received packets saved for delivery to the phone
+     */
+    repeated MeshPacket receive_queue = 5;
+  
+    /*
+     * A version integer used to invalidate old save files when we make
+     * incompatible changes This integer is set at build time and is private to
+     * NodeDB.cpp in the device code.
+     */
+    uint32 version = 8;
+  
+    /*
+     * We keep the last received text message (only) stored in the device flash,
+     * so we can show it on the screen.
+     * Might be null
+     */
+    MeshPacket rx_text_message = 7;
+  
+    /*
+     * Used only during development.  Indicates developer is testing and changes
+     * should never be saved to flash.
+     */
+    bool no_save = 9;
+  
+    /*
+     * Some GPSes seem to have bogus settings from the factory, so we always do one factory reset.
+     */
+    bool did_gps_reset = 11;
+  
+    /*
+     * Secondary channels are only used for encryption/decryption/authentication purposes.  Their radio settings (freq etc)
+     * are ignored, only psk is used.
+     * Note: this is not kept inside of RadioConfig because that would make ToRadio/FromRadio worse case > 512 bytes (to big for BLE)
+     */
+    repeated ChannelSettings secondary_channels = 12;
+  }
