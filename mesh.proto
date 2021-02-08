@@ -1047,6 +1047,12 @@ message MyNodeInfo {
   uint32 packet_id_bits = 10;
 
   /*
+   * This field was a bad idea - because the odds are so low of a collision API
+   * clients should instead pick a randrom 32 bit number as their initial packetid and just keep
+   * incrementing that.  Otherwise if a client connects two times in a row and used this
+   * value (and the device had not sent a packet on its own between those two times) current_packet_id
+   * would not have changed.  Then the client would be sending duplicate values.
+   *
    * The current ID this node is using for sending new packets (exposed so that
    * the phone can self assign packet IDs if it wishes by picking packet IDs from
    * the opposite side of the pacekt ID space).
@@ -1056,7 +1062,7 @@ message MyNodeInfo {
    * connected to the phone just routes like any other. This would allow all sorts
    * of clean/clever routing topologies in the future.
    */
-  uint32 current_packet_id = 11;
+  uint32 current_packet_id = 11 [deprecated = true];
 
   /*
    * How many bits are used for the nodenum.  If zero it is assumed we use
