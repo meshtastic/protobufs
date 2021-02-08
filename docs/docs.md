@@ -29,11 +29,11 @@
     - [ChargeCurrent](#.ChargeCurrent)
     - [Constants](#.Constants)
     - [CriticalErrorCode](#.CriticalErrorCode)
+    - [ErrorReason](#.ErrorReason)
     - [GpsOperation](#.GpsOperation)
     - [LocationSharing](#.LocationSharing)
     - [LogRecord.Level](#.LogRecord.Level)
     - [RegionCode](#.RegionCode)
-    - [RouteError](#.RouteError)
   
 - [portnums.proto](#portnums.proto)
     - [PortNum](#.PortNum)
@@ -302,7 +302,9 @@ Sent to the phone in response to WantNodes.
 | error_address | [uint32](#uint32) |  | A numeric error address (nonzero if available) |
 | error_count | [uint32](#uint32) |  | The total number of errors this node has ever encountered (well - since the last time we discarded preferences) |
 | packet_id_bits | [uint32](#uint32) |  | How many bits are used for the packetid. If zero it is assumed we use eight bit packetids Old device loads (older that 0.6.5 do not populate this field, but all newer loads do). |
-| current_packet_id | [uint32](#uint32) |  | The current ID this node is using for sending new packets (exposed so that the phone can self assign packet IDs if it wishes by picking packet IDs from the opposite side of the pacekt ID space). Old device loads (older that 0.6.5 do not populate this field, but all newer loads do). FIXME: that we need to expose this is a bit of a mistake. Really the phones should be modeled/treated as 1st class nodes like any other, and the radio connected to the phone just routes like any other. This would allow all sorts of clean/clever routing topologies in the future. |
+| current_packet_id | [uint32](#uint32) |  | **Deprecated.** This field was a bad idea - because the odds are so low of a collision API clients should instead pick a randrom 32 bit number as their initial packetid and just keep incrementing that. Otherwise if a client connects two times in a row and used this value (and the device had not sent a packet on its own between those two times) current_packet_id would not have changed. Then the client would be sending duplicate values.
+
+The current ID this node is using for sending new packets (exposed so that the phone can self assign packet IDs if it wishes by picking packet IDs from the opposite side of the pacekt ID space). Old device loads (older that 0.6.5 do not populate this field, but all newer loads do). FIXME: that we need to expose this is a bit of a mistake. Really the phones should be modeled/treated as 1st class nodes like any other, and the radio connected to the phone just routes like any other. This would allow all sorts of clean/clever routing topologies in the future. |
 | node_num_bits | [uint32](#uint32) |  | How many bits are used for the nodenum. If zero it is assumed we use eight bit nodenums New device loads will user 32 bit nodenum. Old device loads (older that 0.6.5 do not populate this field, but all newer loads do). |
 | message_timeout_msec | [uint32](#uint32) |  | How long before we consider a message abandoned and we can clear our caches of any messages in flight Normally quite large to handle the worst case message delivery time, 5 minutes. Formerly called FLOOD_EXPIRE_TIME in the device code |
 | min_app_version | [uint32](#uint32) |  | The minimum app version that can talk to this device. Phone/PC apps should compare this to their build number and if too low tell the user they must update their app |
@@ -387,7 +389,7 @@ set for behavior of their node
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | preferences | [RadioConfig.UserPreferences](#RadioConfig.UserPreferences) |  |  |
-| channel_settings | [ChannelSettings](#ChannelSettings) |  | The preferred way to find channel settings is now in FromRadio. |
+| channel_settings | [ChannelSettings](#ChannelSettings) |  | **Deprecated.** The preferred way to find channel settings is now in FromRadio. |
 
 
 
@@ -447,6 +449,15 @@ FIXME - Move this out of UserPreferences and into a section for plugin configura
 | ext_notification_plugin_active | [bool](#bool) |  |  |
 | ext_notification_plugin_alert_message | [bool](#bool) |  |  |
 | ext_notification_plugin_alert_bell | [bool](#bool) |  |  |
+| range_test_plugin_enabled | [bool](#bool) |  | Preferences for the RangeTestPlugin
+
+FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
+| range_test_plugin_sender | [uint32](#uint32) |  |  |
+| range_test_plugin_save | [bool](#bool) |  |  |
+| store_forward_plugin_enabled | [bool](#bool) |  | Preferences for the StoreForwardPlugin
+
+FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
+| store_forward_plugin_records | [uint32](#uint32) |  |  |
 
 
 
@@ -480,9 +491,9 @@ inside a radio packet (because from/to are broken out by the comms library)
 | data | [Data](#Data) |  |  |
 | route_request | [RouteDiscovery](#RouteDiscovery) |  | A route request going from the requester FIXME - these route messages should be moved into regular data packets and use the regular on device plugin mechanism. |
 | route_reply | [RouteDiscovery](#RouteDiscovery) |  | A route reply |
-| route_error | [RouteError](#RouteError) |  | A failure in a routed message |
-| position | [Position](#Position) |  | Prior to 1.20 positions were communicated as a special payload type, now they are GPS_POSITION_APP Data |
-| user | [User](#User) |  | Prior to 1.20 positions were communicated as a special payload type, now they are MESH_USERINFO_APP |
+| error_reason | [ErrorReason](#ErrorReason) |  | A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide details on the type of failure). |
+| position | [Position](#Position) |  | **Deprecated.** Prior to 1.20 positions were communicated as a special payload type, now they are GPS_POSITION_APP Data |
+| user | [User](#User) |  | **Deprecated.** Prior to 1.20 positions were communicated as a special payload type, now they are MESH_USERINFO_APP |
 | want_response | [bool](#bool) |  | Not normally used, but for testing a sender can request that recipient responds in kind (i.e. if it received a position, it should unicast back it&#39;s position). Note: that if you set this on a broadcast you will receive many replies. |
 | success_id | [uint32](#uint32) |  | This packet is a requested acknoledgement indicating that we have received the specified message ID. This packet type can be used both for immediate (0 hops) messages or can be routed through multiple hops if dest is set. Note: As an optimization, recipients can _also_ populate a field in payload if they think the recipient would appreciate that extra state. |
 | fail_id | [uint32](#uint32) |  | This is a nak, we failed to deliver this message. |
@@ -546,7 +557,7 @@ A few nodenums are reserved and will never be requested:
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [string](#string) |  | A globally unique ID string for this user. In the case of Signal that would mean &#43;16504442323, for the default macaddr derived id it would be !&lt;6 hexidecimal bytes&gt; |
+| id | [string](#string) |  | A globally unique ID string for this user. In the case of Signal that would mean &#43;16504442323, for the default macaddr derived id it would be !&lt;8 hexidecimal bytes&gt; |
 | long_name | [string](#string) |  | A full name for this user, i.e. &#34;Kevin Hester&#34; |
 | short_name | [string](#string) |  | A VERY short name, ideally two characters. Suitable for a tiny OLED screen |
 | macaddr | [bytes](#bytes) |  | This is the addr of the radio. Not populated by the phone, but added by the esp32 when broadcasting |
@@ -635,6 +646,23 @@ post on the meshtastic.discourse.group and we&#39;ll try to help.
 
 
 
+<a name=".ErrorReason"></a>
+
+### ErrorReason
+A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide
+details on the type of failure).
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| NONE | 0 | This message is not a failure |
+| NO_ROUTE | 1 | Our node doesn&#39;t have a route to the requested destination anymore. |
+| GOT_NAK | 2 | We received a nak while trying to forward on your behalf |
+| TIMEOUT | 3 |  |
+| NO_INTERFACE | 4 | No suitable interface could be found for delivering this packet |
+| MAX_RETRANSMIT | 5 | We reached the max retransmission count (typically for naive flood routing) |
+
+
+
 <a name=".GpsOperation"></a>
 
 ### GpsOperation
@@ -708,20 +736,6 @@ old value will be no longer set.
 | TW | 8 |  |
 
 
-
-<a name=".RouteError"></a>
-
-### RouteError
-
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| NONE | 0 |  |
-| NO_ROUTE | 1 | Our node doesn&#39;t have a route to the requested destination anymore. |
-| GOT_NAK | 2 | We received a nak while trying to forward on your behalf |
-| TIMEOUT | 3 |  |
-
-
  
 
  
@@ -779,7 +793,7 @@ Reserved for built-in GPIO/example app. See remote_hardware.proto/HardwareMessag
 | SERIAL_APP | 64 | Provides a hardware serial interface to send and receive from the Meshtastic network. Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network. Maximum packet size of 240 bytes.
 
 Maintained by Jm Casler (MC Hamster) : jm@casler.org |
-| STORE_REQUEST_APP | 65 | STORE_REQUEST_APP (Work in Progress)
+| STORE_FORWARD_APP | 65 | STORE_FORWARD_APP (Work in Progress)
 
 Maintained by Jm Casler (MC Hamster) : jm@casler.org |
 | PRIVATE_APP | 256 | Private applications should use portnums &gt;= 256. To simplify initial development and testing you can use &#34;PRIVATE_APP&#34; in your code without needing to rebuild protobuf files (via bin/regin_protos.sh) |
