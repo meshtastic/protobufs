@@ -157,10 +157,14 @@ enum ErrorReason {
 
   TIMEOUT = 3;
 
-  /* No suitable interface could be found for delivering this packet */
+  /*
+   * No suitable interface could be found for delivering this packet
+   */
   NO_INTERFACE = 4;
 
-  /* We reached the max retransmission count (typically for naive flood routing) */
+  /*
+   * We reached the max retransmission count (typically for naive flood routing)
+   */
   MAX_RETRANSMIT = 5;
 }
 
@@ -780,9 +784,9 @@ message RadioConfig {
      */
     bool debug_log_enabled = 101;
 
-    /**
-    How our location is shared with other nodes (or the local phone)
-    */
+    /*
+     * How our location is shared with other nodes (or the local phone)
+     */
     LocationSharing location_share = 32;
 
     /*
@@ -821,11 +825,11 @@ message RadioConfig {
      */
     repeated uint32 ignore_incoming = 103;
     
-    /**
-    Preferences for the SerialPlugin
-    
-    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-    */
+    /*
+     * Preferences for the SerialPlugin
+     *
+     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+     */
     bool serialplugin_enabled = 120;
     bool serialplugin_echo = 121;
     uint32 serialplugin_rxd = 122;
@@ -833,11 +837,11 @@ message RadioConfig {
     uint32 serialplugin_timeout = 124;
     uint32 serialplugin_mode = 125;
 
-    /**
-    Preferences for the ExternalNotificationPlugin
-    
-    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-    */
+    /*
+     * Preferences for the ExternalNotificationPlugin
+     *
+     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+     */
     bool ext_notification_plugin_enabled = 126;
     uint32 ext_notification_plugin_output_ms = 127;
     uint32 ext_notification_plugin_output = 128;
@@ -845,20 +849,20 @@ message RadioConfig {
     bool ext_notification_plugin_alert_message = 130;
     bool ext_notification_plugin_alert_bell = 131;
 
-    /**
-    Preferences for the RangeTestPlugin
-    
-    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-    */
+    /*
+     * Preferences for the RangeTestPlugin
+     *
+     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+     */
     bool range_test_plugin_enabled = 132;
     uint32 range_test_plugin_sender = 133;
     bool range_test_plugin_save = 134;
 
-    /**
-    Preferences for the StoreForwardPlugin
-    
-    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-    */
+    /*
+     * Preferences for the StoreForwardPlugin
+     *
+     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+     */
     bool store_forward_plugin_enabled = 136;
     uint32 store_forward_plugin_records = 137;
   }
@@ -943,7 +947,7 @@ message NodeInfo {
   uint32 next_hop = 5;
 }
 
-/** Error codes for critical errors
+/* Error codes for critical errors
  * 
  * The device might report these fault codes on the screen.  If you encounter a fault code, please
  * post on the meshtastic.discourse.group and we'll try to help.
