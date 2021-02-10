@@ -30,9 +30,16 @@
 # Note: the actual limit (because of header bytes) on the size of encrypted payloads is 251 bytes, but I use 256
 # here because we might need to fill with zeros for padding to encryption block size (16 bytes per block)
 *MeshPacket.encrypted max_size:256
-*MeshPacket.payload anonymous_oneof:true
+*MeshPacket.payloadVariant anonymous_oneof:true
 
-*SubPacket.payload anonymous_oneof:true
+*SubPacket.payloadVariant anonymous_oneof:true
+
+# We don't want this one anonymous
+# *SubPacket.ackVariant anonymous_oneof:true
+
+*ToRadio.payloadVariant anonymous_oneof:true
+
+*FromRadio.payloadVariant anonymous_oneof:true
 
 # Max of three ignored nodes for our testing
 *UserPreferences.ignore_incoming max_count:3
