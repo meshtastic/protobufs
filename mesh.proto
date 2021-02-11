@@ -259,6 +259,30 @@ message SubPacket {
  */
 message MeshPacket {
 
+  /* The priority of this message for sending.  Higher priorities are sent first (when managing the transmit queue).
+  This field is never sent over the air, it is only used internally inside of a local device node.  API clients (either on the local node or
+  connected directly to the node) can set this parameter if necessary.
+
+  (values must be <= 127 to keep protobuf field to one byte in size.
+  */
+  enum Priority {
+    /* Treated as Priority.DEFAULT */
+    UNSET = 0;
+
+    MIN = 1;
+
+    /* Background position updates are sent with very low priority - if the link is super conjested they might not go out at all */
+    BACKGROUND = 10;
+
+    /* This priority is used for all messages that don't have a priority set */
+    DEFAULT = 64;
+
+    /* Ack/naks are sent with very high priority to ensure that retransmission stops as soon as possible */
+    ACK = 120;
+
+    MAX = 127;
+  }
+
   /*
    * The sending node number.
    * Note: Our crypto implementation uses this field as well.  See
@@ -268,9 +292,7 @@ message MeshPacket {
   uint32 from = 1; 
 
   /*
-   * The (immediate) destination for this packet.  If we are using routing, the
-   * final destination will be in payload.dest
-   * FIXME - really should be fixed32 instead, this encoding only
+   * The (immediatSee Priority description for more details.y should be fixed32 instead, this encoding only
    * hurts the ble link though.
    */
   uint32 to = 2;
@@ -347,6 +369,11 @@ message MeshPacket {
    * Note: This flag is normally sent in a flag bit in the header when sent over the wire
    */
   bool want_ack = 11;
+
+  /* The priority of this message for sending. 
+  See MeshPacket.Priority description for more details.
+  */
+  Priority priority = 12;
 }
 
 /*

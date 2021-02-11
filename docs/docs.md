@@ -33,6 +33,7 @@
     - [GpsOperation](#.GpsOperation)
     - [LocationSharing](#.LocationSharing)
     - [LogRecord.Level](#.LogRecord.Level)
+    - [MeshPacket.Priority](#.MeshPacket.Priority)
     - [RegionCode](#.RegionCode)
   
 - [portnums.proto](#portnums.proto)
@@ -267,7 +268,7 @@ very small, we now assume that there is only _one_ SubPacket in each MeshPacket)
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | from | [uint32](#uint32) |  | The sending node number. Note: Our crypto implementation uses this field as well. See docs/software/crypto.md for details. FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
-| to | [uint32](#uint32) |  | The (immediate) destination for this packet. If we are using routing, the final destination will be in payload.dest FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
+| to | [uint32](#uint32) |  | The (immediatSee Priority description for more details.y should be fixed32 instead, this encoding only hurts the ble link though. |
 | channel_index | [uint32](#uint32) |  | If set, this indicates the index in the secondary_channels table that this packet was sent/received on. If unset, packet was on the primary channel. A particular node might know only a subset of channels in use on the mesh. Therefore channel_index is inherently a local concept and meaningless to send between nodes. |
 | decoded | [SubPacket](#SubPacket) |  |  |
 | encrypted | [bytes](#bytes) |  |  |
@@ -276,6 +277,7 @@ very small, we now assume that there is only _one_ SubPacket in each MeshPacket)
 | rx_snr | [float](#float) |  | Never* sent over the radio links. Set during reception to indicate the SNR of this packet. Used to collect statistics on current link waulity. |
 | hop_limit | [uint32](#uint32) |  | If unset treated as zero (no fowarding, send to adjacent nodes only) if 1, allow hopping through one node, etc... For our usecase real world topologies probably have a max of about 3. This field is normally placed into a few of bits in the header. |
 | want_ack | [bool](#bool) |  | This packet is being sent as a reliable message, we would prefer it to arrive at the destination. We would like to receive a ack packet in response. Broadcasts messages treat this flag specially: Since acks for broadcasts would rapidly flood the channel, the normal ack behavior is suppressed. Instead, the original sender listens to see if at least one node is rebroadcasting this packet (because naive flooding algoritm). If it hears that the odds (given typical LoRa topologies) the odds are very high that every node should eventually receive the message. So FloodingRouter.cpp generates an implicit ack which is delivered to the original sender. If after some time we don&#39;t hear anyone rebroadcast our packet, we will timeout and retransmit, using the regular resend logic. Note: This flag is normally sent in a flag bit in the header when sent over the wire |
+| priority | [MeshPacket.Priority](#MeshPacket.Priority) |  | The priority of this message for sending. See MeshPacket.Priority description for more details. |
 
 
 
@@ -708,6 +710,26 @@ Log levels, chosen to match python logging conventions.
 | INFO | 20 |  |
 | DEBUG | 10 |  |
 | TRACE | 5 |  |
+
+
+
+<a name=".MeshPacket.Priority"></a>
+
+### MeshPacket.Priority
+The priority of this message for sending.  Higher priorities are sent first (when managing the transmit queue).
+This field is never sent over the air, it is only used internally inside of a local device node.  API clients (either on the local node or
+connected directly to the node) can set this parameter if necessary.
+
+(values must be &lt;= 127 to keep protobuf field to one byte in size.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| UNSET | 0 | Treated as Priority.DEFAULT |
+| MIN | 1 |  |
+| BACKGROUND | 10 | Background position updates are sent with very low priority - if the link is super conjested they might not go out at all |
+| DEFAULT | 64 | This priority is used for all messages that don&#39;t have a priority set |
+| ACK | 120 | Ack/naks are sent with very high priority to ensure that retransmission stops as soon as possible |
+| MAX | 127 |  |
 
 
 
