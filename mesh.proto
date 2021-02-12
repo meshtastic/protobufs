@@ -264,6 +264,12 @@ message MeshPacket {
   connected directly to the node) can set this parameter if necessary.
 
   (values must be <= 127 to keep protobuf field to one byte in size.
+  
+  Detailed background on this field:
+
+  I noticed a funny side effect of lora being so slow: Usually when making a protocol there isn’t much need to use message priority to change the order of transmission (because interfaces are fairly fast). But for lora where packets can take a few seconds each, it is very important to make sure that critical packets are sent ASAP. In the case of meshtastic that means we want to send protocol acks as soon as possible (to prevent unneeded retransmissions), we want routing messages to be sent next, then messages marked as reliable and finally ‘background’ packets like periodic position updates.
+
+  So I bit the bullet and implemented a new (internal - not sent over the air) field in MeshPacket called ‘priority’. And the transmission queue in the router object is now a priority queue.
   */
   enum Priority {
     /* Treated as Priority.DEFAULT */
