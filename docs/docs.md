@@ -727,7 +727,8 @@ connected directly to the node) can set this parameter if necessary.
 | UNSET | 0 | Treated as Priority.DEFAULT |
 | MIN | 1 |  |
 | BACKGROUND | 10 | Background position updates are sent with very low priority - if the link is super conjested they might not go out at all |
-| DEFAULT | 64 | This priority is used for all messages that don&#39;t have a priority set |
+| DEFAULT | 64 | This priority is used for most messages that don&#39;t have a priority set |
+| RELIABLE | 70 | If priority is unset but the message is marked as want_ack, assume it is important and use a slightly higher priority |
 | ACK | 120 | Ack/naks are sent with very high priority to ensure that retransmission stops as soon as possible |
 | MAX | 127 |  |
 

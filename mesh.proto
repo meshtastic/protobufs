@@ -274,8 +274,11 @@ message MeshPacket {
     /* Background position updates are sent with very low priority - if the link is super conjested they might not go out at all */
     BACKGROUND = 10;
 
-    /* This priority is used for all messages that don't have a priority set */
+    /* This priority is used for most messages that don't have a priority set */
     DEFAULT = 64;
+
+    /* If priority is unset but the message is marked as want_ack, assume it is important and use a slightly higher priority */
+    RELIABLE = 70;
 
     /* Ack/naks are sent with very high priority to ensure that retransmission stops as soon as possible */
     ACK = 120;
