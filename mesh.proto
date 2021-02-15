@@ -1064,7 +1064,7 @@ message MyNodeInfo {
    * read/write region enum in UserSettings   
    * The format of this string was 1.0-US or 1.0-CN etc.. Or empty string if unset.
    */
-  string region = 4;
+  string region = 4 [deprecated = true];
 
   /*
    * TBEAM, HELTEC, etc...
