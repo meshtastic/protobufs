@@ -33,9 +33,9 @@ message Position {
   /*
    * The new preferred location encoding, divide by 1e-7 to get degrees in floating point
    */
-  sint32 latitude_i = 7;
+  sfixed32 latitude_i = 1;
 
-  sint32 longitude_i = 8;
+  sfixed32 longitude_i = 2;
 
   /*
    * In meters above MSL
@@ -187,23 +187,13 @@ message SubPacket {
     /*
      * A route reply
      */
-    RouteDiscovery route_reply = 7;
+    RouteDiscovery route_reply = 7;  
 
     /*
      * A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide
-     * details on the type of failure).
+     * details on the type of failure). 
      */
     ErrorReason error_reason = 13;
-
-    /*
-     * Prior to 1.20 positions were communicated as a special payload type, now they are GPS_POSITION_APP Data
-     */
-    Position position = 1 [deprecated = true];
-
-    /*
-     * Prior to 1.20 positions were communicated as a special payload type, now they are MESH_USERINFO_APP
-     */
-    User user = 4 [deprecated = true];    
   }
 
   /*
@@ -559,6 +549,31 @@ message ChannelSettings {
   bool downlink_enabled = 17;
 }
 
+/* A pair of a channel number, mode and the (sharable) settings for that channel */
+message Channel {
+
+  enum Role {
+    /* This channel is not in use right now */
+    DISABLED = 0;
+
+    /* This channel is used to set the frequency for the radio - all other enabled channels must be SECONDARY */
+    PRIMARY = 1;
+
+    /* Secondary channels are only used for encryption/decryption/authentication purposes.  Their radio settings (freq etc)
+     * are ignored, only psk is used. 
+     */
+    SECONDARY = 2;
+  }
+
+  /* The index of this channel in the channel table (from 0 to MAX_CHANNELS-1) */
+  uint32 index = 1;
+
+  /* The new settings, or NULL to disable that channel */
+  ChannelSettings settings = 2;
+
+  Role role = 3;
+}
+
 /*
  * The frequency/regulatory region the user has selected.
  *
@@ -900,11 +915,6 @@ message RadioConfig {
   }
 
   UserPreferences preferences = 1;
-
-  /*
-   * The preferred way to find channel settings is now in FromRadio. 
-   */
-  ChannelSettings channel_settings = 2 [ deprecated = true ];
 }
 
 /*
@@ -1052,11 +1062,16 @@ message MyNodeInfo {
   bool has_gps = 2;
 
   /*
-   * # of legal channels (set at build time in the device flash image)
+   * # of frequencies that can be used (set at build time in the device flash image).  Note: this is different from max_channels, this field 
+   * is telling the # of frequency bands this node can use.  (old name was num_channels)
    */
-  int32 num_channels = 3;
+  uint32 num_bands = 3;
 
-  /*
+  /* The maximum number of 'software' channels that can be set on this node. 
+  */
+  uint32 max_channels = 15;
+
+  /* Deprecated! ONLY USED IN DEVICE CODE (for upgrading old 1.0 firmwares) DO NOT READ ELSEWHERE.
    * The region code for my radio (US, CN, etc...)
    * Note: This string is deprecated.  The 1.0 builds populate it based on the
    * flashed firmware name.  But for newer builds this string will be unpopulated
@@ -1093,38 +1108,6 @@ message MyNodeInfo {
    * The total number of errors this node has ever encountered (well - since the last time we discarded preferences)
    */
   uint32 error_count = 9;
-
-  /*
-   * How many bits are used for the packetid.  If zero it is assumed we use
-   * eight bit packetids Old device loads (older that 0.6.5 do not populate this field, but all newer loads do).
-   */
-  uint32 packet_id_bits = 10;
-
-  /*
-   * This field was a bad idea - because the odds are so low of a collision API
-   * clients should instead pick a randrom 32 bit number as their initial packetid and just keep
-   * incrementing that.  Otherwise if a client connects two times in a row and used this
-   * value (and the device had not sent a packet on its own between those two times) current_packet_id
-   * would not have changed.  Then the client would be sending duplicate values.
-   *
-   * The current ID this node is using for sending new packets (exposed so that
-   * the phone can self assign packet IDs if it wishes by picking packet IDs from
-   * the opposite side of the pacekt ID space).
-   * Old device loads (older that 0.6.5 do not populate this field, but all newer loads do).
-   * FIXME: that we need to expose this is a bit of a mistake.  Really the phones
-   * should be modeled/treated as 1st class nodes like any other, and the radio
-   * connected to the phone just routes like any other. This would allow all sorts
-   * of clean/clever routing topologies in the future.
-   */
-  uint32 current_packet_id = 11 [deprecated = true];
-
-  /*
-   * How many bits are used for the nodenum.  If zero it is assumed we use
-   * eight bit nodenums New device loads will user 32 bit nodenum.
-   * Old device loads (older that 0.6.5 do not populate this field, but all newer
-   * loads do).
-   */
-  uint32 node_num_bits = 12;
 
   /*
    * How long before we consider a message abandoned and we can clear our
@@ -1238,18 +1221,18 @@ message FromRadio {
 
     /*
      * One of the channels, they are all sent during config download
-     * The first channel is the "primary" channel all other channels are secondary channels
-     * The primary channel is also sent as part of RadioConfig (which is deprecated, but to support older clients)
      */
-    ChannelSettings channel = 10;
+    Channel channel = 10;
   }
 }
- 
+
+
 /*
  * packets/commands to the radio will be written (reliably) to the toRadio characteristic.
  * Once the write completes the phone can assume it is handled.
  */
 message ToRadio {
+
 
   oneof payloadVariant {
 
@@ -1281,9 +1264,8 @@ message ToRadio {
     User set_owner = 102; 
 
     /*
-     * Set channels (using the new API).  The first sent channel is assumed to be channel
-     * index 0 the "primary channel".  Following records are secondary channels.
-     */
-    ChannelSettings set_channel = 103;
+     * Set channels (using the new API).  A special channel is the "primary channel".  The other records are secondary channels.
+     * Note: only one channel can be marked as primary.  If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically */
+    Channel set_channel = 104;
   }
 }

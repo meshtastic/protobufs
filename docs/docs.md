@@ -10,6 +10,7 @@
     - [DeviceState](#.DeviceState)
   
 - [mesh.proto](#mesh.proto)
+    - [Channel](#.Channel)
     - [ChannelSettings](#.ChannelSettings)
     - [Data](#.Data)
     - [FromRadio](#.FromRadio)
@@ -25,6 +26,7 @@
     - [ToRadio](#.ToRadio)
     - [User](#.User)
   
+    - [Channel.Role](#.Channel.Role)
     - [ChannelSettings.ModemConfig](#.ChannelSettings.ModemConfig)
     - [ChargeCurrent](#.ChargeCurrent)
     - [Constants](#.Constants)
@@ -109,7 +111,7 @@ the receive queue and use the preferences store for the other stuff
 | rx_text_message | [MeshPacket](#MeshPacket) |  | We keep the last received text message (only) stored in the device flash, so we can show it on the screen. Might be null |
 | no_save | [bool](#bool) |  | Used only during development. Indicates developer is testing and changes should never be saved to flash. |
 | did_gps_reset | [bool](#bool) |  | Some GPSes seem to have bogus settings from the factory, so we always do one factory reset. |
-| secondary_channels | [ChannelSettings](#ChannelSettings) | repeated | Secondary channels are only used for encryption/decryption/authentication purposes. Their radio settings (freq etc) are ignored, only psk is used. Note: this is not kept inside of RadioConfig because that would make ToRadio/FromRadio worse case &gt; 512 bytes (to big for BLE) |
+| channels | [Channel](#Channel) | repeated | The channels our node knows about |
 
 
 
@@ -146,6 +148,23 @@ To generate Nanopb c code:
 /home/kevinh/packages/nanopb-0.4.0-linux-x86/generator-bin/protoc --nanopb_out=/tmp -I=app/src/main/proto mesh.proto
 
 Nanopb binaries available here: https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.0
+
+
+<a name=".Channel"></a>
+
+### Channel
+A pair of a channel number, mode and the (sharable) settings for that channel
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| index | [uint32](#uint32) |  | The index of this channel in the channel table (from 0 to MAX_CHANNELS-1) |
+| settings | [ChannelSettings](#ChannelSettings) |  | The new settings, or NULL to disable that channel |
+| role | [Channel.Role](#Channel.Role) |  |  |
+
+
+
+
 
 
 <a name=".ChannelSettings"></a>
@@ -227,7 +246,7 @@ It will sit in that descriptor until consumed by the phone, at which point the n
 | log_record | [LogRecord](#LogRecord) |  | set to send debug console output over our protobuf stream |
 | config_complete_id | [uint32](#uint32) |  | sent as true once the device has finished sending all of the responses to want_config recipient should check if this ID matches our original request nonce, if not, it means your config responses haven&#39;t started yet. |
 | rebooted | [bool](#bool) |  | Sent to tell clients the radio has just rebooted. Set to true if present. Not used on all transports, currently just used for the serial console. |
-| channel | [ChannelSettings](#ChannelSettings) |  | One of the channels, they are all sent during config download The first channel is the &#34;primary&#34; channel all other channels are secondary channels The primary channel is also sent as part of RadioConfig (which is deprecated, but to support older clients) |
+| channel | [Channel](#Channel) |  | One of the channels, they are all sent during config download |
 
 
 
@@ -296,18 +315,14 @@ Sent to the phone in response to WantNodes.
 | ----- | ---- | ----- | ----------- |
 | my_node_num | [uint32](#uint32) |  | Tells the phone what our node number is, default starting value is lowbyte of macaddr, but it will be fixed if that is already in use |
 | has_gps | [bool](#bool) |  | Note: this bool no longer means &#34;we have our own GPS&#34;. Because gps_operation is more advanced, but we&#39;d like old phone apps to keep working. So for legacy reasons we set this flag as follows: if false it would be great if the phone can help provide gps coordinates. If true we don&#39;t need location assistance from the phone. |
-| num_channels | [int32](#int32) |  | # of legal channels (set at build time in the device flash image) |
-| region | [string](#string) |  | The region code for my radio (US, CN, etc...) Note: This string is deprecated. The 1.0 builds populate it based on the flashed firmware name. But for newer builds this string will be unpopulated (missing/null). For those builds you should instead look at the new read/write region enum in UserSettings The format of this string was 1.0-US or 1.0-CN etc.. Or empty string if unset. |
+| num_bands | [uint32](#uint32) |  | # of frequencies that can be used (set at build time in the device flash image). Note: this is different from max_channels, this field is telling the # of frequency bands this node can use. (old name was num_channels) |
+| max_channels | [uint32](#uint32) |  | The maximum number of &#39;software&#39; channels that can be set on this node. |
+| region | [string](#string) |  | **Deprecated.** Deprecated! ONLY USED IN DEVICE CODE (for upgrading old 1.0 firmwares) DO NOT READ ELSEWHERE. The region code for my radio (US, CN, etc...) Note: This string is deprecated. The 1.0 builds populate it based on the flashed firmware name. But for newer builds this string will be unpopulated (missing/null). For those builds you should instead look at the new read/write region enum in UserSettings The format of this string was 1.0-US or 1.0-CN etc.. Or empty string if unset. |
 | hw_model | [string](#string) |  | TBEAM, HELTEC, etc... |
 | firmware_version | [string](#string) |  | 0.0.5 etc... |
 | error_code | [CriticalErrorCode](#CriticalErrorCode) |  | An error message we&#39;d like to report back to the mothership through analytics. It indicates a serious bug occurred on the device, the device coped with it, but we still want to tell the devs about the bug. This field will be cleared after the phone reads MyNodeInfo (i.e. it will onlybe reported once) a numeric error code to go with error message, zero means no error |
 | error_address | [uint32](#uint32) |  | A numeric error address (nonzero if available) |
 | error_count | [uint32](#uint32) |  | The total number of errors this node has ever encountered (well - since the last time we discarded preferences) |
-| packet_id_bits | [uint32](#uint32) |  | How many bits are used for the packetid. If zero it is assumed we use eight bit packetids Old device loads (older that 0.6.5 do not populate this field, but all newer loads do). |
-| current_packet_id | [uint32](#uint32) |  | **Deprecated.** This field was a bad idea - because the odds are so low of a collision API clients should instead pick a randrom 32 bit number as their initial packetid and just keep incrementing that. Otherwise if a client connects two times in a row and used this value (and the device had not sent a packet on its own between those two times) current_packet_id would not have changed. Then the client would be sending duplicate values.
-
-The current ID this node is using for sending new packets (exposed so that the phone can self assign packet IDs if it wishes by picking packet IDs from the opposite side of the pacekt ID space). Old device loads (older that 0.6.5 do not populate this field, but all newer loads do). FIXME: that we need to expose this is a bit of a mistake. Really the phones should be modeled/treated as 1st class nodes like any other, and the radio connected to the phone just routes like any other. This would allow all sorts of clean/clever routing topologies in the future. |
-| node_num_bits | [uint32](#uint32) |  | How many bits are used for the nodenum. If zero it is assumed we use eight bit nodenums New device loads will user 32 bit nodenum. Old device loads (older that 0.6.5 do not populate this field, but all newer loads do). |
 | message_timeout_msec | [uint32](#uint32) |  | How long before we consider a message abandoned and we can clear our caches of any messages in flight Normally quite large to handle the worst case message delivery time, 5 minutes. Formerly called FLOOD_EXPIRE_TIME in the device code |
 | min_app_version | [uint32](#uint32) |  | The minimum app version that can talk to this device. Phone/PC apps should compare this to their build number and if too low tell the user they must update their app |
 
@@ -369,8 +384,8 @@ a gps position
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| latitude_i | [sint32](#sint32) |  | The new preferred location encoding, divide by 1e-7 to get degrees in floating point |
-| longitude_i | [sint32](#sint32) |  |  |
+| latitude_i | [sfixed32](#sfixed32) |  | The new preferred location encoding, divide by 1e-7 to get degrees in floating point |
+| longitude_i | [sfixed32](#sfixed32) |  |  |
 | altitude | [int32](#int32) |  | In meters above MSL |
 | battery_level | [int32](#int32) |  | 1-100 (0 means not provided) |
 | time | [fixed32](#fixed32) |  | This is usually not sent over the mesh (to save space), but it is sent from the phone so that the local device can set its RTC If it is sent over the mesh (because there are devices on the mesh without GPS), it will only be sent by devices which has a hardware GPS clock. seconds since 1970 |
@@ -391,7 +406,6 @@ set for behavior of their node
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | preferences | [RadioConfig.UserPreferences](#RadioConfig.UserPreferences) |  |  |
-| channel_settings | [ChannelSettings](#ChannelSettings) |  | **Deprecated.** The preferred way to find channel settings is now in FromRadio. |
 
 
 
@@ -494,8 +508,6 @@ inside a radio packet (because from/to are broken out by the comms library)
 | route_request | [RouteDiscovery](#RouteDiscovery) |  | A route request going from the requester FIXME - these route messages should be moved into regular data packets and use the regular on device plugin mechanism. |
 | route_reply | [RouteDiscovery](#RouteDiscovery) |  | A route reply |
 | error_reason | [ErrorReason](#ErrorReason) |  | A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide details on the type of failure). |
-| position | [Position](#Position) |  | **Deprecated.** Prior to 1.20 positions were communicated as a special payload type, now they are GPS_POSITION_APP Data |
-| user | [User](#User) |  | **Deprecated.** Prior to 1.20 positions were communicated as a special payload type, now they are MESH_USERINFO_APP |
 | want_response | [bool](#bool) |  | Not normally used, but for testing a sender can request that recipient responds in kind (i.e. if it received a position, it should unicast back it&#39;s position). Note: that if you set this on a broadcast you will receive many replies. |
 | success_id | [uint32](#uint32) |  | This packet is a requested acknoledgement indicating that we have received the specified message ID. This packet type can be used both for immediate (0 hops) messages or can be routed through multiple hops if dest is set. Note: As an optimization, recipients can _also_ populate a field in payload if they think the recipient would appreciate that extra state. |
 | fail_id | [uint32](#uint32) |  | This is a nak, we failed to deliver this message. |
@@ -521,7 +533,7 @@ Once the write completes the phone can assume it is handled.
 | want_config_id | [uint32](#uint32) |  | phone wants radio to send full node db to the phone, This is typically the first packet sent to the radio when the phone gets a bluetooth connection. The radio will respond by sending back a MyNodeInfo, a owner, a radio config and a series of FromRadio.node_infos, and config_complete the integer you write into this field will be reported back in the config_complete_id response this allows clients to never be confused by a stale old partially sent config. |
 | set_radio | [RadioConfig](#RadioConfig) |  | set the radio provisioning for this node |
 | set_owner | [User](#User) |  | Set the owner for this node |
-| set_channel | [ChannelSettings](#ChannelSettings) |  | Set channels (using the new API). The first sent channel is assumed to be channel index 0 the &#34;primary channel&#34;. Following records are secondary channels. |
+| set_channel | [Channel](#Channel) |  | Set channels (using the new API). A special channel is the &#34;primary channel&#34;. The other records are secondary channels. |
 
 
 
@@ -569,6 +581,19 @@ A few nodenums are reserved and will never be requested:
 
 
  
+
+
+<a name=".Channel.Role"></a>
+
+### Channel.Role
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| DISABLED | 0 | This channel is not in use right now |
+| PRIMARY | 1 | This channel is used to set the frequency for the radio - all other enabled channels must be SECONDARY |
+| SECONDARY | 2 | Secondary channels are only used for encryption/decryption/authentication purposes. Their radio settings (freq etc) are ignored, only psk is used. |
+
 
 
 <a name=".ChannelSettings.ModemConfig"></a>
@@ -721,6 +746,12 @@ This field is never sent over the air, it is only used internally inside of a lo
 connected directly to the node) can set this parameter if necessary.
 
 (values must be &lt;= 127 to keep protobuf field to one byte in size.
+
+Detailed background on this field:
+
+I noticed a funny side effect of lora being so slow: Usually when making a protocol there isn’t much need to use message priority to change the order of transmission (because interfaces are fairly fast). But for lora where packets can take a few seconds each, it is very important to make sure that critical packets are sent ASAP. In the case of meshtastic that means we want to send protocol acks as soon as possible (to prevent unneeded retransmissions), we want routing messages to be sent next, then messages marked as reliable and finally ‘background’ packets like periodic position updates.
+
+So I bit the bullet and implemented a new (internal - not sent over the air) field in MeshPacket called ‘priority’. And the transmission queue in the router object is now a priority queue.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
