@@ -213,7 +213,7 @@ message Data {
    * responds in kind (i.e. if it received a position, it should unicast back it's position).
    * Note: that if you set this on a broadcast you will receive many replies.
    */
-  bool want_response = 5;
+  bool want_response = 3;
 
   /*
    * The address of the destination node.
@@ -222,18 +222,47 @@ message Data {
    * RouteDiscovery messages _must_ populate this.  Other message types might need
    * to if they are doing multihop routing.
    */
-  fixed32 dest = 9;
+  fixed32 dest = 4;
 
   /*
    * The address of the original sender for this message.
    * This field should _only_ be populated for reliable multihop packets (to keep
    * packets small).
    */
-  fixed32 source = 12;
+  fixed32 source = 5;
+
+   /*
+   * If unset treated as zero (no fowarding, send to adjacent nodes only)
+   * if 1, allow hopping through one node, etc...
+   * For our usecase real world topologies probably have a max of about 3.
+   * This field is normally placed into a few of bits in the header.
+   */
+   uint32 hop_limit = 6;
+
+   /*
+    * This packet is being sent as a reliable message, we would prefer it to arrive
+    * at the destination.  We would like to receive a ack packet in response.
+    * Broadcasts messages treat this flag specially: Since acks for broadcasts would
+    * rapidly flood the channel, the normal ack behavior is suppressed.  Instead,
+    * the original sender listens to see if at least one node is rebroadcasting this
+    * packet (because naive flooding algoritm).  If it hears that the odds (given
+    * typical LoRa topologies) the odds are very high that every node should
+    * eventually receive the message.  So FloodingRouter.cpp generates an implicit
+    * ack which is delivered to the original sender. If after some time we don't
+    * hear anyone rebroadcast our packet, we will timeout and retransmit, using the regular resend logic.
+    * Note: This flag is normally sent in a flag bit in the header when sent over the wire
+    */
+   bool want_ack = 7;
+ 
+   /* The priority of this message for sending. 
+   See MeshPacket.Priority description for more details.
+   This field is never sent over the radio links (to keep size small)
+   */
+   Priority priority = 8;
 }
 
 /*
- * A full packet sent/received over the mesh
+ * A packet envelope sent/received over the mesh
  * Note: For simplicity reasons (and that we want to keep over the radio packets
  * very small, we now assume that there is only _one_ SubPacket in each MeshPacket).
  */
@@ -334,34 +363,6 @@ message MeshPacket {
    * of this packet.  Used to collect statistics on current link waulity.
    */
   float rx_snr = 7;
-
-  /*
-   * If unset treated as zero (no fowarding, send to adjacent nodes only)
-   * if 1, allow hopping through one node, etc...
-   * For our usecase real world topologies probably have a max of about 3.
-   * This field is normally placed into a few of bits in the header.
-   */
-  uint32 hop_limit = 10;
-
-  /*
-   * This packet is being sent as a reliable message, we would prefer it to arrive
-   * at the destination.  We would like to receive a ack packet in response.
-   * Broadcasts messages treat this flag specially: Since acks for broadcasts would
-   * rapidly flood the channel, the normal ack behavior is suppressed.  Instead,
-   * the original sender listens to see if at least one node is rebroadcasting this
-   * packet (because naive flooding algoritm).  If it hears that the odds (given
-   * typical LoRa topologies) the odds are very high that every node should
-   * eventually receive the message.  So FloodingRouter.cpp generates an implicit
-   * ack which is delivered to the original sender. If after some time we don't
-   * hear anyone rebroadcast our packet, we will timeout and retransmit, using the regular resend logic.
-   * Note: This flag is normally sent in a flag bit in the header when sent over the wire
-   */
-  bool want_ack = 11;
-
-  /* The priority of this message for sending. 
-  See MeshPacket.Priority description for more details.
-  */
-  Priority priority = 12;
 }
 
 /*
