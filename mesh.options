@@ -12,6 +12,7 @@
 # FIXME, max out based on total SubPacket size And do fragmentation and reassembly (for larger payloads) at the Android layer, not the esp32 layer.
 # note: this payload length is ONLY the bytes that are sent inside of the radiohead packet
 *Data.payload max_size:240
+*Data.payloadVariant anonymous_oneof:true
 
 *UserPreferences.wifi_ssid max_size:33
 *UserPreferences.wifi_password max_size:64
@@ -32,14 +33,11 @@
 *MeshPacket.encrypted max_size:256
 *MeshPacket.payloadVariant anonymous_oneof:true
 
-*SubPacket.payloadVariant anonymous_oneof:true
-
-# We don't want this one anonymous
-# *SubPacket.ackVariant anonymous_oneof:true
-
 *ToRadio.payloadVariant anonymous_oneof:true
 
 *FromRadio.payloadVariant anonymous_oneof:true
+
+*Routing.variant anonymous_oneof:true
 
 # Max of three ignored nodes for our testing
 *UserPreferences.ignore_incoming max_count:3

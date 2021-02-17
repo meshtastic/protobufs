@@ -58,14 +58,19 @@ enum PortNum {
     /*
      * The built-in position messaging app.
      * See Position for details on the message sent to this port number.
+     * payload is a Position protobuf
      */
     POSITION_APP = 3;
 
     /*
      * The built-in user info app.
      * See User for details on the message sent to this port number.
+     * payload is a User protobuf
      */
     NODEINFO_APP = 4;
+
+    /* Protocol control packets for mesh protocol use, payload is a Routing protobuf */
+    ROUTING_APP = 5;
 
     /*
      * Provides a 'ping' service that replies to any packet it receives.  Also this serves as a small example plugin.

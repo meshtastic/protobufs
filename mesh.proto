@@ -58,23 +58,6 @@ message Position {
 }
 
 /*
- * a data message to forward to an external app (or possibly also be consumed
- * internally in the case of CLEAR_TEXT and CLEAR_READACK)
- */
-message Data {
-
-  /*
-   * Formerly named typ and of type Type
-   */
-  PortNum portnum = 1;
-
-  /*
-   * Required
-   */
-  bytes payload = 2;
-}
-
-/*
  * Broadcast when a newly powered mesh node wants to find a node num it can use
  * Sent from the phone over bluetooth to set the user id for the owner of this node.
  * Also sent from nodes to each other when a new node signs on (so all clients can have this info)
@@ -131,70 +114,99 @@ message User {
 message RouteDiscovery {
 
   /*
-  * The list of nodes this packet has visited so far
+  * The list of nodenums this packet has visited so far
   */
-  repeated int32 route = 2;
+  repeated fixed32 route = 2;
 }
 
-/*
+
+  
+/* A Routing control Data packet handled by the routing plugin
+*/
+message Routing {
+
+  /*
   * A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide
   * details on the type of failure).
   */
-enum ErrorReason {
+  enum Error {
 
-  /* This message is not a failure */
-  NONE = 0;
+    /* This message is not a failure */
+    NONE = 0;
+
+    /*
+      * Our node doesn't have a route to the requested destination anymore.
+      */
+    NO_ROUTE = 1;
+
+    /*
+      * We received a nak while trying to forward on your behalf
+      */
+    GOT_NAK = 2;
+
+    TIMEOUT = 3;
+
+    /* No suitable interface could be found for delivering this packet */
+    NO_INTERFACE = 4;
+
+    /* We reached the max retransmission count (typically for naive flood routing) */
+    MAX_RETRANSMIT = 5;
+  }
+
+  oneof variant {
+    /*
+    * A route request going from the requester
+    */
+    RouteDiscovery route_request = 1;
+
+    /*
+      * A route reply
+      */
+    RouteDiscovery route_reply = 2;  
+
+    /*
+      * A failure in delivering a message (usually used for routing control messages, but might be provided 
+      * in addition to ack.fail_id to provide details on the type of failure). 
+      */
+    Error error_reason = 3;
+
+    /* This is an ack.
+     * This packet is a requested acknoledgement indicating that we have received
+     * the specified message ID.  This packet type can be used both for immediate
+     * (0 hops) messages or can be routed through multiple hops if dest is set.
+     * Note: As an optimization, recipients can _also_ populate a field in payload
+     * if they think the recipient would appreciate that extra state.
+     */
+     fixed32 success_id = 4;
+
+     /*
+      * This is a nak, we failed to deliver this message.
+      */
+     fixed32 fail_id = 5;
+  }
 
   /*
-   * Our node doesn't have a route to the requested destination anymore.
+   * Only used in route_error messages.  Indicates the original message ID that
+   * this message is reporting failure on.
    */
-  NO_ROUTE = 1;
-
-  /*
-   * We received a nak while trying to forward on your behalf
-   */
-  GOT_NAK = 2;
-
-  TIMEOUT = 3;
-
-  /* No suitable interface could be found for delivering this packet */
-  NO_INTERFACE = 4;
-
-  /* We reached the max retransmission count (typically for naive flood routing) */
-  MAX_RETRANSMIT = 5;
+   fixed32 original_id = 6;    
 }
 
-/*
+/* (Formerly called SubPacket)
  * The payload portion fo a packet, this is the actual bytes that are sent
  * inside a radio packet (because from/to are broken out by the comms library)
  */
-message SubPacket {
+message Data {
 
   /*
-   * Only one of the following fields can be populated at a time
+   * Formerly named typ and of type Type
    */
-  oneof payloadVariant {
+   PortNum portnum = 1;
 
-    Data data = 3;
-
-    /*
-     * A route request going from the requester
-     * FIXME - these route messages should be moved into regular data packets and use the regular on
-     * device plugin mechanism.
-     */
-    RouteDiscovery route_request = 6;
-
-    /*
-     * A route reply
-     */
-    RouteDiscovery route_reply = 7;  
-
-    /*
-     * A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide
-     * details on the type of failure). 
-     */
-    ErrorReason error_reason = 13;
-  }
+   /*
+    * Required
+    */
+   bytes payload = 2;
 
   /*
    * Not normally used, but for testing a sender can request that recipient
@@ -203,22 +215,6 @@ message SubPacket {
    */
   bool want_response = 5;
 
-  oneof ackVariant {
-    /*
-     * This packet is a requested acknoledgement indicating that we have received
-     * the specified message ID.  This packet type can be used both for immediate
-     * (0 hops) messages or can be routed through multiple hops if dest is set.
-     * Note: As an optimization, recipients can _also_ populate a field in payload
-     * if they think the recipient would appreciate that extra state.
-     */
-    uint32 success_id = 10;
-
-    /*
-     * This is a nak, we failed to deliver this message.
-     */
-    uint32 fail_id = 11;
-  }
-
   /*
    * The address of the destination node.
    * This field is is filled in by the mesh radio device software, applicaiton
@@ -226,20 +222,14 @@ message SubPacket {
    * RouteDiscovery messages _must_ populate this.  Other message types might need
    * to if they are doing multihop routing.
    */
-  uint32 dest = 9;
+  fixed32 dest = 9;
 
   /*
    * The address of the original sender for this message.
    * This field should _only_ be populated for reliable multihop packets (to keep
    * packets small).
    */
-  uint32 source = 12;
-
-  /*
-   * Only used in route_error messages.  Indicates the original message ID that
-   * this message is reporting failure on.
-   */
-  uint32 original_id = 2;
+  fixed32 source = 12;
 }
 
 /*
@@ -288,13 +278,13 @@ message MeshPacket {
    * docs/software/crypto.md for details.
    * FIXME - really should be fixed32 instead, this encoding only hurts the ble link though.
    */
-  uint32 from = 1; 
+  fixed32 from = 1; 
 
   /*
    * The (immediatSee Priority description for more details.y should be fixed32 instead, this encoding only
    * hurts the ble link though.
    */
-  uint32 to = 2;
+  fixed32 to = 2;
 
   /*
    * If set, this indicates the index in the secondary_channels table that this packet 
@@ -303,7 +293,6 @@ message MeshPacket {
    * is inherently a local concept and meaningless to send between nodes.
    */
   uint32 channel_index = 4;
-
   
   /*
    * Internally to the mesh radios we will route SubPackets encrypted per
@@ -315,7 +304,7 @@ message MeshPacket {
    */
   
   oneof payloadVariant {
-    SubPacket decoded = 3;
+    Data decoded = 3;
     bytes encrypted = 8;
   }
 
@@ -330,7 +319,7 @@ message MeshPacket {
    * FIXME - really should be fixed32 instead, this encoding only
    * hurts the ble link though.
    */
-  uint32 id = 6; 
+  fixed32 id = 6; 
 
   /*
    * The time this message was received by the esp32 (secs since 1970).  Note:
@@ -552,6 +541,16 @@ message ChannelSettings {
 /* A pair of a channel number, mode and the (sharable) settings for that channel */
 message Channel {
 
+  /* How this channel is being used (or not).
+
+  Note: this field is an enum to give us options for the future.  In particular, someday
+  we might make a 'SCANNING' option.  SCANNING channels could have different frequencies and the radio would
+  occasionally check that freq to see if anything is being transmitted.
+
+  For devices that have multiple physical radios attached, we could keep multiple PRIMARY/SCANNING channels active at once to allow
+  cross band routing as needed.  If a device has only a single radio (the common case) only one channel can be PRIMARY at a time
+  (but any number of SECONDARY channels can't be sent received on that common frequency)
+  */
   enum Role {
     /* This channel is not in use right now */
     DISABLED = 0;
@@ -565,7 +564,7 @@ message Channel {
     SECONDARY = 2;
   }
 
-  /* The index of this channel in the channel table (from 0 to MAX_CHANNELS-1) */
+  /* The index of this channel in the channel table (from 0 to MAX_NUM_CHANNELS-1) */
   uint32 index = 1;
 
   /* The new settings, or NULL to disable that channel */
@@ -1176,6 +1175,9 @@ message LogRecord {
  */
 message FromRadio {
 
+  /* In the <1.2 versions packet had ID 2, to prevent confusing old apps with our new packets, we've changed */
+  reserved 2;
+
   /*
    * The packet num, used to allow the phone to request missing read packets from the FIFO, see our bluetooth docs
    */
@@ -1183,7 +1185,7 @@ message FromRadio {
 
   oneof payloadVariant {
 
-    MeshPacket packet = 2;
+    MeshPacket packet = 11;
 
     /*
      * Tells the phone what our node number is, can be -1 if we've not yet joined a mesh.
@@ -1233,13 +1235,15 @@ message FromRadio {
  */
 message ToRadio {
 
+  /* In the <1.2 versions packet had ID 2, to prevent confusing old apps with our new packets, we've changed */
+  reserved 1;
 
   oneof payloadVariant {
 
     /*
      * send this packet on the mesh
      */
-    MeshPacket packet = 1;
+    MeshPacket packet = 2;
 
     /*
      * phone wants radio to send full node db to the phone, This is

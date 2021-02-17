@@ -4,6 +4,7 @@
 ## Table of Contents
 
 - [apponly.proto](#apponly.proto)
+    - [ChannelSet](#.ChannelSet)
     - [ServiceEnvelope](#.ServiceEnvelope)
   
 - [deviceonly.proto](#deviceonly.proto)
@@ -22,7 +23,7 @@
     - [RadioConfig](#.RadioConfig)
     - [RadioConfig.UserPreferences](#.RadioConfig.UserPreferences)
     - [RouteDiscovery](#.RouteDiscovery)
-    - [SubPacket](#.SubPacket)
+    - [Routing](#.Routing)
     - [ToRadio](#.ToRadio)
     - [User](#.User)
   
@@ -31,12 +32,12 @@
     - [ChargeCurrent](#.ChargeCurrent)
     - [Constants](#.Constants)
     - [CriticalErrorCode](#.CriticalErrorCode)
-    - [ErrorReason](#.ErrorReason)
     - [GpsOperation](#.GpsOperation)
     - [LocationSharing](#.LocationSharing)
     - [LogRecord.Level](#.LogRecord.Level)
     - [MeshPacket.Priority](#.MeshPacket.Priority)
     - [RegionCode](#.RegionCode)
+    - [Routing.Error](#.Routing.Error)
   
 - [portnums.proto](#portnums.proto)
     - [PortNum](#.PortNum)
@@ -54,6 +55,25 @@
 <p align="right"><a href="#top">Top</a></p>
 
 ## apponly.proto
+
+
+
+<a name=".ChannelSet"></a>
+
+### ChannelSet
+This is the most compact possible representation for a set of channels.  It includes only one PRIMARY channel (which must be first) and
+any SECONDARY channels.  No DISABLED channels are included.  
+
+This abstraction is used only on the the &#39;app side&#39; of the world (ie python, javascript and android etc) to show a group of Channels
+as a (long) URL
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| settings | [ChannelSettings](#ChannelSettings) | repeated |  |
+
+
+
 
 
 
@@ -158,7 +178,7 @@ A pair of a channel number, mode and the (sharable) settings for that channel
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| index | [uint32](#uint32) |  | The index of this channel in the channel table (from 0 to MAX_CHANNELS-1) |
+| index | [uint32](#uint32) |  | The index of this channel in the channel table (from 0 to MAX_NUM_CHANNELS-1) |
 | settings | [ChannelSettings](#ChannelSettings) |  | The new settings, or NULL to disable that channel |
 | role | [Channel.Role](#Channel.Role) |  |  |
 
@@ -214,14 +234,18 @@ remote gpio are managed as an example
 <a name=".Data"></a>
 
 ### Data
-a data message to forward to an external app (or possibly also be consumed
-internally in the case of CLEAR_TEXT and CLEAR_READACK)
+(Formerly called SubPacket)
+The payload portion fo a packet, this is the actual bytes that are sent
+inside a radio packet (because from/to are broken out by the comms library)
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | portnum | [PortNum](#PortNum) |  | Formerly named typ and of type Type |
 | payload | [bytes](#bytes) |  | Required |
+| want_response | [bool](#bool) |  | Not normally used, but for testing a sender can request that recipient responds in kind (i.e. if it received a position, it should unicast back it&#39;s position). Note: that if you set this on a broadcast you will receive many replies. |
+| dest | [fixed32](#fixed32) |  | The address of the destination node. This field is is filled in by the mesh radio device software, applicaiton layer software should never need it. RouteDiscovery messages _must_ populate this. Other message types might need to if they are doing multihop routing. |
+| source | [fixed32](#fixed32) |  | The address of the original sender for this message. This field should _only_ be populated for reliable multihop packets (to keep packets small). |
 
 
 
@@ -286,12 +310,12 @@ very small, we now assume that there is only _one_ SubPacket in each MeshPacket)
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| from | [uint32](#uint32) |  | The sending node number. Note: Our crypto implementation uses this field as well. See docs/software/crypto.md for details. FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
-| to | [uint32](#uint32) |  | The (immediatSee Priority description for more details.y should be fixed32 instead, this encoding only hurts the ble link though. |
+| from | [fixed32](#fixed32) |  | The sending node number. Note: Our crypto implementation uses this field as well. See docs/software/crypto.md for details. FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
+| to | [fixed32](#fixed32) |  | The (immediatSee Priority description for more details.y should be fixed32 instead, this encoding only hurts the ble link though. |
 | channel_index | [uint32](#uint32) |  | If set, this indicates the index in the secondary_channels table that this packet was sent/received on. If unset, packet was on the primary channel. A particular node might know only a subset of channels in use on the mesh. Therefore channel_index is inherently a local concept and meaningless to send between nodes. |
-| decoded | [SubPacket](#SubPacket) |  |  |
+| decoded | [Data](#Data) |  |  |
 | encrypted | [bytes](#bytes) |  |  |
-| id | [uint32](#uint32) |  | A unique ID for this packet. Always 0 for no-ack packets or non broadcast packets (and therefore take zero bytes of space). Otherwise a unique ID for this packet, useful for flooding algorithms. ID only needs to be unique on a _per sender_ basis, and it only needs to be unique for a few minutes (long enough to last for the length of any ACK or the completion of a mesh broadcast flood). Note: Our crypto implementation uses this id as well. See docs/software/crypto.md for details. FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
+| id | [fixed32](#fixed32) |  | A unique ID for this packet. Always 0 for no-ack packets or non broadcast packets (and therefore take zero bytes of space). Otherwise a unique ID for this packet, useful for flooding algorithms. ID only needs to be unique on a _per sender_ basis, and it only needs to be unique for a few minutes (long enough to last for the length of any ACK or the completion of a mesh broadcast flood). Note: Our crypto implementation uses this id as well. See docs/software/crypto.md for details. FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
 | rx_time | [fixed32](#fixed32) |  | The time this message was received by the esp32 (secs since 1970). Note: this field is _never_ sent on the radio link itself (to save space) Times are typically not sent over the mesh, but they will be added to any Packet (chain of SubPacket) sent to the phone (so the phone can know exact time of reception) |
 | rx_snr | [float](#float) |  | Never* sent over the radio links. Set during reception to indicate the SNR of this packet. Used to collect statistics on current link waulity. |
 | hop_limit | [uint32](#uint32) |  | If unset treated as zero (no fowarding, send to adjacent nodes only) if 1, allow hopping through one node, etc... For our usecase real world topologies probably have a max of about 3. This field is normally placed into a few of bits in the header. |
@@ -488,32 +512,27 @@ A message used in our Dynamic Source Routing protocol (RFC 4728 based)
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| route | [int32](#int32) | repeated | The list of nodes this packet has visited so far |
+| route | [fixed32](#fixed32) | repeated | The list of nodenums this packet has visited so far |
 
 
 
 
 
 
-<a name=".SubPacket"></a>
+<a name=".Routing"></a>
 
-### SubPacket
-The payload portion fo a packet, this is the actual bytes that are sent
-inside a radio packet (because from/to are broken out by the comms library)
+### Routing
+A Routing control Data packet handled by the routing plugin
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| data | [Data](#Data) |  |  |
-| route_request | [RouteDiscovery](#RouteDiscovery) |  | A route request going from the requester FIXME - these route messages should be moved into regular data packets and use the regular on device plugin mechanism. |
+| route_request | [RouteDiscovery](#RouteDiscovery) |  | A route request going from the requester |
 | route_reply | [RouteDiscovery](#RouteDiscovery) |  | A route reply |
-| error_reason | [ErrorReason](#ErrorReason) |  | A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide details on the type of failure). |
-| want_response | [bool](#bool) |  | Not normally used, but for testing a sender can request that recipient responds in kind (i.e. if it received a position, it should unicast back it&#39;s position). Note: that if you set this on a broadcast you will receive many replies. |
-| success_id | [uint32](#uint32) |  | This packet is a requested acknoledgement indicating that we have received the specified message ID. This packet type can be used both for immediate (0 hops) messages or can be routed through multiple hops if dest is set. Note: As an optimization, recipients can _also_ populate a field in payload if they think the recipient would appreciate that extra state. |
-| fail_id | [uint32](#uint32) |  | This is a nak, we failed to deliver this message. |
-| dest | [uint32](#uint32) |  | The address of the destination node. This field is is filled in by the mesh radio device software, applicaiton layer software should never need it. RouteDiscovery messages _must_ populate this. Other message types might need to if they are doing multihop routing. |
-| source | [uint32](#uint32) |  | The address of the original sender for this message. This field should _only_ be populated for reliable multihop packets (to keep packets small). |
-| original_id | [uint32](#uint32) |  | Only used in route_error messages. Indicates the original message ID that this message is reporting failure on. |
+| error_reason | [Routing.Error](#Routing.Error) |  | A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide details on the type of failure). |
+| success_id | [fixed32](#fixed32) |  | This is an ack. This packet is a requested acknoledgement indicating that we have received the specified message ID. This packet type can be used both for immediate (0 hops) messages or can be routed through multiple hops if dest is set. Note: As an optimization, recipients can _also_ populate a field in payload if they think the recipient would appreciate that extra state. |
+| fail_id | [fixed32](#fixed32) |  | This is a nak, we failed to deliver this message. |
+| original_id | [fixed32](#fixed32) |  | Only used in route_error messages. Indicates the original message ID that this message is reporting failure on. |
 
 
 
@@ -533,7 +552,7 @@ Once the write completes the phone can assume it is handled.
 | want_config_id | [uint32](#uint32) |  | phone wants radio to send full node db to the phone, This is typically the first packet sent to the radio when the phone gets a bluetooth connection. The radio will respond by sending back a MyNodeInfo, a owner, a radio config and a series of FromRadio.node_infos, and config_complete the integer you write into this field will be reported back in the config_complete_id response this allows clients to never be confused by a stale old partially sent config. |
 | set_radio | [RadioConfig](#RadioConfig) |  | set the radio provisioning for this node |
 | set_owner | [User](#User) |  | Set the owner for this node |
-| set_channel | [Channel](#Channel) |  | Set channels (using the new API). A special channel is the &#34;primary channel&#34;. The other records are secondary channels. |
+| set_channel | [Channel](#Channel) |  | Set channels (using the new API). A special channel is the &#34;primary channel&#34;. The other records are secondary channels. Note: only one channel can be marked as primary. If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically |
 
 
 
@@ -586,7 +605,15 @@ A few nodenums are reserved and will never be requested:
 <a name=".Channel.Role"></a>
 
 ### Channel.Role
+How this channel is being used (or not).
 
+Note: this field is an enum to give us options for the future.  In particular, someday
+we might make a &#39;SCANNING&#39; option.  SCANNING channels could have different frequencies and the radio would
+occasionally check that freq to see if anything is being transmitted.
+
+For devices that have multiple physical radios attached, we could keep multiple PRIMARY/SCANNING channels active at once to allow
+cross band routing as needed.  If a device has only a single radio (the common case) only one channel can be PRIMARY at a time
+(but any number of SECONDARY channels can&#39;t be sent received on that common frequency)
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -670,23 +697,6 @@ post on the meshtastic.discourse.group and we&#39;ll try to help.
 | NoAXP192 | 6 | This board was expected to have a power management chip and it is missing or broken |
 | InvalidRadioSetting | 7 | The channel tried to set a radio setting which is not supported by this chipset, radio comms settings are now undefined. |
 | TransmitFailed | 8 | Radio transmit hardware failure. We sent data to the radio chip, but it didn&#39;t reply with an interrupt. |
-
-
-
-<a name=".ErrorReason"></a>
-
-### ErrorReason
-A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide
-details on the type of failure).
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| NONE | 0 | This message is not a failure |
-| NO_ROUTE | 1 | Our node doesn&#39;t have a route to the requested destination anymore. |
-| GOT_NAK | 2 | We received a nak while trying to forward on your behalf |
-| TIMEOUT | 3 |  |
-| NO_INTERFACE | 4 | No suitable interface could be found for delivering this packet |
-| MAX_RETRANSMIT | 5 | We reached the max retransmission count (typically for naive flood routing) |
 
 
 
@@ -790,6 +800,23 @@ old value will be no longer set.
 | TW | 8 |  |
 
 
+
+<a name=".Routing.Error"></a>
+
+### Routing.Error
+A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide
+details on the type of failure).
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| NONE | 0 | This message is not a failure |
+| NO_ROUTE | 1 | Our node doesn&#39;t have a route to the requested destination anymore. |
+| GOT_NAK | 2 | We received a nak while trying to forward on your behalf |
+| TIMEOUT | 3 |  |
+| NO_INTERFACE | 4 | No suitable interface could be found for delivering this packet |
+| MAX_RETRANSMIT | 5 | We reached the max retransmission count (typically for naive flood routing) |
+
+
  
 
  
@@ -840,8 +867,9 @@ Note: this concept has been removed for now. Once READACK is implemented, use th
 CLEAR_READACK = 2;
 
 Reserved for built-in GPIO/example app. See remote_hardware.proto/HardwareMessage for details on the message sent/received to this port number |
-| POSITION_APP | 3 | The built-in position messaging app. See Position for details on the message sent to this port number. |
-| NODEINFO_APP | 4 | The built-in user info app. See User for details on the message sent to this port number. |
+| POSITION_APP | 3 | The built-in position messaging app. See Position for details on the message sent to this port number. payload is a Position protobuf |
+| NODEINFO_APP | 4 | The built-in user info app. See User for details on the message sent to this port number. payload is a User protobuf |
+| ROUTING_APP | 5 | Protocol control packets for mesh protocol use, payload is a Routing protobuf |
 | REPLY_APP | 32 | Provides a &#39;ping&#39; service that replies to any packet it receives. Also this serves as a small example plugin. |
 | IP_TUNNEL_APP | 33 | Used for the python IP tunnel feature |
 | SERIAL_APP | 64 | Provides a hardware serial interface to send and receive from the Meshtastic network. Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network. Maximum packet size of 240 bytes.
