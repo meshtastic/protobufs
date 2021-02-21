@@ -303,9 +303,9 @@ emitting multiple records.
 <a name=".MeshPacket"></a>
 
 ### MeshPacket
-A full packet sent/received over the mesh
-Note: For simplicity reasons (and that we want to keep over the radio packets
-very small, we now assume that there is only _one_ SubPacket in each MeshPacket).
+A packet envelope sent/received over the mesh
+only payloadVariant is sent in the payload portion of the LORA packet.
+The other fields are either not sent at all, or sent in the special 16 byte LORA header.
 
 
 | Field | Type | Label | Description |
@@ -320,7 +320,7 @@ very small, we now assume that there is only _one_ SubPacket in each MeshPacket)
 | rx_snr | [float](#float) |  | Never* sent over the radio links. Set during reception to indicate the SNR of this packet. Used to collect statistics on current link waulity. |
 | hop_limit | [uint32](#uint32) |  | If unset treated as zero (no fowarding, send to adjacent nodes only) if 1, allow hopping through one node, etc... For our usecase real world topologies probably have a max of about 3. This field is normally placed into a few of bits in the header. |
 | want_ack | [bool](#bool) |  | This packet is being sent as a reliable message, we would prefer it to arrive at the destination. We would like to receive a ack packet in response. Broadcasts messages treat this flag specially: Since acks for broadcasts would rapidly flood the channel, the normal ack behavior is suppressed. Instead, the original sender listens to see if at least one node is rebroadcasting this packet (because naive flooding algoritm). If it hears that the odds (given typical LoRa topologies) the odds are very high that every node should eventually receive the message. So FloodingRouter.cpp generates an implicit ack which is delivered to the original sender. If after some time we don&#39;t hear anyone rebroadcast our packet, we will timeout and retransmit, using the regular resend logic. Note: This flag is normally sent in a flag bit in the header when sent over the wire |
-| priority | [MeshPacket.Priority](#MeshPacket.Priority) |  | The priority of this message for sending. See MeshPacket.Priority description for more details. |
+| priority | [MeshPacket.Priority](#MeshPacket.Priority) |  | The priority of this message for sending. See MeshPacket.Priority description for more details. This field is never sent over the radio links (to keep size small) |
 
 
 
