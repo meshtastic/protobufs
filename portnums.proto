@@ -82,7 +82,7 @@ enum PortNum {
      *
      * Maintained by Charles Crossan (crossan007) : crossan007@gmail.com
      */
-    ENVIRONMENTAL_MEASUREMENT_APP = 34;
+    ENVIRONMENTAL_MEASUREMENT_APP = 67;
 
     /** Provides a hardware serial interface to send and receive from the Meshtastic network.
     Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic
