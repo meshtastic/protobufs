@@ -39,6 +39,8 @@
 
 *Routing.variant anonymous_oneof:true
 
+*AdminMessage.variant anonymous_oneof:true
+
 # Max of three ignored nodes for our testing
 *UserPreferences.ignore_incoming max_count:3
 

@@ -72,6 +72,9 @@ enum PortNum {
     /* Protocol control packets for mesh protocol use, payload is a Routing protobuf */
     ROUTING_APP = 5;
 
+    /* Admin control packets, payload is a AdminMessage protobuf */
+    ADMIN_APP = 6;
+
     /*
      * Provides a 'ping' service that replies to any packet it receives.  Also this serves as a small example plugin.
      */

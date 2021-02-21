@@ -11,6 +11,7 @@
     - [DeviceState](#.DeviceState)
   
 - [mesh.proto](#mesh.proto)
+    - [AdminMessage](#.AdminMessage)
     - [Channel](#.Channel)
     - [ChannelSettings](#.ChannelSettings)
     - [Data](#.Data)
@@ -168,6 +169,28 @@ To generate Nanopb c code:
 /home/kevinh/packages/nanopb-0.4.0-linux-x86/generator-bin/protoc --nanopb_out=/tmp -I=app/src/main/proto mesh.proto
 
 Nanopb binaries available here: https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.0
+
+
+<a name=".AdminMessage"></a>
+
+### AdminMessage
+This message is handled by the Admin plugin and is responsible for all settings/channel read/write operations.  This message
+is used to do settings operations to both remote AND local nodes.
+
+(Prior to 1.2 these operations were done via special ToRadio operations)
+
+FIXME - move the radioconfig/user/channel READ operations into AdminMessage as well
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| set_radio | [RadioConfig](#RadioConfig) |  | set the radio provisioning for this node |
+| set_owner | [User](#User) |  | Set the owner for this node |
+| set_channel | [Channel](#Channel) |  | Set channels (using the new API). A special channel is the &#34;primary channel&#34;. The other records are secondary channels. Note: only one channel can be marked as primary. If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically |
+
+
+
+
 
 
 <a name=".Channel"></a>
@@ -550,9 +573,6 @@ Once the write completes the phone can assume it is handled.
 | ----- | ---- | ----- | ----------- |
 | packet | [MeshPacket](#MeshPacket) |  | send this packet on the mesh |
 | want_config_id | [uint32](#uint32) |  | phone wants radio to send full node db to the phone, This is typically the first packet sent to the radio when the phone gets a bluetooth connection. The radio will respond by sending back a MyNodeInfo, a owner, a radio config and a series of FromRadio.node_infos, and config_complete the integer you write into this field will be reported back in the config_complete_id response this allows clients to never be confused by a stale old partially sent config. |
-| set_radio | [RadioConfig](#RadioConfig) |  | set the radio provisioning for this node |
-| set_owner | [User](#User) |  | Set the owner for this node |
-| set_channel | [Channel](#Channel) |  | Set channels (using the new API). A special channel is the &#34;primary channel&#34;. The other records are secondary channels. Note: only one channel can be marked as primary. If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically |
 
 
 
@@ -870,6 +890,7 @@ Reserved for built-in GPIO/example app. See remote_hardware.proto/HardwareMessag
 | POSITION_APP | 3 | The built-in position messaging app. See Position for details on the message sent to this port number. payload is a Position protobuf |
 | NODEINFO_APP | 4 | The built-in user info app. See User for details on the message sent to this port number. payload is a User protobuf |
 | ROUTING_APP | 5 | Protocol control packets for mesh protocol use, payload is a Routing protobuf |
+| ADMIN_APP | 6 | Admin control packets, payload is a AdminMessage protobuf |
 | REPLY_APP | 32 | Provides a &#39;ping&#39; service that replies to any packet it receives. Also this serves as a small example plugin. |
 | IP_TUNNEL_APP | 33 | Used for the python IP tunnel feature |
 | SERIAL_APP | 64 | Provides a hardware serial interface to send and receive from the Meshtastic network. Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network. Maximum packet size of 240 bytes.
