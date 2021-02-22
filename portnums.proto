@@ -86,13 +86,23 @@ enum PortNum {
     IP_TUNNEL_APP = 33;
 
     /*
-     * Provides a hardware serial interface to send and receive from the Meshtastic network.
-     * Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic
-     * network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh
-     * network. Maximum packet size of 240 bytes.
+     * Provides a format to send and receive environmental data from the Meshtastic network.
      *
-     * Maintained by Jm Casler (MC Hamster) : jm@casler.org
+     * Maintained by Charles Crossan (crossan007) : crossan007@gmail.com
      */
+    ENVIRONMENTAL_MEASUREMENT_APP = 34;
+
+    /** Provides a hardware serial interface to send and receive from the Meshtastic network.
+    Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic
+    network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh
+    network. Maximum packet size of 240 bytes.
+    
+    Plugin is disabled by default can be turned on by setting SERIALPLUGIN_ENABLED = 1 in
+    SerialPlugh.cpp.
+    
+    Maintained by Jm Casler (MC Hamster) : jm@casler.org
+    
+    */
     SERIAL_APP = 64;
 
     /*
