@@ -371,7 +371,9 @@ The other fields are either not sent at all, or sent in the special 16 byte LORA
 | ----- | ---- | ----- | ----------- |
 | from | [fixed32](#fixed32) |  | The sending node number. Note: Our crypto implementation uses this field as well. See docs/software/crypto.md for details. FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
 | to | [fixed32](#fixed32) |  | The (immediatSee Priority description for more details.y should be fixed32 instead, this encoding only hurts the ble link though. |
-| channel_index | [uint32](#uint32) |  | If set, this indicates the index in the secondary_channels table that this packet was sent/received on. If unset, packet was on the primary channel. A particular node might know only a subset of channels in use on the mesh. Therefore channel_index is inherently a local concept and meaningless to send between nodes. |
+| channel | [uint32](#uint32) |  | (Usually) If set, this indicates the index in the secondary_channels table that this packet was sent/received on. If unset, packet was on the primary channel. A particular node might know only a subset of channels in use on the mesh. Therefore channel_index is inherently a local concept and meaningless to send between nodes.
+
+Very briefly, while sending and receiving deep inside the device Router code, this field instead contains the &#39;channel hash&#39; instead of the index. This &#39;trick&#39; is only used while the payloadVariant is an &#39;encrypted&#39;. |
 | decoded | [Data](#Data) |  |  |
 | encrypted | [bytes](#bytes) |  |  |
 | id | [fixed32](#fixed32) |  | A unique ID for this packet. Always 0 for no-ack packets or non broadcast packets (and therefore take zero bytes of space). Otherwise a unique ID for this packet, useful for flooding algorithms. ID only needs to be unique on a _per sender_ basis, and it only needs to be unique for a few minutes (long enough to last for the length of any ACK or the completion of a mesh broadcast flood). Note: Our crypto implementation uses this id as well. See docs/software/crypto.md for details. FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
@@ -871,6 +873,8 @@ details on the type of failure).
 | TIMEOUT | 3 |  |
 | NO_INTERFACE | 4 | No suitable interface could be found for delivering this packet |
 | MAX_RETRANSMIT | 5 | We reached the max retransmission count (typically for naive flood routing) |
+| NO_CHANNEL | 6 | No suitable channel was found for sending this packet (i.e. was requested channel index disabled?) |
+| TOO_LARGE | 7 | The packet was too big for sending (exceeds interface MTU after encoding) |
 
 
  

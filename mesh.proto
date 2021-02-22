@@ -152,9 +152,15 @@ message Routing {
     NO_INTERFACE = 4;
 
     /*
-      * We reached the max retransmission count (typically for naive flood routing)
-      */
+    * We reached the max retransmission count (typically for naive flood routing)
+    */
     MAX_RETRANSMIT = 5;
+
+    /* No suitable channel was found for sending this packet (i.e. was requested channel index disabled?) */
+    NO_CHANNEL = 6;
+    
+    /* The packet was too big for sending (exceeds interface MTU after encoding) */
+    TOO_LARGE = 7;
   }
 
   oneof variant {
@@ -291,12 +297,16 @@ message MeshPacket {
   fixed32 to = 2;
 
   /*
-   * If set, this indicates the index in the secondary_channels table that this packet 
+   * (Usually) If set, this indicates the index in the secondary_channels table that this packet 
    * was sent/received on.  If unset, packet was on the primary channel.
    * A particular node might know only a subset of channels in use on the mesh.  Therefore channel_index
    * is inherently a local concept and meaningless to send between nodes.
+   *
+   * Very briefly, while sending and receiving deep inside the device Router code, this field instead
+   * contains the 'channel hash' instead of the index.  This 'trick' is only used while the payloadVariant is
+   * an 'encrypted'.
    */
-  uint32 channel_index = 3;
+  uint32 channel = 3;
   
   /*
    * Internally to the mesh radios we will route SubPackets encrypted per
