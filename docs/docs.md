@@ -10,6 +10,9 @@
 - [deviceonly.proto](#deviceonly.proto)
     - [DeviceState](#.DeviceState)
   
+- [environmental_measurement.proto](#environmental_measurement.proto)
+    - [EnvironmentalMeasurement](#.EnvironmentalMeasurement)
+  
 - [mesh.proto](#mesh.proto)
     - [AdminMessage](#.AdminMessage)
     - [Channel](#.Channel)
@@ -133,6 +136,39 @@ the receive queue and use the preferences store for the other stuff
 | no_save | [bool](#bool) |  | Used only during development. Indicates developer is testing and changes should never be saved to flash. |
 | did_gps_reset | [bool](#bool) |  | Some GPSes seem to have bogus settings from the factory, so we always do one factory reset. |
 | channels | [Channel](#Channel) | repeated | The channels our node knows about |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+<a name="environmental_measurement.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## environmental_measurement.proto
+
+
+
+<a name=".EnvironmentalMeasurement"></a>
+
+### EnvironmentalMeasurement
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| temperature | [float](#float) |  |  |
+| relative_humidity | [float](#float) |  |  |
+| barometric_pressure | [float](#float) |  |  |
 
 
 
@@ -895,6 +931,8 @@ Reserved for built-in GPIO/example app. See remote_hardware.proto/HardwareMessag
 | IP_TUNNEL_APP | 33 | Used for the python IP tunnel feature |
 | SERIAL_APP | 64 | Provides a hardware serial interface to send and receive from the Meshtastic network. Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network. Maximum packet size of 240 bytes.
 
+Plugin is disabled by default can be turned on by setting SERIALPLUGIN_ENABLED = 1 in SerialPlugh.cpp.
+
 Maintained by Jm Casler (MC Hamster) : jm@casler.org |
 | STORE_FORWARD_APP | 65 | STORE_FORWARD_APP (Work in Progress)
 
@@ -902,6 +940,9 @@ Maintained by Jm Casler (MC Hamster) : jm@casler.org |
 | RANGE_TEST_APP | 66 | STORE_FORWARD_APP (Work in Progress)
 
 Maintained by Jm Casler (MC Hamster) : jm@casler.org |
+| ENVIRONMENTAL_MEASUREMENT_APP | 67 | Provides a format to send and receive environmental data from the Meshtastic network.
+
+Maintained by Charles Crossan (crossan007) : crossan007@gmail.com |
 | PRIVATE_APP | 256 | Private applications should use portnums &gt;= 256. To simplify initial development and testing you can use &#34;PRIVATE_APP&#34; in your code without needing to rebuild protobuf files (via bin/regin_protos.sh) |
 | ATAK_FORWARDER | 257 | ATAK Forwarder Plugin https://github.com/paulmandal/atak-forwarder |
 | MAX | 511 | Currently we limit port nums to no higher than this value |
