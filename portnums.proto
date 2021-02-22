@@ -120,6 +120,13 @@ enum PortNum {
     RANGE_TEST_APP = 66;
 
     /*
+     * Provides a format to send and receive environmental data from the Meshtastic network.
+     *
+     * Maintained by Charles Crossan (crossan007) : crossan007@gmail.com
+     */
+     ENVIRONMENTAL_MEASUREMENT_APP = 67;
+
+    /*
      * Private applications should use portnums >= 256.
      * To simplify initial development and testing you can use "PRIVATE_APP"
      * in your code without needing to rebuild protobuf files (via bin/regin_protos.sh)
