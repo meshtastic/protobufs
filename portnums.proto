@@ -120,4 +120,7 @@ enum PortNum {
      * ATAK Forwarder Plugin https://github.com/paulmandal/atak-forwarder
      */
     ATAK_FORWARDER = 257;
+
+    /** Currently we limit port nums to no higher than this value */
+    MAX = 511;
   }
