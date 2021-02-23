@@ -37,6 +37,13 @@ message Position {
 
   sfixed32 longitude_i = 2;
 
+  /* This is a special 'small' position update for lat/lon.  It encodes a signed 16 bit latitude in the upper
+  2 bytes, and a signed longitude in the lower 16 bits.  It is not currently implemented, but can be added in an
+  automatically backwards compatible way later.  Note: ONLY microlatlon OR latitude_i, longitude_i are populated in any particular
+  position.  A microdelta is always relative to the last received full position.
+
+  fixed32 microlatlon = 3; */
+
   /*
    * In meters above MSL
    */
