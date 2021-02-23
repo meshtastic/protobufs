@@ -903,26 +903,30 @@ message RadioConfig {
     FIXME - Move this out of UserPreferences and into a section for plugin configuration.
     */
     /*
-    * Enable/Disable the environmental measurement plugin
+    * Enable/Disable the environmental measurement plugin measurement collection
     */
-    bool environmental_measurement_plugin_enabled = 140;
+    bool environmental_measurement_plugin_measurement_enabled = 140;
+    /*
+    * Enable/Disable the environmental measurement plugin on-device display
+    */
+    bool environmental_measurement_plugin_screen_enabled = 141;
     /* 
     * Sometimes sensor reads can fail.  If this happens, we 
     * will retry a configurable number of attempts
     * Each attempt will be delayed by the minimum 
     * required refresh rate for that sensor
     */
-    uint32 environmental_measurement_plugin_read_error_count_threshold = 141;
+    uint32 environmental_measurement_plugin_read_error_count_threshold = 142;
     /*
     * Interval in seconds of how often we should try to send our 
     * measurements to the mesh
     */
-    uint32 environmental_measurement_plugin_update_interval = 142;
+    uint32 environmental_measurement_plugin_update_interval = 143;
     /* Sometimes we can end up with more than read_error_count_threshold
     * failures.  In this case, we will stop trying to read from the sensor
     * for a while.  Wait this long until trying to read from the sensor again
     */
-    uint32 environmental_measurement_plugin_recovery_interval = 143;
+    uint32 environmental_measurement_plugin_recovery_interval = 144;
 
 
   }
