@@ -59,9 +59,10 @@ message DeviceState {
     bool did_gps_reset = 11;
   
     /*
-     * Secondary channels are only used for encryption/decryption/authentication purposes.  Their radio settings (freq etc)
-     * are ignored, only psk is used.
-     * Note: this is not kept inside of RadioConfig because that would make ToRadio/FromRadio worse case > 512 bytes (to big for BLE)
+     * Secondary channels are only used for encryption/decryption/authentication purposes.
+     * Their radio settings (freq etc) are ignored, only psk is used.
+     * Note: this is not kept inside of RadioConfig because that would make
+     * ToRadio/FromRadio worse case > 512 bytes (to big for BLE)
      */
     repeated ChannelSettings secondary_channels = 12;
   }
