@@ -3,6 +3,9 @@
 
 ## Table of Contents
 
+- [admin.proto](#admin.proto)
+    - [AdminMessage](#.AdminMessage)
+  
 - [apponly.proto](#apponly.proto)
     - [ChannelSet](#.ChannelSet)
     - [ServiceEnvelope](#.ServiceEnvelope)
@@ -14,7 +17,6 @@
     - [EnvironmentalMeasurement](#.EnvironmentalMeasurement)
   
 - [mesh.proto](#mesh.proto)
-    - [AdminMessage](#.AdminMessage)
     - [Channel](#.Channel)
     - [ChannelSettings](#.ChannelSettings)
     - [Data](#.Data)
@@ -52,6 +54,46 @@
     - [HardwareMessage.Type](#.HardwareMessage.Type)
   
 - [Scalar Value Types](#scalar-value-types)
+
+
+
+<a name="admin.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## admin.proto
+
+
+
+<a name=".AdminMessage"></a>
+
+### AdminMessage
+This message is handled by the Admin plugin and is responsible for all settings/channel read/write operations.  This message
+is used to do settings operations to both remote AND local nodes.
+
+(Prior to 1.2 these operations were done via special ToRadio operations)
+
+FIXME - move the radioconfig/user/channel READ operations into AdminMessage as well
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| set_radio | [RadioConfig](#RadioConfig) |  | set the radio provisioning for this node |
+| set_owner | [User](#User) |  | Set the owner for this node |
+| set_channel | [Channel](#Channel) |  | Set channels (using the new API). A special channel is the &#34;primary channel&#34;. The other records are secondary channels. Note: only one channel can be marked as primary. If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically |
+| get_radio | [bool](#bool) |  | Send the current RadioConfig in the response for this message |
+| get_channel | [uint32](#uint32) |  | Send the specified channel in the response for this message |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+ 
 
 
 
@@ -205,28 +247,6 @@ To generate Nanopb c code:
 /home/kevinh/packages/nanopb-0.4.0-linux-x86/generator-bin/protoc --nanopb_out=/tmp -I=app/src/main/proto mesh.proto
 
 Nanopb binaries available here: https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.0
-
-
-<a name=".AdminMessage"></a>
-
-### AdminMessage
-This message is handled by the Admin plugin and is responsible for all settings/channel read/write operations.  This message
-is used to do settings operations to both remote AND local nodes.
-
-(Prior to 1.2 these operations were done via special ToRadio operations)
-
-FIXME - move the radioconfig/user/channel READ operations into AdminMessage as well
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| set_radio | [RadioConfig](#RadioConfig) |  | set the radio provisioning for this node |
-| set_owner | [User](#User) |  | Set the owner for this node |
-| set_channel | [Channel](#Channel) |  | Set channels (using the new API). A special channel is the &#34;primary channel&#34;. The other records are secondary channels. Note: only one channel can be marked as primary. If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically |
-
-
-
-
 
 
 <a name=".Channel"></a>
