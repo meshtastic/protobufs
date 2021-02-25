@@ -1363,5 +1363,15 @@ message AdminMessage {
       * Set channels (using the new API).  A special channel is the "primary channel".  The other records are secondary channels.
       * Note: only one channel can be marked as primary.  If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically */
      Channel set_channel = 3;
+
+     /*
+      * Send the current RadioConfig in the response for this message
+      */
+     bool get_radio = 4;
+
+     /*
+      * Send the specified channel in the response for this message
+      */
+      uint32 get_channel = 5;
   }
 }
