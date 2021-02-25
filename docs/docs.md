@@ -250,10 +250,10 @@ A pair of a channel number, mode and the (sharable) settings for that channel
 
 ### ChannelSettings
 Full settings (center freq, spread factor, pre-shared secret key etc...)
-needed to configure a radio for speaking on a particlar channel This
+needed to configure a radio for speaking on a particular channel This
 information can be encoded as a QRcode/url so that other users can configure
 their radio to join the same channel.
-A note aboute how channel names are shown to users: channelname-Xy
+A note about how channel names are shown to users: channelname-Xy
 poundsymbol is a prefix used to indicate this is a channel name (idea from @professr).
 Where X is a letter from A-Z (base 26) representing a hash of the PSK for this
 channel - so that if the user changes anything about the channel (which does
@@ -278,9 +278,9 @@ remote gpio are managed as an example
 | bandwidth | [uint32](#uint32) |  | Bandwidth in MHz Certain bandwidth numbers are &#39;special&#39; and will be converted to the appropriate floating point value: 31 -&gt; 31.25MHz |
 | spread_factor | [uint32](#uint32) |  | A number from 7 to 12. Indicates number of chirps per symbol as 1&lt;&lt;spread_factor. |
 | coding_rate | [uint32](#uint32) |  | The denominator of the coding rate. ie for 4/8, the value is 8. 5/8 the value is 5. |
-| channel_num | [uint32](#uint32) |  | A channel number between 1 and 13 (or whatever the max is in the current region). If ZERO then the rule is &#34;use the old channel name hash based algoritm to derive the channel number&#34;) If using the hash algorithm the channel number will be: hash(channel_name) % NUM_CHANNELS (Where num channels depends on the regulatory region). NUM_CHANNELS_US is 13, for other values see MeshRadio.h in the device code. hash a string into an integer - djb2 by Dan Bernstein. - http://www.cse.yorku.ca/~oz/hash.html unsigned long hash(char *str) { unsigned long hash = 5381; int c; while ((c = *str&#43;&#43;) != 0) hash = ((hash &lt;&lt; 5) &#43; hash) &#43; (unsigned char) c; return hash; } |
-| psk | [bytes](#bytes) |  | A simple preshared key for now for crypto. Must be either 0 bytes (no crypto), 16 bytes (AES128), or 32 bytes (AES256) A special shorthand is used for 1 byte long psks. These psks should be treated as only minimally secure, because they are listed in this source code. Those bytes are mapped using the following scheme: 0 = No crypto 1 = The special default channel key: {0xd4, 0xf1, 0xbb, 0x3a, 0x20, 0x29, 0x07, 0x59, 0xf0, 0xbc, 0xff, 0xab, 0xcf, 0x4e, 0x69, 0xbf} 2 through 10 = The default channel key, except with 1 through 9 added to the last byte |
-| name | [string](#string) |  | A SHORT name that will be packed into the URL. Less than 12 bytes. Something for end users to call the channel If this is the empty string it is assumed that this channel is the special (minimially secure) &#34;Default&#34; channel. In user interfaces it should be rendered as a local language translation of &#34;X&#34;. For channel_num hashing empty string will be treated as &#34;X&#34;. Where &#34;X&#34; is selected based on the english words listed above for ModemConfig |
+| channel_num | [uint32](#uint32) |  | A channel number between 1 and 13 (or whatever the max is in the current region). If ZERO then the rule is &#34;use the old channel name hash based algorithm to derive the channel number&#34;) If using the hash algorithm the channel number will be: hash(channel_name) % NUM_CHANNELS (Where num channels depends on the regulatory region). NUM_CHANNELS_US is 13, for other values see MeshRadio.h in the device code. hash a string into an integer - djb2 by Dan Bernstein. - http://www.cse.yorku.ca/~oz/hash.html unsigned long hash(char *str) { unsigned long hash = 5381; int c; while ((c = *str&#43;&#43;) != 0) hash = ((hash &lt;&lt; 5) &#43; hash) &#43; (unsigned char) c; return hash; } |
+| psk | [bytes](#bytes) |  | A simple pre-shared key for now for crypto. Must be either 0 bytes (no crypto), 16 bytes (AES128), or 32 bytes (AES256) A special shorthand is used for 1 byte long psks. These psks should be treated as only minimally secure, because they are listed in this source code. Those bytes are mapped using the following scheme: 0 = No crypto 1 = The special default channel key: {0xd4, 0xf1, 0xbb, 0x3a, 0x20, 0x29, 0x07, 0x59, 0xf0, 0xbc, 0xff, 0xab, 0xcf, 0x4e, 0x69, 0xbf} 2 through 10 = The default channel key, except with 1 through 9 added to the last byte |
+| name | [string](#string) |  | A SHORT name that will be packed into the URL. Less than 12 bytes. Something for end users to call the channel If this is the empty string it is assumed that this channel is the special (minimally secure) &#34;Default&#34;channel. In user interfaces it should be rendered as a local language translation of &#34;X&#34;. For channel_num hashing empty string will be treated as &#34;X&#34;. Where &#34;X&#34; is selected based on the English words listed above for ModemConfig |
 | id | [fixed32](#fixed32) |  | Used to construct a globally unique channel ID. The full globally unique ID will be: &#34;name.id&#34; where ID is shown as base36. Assuming that the number of meshtastic users is below 20K (true for a long time) the chance of this 64 bit random number colliding with anyone else is super low. And the penalty for collision is low as well, it just means that anyone trying to decrypt channel messages might need to try multiple candidate channels. Any time a non wire compatible change is made to a channel, this field should be regenerated. There are a small number of &#39;special&#39; globally known (and fairly) insecure standard channels. Those channels do not have a numeric id included in the settings, but instead it is pulled from a table of well known IDs. (see Well Known Channels FIXME) |
 | uplink_enabled | [bool](#bool) |  | If true, messages on the mesh will be sent to the *public* internet by any gateway ndoe |
 | downlink_enabled | [bool](#bool) |  | If true, messages seen on the internet will be forwarded to the local mesh. |
@@ -303,7 +303,7 @@ inside a radio packet (because from/to are broken out by the comms library)
 | portnum | [PortNum](#PortNum) |  | Formerly named typ and of type Type |
 | payload | [bytes](#bytes) |  | Required |
 | want_response | [bool](#bool) |  | Not normally used, but for testing a sender can request that recipient responds in kind (i.e. if it received a position, it should unicast back it&#39;s position). Note: that if you set this on a broadcast you will receive many replies. |
-| dest | [fixed32](#fixed32) |  | The address of the destination node. This field is is filled in by the mesh radio device software, applicaiton layer software should never need it. RouteDiscovery messages _must_ populate this. Other message types might need to if they are doing multihop routing. |
+| dest | [fixed32](#fixed32) |  | The address of the destination node. This field is is filled in by the mesh radio device software, application layer software should never need it. RouteDiscovery messages _must_ populate this. Other message types might need to if they are doing multihop routing. |
 | source | [fixed32](#fixed32) |  | The address of the original sender for this message. This field should _only_ be populated for reliable multihop packets (to keep packets small). |
 
 
@@ -316,7 +316,8 @@ inside a radio packet (because from/to are broken out by the comms library)
 ### FromRadio
 Packets from the radio to the phone will appear on the fromRadio characteristic.
 It will support READ and NOTIFY. When a new packet arrives the device will BLE notify?
-It will sit in that descriptor until consumed by the phone, at which point the next item in the FIFO will be populated.
+It will sit in that descriptor until consumed by the phone,
+at which point the next item in the FIFO will be populated.
 
 
 | Field | Type | Label | Description |
@@ -342,9 +343,9 @@ It will sit in that descriptor until consumed by the phone, at which point the n
 Debug output from the device.
 
 To minimize the size of records inside the device code, if a time/source/level is not set 
-on the message it is assumed to be a contuinuation of the previously sent message.  This allows
-the device code to use fixed maxlen 64 byte strings for messages, and then extend as needed by
-emitting multiple records.
+on the message it is assumed to be a continuation of the previously sent message.
+This allows the device code to use fixed maxlen 64 byte strings for messages,
+and then extend as needed by emitting multiple records.
 
 
 | Field | Type | Label | Description |
@@ -378,10 +379,10 @@ Very briefly, while sending and receiving deep inside the device Router code, th
 | encrypted | [bytes](#bytes) |  |  |
 | id | [fixed32](#fixed32) |  | A unique ID for this packet. Always 0 for no-ack packets or non broadcast packets (and therefore take zero bytes of space). Otherwise a unique ID for this packet, useful for flooding algorithms. ID only needs to be unique on a _per sender_ basis, and it only needs to be unique for a few minutes (long enough to last for the length of any ACK or the completion of a mesh broadcast flood). Note: Our crypto implementation uses this id as well. See docs/software/crypto.md for details. FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
 | rx_time | [fixed32](#fixed32) |  | The time this message was received by the esp32 (secs since 1970). Note: this field is _never_ sent on the radio link itself (to save space) Times are typically not sent over the mesh, but they will be added to any Packet (chain of SubPacket) sent to the phone (so the phone can know exact time of reception) |
-| rx_snr | [float](#float) |  | Never* sent over the radio links. Set during reception to indicate the SNR of this packet. Used to collect statistics on current link waulity. |
-| hop_limit | [uint32](#uint32) |  | If unset treated as zero (no fowarding, send to adjacent nodes only) if 1, allow hopping through one node, etc... For our usecase real world topologies probably have a max of about 3. This field is normally placed into a few of bits in the header. |
-| want_ack | [bool](#bool) |  | This packet is being sent as a reliable message, we would prefer it to arrive at the destination. We would like to receive a ack packet in response. Broadcasts messages treat this flag specially: Since acks for broadcasts would rapidly flood the channel, the normal ack behavior is suppressed. Instead, the original sender listens to see if at least one node is rebroadcasting this packet (because naive flooding algoritm). If it hears that the odds (given typical LoRa topologies) the odds are very high that every node should eventually receive the message. So FloodingRouter.cpp generates an implicit ack which is delivered to the original sender. If after some time we don&#39;t hear anyone rebroadcast our packet, we will timeout and retransmit, using the regular resend logic. Note: This flag is normally sent in a flag bit in the header when sent over the wire |
-| priority | [MeshPacket.Priority](#MeshPacket.Priority) |  | The priority of this message for sending. See MeshPacket.Priority description for more details. This field is never sent over the radio links (to keep size small) |
+| rx_snr | [float](#float) |  | Never* sent over the radio links. Set during reception to indicate the SNR of this packet. Used to collect statistics on current link quality. |
+| hop_limit | [uint32](#uint32) |  | If unset treated as zero (no forwarding, send to adjacent nodes only) if 1, allow hopping through one node, etc... For our usecase real world topologies probably have a max of about 3. This field is normally placed into a few of bits in the header. |
+| want_ack | [bool](#bool) |  | This packet is being sent as a reliable message, we would prefer it to arrive at the destination. We would like to receive a ack packet in response. Broadcasts messages treat this flag specially: Since acks for broadcasts would rapidly flood the channel, the normal ack behavior is suppressed. Instead, the original sender listens to see if at least one node is rebroadcasting this packet (because naive flooding algorithm). If it hears that the odds (given typical LoRa topologies) the odds are very high that every node should eventually receive the message. So FloodingRouter.cpp generates an implicit ack which is delivered to the original sender. If after some time we don&#39;t hear anyone rebroadcast our packet, we will timeout and retransmit, using the regular resend logic. Note: This flag is normally sent in a flag bit in the header when sent over the wire |
+| priority | [MeshPacket.Priority](#MeshPacket.Priority) |  | The priority of this message for sending. See MeshPacket.Priority description for more details. |
 
 
 
@@ -405,7 +406,7 @@ Sent to the phone in response to WantNodes.
 | region | [string](#string) |  | **Deprecated.** Deprecated! ONLY USED IN DEVICE CODE (for upgrading old 1.0 firmwares) DO NOT READ ELSEWHERE. The region code for my radio (US, CN, etc...) Note: This string is deprecated. The 1.0 builds populate it based on the flashed firmware name. But for newer builds this string will be unpopulated (missing/null). For those builds you should instead look at the new read/write region enum in UserSettings The format of this string was 1.0-US or 1.0-CN etc.. Or empty string if unset. |
 | hw_model | [string](#string) |  | TBEAM, HELTEC, etc... |
 | firmware_version | [string](#string) |  | 0.0.5 etc... |
-| error_code | [CriticalErrorCode](#CriticalErrorCode) |  | An error message we&#39;d like to report back to the mothership through analytics. It indicates a serious bug occurred on the device, the device coped with it, but we still want to tell the devs about the bug. This field will be cleared after the phone reads MyNodeInfo (i.e. it will onlybe reported once) a numeric error code to go with error message, zero means no error |
+| error_code | [CriticalErrorCode](#CriticalErrorCode) |  | An error message we&#39;d like to report back to the mothership through analytics. It indicates a serious bug occurred on the device, the device coped with it, but we still want to tell the devs about the bug. This field will be cleared after the phone reads MyNodeInfo (i.e. it will only be reported once) a numeric error code to go with error message, zero means no error |
 | error_address | [uint32](#uint32) |  | A numeric error address (nonzero if available) |
 | error_count | [uint32](#uint32) |  | The total number of errors this node has ever encountered (well - since the last time we discarded preferences) |
 | message_timeout_msec | [uint32](#uint32) |  | How long before we consider a message abandoned and we can clear our caches of any messages in flight Normally quite large to handle the worst case message delivery time, 5 minutes. Formerly called FLOOD_EXPIRE_TIME in the device code |
@@ -448,7 +449,7 @@ Full information about a node on the mesh
 | user | [User](#User) |  | The user info for this node |
 | position | [Position](#Position) |  | This position data will also contain a time last seen |
 | snr | [float](#float) |  | Returns the Signal-to-noise ratio (SNR) of the last received message, as measured by the receiver. Return SNR of the last received message in dB |
-| next_hop | [uint32](#uint32) |  | Returns the last measured frequency error. The LoRa receiver estimates the frequency offset between the receiver centre frequency and that of the received LoRa signal. This function returns the estimates offset (in Hz) of the last received message. Caution: this measurement is not absolute, but is measured relative to the local receiver&#39;s oscillator. Apparent errors may be due to the transmitter, the receiver or both. \return The estimated centre frequency offset in Hz of the last received message. int32 frequency_error = 6;
+| next_hop | [uint32](#uint32) |  | Returns the last measured frequency error. The LoRa receiver estimates the frequency offset between the receiver center frequency and that of the received LoRa signal. This function returns the estimates offset (in Hz) of the last received message. Caution: this measurement is not absolute, but is measured relative to the local receiver&#39;s oscillator. Apparent errors may be due to the transmitter, the receiver or both. \return The estimated center frequency offset in Hz of the last received message. int32 frequency_error = 6;
 
 enum RouteState { Invalid = 0; Discovering = 1; Valid = 2; }
 
@@ -559,6 +560,11 @@ FIXME - Move this out of UserPreferences and into a section for plugin configura
 
 FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
 | store_forward_plugin_records | [uint32](#uint32) |  |  |
+| environmental_measurement_plugin_measurement_enabled | [bool](#bool) |  | Enable/Disable the environmental measurement plugin measurement collection |
+| environmental_measurement_plugin_screen_enabled | [bool](#bool) |  | Enable/Disable the environmental measurement plugin on-device display |
+| environmental_measurement_plugin_read_error_count_threshold | [uint32](#uint32) |  | Sometimes sensor reads can fail. If this happens, we will retry a configurable number of attempts Each attempt will be delayed by the minimum required refresh rate for that sensor |
+| environmental_measurement_plugin_update_interval | [uint32](#uint32) |  | Interval in seconds of how often we should try to send our measurements to the mesh |
+| environmental_measurement_plugin_recovery_interval | [uint32](#uint32) |  | Sometimes we can end up with more than read_error_count_threshold failures. In this case, we will stop trying to read from the sensor for a while. Wait this long until trying to read from the sensor again |
 
 
 
@@ -741,8 +747,9 @@ Shared constants between device and phone
 ### CriticalErrorCode
 Error codes for critical errors
 
-The device might report these fault codes on the screen.  If you encounter a fault code, please
-post on the meshtastic.discourse.group and we&#39;ll try to help.
+The device might report these fault codes on the screen.
+If you encounter a fault code, please post on the meshtastic.discourse.group
+and we&#39;ll try to help.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -766,10 +773,10 @@ Note: This is independent of how our location is shared with other devices.  For
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| GpsOpUnset | 0 | This is treated as GpsOpMobile - it is the default settting |
+| GpsOpUnset | 0 | This is treated as GpsOpMobile - it is the default setting |
 | GpsOpStationary | 1 | Note: This mode was removed, because it is identical go GpsOpMobile with a gps_update_rate of once per day
 
-This node is mostly stationary, we should try to get location only once per day, Once we have that position we should turn the GPS to sleep mode This is the recommendated configuration for stationary &#39;router&#39; nodes |
+This node is mostly stationary, we should try to get location only once per day, Once we have that position we should turn the GPS to sleep mode This is the recommended configuration for stationary &#39;router&#39; nodes |
 | GpsOpMobile | 2 | This node is mobile and we should get GPS position at a rate governed by gps_update_rate |
 | GpsOpTimeOnly | 3 | We should only use the GPS to get time (no location data should be acquired/stored) Once we have the time we treat gps_update_interval as MAXINT (i.e. sleep forever) |
 | GpsOpDisabled | 4 | GPS is always turned off - this mode is not recommended - use GpsOpTimeOnly instead |
@@ -809,23 +816,34 @@ Log levels, chosen to match python logging conventions.
 <a name=".MeshPacket.Priority"></a>
 
 ### MeshPacket.Priority
-The priority of this message for sending.  Higher priorities are sent first (when managing the transmit queue).
-This field is never sent over the air, it is only used internally inside of a local device node.  API clients (either on the local node or
-connected directly to the node) can set this parameter if necessary.
+The priority of this message for sending.  Higher priorities are sent first
+(when managing the transmit queue).
+This field is never sent over the air, it is only used internally inside of a local device node.
+API clients (either on the local node or connected directly to the node)
+can set this parameter if necessary.
 
 (values must be &lt;= 127 to keep protobuf field to one byte in size.
 
 Detailed background on this field:
 
-I noticed a funny side effect of lora being so slow: Usually when making a protocol there isn’t much need to use message priority to change the order of transmission (because interfaces are fairly fast). But for lora where packets can take a few seconds each, it is very important to make sure that critical packets are sent ASAP. In the case of meshtastic that means we want to send protocol acks as soon as possible (to prevent unneeded retransmissions), we want routing messages to be sent next, then messages marked as reliable and finally ‘background’ packets like periodic position updates.
+I noticed a funny side effect of lora being so slow: Usually when making
+a protocol there isn’t much need to use message priority to change the order
+of transmission (because interfaces are fairly fast).
+But for lora where packets can take a few seconds each, it is very important
+to make sure that critical packets are sent ASAP.
+In the case of meshtastic that means we want to send protocol acks as soon as possible
+(to prevent unneeded retransmissions), we want routing messages to be sent next,
+then messages marked as reliable and finally ‘background’ packets like periodic position updates.
 
-So I bit the bullet and implemented a new (internal - not sent over the air) field in MeshPacket called ‘priority’. And the transmission queue in the router object is now a priority queue.
+So I bit the bullet and implemented a new (internal - not sent over the air)
+field in MeshPacket called ‘priority’.
+And the transmission queue in the router object is now a priority queue.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | UNSET | 0 | Treated as Priority.DEFAULT |
 | MIN | 1 |  |
-| BACKGROUND | 10 | Background position updates are sent with very low priority - if the link is super conjested they might not go out at all |
+| BACKGROUND | 10 | Background position updates are sent with very low priority - if the link is super congested they might not go out at all |
 | DEFAULT | 64 | This priority is used for most messages that don&#39;t have a priority set |
 | RELIABLE | 70 | If priority is unset but the message is marked as want_ack, assume it is important and use a slightly higher priority |
 | ACK | 120 | Ack/naks are sent with very high priority to ensure that retransmission stops as soon as possible |
@@ -911,14 +929,14 @@ All other values are reserved.
 
 Note: This was formerly a Type enum named &#39;typ&#39; with the same id #
 
-We have change to this &#39;portnum&#39; based scheme for specifying app handlers for particular payloads.  
+We have change to this &#39;portnum&#39; based scheme for specifying app handlers for particular payloads.
 This change is backwards compatible by treating the legacy OPAQUE/CLEAR_TEXT values identically.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | UNKNOWN_APP | 0 | Deprecated: do not use in new code (formerly called OPAQUE) A message sent from a device outside of the mesh, in a form the mesh does not understand NOTE: This must be 0, because it is documented in IMeshService.aidl to be so |
 | TEXT_MESSAGE_APP | 1 | A simple UTF-8 text message, which even the little micros in the mesh can understand and show on their screen eventually in some circumstances even signal might send messages in this form (see below) Formerly called CLEAR_TEXT |
-| REMOTE_HARDWARE_APP | 2 | A message receive acknowledgement, sent in cleartext - allows radio to show user that a message has been read by the recipient, optional
+| REMOTE_HARDWARE_APP | 2 | A message receive acknowledgment, sent in cleartext - allows radio to show user that a message has been read by the recipient, optional
 
 Note: this concept has been removed for now. Once READACK is implemented, use the new packet type/port number stuff?
 
@@ -933,20 +951,18 @@ Reserved for built-in GPIO/example app. See remote_hardware.proto/HardwareMessag
 | ADMIN_APP | 6 | Admin control packets, payload is a AdminMessage protobuf |
 | REPLY_APP | 32 | Provides a &#39;ping&#39; service that replies to any packet it receives. Also this serves as a small example plugin. |
 | IP_TUNNEL_APP | 33 | Used for the python IP tunnel feature |
+| ENVIRONMENTAL_MEASUREMENT_APP | 34 | Provides a format to send and receive environmental data from the Meshtastic network.
+
+Maintained by Charles Crossan (crossan007) : crossan007@gmail.com |
 | SERIAL_APP | 64 | Provides a hardware serial interface to send and receive from the Meshtastic network. Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network. Maximum packet size of 240 bytes.
 
-Plugin is disabled by default can be turned on by setting SERIALPLUGIN_ENABLED = 1 in SerialPlugh.cpp.
-
-Maintained by Jm Casler (MC Hamster) : jm@casler.org |
+Plugin is disabled by default can be turned on by setting SERIALPLUGIN_ENABLED = 1 in SerialPlugh.cpp. Maintained by Jm Casler (MC Hamster) : jm@casler.org |
 | STORE_FORWARD_APP | 65 | STORE_FORWARD_APP (Work in Progress)
 
 Maintained by Jm Casler (MC Hamster) : jm@casler.org |
 | RANGE_TEST_APP | 66 | STORE_FORWARD_APP (Work in Progress)
 
 Maintained by Jm Casler (MC Hamster) : jm@casler.org |
-| ENVIRONMENTAL_MEASUREMENT_APP | 67 | Provides a format to send and receive environmental data from the Meshtastic network.
-
-Maintained by Charles Crossan (crossan007) : crossan007@gmail.com |
 | PRIVATE_APP | 256 | Private applications should use portnums &gt;= 256. To simplify initial development and testing you can use &#34;PRIVATE_APP&#34; in your code without needing to rebuild protobuf files (via bin/regin_protos.sh) |
 | ATAK_FORWARDER | 257 | ATAK Forwarder Plugin https://github.com/paulmandal/atak-forwarder |
 | MAX | 511 | Currently we limit port nums to no higher than this value |
@@ -970,14 +986,18 @@ Maintained by Charles Crossan (crossan007) : crossan007@gmail.com |
 <a name=".HardwareMessage"></a>
 
 ### HardwareMessage
-A example app to show off the plugin system. This message is used for REMOTE_HARDWARE_APP PortNums.
+A example app to show off the plugin system. This message is used for 
+REMOTE_HARDWARE_APP PortNums.
 
-Also provides easy remote access to any GPIO.  
+Also provides easy remote access to any GPIO.
 
-In the future other remote hardware operations can be added based on user interest (i.e. serial output, spi/i2c input/output).
+In the future other remote hardware operations can be added based on user interest
+(i.e. serial output, spi/i2c input/output).
 
-FIXME - currently this feature is turned on by default which is dangerous because no security yet (beyond the channel mechanism).
-It should be off by default and then protected based on some TBD mechanism (a special channel once multichannel support is included?)
+FIXME - currently this feature is turned on by default which is dangerous
+because no security yet (beyond the channel mechanism).
+It should be off by default and then protected based on some TBD mechanism
+(a special channel once multichannel support is included?)
 
 
 | Field | Type | Label | Description |

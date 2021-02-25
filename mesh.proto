@@ -31,7 +31,8 @@ import "portnums.proto";
 message Position {
 
   /*
-   * The new preferred location encoding, divide by 1e-7 to get degrees in floating point
+   * The new preferred location encoding, divide by 1e-7 to get degrees
+   * in floating point
    */
   sfixed32 latitude_i = 1;
 
@@ -61,7 +62,7 @@ message Position {
    * be sent by devices which has a hardware GPS clock.
    * seconds since 1970
    */
-  fixed32 time = 9; 
+  fixed32 time = 9;
 }
 
 /*
@@ -97,22 +98,23 @@ message User {
    * Signal that would mean +16504442323, for the default macaddr
    * derived id it would be !<8 hexidecimal bytes>
    */
-  string id = 1; 
-  
+  string id = 1;
+
   /*
    * A full name for this user, i.e. "Kevin Hester"
    */
-  string long_name = 2;  
-  
+  string long_name = 2;
+
   /*
    * A VERY short name, ideally two characters.  Suitable for a tiny OLED screen
    */
-  string short_name = 3; 
-  
+  string short_name = 3;
+
   /*
-   * This is the addr of the radio.  Not populated by the phone, but added by the esp32 when broadcasting
+   * This is the addr of the radio.  Not populated by the phone,
+   * but added by the esp32 when broadcasting
    */
-  bytes macaddr = 4; 
+  bytes macaddr = 4;
 }
 
 /*
@@ -234,7 +236,7 @@ message Data {
 
   /*
    * The address of the destination node.
-   * This field is is filled in by the mesh radio device software, applicaiton
+   * This field is is filled in by the mesh radio device software, application
    * layer software should never need it.
    * RouteDiscovery messages _must_ populate this.  Other message types might need
    * to if they are doing multihop routing.
@@ -256,17 +258,28 @@ message Data {
  */
 message MeshPacket {
 
-  /* The priority of this message for sending.  Higher priorities are sent first (when managing the transmit queue).
-  This field is never sent over the air, it is only used internally inside of a local device node.  API clients (either on the local node or
-  connected directly to the node) can set this parameter if necessary.
+  /* The priority of this message for sending.  Higher priorities are sent first
+  (when managing the transmit queue).
+  This field is never sent over the air, it is only used internally inside of a local device node.
+  API clients (either on the local node or connected directly to the node)
+  can set this parameter if necessary.
 
   (values must be <= 127 to keep protobuf field to one byte in size.
   
   Detailed background on this field:
 
-  I noticed a funny side effect of lora being so slow: Usually when making a protocol there isn’t much need to use message priority to change the order of transmission (because interfaces are fairly fast). But for lora where packets can take a few seconds each, it is very important to make sure that critical packets are sent ASAP. In the case of meshtastic that means we want to send protocol acks as soon as possible (to prevent unneeded retransmissions), we want routing messages to be sent next, then messages marked as reliable and finally ‘background’ packets like periodic position updates.
+  I noticed a funny side effect of lora being so slow: Usually when making
+  a protocol there isn’t much need to use message priority to change the order
+  of transmission (because interfaces are fairly fast).
+  But for lora where packets can take a few seconds each, it is very important
+  to make sure that critical packets are sent ASAP.
+  In the case of meshtastic that means we want to send protocol acks as soon as possible
+  (to prevent unneeded retransmissions), we want routing messages to be sent next,
+  then messages marked as reliable and finally ‘background’ packets like periodic position updates.
 
-  So I bit the bullet and implemented a new (internal - not sent over the air) field in MeshPacket called ‘priority’. And the transmission queue in the router object is now a priority queue.
+  So I bit the bullet and implemented a new (internal - not sent over the air)
+  field in MeshPacket called ‘priority’.
+  And the transmission queue in the router object is now a priority queue.
   */
   enum Priority {
     /* Treated as Priority.DEFAULT */
@@ -274,16 +287,19 @@ message MeshPacket {
 
     MIN = 1;
 
-    /* Background position updates are sent with very low priority - if the link is super conjested they might not go out at all */
+    /* Background position updates are sent with very low priority -
+     * if the link is super congested they might not go out at all */
     BACKGROUND = 10;
 
     /* This priority is used for most messages that don't have a priority set */
     DEFAULT = 64;
 
-    /* If priority is unset but the message is marked as want_ack, assume it is important and use a slightly higher priority */
+    /* If priority is unset but the message is marked as want_ack,
+     * assume it is important and use a slightly higher priority */
     RELIABLE = 70;
 
-    /* Ack/naks are sent with very high priority to ensure that retransmission stops as soon as possible */
+    /* Ack/naks are sent with very high priority to ensure that retransmission
+     * stops as soon as possible */
     ACK = 120;
 
     MAX = 127;
@@ -352,38 +368,37 @@ message MeshPacket {
 
   /*
    * *Never* sent over the radio links.  Set during reception to indicate the SNR
-   * of this packet.  Used to collect statistics on current link waulity.
+   * of this packet.  Used to collect statistics on current link quality.
    */
   float rx_snr = 8;
 
-   /*
-   * If unset treated as zero (no fowarding, send to adjacent nodes only)
+  /*
+   * If unset treated as zero (no forwarding, send to adjacent nodes only)
    * if 1, allow hopping through one node, etc...
    * For our usecase real world topologies probably have a max of about 3.
    * This field is normally placed into a few of bits in the header.
    */
-   uint32 hop_limit = 9;
+  uint32 hop_limit = 10;
 
-   /*
-    * This packet is being sent as a reliable message, we would prefer it to arrive
-    * at the destination.  We would like to receive a ack packet in response.
-    * Broadcasts messages treat this flag specially: Since acks for broadcasts would
-    * rapidly flood the channel, the normal ack behavior is suppressed.  Instead,
-    * the original sender listens to see if at least one node is rebroadcasting this
-    * packet (because naive flooding algoritm).  If it hears that the odds (given
-    * typical LoRa topologies) the odds are very high that every node should
-    * eventually receive the message.  So FloodingRouter.cpp generates an implicit
-    * ack which is delivered to the original sender. If after some time we don't
-    * hear anyone rebroadcast our packet, we will timeout and retransmit, using the regular resend logic.
-    * Note: This flag is normally sent in a flag bit in the header when sent over the wire
-    */
-   bool want_ack = 10;
-   
-   /* The priority of this message for sending. 
-   See MeshPacket.Priority description for more details.
-   This field is never sent over the radio links (to keep size small)
+  /*
+   * This packet is being sent as a reliable message, we would prefer it to arrive
+   * at the destination.  We would like to receive a ack packet in response.
+   * Broadcasts messages treat this flag specially: Since acks for broadcasts would
+   * rapidly flood the channel, the normal ack behavior is suppressed.  Instead,
+   * the original sender listens to see if at least one node is rebroadcasting this
+   * packet (because naive flooding algorithm).  If it hears that the odds (given
+   * typical LoRa topologies) the odds are very high that every node should
+   * eventually receive the message.  So FloodingRouter.cpp generates an implicit
+   * ack which is delivered to the original sender. If after some time we don't
+   * hear anyone rebroadcast our packet, we will timeout and retransmit, using the regular resend logic.
+   * Note: This flag is normally sent in a flag bit in the header when sent over the wire
    */
-   Priority priority = 11;   
+  bool want_ack = 11;
+
+  /* The priority of this message for sending. 
+  See MeshPacket.Priority description for more details.
+  */
+  Priority priority = 12;
 }
 
 /*
@@ -407,10 +422,10 @@ enum Constants {
 
 /*
  * Full settings (center freq, spread factor, pre-shared secret key etc...)
- * needed to configure a radio for speaking on a particlar channel This
+ * needed to configure a radio for speaking on a particular channel This
  * information can be encoded as a QRcode/url so that other users can configure
  * their radio to join the same channel.
- * A note aboute how channel names are shown to users: channelname-Xy
+ * A note about how channel names are shown to users: channelname-Xy
  * poundsymbol is a prefix used to indicate this is a channel name (idea from @professr).
  * Where X is a letter from A-Z (base 26) representing a hash of the PSK for this
  * channel - so that if the user changes anything about the channel (which does
@@ -500,7 +515,7 @@ message ChannelSettings {
   /*
    * A channel number between 1 and 13 (or whatever the max is in the current
    * region). If ZERO then the rule is "use the old channel name hash based
-   * algoritm to derive the channel number")
+   * algorithm to derive the channel number")
    * If using the hash algorithm the channel number will be: hash(channel_name) %
    * NUM_CHANNELS (Where num channels depends on the regulatory region).
    * NUM_CHANNELS_US is 13, for other values see MeshRadio.h in the device code.
@@ -516,9 +531,10 @@ message ChannelSettings {
   uint32 channel_num = 9;
 
   /*
-   * A simple preshared key for now for crypto.  Must be either 0 bytes (no
+   * A simple pre-shared key for now for crypto.  Must be either 0 bytes (no
    * crypto), 16 bytes (AES128), or 32 bytes (AES256)
-   * A special shorthand is used for 1 byte long psks.  These psks should be treated as only minimally secure,
+   * A special shorthand is used for 1 byte long psks.
+   * These psks should be treated as only minimally secure,
    * because they are listed in this source code.  Those bytes are mapped using the following scheme:
    * 0 = No crypto
    * 1 = The special default channel key: {0xd4, 0xf1, 0xbb, 0x3a, 0x20, 0x29, 0x07, 0x59, 0xf0, 0xbc, 0xff, 0xab, 0xcf, 0x4e, 0x69, 0xbf}
@@ -529,10 +545,11 @@ message ChannelSettings {
   /*
    * A SHORT name that will be packed into the URL.  Less than 12 bytes.
    * Something for end users to call the channel
-   * If this is the empty string it is assumed that this channel is the special (minimially secure) "Default"
-   * channel.  In user interfaces it should be rendered as a local language translation of "X".  For channel_num
+   * If this is the empty string it is assumed that this channel
+   * is the special (minimally secure) "Default"channel.
+   * In user interfaces it should be rendered as a local language translation of "X".  For channel_num
    * hashing empty string will be treated as "X".
-   * Where "X" is selected based on the english words listed above for ModemConfig
+   * Where "X" is selected based on the English words listed above for ModemConfig
    */
   string name = 5;
 
@@ -653,7 +670,7 @@ enum ChargeCurrent {
 enum GpsOperation {
 
   /*
-   * This is treated as GpsOpMobile - it is the default settting
+   * This is treated as GpsOpMobile - it is the default setting
    */
   GpsOpUnset = 0;
 
@@ -662,7 +679,7 @@ enum GpsOperation {
    *
    * This node is mostly stationary, we should try to get location only once per day,
    * Once we have that position we should turn the GPS to sleep mode
-   * This is the recommendated configuration for stationary 'router' nodes
+   * This is the recommended configuration for stationary 'router' nodes
    */
   GpsOpStationary = 1;
 
@@ -852,9 +869,9 @@ message RadioConfig {
      */
     bool debug_log_enabled = 101;
 
-    /*
-     * How our location is shared with other nodes (or the local phone)
-     */
+    /**
+    How our location is shared with other nodes (or the local phone)
+    */
     LocationSharing location_share = 32;
 
     /*
@@ -893,11 +910,11 @@ message RadioConfig {
      */
     repeated uint32 ignore_incoming = 103;
     
-    /*
-     * Preferences for the SerialPlugin
-     *
-     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-     */
+    /**
+    Preferences for the SerialPlugin
+    
+    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+    */
     bool serialplugin_enabled = 120;
     bool serialplugin_echo = 121;
     uint32 serialplugin_rxd = 122;
@@ -905,11 +922,11 @@ message RadioConfig {
     uint32 serialplugin_timeout = 124;
     uint32 serialplugin_mode = 125;
 
-    /*
-     * Preferences for the ExternalNotificationPlugin
-     *
-     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-     */
+    /**
+    Preferences for the ExternalNotificationPlugin
+    
+    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+    */
     bool ext_notification_plugin_enabled = 126;
     uint32 ext_notification_plugin_output_ms = 127;
     uint32 ext_notification_plugin_output = 128;
@@ -917,22 +934,54 @@ message RadioConfig {
     bool ext_notification_plugin_alert_message = 130;
     bool ext_notification_plugin_alert_bell = 131;
 
-    /*
-     * Preferences for the RangeTestPlugin
-     *
-     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-     */
+    /**
+    Preferences for the RangeTestPlugin
+    
+    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+    */
     bool range_test_plugin_enabled = 132;
     uint32 range_test_plugin_sender = 133;
     bool range_test_plugin_save = 134;
 
-    /*
-     * Preferences for the StoreForwardPlugin
-     *
-     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-     */
+    /**
+    Preferences for the StoreForwardPlugin
+    
+    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+    */
     bool store_forward_plugin_enabled = 136;
     uint32 store_forward_plugin_records = 137;
+
+    /**
+    Preferences for the EnvironmentalMeasurement Plugin
+    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+    */
+    /*
+    * Enable/Disable the environmental measurement plugin measurement collection
+    */
+    bool environmental_measurement_plugin_measurement_enabled = 140;
+    /*
+    * Enable/Disable the environmental measurement plugin on-device display
+    */
+    bool environmental_measurement_plugin_screen_enabled = 141;
+    /* 
+    * Sometimes sensor reads can fail.  If this happens, we 
+    * will retry a configurable number of attempts
+    * Each attempt will be delayed by the minimum 
+    * required refresh rate for that sensor
+    */
+    uint32 environmental_measurement_plugin_read_error_count_threshold = 142;
+    /*
+    * Interval in seconds of how often we should try to send our 
+    * measurements to the mesh
+    */
+    uint32 environmental_measurement_plugin_update_interval = 143;
+    /* Sometimes we can end up with more than read_error_count_threshold
+    * failures.  In this case, we will stop trying to read from the sensor
+    * for a while.  Wait this long until trying to read from the sensor again
+    */
+    uint32 environmental_measurement_plugin_recovery_interval = 144;
+
+
   }
 
   UserPreferences preferences = 1;
@@ -979,19 +1028,19 @@ message NodeInfo {
   Position position = 3;
 
   /*
-   * Returns the Signal-to-noise ratio (SNR) of the last received message, as measured by the receiver.
-   * Return SNR of the last received message in dB
+   * Returns the Signal-to-noise ratio (SNR) of the last received message,
+   * as measured by the receiver. Return SNR of the last received message in dB
    */
   float snr = 7;
 
   /*
    * Returns the last measured frequency error.
    * The LoRa receiver estimates the frequency offset between the receiver
-   * centre frequency and that of the received LoRa signal. This function
+   * center frequency and that of the received LoRa signal. This function
    * returns the estimates offset (in Hz) of the last received message.
    * Caution: this measurement is not absolute, but is measured relative to the
    * local receiver's oscillator. Apparent errors may be due to the
-   * transmitter, the receiver or both. \return The estimated centre frequency
+   * transmitter, the receiver or both. \return The estimated center frequency
    * offset in Hz of the last received message.
    * int32 frequency_error = 6;
    *
@@ -1010,10 +1059,11 @@ message NodeInfo {
   uint32 next_hop = 5;
 }
 
-/* Error codes for critical errors
+/** Error codes for critical errors
  * 
- * The device might report these fault codes on the screen.  If you encounter a fault code, please
- * post on the meshtastic.discourse.group and we'll try to help.
+ * The device might report these fault codes on the screen.
+ * If you encounter a fault code, please post on the meshtastic.discourse.group
+ * and we'll try to help.
  */
 enum CriticalErrorCode { 
   None = 0;
@@ -1070,15 +1120,17 @@ enum CriticalErrorCode {
 message MyNodeInfo {
 
   /*
-   * Tells the phone what our node number is, default starting value is lowbyte of macaddr, but it will be fixed if that is already in use
+   * Tells the phone what our node number is, default starting value is
+   * lowbyte of macaddr, but it will be fixed if that is already in use
    */
   uint32 my_node_num = 1;
 
   /*
-   * Note: this bool no longer means "we have our own GPS".  Because gps_operation is more advanced,
-   * but we'd like old phone apps to keep working.  So for legacy reasons we set this flag as follows:  
-   * if false it would be great if the phone can help provide gps coordinates.  If true we don't need location
-   * assistance from the phone.
+   * Note: this bool no longer means "we have our own GPS".
+   * Because gps_operation is more advanced, but we'd like old phone apps
+   * to keep working.  So for legacy reasons we set this flag as follows:
+   * if false it would be great if the phone can help provide gps coordinates.
+   * If true we don't need location assistance from the phone.
    */
   bool has_gps = 2;
 
@@ -1114,8 +1166,10 @@ message MyNodeInfo {
 
   /*
    * An error message we'd like to report back to the mothership through analytics.
-   * It indicates a serious bug occurred on the device, the device coped with it, but we still want to tell the devs about the bug.
-   * This field will be cleared after the phone reads MyNodeInfo (i.e. it will onlybe reported once)
+   * It indicates a serious bug occurred on the device, the device coped with it,
+   * but we still want to tell the devs about the bug.
+   * This field will be cleared after the phone reads MyNodeInfo
+   * (i.e. it will only be reported once)
    * a numeric error code to go with error message, zero means no error
    */
    CriticalErrorCode error_code = 7;
@@ -1126,7 +1180,8 @@ message MyNodeInfo {
   uint32 error_address = 8;
 
   /*
-   * The total number of errors this node has ever encountered (well - since the last time we discarded preferences)
+   * The total number of errors this node has ever encountered
+   * (well - since the last time we discarded preferences)
    */
   uint32 error_count = 9;
 
@@ -1153,9 +1208,9 @@ message MyNodeInfo {
 /* Debug output from the device.
  *
  * To minimize the size of records inside the device code, if a time/source/level is not set 
- * on the message it is assumed to be a contuinuation of the previously sent message.  This allows
- * the device code to use fixed maxlen 64 byte strings for messages, and then extend as needed by
- * emitting multiple records.
+ * on the message it is assumed to be a continuation of the previously sent message.
+ * This allows the device code to use fixed maxlen 64 byte strings for messages,
+ * and then extend as needed by emitting multiple records.
  */
 message LogRecord {
 
@@ -1193,7 +1248,8 @@ message LogRecord {
 /*
  * Packets from the radio to the phone will appear on the fromRadio characteristic.
  * It will support READ and NOTIFY. When a new packet arrives the device will BLE notify?
- * It will sit in that descriptor until consumed by the phone, at which point the next item in the FIFO will be populated.
+ * It will sit in that descriptor until consumed by the phone,
+ * at which point the next item in the FIFO will be populated.
  */
 message FromRadio {
 
@@ -1201,7 +1257,8 @@ message FromRadio {
   reserved 2;
 
   /*
-   * The packet num, used to allow the phone to request missing read packets from the FIFO, see our bluetooth docs
+   * The packet num, used to allow the phone to request missing read packets from the FIFO,
+   * see our bluetooth docs
    */
   uint32 num = 1;
 
