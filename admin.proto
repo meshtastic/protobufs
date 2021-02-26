@@ -35,11 +35,13 @@ message AdminMessage {
        /*
         * Send the current RadioConfig in the response for this message
         */
-       bool get_radio = 4;
+       bool get_radio_request = 4;
+       RadioConfig get_radio_response = 5;
   
        /*
         * Send the specified channel in the response for this message
         */
-        uint32 get_channel = 5;
+        uint32 get_channel_request = 6;
+        Channel get_channel_response = 7;
     }
   }

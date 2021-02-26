@@ -80,8 +80,10 @@ FIXME - move the radioconfig/user/channel READ operations into AdminMessage as w
 | set_radio | [RadioConfig](#RadioConfig) |  | set the radio provisioning for this node |
 | set_owner | [User](#User) |  | Set the owner for this node |
 | set_channel | [Channel](#Channel) |  | Set channels (using the new API). A special channel is the &#34;primary channel&#34;. The other records are secondary channels. Note: only one channel can be marked as primary. If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically |
-| get_radio | [bool](#bool) |  | Send the current RadioConfig in the response for this message |
-| get_channel | [uint32](#uint32) |  | Send the specified channel in the response for this message |
+| get_radio_request | [bool](#bool) |  | Send the current RadioConfig in the response for this message |
+| get_radio_response | [RadioConfig](#RadioConfig) |  |  |
+| get_channel_request | [uint32](#uint32) |  | Send the specified channel in the response for this message |
+| get_channel_response | [Channel](#Channel) |  |  |
 
 
 
