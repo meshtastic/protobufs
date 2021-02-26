@@ -327,6 +327,7 @@ inside a radio packet (because from/to are broken out by the comms library)
 | want_response | [bool](#bool) |  | Not normally used, but for testing a sender can request that recipient responds in kind (i.e. if it received a position, it should unicast back it&#39;s position). Note: that if you set this on a broadcast you will receive many replies. |
 | dest | [fixed32](#fixed32) |  | The address of the destination node. This field is is filled in by the mesh radio device software, application layer software should never need it. RouteDiscovery messages _must_ populate this. Other message types might need to if they are doing multihop routing. |
 | source | [fixed32](#fixed32) |  | The address of the original sender for this message. This field should _only_ be populated for reliable multihop packets (to keep packets small). |
+| request_id | [fixed32](#fixed32) |  | Only used in routing or response messages. Indicates the original message ID that this message is reporting failure on. (formerly called original_id) |
 
 
 
@@ -619,9 +620,6 @@ A Routing control Data packet handled by the routing plugin
 | route_request | [RouteDiscovery](#RouteDiscovery) |  | A route request going from the requester |
 | route_reply | [RouteDiscovery](#RouteDiscovery) |  | A route reply |
 | error_reason | [Routing.Error](#Routing.Error) |  | A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide details on the type of failure). |
-| success_id | [fixed32](#fixed32) |  | This is an ack. This packet is a requested acknoledgement indicating that we have received the specified message ID. This packet type can be used both for immediate (0 hops) messages or can be routed through multiple hops if dest is set. Note: As an optimization, recipients can _also_ populate a field in payload if they think the recipient would appreciate that extra state. |
-| fail_id | [fixed32](#fixed32) |  | This is a nak, we failed to deliver this message. |
-| original_id | [fixed32](#fixed32) |  | Only used in route_error messages. Indicates the original message ID that this message is reporting failure on. |
 
 
 

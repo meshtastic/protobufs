@@ -189,26 +189,22 @@ message Routing {
       */
     Error error_reason = 3;
 
-    /* This is an ack.
+    /* Deprecated - this has been replced with error_reason == NONE && request_id != 0
+     * This is an ack.
      * This packet is a requested acknoledgement indicating that we have received
      * the specified message ID.  This packet type can be used both for immediate
      * (0 hops) messages or can be routed through multiple hops if dest is set.
      * Note: As an optimization, recipients can _also_ populate a field in payload
      * if they think the recipient would appreciate that extra state.
-     */
+     
      fixed32 success_id = 4;
+     */
 
-     /*
+     /* Deprecated - this has been replced with error_reason !== NONE && request_id != 0
       * This is a nak, we failed to deliver this message.
-      */
      fixed32 fail_id = 5;
-  }
-
-  /*
-   * Only used in route_error messages.  Indicates the original message ID that
-   * this message is reporting failure on.
-   */
-   fixed32 original_id = 6;    
+     */
+  } 
 }
 
 /* (Formerly called SubPacket)
@@ -249,6 +245,12 @@ message Data {
    * packets small).
    */
   fixed32 source = 5;
+
+  /*
+   * Only used in routing or response messages.  Indicates the original message ID that
+   * this message is reporting failure on. (formerly called original_id)
+   */
+   fixed32 request_id = 6;     
 }
 
 /*
