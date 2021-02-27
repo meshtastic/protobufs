@@ -82,7 +82,7 @@ FIXME - move the radioconfig/user/channel READ operations into AdminMessage as w
 | set_channel | [Channel](#Channel) |  | Set channels (using the new API). A special channel is the &#34;primary channel&#34;. The other records are secondary channels. Note: only one channel can be marked as primary. If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically |
 | get_radio_request | [bool](#bool) |  | Send the current RadioConfig in the response for this message |
 | get_radio_response | [RadioConfig](#RadioConfig) |  |  |
-| get_channel_request | [uint32](#uint32) |  | Send the specified channel in the response for this message |
+| get_channel_request | [uint32](#uint32) |  | Send the specified channel in the response for this message NOTE: This field is sent with the channel index &#43; 1 (to ensure we never try to send &#39;zero&#39; - which protobufs treats as not present) |
 | get_channel_response | [Channel](#Channel) |  |  |
 
 

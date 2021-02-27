@@ -40,6 +40,7 @@ message AdminMessage {
   
        /*
         * Send the specified channel in the response for this message
+        * NOTE: This field is sent with the channel index + 1 (to ensure we never try to send 'zero' - which protobufs treats as not present)
         */
         uint32 get_channel_request = 6;
         Channel get_channel_response = 7;
