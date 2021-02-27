@@ -1,12 +1,13 @@
 syntax = "proto3";
 
 option java_package = "com.geeksville.mesh";
-option java_outer_classname = "DeviceOnly";
 option optimize_for = LITE_RUNTIME;
 
 import "mesh.proto";
 import "radioconfig.proto";
 import "channel.proto";
+
+option java_outer_classname = "DeviceOnly";
 
 /*
  * This message is never sent over the wire, but it is used for serializing DB

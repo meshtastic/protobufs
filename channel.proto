@@ -20,8 +20,9 @@ syntax = "proto3";
  */
 
 option java_package = "com.geeksville.mesh";
-option java_outer_classname = "ChannelProtos";
 option optimize_for = LITE_RUNTIME;
+
+option java_outer_classname = "ChannelProtos";
 
 /*
  * Full settings (center freq, spread factor, pre-shared secret key etc...)

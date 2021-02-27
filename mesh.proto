@@ -20,10 +20,11 @@ syntax = "proto3";
  */
 
 option java_package = "com.geeksville.mesh";
-option java_outer_classname = "MeshProtos";
 option optimize_for = LITE_RUNTIME;
 
 import "portnums.proto";
+
+option java_outer_classname = "MeshProtos";
 
 /*
  * a gps position
