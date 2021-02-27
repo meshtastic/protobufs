@@ -13,21 +13,6 @@
 # note: this payload length is ONLY the bytes that are sent inside of the radiohead packet.  The 16 byte header is outside of this envelope
 *Data.payload max_size:237
 
-*UserPreferences.wifi_ssid max_size:33
-*UserPreferences.wifi_password max_size:64
-*UserPreferences.region max_size:6
-
-*Channel.index int_size:8
-
-# 256 bit or 128 bit psk key
-*ChannelSettings.psk max_size:32
-*ChannelSettings.name max_size:12
-*ChannelSettings.tx_power int_size:8
-*ChannelSettings.bandwidth int_size:16
-*ChannelSettings.coding_rate int_size:8
-*ChannelSettings.channel_num int_size:8
-
-
 *MyNodeInfo.firmware_version max_size:12
 *MyNodeInfo.hw_model max_size:16
 *MyNodeInfo.region max_size:12
@@ -44,9 +29,6 @@
 *FromRadio.payloadVariant anonymous_oneof:true
 
 *Routing.variant anonymous_oneof:true
-
-# Max of three ignored nodes for our testing
-*UserPreferences.ignore_incoming max_count:3
 
 *LogRecord.message max_size:64
 *LogRecord.source max_size:8

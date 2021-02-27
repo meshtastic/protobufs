@@ -5,6 +5,8 @@ option java_outer_classname = "DeviceOnly";
 option optimize_for = LITE_RUNTIME;
 
 import "mesh.proto";
+import "radioconfig.proto";
+import "channel.proto";
 
 /*
  * This message is never sent over the wire, but it is used for serializing DB

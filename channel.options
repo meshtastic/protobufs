@@ -1,0 +1,10 @@
+*Channel.index int_size:8
+
+# 256 bit or 128 bit psk key
+*ChannelSettings.psk max_size:32
+*ChannelSettings.name max_size:12
+*ChannelSettings.tx_power int_size:8
+*ChannelSettings.bandwidth int_size:16
+*ChannelSettings.coding_rate int_size:8
+*ChannelSettings.channel_num int_size:8
+

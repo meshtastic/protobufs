@@ -5,6 +5,8 @@ option java_outer_classname = "AdminProtos";
 option optimize_for = LITE_RUNTIME;
 
 import "mesh.proto";
+import "radioconfig.proto";
+import "channel.proto";
 
 /* This message is handled by the Admin plugin and is responsible for all settings/channel read/write operations.  This message
 is used to do settings operations to both remote AND local nodes.

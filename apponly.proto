@@ -5,6 +5,7 @@ option java_outer_classname = "AppOnlyProtos";
 option optimize_for = LITE_RUNTIME;
 
 import "mesh.proto";
+import "channel.proto";
 
 /*
  * This message wraps a MeshPacket with extra metadata about the sender and how it arrived.

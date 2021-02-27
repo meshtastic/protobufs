@@ -1,0 +1,216 @@
+syntax = "proto3";
+/* 
+ * Meshtastic protobufs
+ *
+ * For more information on protobufs (and tools to use them with the language of your choice) see
+ * https://developers.google.com/protocol-buffers/docs/proto3
+ *
+ * We are not placing any of these defs inside a package, because if you do the
+ * resulting nanopb version is super verbose package mesh.
+ *
+ * Protobuf build instructions:
+ *
+ * To build java classes for reading writing:
+ * protoc -I=. --java_out /tmp mesh.proto
+ *
+ * To generate Nanopb c code:
+ * /home/kevinh/packages/nanopb-0.4.0-linux-x86/generator-bin/protoc --nanopb_out=/tmp -I=app/src/main/proto mesh.proto
+ * 
+ * Nanopb binaries available here: https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.0
+ */
+
+option java_package = "com.geeksville.mesh";
+option java_outer_classname = "ChannelProtos";
+option optimize_for = LITE_RUNTIME;
+
+/*
+ * Full settings (center freq, spread factor, pre-shared secret key etc...)
+ * needed to configure a radio for speaking on a particular channel This
+ * information can be encoded as a QRcode/url so that other users can configure
+ * their radio to join the same channel.
+ * A note about how channel names are shown to users: channelname-Xy
+ * poundsymbol is a prefix used to indicate this is a channel name (idea from @professr).
+ * Where X is a letter from A-Z (base 26) representing a hash of the PSK for this
+ * channel - so that if the user changes anything about the channel (which does
+ * force a new PSK) this letter will also change. Thus preventing user confusion if
+ * two friends try to type in a channel name of "BobsChan" and then can't talk
+ * because their PSKs will be different.  The PSK is hashed into this letter by
+ * "0x41 + [xor all bytes of the psk ] modulo 26"
+ * This also allows the option of someday if people have the PSK off (zero), the
+ * users COULD type in a channel name and be able to talk.
+ * Y is a lower case letter from a-z that represents the channel 'speed' settings
+ * (for some future definition of speed)
+ * 
+ * FIXME: Add description of multi-channel support and how primary vs secondary channels are used.
+ * FIXME: explain how apps use channels for security.  explain how remote settings and 
+ * remote gpio are managed as an example
+ */
+message ChannelSettings {
+
+  /*
+   * If zero then, use default max legal continuous power (ie. something that won't
+   * burn out the radio hardware)
+   * In most cases you should use zero here.
+   */
+  int32 tx_power = 1;
+
+  /*
+   * Standard predefined channel settings 
+   * Note: these mappings must match ModemConfigChoice in the device code.
+   */
+  enum ModemConfig {
+  
+    /*
+     * < Bw = 125 kHz, Cr = 4/5, Sf(7) = 128chips/symbol, CRC
+     * < on. Default medium range (5.469 kbps)
+     */
+    Bw125Cr45Sf128 = 0;
+
+    /*
+     * < Bw = 500 kHz, Cr = 4/5, Sf(7) = 128chips/symbol, CRC
+     * < on. Fast+short range (21.875 kbps)
+     */
+    Bw500Cr45Sf128 = 1;
+    
+    /*
+     * < Bw = 31.25 kHz, Cr = 4/8, Sf(9) = 512chips/symbol,
+     * < CRC on. Slow+long range (275 bps)
+     */
+    Bw31_25Cr48Sf512 = 2;
+    
+    /*
+     * < Bw = 125 kHz, Cr = 4/8, Sf(12) = 4096chips/symbol, CRC
+     * < on. Slow+long range (183 bps)
+     */
+    Bw125Cr48Sf4096 = 3;
+  } 
+
+  /*
+   * Note: This is the 'old' mechanism for specifying channel parameters.
+   * Either modem_config or bandwidth/spreading/coding will be specified - NOT
+   * BOTH. As a heuristic: If bandwidth is specified, do not use modem_config.
+   * Because protobufs take ZERO space when the value is zero this works out
+   * nicely.
+   * This value is replaced by bandwidth/spread_factor/coding_rate.  If you'd
+   * like to experiment with other options add them to MeshRadio.cpp in the
+   * device code.
+   */
+  ModemConfig modem_config = 3;
+
+  /*
+   * Bandwidth in MHz
+   * Certain bandwidth numbers are 'special' and will be converted to the
+   * appropriate floating point value: 31 -> 31.25MHz
+   */
+  uint32 bandwidth = 6;
+
+  /*
+   * A number from 7 to 12.  Indicates number of chirps per symbol as
+   * 1<<spread_factor.
+   */
+  uint32 spread_factor = 7;
+
+  /*
+   * The denominator of the coding rate.  ie for 4/8, the value is 8. 5/8 the value is 5.
+   */
+  uint32 coding_rate = 8;
+
+  /*
+   * A channel number between 1 and 13 (or whatever the max is in the current
+   * region). If ZERO then the rule is "use the old channel name hash based
+   * algorithm to derive the channel number")
+   * If using the hash algorithm the channel number will be: hash(channel_name) %
+   * NUM_CHANNELS (Where num channels depends on the regulatory region).
+   * NUM_CHANNELS_US is 13, for other values see MeshRadio.h in the device code.
+   * hash a string into an integer - djb2 by Dan Bernstein. -
+   * http://www.cse.yorku.ca/~oz/hash.html
+   * unsigned long hash(char *str) {
+   *   unsigned long hash = 5381; int c;
+   *   while ((c = *str++) != 0)
+   *     hash = ((hash << 5) + hash) + (unsigned char) c;
+   *   return hash;
+   * }
+   */
+  uint32 channel_num = 9;
+
+  /*
+   * A simple pre-shared key for now for crypto.  Must be either 0 bytes (no
+   * crypto), 16 bytes (AES128), or 32 bytes (AES256)
+   * A special shorthand is used for 1 byte long psks.
+   * These psks should be treated as only minimally secure,
+   * because they are listed in this source code.  Those bytes are mapped using the following scheme:
+   * 0 = No crypto
+   * 1 = The special default channel key: {0xd4, 0xf1, 0xbb, 0x3a, 0x20, 0x29, 0x07, 0x59, 0xf0, 0xbc, 0xff, 0xab, 0xcf, 0x4e, 0x69, 0xbf}
+   * 2 through 10 = The default channel key, except with 1 through 9 added to the last byte
+   */
+  bytes psk = 4;
+
+  /*
+   * A SHORT name that will be packed into the URL.  Less than 12 bytes.
+   * Something for end users to call the channel
+   * If this is the empty string it is assumed that this channel
+   * is the special (minimally secure) "Default"channel.
+   * In user interfaces it should be rendered as a local language translation of "X".  For channel_num
+   * hashing empty string will be treated as "X".
+   * Where "X" is selected based on the English words listed above for ModemConfig
+   */
+  string name = 5;
+
+  /*
+   * Used to construct a globally unique channel ID.  The full globally unique ID will be: "name.id"
+   * where ID is shown as base36.  Assuming that the number of meshtastic users is below 20K (true for a long time)
+   * the chance of this 64 bit random number colliding with anyone else is super low.  And the penalty for
+   * collision is low as well, it just means that anyone trying to decrypt channel messages might need to
+   * try multiple candidate channels.
+   * Any time a non wire compatible change is made to a channel, this field should be regenerated.
+   * There are a small number of 'special' globally known (and fairly) insecure standard channels.  
+   * Those channels do not have a numeric id included in the settings, but instead it is pulled from
+   * a table of well known IDs.  (see Well Known Channels FIXME)
+   */
+  fixed32 id = 10;
+
+  /*
+   * If true, messages on the mesh will be sent to the *public* internet by any gateway ndoe
+   */
+  bool uplink_enabled = 16;
+
+  /*
+   * If true, messages seen on the internet will be forwarded to the local mesh.
+   */
+  bool downlink_enabled = 17;
+}
+
+/* A pair of a channel number, mode and the (sharable) settings for that channel */
+message Channel {
+
+  /* How this channel is being used (or not).
+
+  Note: this field is an enum to give us options for the future.  In particular, someday
+  we might make a 'SCANNING' option.  SCANNING channels could have different frequencies and the radio would
+  occasionally check that freq to see if anything is being transmitted.
+
+  For devices that have multiple physical radios attached, we could keep multiple PRIMARY/SCANNING channels active at once to allow
+  cross band routing as needed.  If a device has only a single radio (the common case) only one channel can be PRIMARY at a time
+  (but any number of SECONDARY channels can't be sent received on that common frequency)
+  */
+  enum Role {
+    /* This channel is not in use right now */
+    DISABLED = 0;
+
+    /* This channel is used to set the frequency for the radio - all other enabled channels must be SECONDARY */
+    PRIMARY = 1;
+
+    /* Secondary channels are only used for encryption/decryption/authentication purposes.  Their radio settings (freq etc)
+     * are ignored, only psk is used. 
+     */
+    SECONDARY = 2;
+  }
+
+  /* The index of this channel in the channel table (from 0 to MAX_NUM_CHANNELS-1) */
+  uint32 index = 1;
+
+  /* The new settings, or NULL to disable that channel */
+  ChannelSettings settings = 2;
+
+  Role role = 3;
+}

@@ -10,6 +10,13 @@
     - [ChannelSet](#.ChannelSet)
     - [ServiceEnvelope](#.ServiceEnvelope)
   
+- [channel.proto](#channel.proto)
+    - [Channel](#.Channel)
+    - [ChannelSettings](#.ChannelSettings)
+  
+    - [Channel.Role](#.Channel.Role)
+    - [ChannelSettings.ModemConfig](#.ChannelSettings.ModemConfig)
+  
 - [deviceonly.proto](#deviceonly.proto)
     - [DeviceState](#.DeviceState)
   
@@ -17,8 +24,6 @@
     - [EnvironmentalMeasurement](#.EnvironmentalMeasurement)
   
 - [mesh.proto](#mesh.proto)
-    - [Channel](#.Channel)
-    - [ChannelSettings](#.ChannelSettings)
     - [Data](#.Data)
     - [FromRadio](#.FromRadio)
     - [LogRecord](#.LogRecord)
@@ -26,27 +31,28 @@
     - [MyNodeInfo](#.MyNodeInfo)
     - [NodeInfo](#.NodeInfo)
     - [Position](#.Position)
-    - [RadioConfig](#.RadioConfig)
-    - [RadioConfig.UserPreferences](#.RadioConfig.UserPreferences)
     - [RouteDiscovery](#.RouteDiscovery)
     - [Routing](#.Routing)
     - [ToRadio](#.ToRadio)
     - [User](#.User)
   
-    - [Channel.Role](#.Channel.Role)
-    - [ChannelSettings.ModemConfig](#.ChannelSettings.ModemConfig)
-    - [ChargeCurrent](#.ChargeCurrent)
     - [Constants](#.Constants)
     - [CriticalErrorCode](#.CriticalErrorCode)
-    - [GpsOperation](#.GpsOperation)
-    - [LocationSharing](#.LocationSharing)
     - [LogRecord.Level](#.LogRecord.Level)
     - [MeshPacket.Priority](#.MeshPacket.Priority)
-    - [RegionCode](#.RegionCode)
     - [Routing.Error](#.Routing.Error)
   
 - [portnums.proto](#portnums.proto)
     - [PortNum](#.PortNum)
+  
+- [radioconfig.proto](#radioconfig.proto)
+    - [RadioConfig](#.RadioConfig)
+    - [RadioConfig.UserPreferences](#.RadioConfig.UserPreferences)
+  
+    - [ChargeCurrent](#.ChargeCurrent)
+    - [GpsOperation](#.GpsOperation)
+    - [LocationSharing](#.LocationSharing)
+    - [RegionCode](#.RegionCode)
   
 - [remote_hardware.proto](#remote_hardware.proto)
     - [HardwareMessage](#.HardwareMessage)
@@ -142,6 +148,135 @@ This message wraps a MeshPacket with extra metadata about the sender and how it 
 
 
  
+
+ 
+
+ 
+
+ 
+
+
+
+<a name="channel.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## channel.proto
+Meshtastic protobufs
+
+For more information on protobufs (and tools to use them with the language of your choice) see
+https://developers.google.com/protocol-buffers/docs/proto3
+
+We are not placing any of these defs inside a package, because if you do the
+resulting nanopb version is super verbose package mesh.
+
+Protobuf build instructions:
+
+To build java classes for reading writing:
+protoc -I=. --java_out /tmp mesh.proto
+
+To generate Nanopb c code:
+/home/kevinh/packages/nanopb-0.4.0-linux-x86/generator-bin/protoc --nanopb_out=/tmp -I=app/src/main/proto mesh.proto
+
+Nanopb binaries available here: https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.0
+
+
+<a name=".Channel"></a>
+
+### Channel
+A pair of a channel number, mode and the (sharable) settings for that channel
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| index | [uint32](#uint32) |  | The index of this channel in the channel table (from 0 to MAX_NUM_CHANNELS-1) |
+| settings | [ChannelSettings](#ChannelSettings) |  | The new settings, or NULL to disable that channel |
+| role | [Channel.Role](#Channel.Role) |  |  |
+
+
+
+
+
+
+<a name=".ChannelSettings"></a>
+
+### ChannelSettings
+Full settings (center freq, spread factor, pre-shared secret key etc...)
+needed to configure a radio for speaking on a particular channel This
+information can be encoded as a QRcode/url so that other users can configure
+their radio to join the same channel.
+A note about how channel names are shown to users: channelname-Xy
+poundsymbol is a prefix used to indicate this is a channel name (idea from @professr).
+Where X is a letter from A-Z (base 26) representing a hash of the PSK for this
+channel - so that if the user changes anything about the channel (which does
+force a new PSK) this letter will also change. Thus preventing user confusion if
+two friends try to type in a channel name of &#34;BobsChan&#34; and then can&#39;t talk
+because their PSKs will be different.  The PSK is hashed into this letter by
+&#34;0x41 &#43; [xor all bytes of the psk ] modulo 26&#34;
+This also allows the option of someday if people have the PSK off (zero), the
+users COULD type in a channel name and be able to talk.
+Y is a lower case letter from a-z that represents the channel &#39;speed&#39; settings
+(for some future definition of speed)
+
+FIXME: Add description of multi-channel support and how primary vs secondary channels are used.
+FIXME: explain how apps use channels for security.  explain how remote settings and 
+remote gpio are managed as an example
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tx_power | [int32](#int32) |  | If zero then, use default max legal continuous power (ie. something that won&#39;t burn out the radio hardware) In most cases you should use zero here. |
+| modem_config | [ChannelSettings.ModemConfig](#ChannelSettings.ModemConfig) |  | Note: This is the &#39;old&#39; mechanism for specifying channel parameters. Either modem_config or bandwidth/spreading/coding will be specified - NOT BOTH. As a heuristic: If bandwidth is specified, do not use modem_config. Because protobufs take ZERO space when the value is zero this works out nicely. This value is replaced by bandwidth/spread_factor/coding_rate. If you&#39;d like to experiment with other options add them to MeshRadio.cpp in the device code. |
+| bandwidth | [uint32](#uint32) |  | Bandwidth in MHz Certain bandwidth numbers are &#39;special&#39; and will be converted to the appropriate floating point value: 31 -&gt; 31.25MHz |
+| spread_factor | [uint32](#uint32) |  | A number from 7 to 12. Indicates number of chirps per symbol as 1&lt;&lt;spread_factor. |
+| coding_rate | [uint32](#uint32) |  | The denominator of the coding rate. ie for 4/8, the value is 8. 5/8 the value is 5. |
+| channel_num | [uint32](#uint32) |  | A channel number between 1 and 13 (or whatever the max is in the current region). If ZERO then the rule is &#34;use the old channel name hash based algorithm to derive the channel number&#34;) If using the hash algorithm the channel number will be: hash(channel_name) % NUM_CHANNELS (Where num channels depends on the regulatory region). NUM_CHANNELS_US is 13, for other values see MeshRadio.h in the device code. hash a string into an integer - djb2 by Dan Bernstein. - http://www.cse.yorku.ca/~oz/hash.html unsigned long hash(char *str) { unsigned long hash = 5381; int c; while ((c = *str&#43;&#43;) != 0) hash = ((hash &lt;&lt; 5) &#43; hash) &#43; (unsigned char) c; return hash; } |
+| psk | [bytes](#bytes) |  | A simple pre-shared key for now for crypto. Must be either 0 bytes (no crypto), 16 bytes (AES128), or 32 bytes (AES256) A special shorthand is used for 1 byte long psks. These psks should be treated as only minimally secure, because they are listed in this source code. Those bytes are mapped using the following scheme: 0 = No crypto 1 = The special default channel key: {0xd4, 0xf1, 0xbb, 0x3a, 0x20, 0x29, 0x07, 0x59, 0xf0, 0xbc, 0xff, 0xab, 0xcf, 0x4e, 0x69, 0xbf} 2 through 10 = The default channel key, except with 1 through 9 added to the last byte |
+| name | [string](#string) |  | A SHORT name that will be packed into the URL. Less than 12 bytes. Something for end users to call the channel If this is the empty string it is assumed that this channel is the special (minimally secure) &#34;Default&#34;channel. In user interfaces it should be rendered as a local language translation of &#34;X&#34;. For channel_num hashing empty string will be treated as &#34;X&#34;. Where &#34;X&#34; is selected based on the English words listed above for ModemConfig |
+| id | [fixed32](#fixed32) |  | Used to construct a globally unique channel ID. The full globally unique ID will be: &#34;name.id&#34; where ID is shown as base36. Assuming that the number of meshtastic users is below 20K (true for a long time) the chance of this 64 bit random number colliding with anyone else is super low. And the penalty for collision is low as well, it just means that anyone trying to decrypt channel messages might need to try multiple candidate channels. Any time a non wire compatible change is made to a channel, this field should be regenerated. There are a small number of &#39;special&#39; globally known (and fairly) insecure standard channels. Those channels do not have a numeric id included in the settings, but instead it is pulled from a table of well known IDs. (see Well Known Channels FIXME) |
+| uplink_enabled | [bool](#bool) |  | If true, messages on the mesh will be sent to the *public* internet by any gateway ndoe |
+| downlink_enabled | [bool](#bool) |  | If true, messages seen on the internet will be forwarded to the local mesh. |
+
+
+
+
+
+ 
+
+
+<a name=".Channel.Role"></a>
+
+### Channel.Role
+How this channel is being used (or not).
+
+Note: this field is an enum to give us options for the future.  In particular, someday
+we might make a &#39;SCANNING&#39; option.  SCANNING channels could have different frequencies and the radio would
+occasionally check that freq to see if anything is being transmitted.
+
+For devices that have multiple physical radios attached, we could keep multiple PRIMARY/SCANNING channels active at once to allow
+cross band routing as needed.  If a device has only a single radio (the common case) only one channel can be PRIMARY at a time
+(but any number of SECONDARY channels can&#39;t be sent received on that common frequency)
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| DISABLED | 0 | This channel is not in use right now |
+| PRIMARY | 1 | This channel is used to set the frequency for the radio - all other enabled channels must be SECONDARY |
+| SECONDARY | 2 | Secondary channels are only used for encryption/decryption/authentication purposes. Their radio settings (freq etc) are ignored, only psk is used. |
+
+
+
+<a name=".ChannelSettings.ModemConfig"></a>
+
+### ChannelSettings.ModemConfig
+Standard predefined channel settings 
+Note: these mappings must match ModemConfigChoice in the device code.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| Bw125Cr45Sf128 | 0 | &lt; Bw = 125 kHz, Cr = 4/5, Sf(7) = 128chips/symbol, CRC &lt; on. Default medium range (5.469 kbps) |
+| Bw500Cr45Sf128 | 1 | &lt; Bw = 500 kHz, Cr = 4/5, Sf(7) = 128chips/symbol, CRC &lt; on. Fast&#43;short range (21.875 kbps) |
+| Bw31_25Cr48Sf512 | 2 | &lt; Bw = 31.25 kHz, Cr = 4/8, Sf(9) = 512chips/symbol, &lt; CRC on. Slow&#43;long range (275 bps) |
+| Bw125Cr48Sf4096 | 3 | &lt; Bw = 125 kHz, Cr = 4/8, Sf(12) = 4096chips/symbol, CRC &lt; on. Slow&#43;long range (183 bps) |
+
 
  
 
@@ -251,67 +386,6 @@ To generate Nanopb c code:
 Nanopb binaries available here: https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.0
 
 
-<a name=".Channel"></a>
-
-### Channel
-A pair of a channel number, mode and the (sharable) settings for that channel
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| index | [uint32](#uint32) |  | The index of this channel in the channel table (from 0 to MAX_NUM_CHANNELS-1) |
-| settings | [ChannelSettings](#ChannelSettings) |  | The new settings, or NULL to disable that channel |
-| role | [Channel.Role](#Channel.Role) |  |  |
-
-
-
-
-
-
-<a name=".ChannelSettings"></a>
-
-### ChannelSettings
-Full settings (center freq, spread factor, pre-shared secret key etc...)
-needed to configure a radio for speaking on a particular channel This
-information can be encoded as a QRcode/url so that other users can configure
-their radio to join the same channel.
-A note about how channel names are shown to users: channelname-Xy
-poundsymbol is a prefix used to indicate this is a channel name (idea from @professr).
-Where X is a letter from A-Z (base 26) representing a hash of the PSK for this
-channel - so that if the user changes anything about the channel (which does
-force a new PSK) this letter will also change. Thus preventing user confusion if
-two friends try to type in a channel name of &#34;BobsChan&#34; and then can&#39;t talk
-because their PSKs will be different.  The PSK is hashed into this letter by
-&#34;0x41 &#43; [xor all bytes of the psk ] modulo 26&#34;
-This also allows the option of someday if people have the PSK off (zero), the
-users COULD type in a channel name and be able to talk.
-Y is a lower case letter from a-z that represents the channel &#39;speed&#39; settings
-(for some future definition of speed)
-
-FIXME: Add description of multi-channel support and how primary vs secondary channels are used.
-FIXME: explain how apps use channels for security.  explain how remote settings and 
-remote gpio are managed as an example
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| tx_power | [int32](#int32) |  | If zero then, use default max legal continuous power (ie. something that won&#39;t burn out the radio hardware) In most cases you should use zero here. |
-| modem_config | [ChannelSettings.ModemConfig](#ChannelSettings.ModemConfig) |  | Note: This is the &#39;old&#39; mechanism for specifying channel parameters. Either modem_config or bandwidth/spreading/coding will be specified - NOT BOTH. As a heuristic: If bandwidth is specified, do not use modem_config. Because protobufs take ZERO space when the value is zero this works out nicely. This value is replaced by bandwidth/spread_factor/coding_rate. If you&#39;d like to experiment with other options add them to MeshRadio.cpp in the device code. |
-| bandwidth | [uint32](#uint32) |  | Bandwidth in MHz Certain bandwidth numbers are &#39;special&#39; and will be converted to the appropriate floating point value: 31 -&gt; 31.25MHz |
-| spread_factor | [uint32](#uint32) |  | A number from 7 to 12. Indicates number of chirps per symbol as 1&lt;&lt;spread_factor. |
-| coding_rate | [uint32](#uint32) |  | The denominator of the coding rate. ie for 4/8, the value is 8. 5/8 the value is 5. |
-| channel_num | [uint32](#uint32) |  | A channel number between 1 and 13 (or whatever the max is in the current region). If ZERO then the rule is &#34;use the old channel name hash based algorithm to derive the channel number&#34;) If using the hash algorithm the channel number will be: hash(channel_name) % NUM_CHANNELS (Where num channels depends on the regulatory region). NUM_CHANNELS_US is 13, for other values see MeshRadio.h in the device code. hash a string into an integer - djb2 by Dan Bernstein. - http://www.cse.yorku.ca/~oz/hash.html unsigned long hash(char *str) { unsigned long hash = 5381; int c; while ((c = *str&#43;&#43;) != 0) hash = ((hash &lt;&lt; 5) &#43; hash) &#43; (unsigned char) c; return hash; } |
-| psk | [bytes](#bytes) |  | A simple pre-shared key for now for crypto. Must be either 0 bytes (no crypto), 16 bytes (AES128), or 32 bytes (AES256) A special shorthand is used for 1 byte long psks. These psks should be treated as only minimally secure, because they are listed in this source code. Those bytes are mapped using the following scheme: 0 = No crypto 1 = The special default channel key: {0xd4, 0xf1, 0xbb, 0x3a, 0x20, 0x29, 0x07, 0x59, 0xf0, 0xbc, 0xff, 0xab, 0xcf, 0x4e, 0x69, 0xbf} 2 through 10 = The default channel key, except with 1 through 9 added to the last byte |
-| name | [string](#string) |  | A SHORT name that will be packed into the URL. Less than 12 bytes. Something for end users to call the channel If this is the empty string it is assumed that this channel is the special (minimally secure) &#34;Default&#34;channel. In user interfaces it should be rendered as a local language translation of &#34;X&#34;. For channel_num hashing empty string will be treated as &#34;X&#34;. Where &#34;X&#34; is selected based on the English words listed above for ModemConfig |
-| id | [fixed32](#fixed32) |  | Used to construct a globally unique channel ID. The full globally unique ID will be: &#34;name.id&#34; where ID is shown as base36. Assuming that the number of meshtastic users is below 20K (true for a long time) the chance of this 64 bit random number colliding with anyone else is super low. And the penalty for collision is low as well, it just means that anyone trying to decrypt channel messages might need to try multiple candidate channels. Any time a non wire compatible change is made to a channel, this field should be regenerated. There are a small number of &#39;special&#39; globally known (and fairly) insecure standard channels. Those channels do not have a numeric id included in the settings, but instead it is pulled from a table of well known IDs. (see Well Known Channels FIXME) |
-| uplink_enabled | [bool](#bool) |  | If true, messages on the mesh will be sent to the *public* internet by any gateway ndoe |
-| downlink_enabled | [bool](#bool) |  | If true, messages seen on the internet will be forwarded to the local mesh. |
-
-
-
-
-
-
 <a name=".Data"></a>
 
 ### Data
@@ -349,11 +423,9 @@ at which point the next item in the FIFO will be populated.
 | packet | [MeshPacket](#MeshPacket) |  |  |
 | my_info | [MyNodeInfo](#MyNodeInfo) |  | Tells the phone what our node number is, can be -1 if we&#39;ve not yet joined a mesh. |
 | node_info | [NodeInfo](#NodeInfo) |  | One packet is sent for each node in the on radio DB starts over with the first node in our DB |
-| radio | [RadioConfig](#RadioConfig) |  | In rev1 this was the radio BLE characteristic |
 | log_record | [LogRecord](#LogRecord) |  | set to send debug console output over our protobuf stream |
 | config_complete_id | [uint32](#uint32) |  | sent as true once the device has finished sending all of the responses to want_config recipient should check if this ID matches our original request nonce, if not, it means your config responses haven&#39;t started yet. |
 | rebooted | [bool](#bool) |  | Sent to tell clients the radio has just rebooted. Set to true if present. Not used on all transports, currently just used for the serial console. |
-| channel | [Channel](#Channel) |  | One of the channels, they are all sent during config download |
 
 
 
@@ -504,96 +576,6 @@ a gps position
 
 
 
-<a name=".RadioConfig"></a>
-
-### RadioConfig
-The entire set of user settable/readable settings for our radio device.
-Includes both the current channel settings and any preferences the user has
-set for behavior of their node
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| preferences | [RadioConfig.UserPreferences](#RadioConfig.UserPreferences) |  |  |
-
-
-
-
-
-
-<a name=".RadioConfig.UserPreferences"></a>
-
-### RadioConfig.UserPreferences
-see sw-design.md for more information on these preferences
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| position_broadcast_secs | [uint32](#uint32) |  | We should send our position this often (but only if it has changed significantly) Defaults to 15 minutes |
-| send_owner_interval | [uint32](#uint32) |  | Send our owner info at least this often (also we always send once at boot - to rejoin the mesh) |
-| wait_bluetooth_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 1 minute |
-| screen_on_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of one minute |
-| phone_timeout_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 15 minutes |
-| phone_sds_timeout_sec | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of two hours, MAXUINT for disabled |
-| mesh_sds_timeout_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of two hours, MAXUINT for disabled |
-| sds_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of one year |
-| ls_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 3600 |
-| min_wake_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 10 seconds |
-| wifi_ssid | [string](#string) |  | If set, this node will try to join the specified wifi network and acquire an address via DHCP |
-| wifi_password | [string](#string) |  | If set, will be use to authenticate to the named wifi |
-| wifi_ap_mode | [bool](#bool) |  | If set, the node will operate as an AP (and DHCP server), otherwise it will be a station |
-| region | [RegionCode](#RegionCode) |  | The region code for my radio (US, CN, EU433, etc...) |
-| charge_current | [ChargeCurrent](#ChargeCurrent) |  | Sets the current of the battery charger |
-| is_router | [bool](#bool) |  | Are we operating as a router. Changes behavior in the following ways: The device will only sleep for critically low battery level (i.e. always tries to stay alive for the mesh) In the future routing decisions will preferentially route packets through nodes with this attribute (because assumed good line of sight) |
-| is_low_power | [bool](#bool) |  | If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in we should try to minimize power consumption as much as possible. YOU DO NOT NEED TO SET THIS IF YOU&#39;VE set is_router (it is implied in that case). |
-| fixed_position | [bool](#bool) |  | If set, this node is at a fixed position. We will generate GPS position updates at the regular interval, but use whatever the last lat/lon/alt we have for the node. The lat/lon/alt can be set by an internal GPS or with the help of the app. |
-| factory_reset | [bool](#bool) |  | This setting is never saved to disk, but if set, all device settings will be returned to factory defaults. (Region, serial number etc... will be preserved) |
-| debug_log_enabled | [bool](#bool) |  | By default we turn off logging as soon as an API client connects (to keep shared serial link quiet). Set this to true to leave the debug log outputting even when API is active. |
-| location_share | [LocationSharing](#LocationSharing) |  | How our location is shared with other nodes (or the local phone) |
-| gps_operation | [GpsOperation](#GpsOperation) |  | How the GPS hardware in this unit is operated. Note: This is independent of how our location is shared with other devices. For that see LocationSharing |
-| gps_update_interval | [uint32](#uint32) |  | How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode? or zero for the default of once every 30 seconds or a very large value (maxint) to update only once at boot. |
-| gps_attempt_time | [uint32](#uint32) |  | How long should we try to get our position during each gps_update_interval attempt? (in seconds) Or if zero, use the default of 30 seconds. If we don&#39;t get a new gps fix in that time, the gps will be put into sleep until the next gps_update_rate window. |
-| ignore_incoming | [uint32](#uint32) | repeated | If true, radio should not try to be smart about what packets to queue to the phone bool keep_all_packets = 101;
-
-If true, we will try to capture all the packets sent on the mesh, not just the ones destined to our node. bool promiscuous_mode = 102;
-
-For testing it is useful sometimes to force a node to never listen to particular other nodes (simulating radio out of range). All nodenums listed in ignore_incoming will have packets they send droped on receive (by router.cpp) |
-| serialplugin_enabled | [bool](#bool) |  | Preferences for the SerialPlugin
-
-FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
-| serialplugin_echo | [bool](#bool) |  |  |
-| serialplugin_rxd | [uint32](#uint32) |  |  |
-| serialplugin_txd | [uint32](#uint32) |  |  |
-| serialplugin_timeout | [uint32](#uint32) |  |  |
-| serialplugin_mode | [uint32](#uint32) |  |  |
-| ext_notification_plugin_enabled | [bool](#bool) |  | Preferences for the ExternalNotificationPlugin
-
-FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
-| ext_notification_plugin_output_ms | [uint32](#uint32) |  |  |
-| ext_notification_plugin_output | [uint32](#uint32) |  |  |
-| ext_notification_plugin_active | [bool](#bool) |  |  |
-| ext_notification_plugin_alert_message | [bool](#bool) |  |  |
-| ext_notification_plugin_alert_bell | [bool](#bool) |  |  |
-| range_test_plugin_enabled | [bool](#bool) |  | Preferences for the RangeTestPlugin
-
-FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
-| range_test_plugin_sender | [uint32](#uint32) |  |  |
-| range_test_plugin_save | [bool](#bool) |  |  |
-| store_forward_plugin_enabled | [bool](#bool) |  | Preferences for the StoreForwardPlugin
-
-FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
-| store_forward_plugin_records | [uint32](#uint32) |  |  |
-| environmental_measurement_plugin_measurement_enabled | [bool](#bool) |  | Enable/Disable the environmental measurement plugin measurement collection |
-| environmental_measurement_plugin_screen_enabled | [bool](#bool) |  | Enable/Disable the environmental measurement plugin on-device display |
-| environmental_measurement_plugin_read_error_count_threshold | [uint32](#uint32) |  | Sometimes sensor reads can fail. If this happens, we will retry a configurable number of attempts Each attempt will be delayed by the minimum required refresh rate for that sensor |
-| environmental_measurement_plugin_update_interval | [uint32](#uint32) |  | Interval in seconds of how often we should try to send our measurements to the mesh |
-| environmental_measurement_plugin_recovery_interval | [uint32](#uint32) |  | Sometimes we can end up with more than read_error_count_threshold failures. In this case, we will stop trying to read from the sensor for a while. Wait this long until trying to read from the sensor again |
-
-
-
-
-
-
 <a name=".RouteDiscovery"></a>
 
 ### RouteDiscovery
@@ -686,70 +668,6 @@ A few nodenums are reserved and will never be requested:
  
 
 
-<a name=".Channel.Role"></a>
-
-### Channel.Role
-How this channel is being used (or not).
-
-Note: this field is an enum to give us options for the future.  In particular, someday
-we might make a &#39;SCANNING&#39; option.  SCANNING channels could have different frequencies and the radio would
-occasionally check that freq to see if anything is being transmitted.
-
-For devices that have multiple physical radios attached, we could keep multiple PRIMARY/SCANNING channels active at once to allow
-cross band routing as needed.  If a device has only a single radio (the common case) only one channel can be PRIMARY at a time
-(but any number of SECONDARY channels can&#39;t be sent received on that common frequency)
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| DISABLED | 0 | This channel is not in use right now |
-| PRIMARY | 1 | This channel is used to set the frequency for the radio - all other enabled channels must be SECONDARY |
-| SECONDARY | 2 | Secondary channels are only used for encryption/decryption/authentication purposes. Their radio settings (freq etc) are ignored, only psk is used. |
-
-
-
-<a name=".ChannelSettings.ModemConfig"></a>
-
-### ChannelSettings.ModemConfig
-Standard predefined channel settings 
-Note: these mappings must match ModemConfigChoice in the device code.
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| Bw125Cr45Sf128 | 0 | &lt; Bw = 125 kHz, Cr = 4/5, Sf(7) = 128chips/symbol, CRC &lt; on. Default medium range (5.469 kbps) |
-| Bw500Cr45Sf128 | 1 | &lt; Bw = 500 kHz, Cr = 4/5, Sf(7) = 128chips/symbol, CRC &lt; on. Fast&#43;short range (21.875 kbps) |
-| Bw31_25Cr48Sf512 | 2 | &lt; Bw = 31.25 kHz, Cr = 4/8, Sf(9) = 512chips/symbol, &lt; CRC on. Slow&#43;long range (275 bps) |
-| Bw125Cr48Sf4096 | 3 | &lt; Bw = 125 kHz, Cr = 4/8, Sf(12) = 4096chips/symbol, CRC &lt; on. Slow&#43;long range (183 bps) |
-
-
-
-<a name=".ChargeCurrent"></a>
-
-### ChargeCurrent
-Sets the charge control current of devices with a battery charger that can be
-configured. This is passed into the axp power management chip like on the tbeam.
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| MAUnset | 0 |  |
-| MA100 | 1 |  |
-| MA190 | 2 |  |
-| MA280 | 3 |  |
-| MA360 | 4 |  |
-| MA450 | 5 |  |
-| MA550 | 6 |  |
-| MA630 | 7 |  |
-| MA700 | 8 |  |
-| MA780 | 9 |  |
-| MA880 | 10 |  |
-| MA960 | 11 |  |
-| MA1000 | 12 |  |
-| MA1080 | 13 |  |
-| MA1160 | 14 |  |
-| MA1240 | 15 |  |
-| MA1320 | 16 |  |
-
-
-
 <a name=".Constants"></a>
 
 ### Constants
@@ -782,37 +700,6 @@ and we&#39;ll try to help.
 | NoAXP192 | 6 | This board was expected to have a power management chip and it is missing or broken |
 | InvalidRadioSetting | 7 | The channel tried to set a radio setting which is not supported by this chipset, radio comms settings are now undefined. |
 | TransmitFailed | 8 | Radio transmit hardware failure. We sent data to the radio chip, but it didn&#39;t reply with an interrupt. |
-
-
-
-<a name=".GpsOperation"></a>
-
-### GpsOperation
-How the GPS hardware in this unit is operated.
-Note: This is independent of how our location is shared with other devices.  For that see LocationSharing
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| GpsOpUnset | 0 | This is treated as GpsOpMobile - it is the default setting |
-| GpsOpStationary | 1 | Note: This mode was removed, because it is identical go GpsOpMobile with a gps_update_rate of once per day
-
-This node is mostly stationary, we should try to get location only once per day, Once we have that position we should turn the GPS to sleep mode This is the recommended configuration for stationary &#39;router&#39; nodes |
-| GpsOpMobile | 2 | This node is mobile and we should get GPS position at a rate governed by gps_update_rate |
-| GpsOpTimeOnly | 3 | We should only use the GPS to get time (no location data should be acquired/stored) Once we have the time we treat gps_update_interval as MAXINT (i.e. sleep forever) |
-| GpsOpDisabled | 4 | GPS is always turned off - this mode is not recommended - use GpsOpTimeOnly instead |
-
-
-
-<a name=".LocationSharing"></a>
-
-### LocationSharing
-How our location is shared with other nodes (or the local phone)
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| LocUnset | 0 | This is the default and treated as LocEnabled) |
-| LocEnabled | 1 | We are sharing our location |
-| LocDisabled | 2 | We are not sharing our location (if the unit has a GPS it will default to only get time - i.e. GpsOpTimeOnly) |
 
 
 
@@ -868,32 +755,6 @@ And the transmission queue in the router object is now a priority queue.
 | RELIABLE | 70 | If priority is unset but the message is marked as want_ack, assume it is important and use a slightly higher priority |
 | ACK | 120 | Ack/naks are sent with very high priority to ensure that retransmission stops as soon as possible |
 | MAX | 127 |  |
-
-
-
-<a name=".RegionCode"></a>
-
-### RegionCode
-The frequency/regulatory region the user has selected.
-
-Note: In 1.0 builds (which must still be supported by the android app for a
-long time) this field will be unpopulated.
-
-If firmware is ever upgraded from an old 1.0ish build, the old
-MyNodeInfo.region string will be used to set UserPreferences.region and the
-old value will be no longer set.
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| Unset | 0 |  |
-| US | 1 |  |
-| EU433 | 2 |  |
-| EU865 | 3 |  |
-| CN | 4 |  |
-| JP | 5 |  |
-| ANZ | 6 |  |
-| KR | 7 |  |
-| TW | 8 |  |
 
 
 
@@ -986,6 +847,213 @@ Maintained by Jm Casler (MC Hamster) : jm@casler.org |
 | PRIVATE_APP | 256 | Private applications should use portnums &gt;= 256. To simplify initial development and testing you can use &#34;PRIVATE_APP&#34; in your code without needing to rebuild protobuf files (via bin/regin_protos.sh) |
 | ATAK_FORWARDER | 257 | ATAK Forwarder Plugin https://github.com/paulmandal/atak-forwarder |
 | MAX | 511 | Currently we limit port nums to no higher than this value |
+
+
+ 
+
+ 
+
+ 
+
+
+
+<a name="radioconfig.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## radioconfig.proto
+Meshtastic protobufs
+
+For more information on protobufs (and tools to use them with the language of your choice) see
+https://developers.google.com/protocol-buffers/docs/proto3
+
+We are not placing any of these defs inside a package, because if you do the
+resulting nanopb version is super verbose package mesh.
+
+Protobuf build instructions:
+
+To build java classes for reading writing:
+protoc -I=. --java_out /tmp mesh.proto
+
+To generate Nanopb c code:
+/home/kevinh/packages/nanopb-0.4.0-linux-x86/generator-bin/protoc --nanopb_out=/tmp -I=app/src/main/proto mesh.proto
+
+Nanopb binaries available here: https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.0
+
+
+<a name=".RadioConfig"></a>
+
+### RadioConfig
+The entire set of user settable/readable settings for our radio device.
+Includes both the current channel settings and any preferences the user has
+set for behavior of their node
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| preferences | [RadioConfig.UserPreferences](#RadioConfig.UserPreferences) |  |  |
+
+
+
+
+
+
+<a name=".RadioConfig.UserPreferences"></a>
+
+### RadioConfig.UserPreferences
+see sw-design.md for more information on these preferences
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| position_broadcast_secs | [uint32](#uint32) |  | We should send our position this often (but only if it has changed significantly) Defaults to 15 minutes |
+| send_owner_interval | [uint32](#uint32) |  | Send our owner info at least this often (also we always send once at boot - to rejoin the mesh) |
+| wait_bluetooth_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 1 minute |
+| screen_on_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of one minute |
+| phone_timeout_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 15 minutes |
+| phone_sds_timeout_sec | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of two hours, MAXUINT for disabled |
+| mesh_sds_timeout_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of two hours, MAXUINT for disabled |
+| sds_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of one year |
+| ls_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 3600 |
+| min_wake_secs | [uint32](#uint32) |  | Power management state machine option. See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details. 0 for default of 10 seconds |
+| wifi_ssid | [string](#string) |  | If set, this node will try to join the specified wifi network and acquire an address via DHCP |
+| wifi_password | [string](#string) |  | If set, will be use to authenticate to the named wifi |
+| wifi_ap_mode | [bool](#bool) |  | If set, the node will operate as an AP (and DHCP server), otherwise it will be a station |
+| region | [RegionCode](#RegionCode) |  | The region code for my radio (US, CN, EU433, etc...) |
+| charge_current | [ChargeCurrent](#ChargeCurrent) |  | Sets the current of the battery charger |
+| is_router | [bool](#bool) |  | Are we operating as a router. Changes behavior in the following ways: The device will only sleep for critically low battery level (i.e. always tries to stay alive for the mesh) In the future routing decisions will preferentially route packets through nodes with this attribute (because assumed good line of sight) |
+| is_low_power | [bool](#bool) |  | If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in we should try to minimize power consumption as much as possible. YOU DO NOT NEED TO SET THIS IF YOU&#39;VE set is_router (it is implied in that case). |
+| fixed_position | [bool](#bool) |  | If set, this node is at a fixed position. We will generate GPS position updates at the regular interval, but use whatever the last lat/lon/alt we have for the node. The lat/lon/alt can be set by an internal GPS or with the help of the app. |
+| factory_reset | [bool](#bool) |  | This setting is never saved to disk, but if set, all device settings will be returned to factory defaults. (Region, serial number etc... will be preserved) |
+| debug_log_enabled | [bool](#bool) |  | By default we turn off logging as soon as an API client connects (to keep shared serial link quiet). Set this to true to leave the debug log outputting even when API is active. |
+| location_share | [LocationSharing](#LocationSharing) |  | How our location is shared with other nodes (or the local phone) |
+| gps_operation | [GpsOperation](#GpsOperation) |  | How the GPS hardware in this unit is operated. Note: This is independent of how our location is shared with other devices. For that see LocationSharing |
+| gps_update_interval | [uint32](#uint32) |  | How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode? or zero for the default of once every 30 seconds or a very large value (maxint) to update only once at boot. |
+| gps_attempt_time | [uint32](#uint32) |  | How long should we try to get our position during each gps_update_interval attempt? (in seconds) Or if zero, use the default of 30 seconds. If we don&#39;t get a new gps fix in that time, the gps will be put into sleep until the next gps_update_rate window. |
+| ignore_incoming | [uint32](#uint32) | repeated | If true, radio should not try to be smart about what packets to queue to the phone bool keep_all_packets = 101;
+
+If true, we will try to capture all the packets sent on the mesh, not just the ones destined to our node. bool promiscuous_mode = 102;
+
+For testing it is useful sometimes to force a node to never listen to particular other nodes (simulating radio out of range). All nodenums listed in ignore_incoming will have packets they send droped on receive (by router.cpp) |
+| serialplugin_enabled | [bool](#bool) |  | Preferences for the SerialPlugin
+
+FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
+| serialplugin_echo | [bool](#bool) |  |  |
+| serialplugin_rxd | [uint32](#uint32) |  |  |
+| serialplugin_txd | [uint32](#uint32) |  |  |
+| serialplugin_timeout | [uint32](#uint32) |  |  |
+| serialplugin_mode | [uint32](#uint32) |  |  |
+| ext_notification_plugin_enabled | [bool](#bool) |  | Preferences for the ExternalNotificationPlugin
+
+FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
+| ext_notification_plugin_output_ms | [uint32](#uint32) |  |  |
+| ext_notification_plugin_output | [uint32](#uint32) |  |  |
+| ext_notification_plugin_active | [bool](#bool) |  |  |
+| ext_notification_plugin_alert_message | [bool](#bool) |  |  |
+| ext_notification_plugin_alert_bell | [bool](#bool) |  |  |
+| range_test_plugin_enabled | [bool](#bool) |  | Preferences for the RangeTestPlugin
+
+FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
+| range_test_plugin_sender | [uint32](#uint32) |  |  |
+| range_test_plugin_save | [bool](#bool) |  |  |
+| store_forward_plugin_enabled | [bool](#bool) |  | Preferences for the StoreForwardPlugin
+
+FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
+| store_forward_plugin_records | [uint32](#uint32) |  |  |
+| environmental_measurement_plugin_measurement_enabled | [bool](#bool) |  | Enable/Disable the environmental measurement plugin measurement collection |
+| environmental_measurement_plugin_screen_enabled | [bool](#bool) |  | Enable/Disable the environmental measurement plugin on-device display |
+| environmental_measurement_plugin_read_error_count_threshold | [uint32](#uint32) |  | Sometimes sensor reads can fail. If this happens, we will retry a configurable number of attempts Each attempt will be delayed by the minimum required refresh rate for that sensor |
+| environmental_measurement_plugin_update_interval | [uint32](#uint32) |  | Interval in seconds of how often we should try to send our measurements to the mesh |
+| environmental_measurement_plugin_recovery_interval | [uint32](#uint32) |  | Sometimes we can end up with more than read_error_count_threshold failures. In this case, we will stop trying to read from the sensor for a while. Wait this long until trying to read from the sensor again |
+
+
+
+
+
+ 
+
+
+<a name=".ChargeCurrent"></a>
+
+### ChargeCurrent
+Sets the charge control current of devices with a battery charger that can be
+configured. This is passed into the axp power management chip like on the tbeam.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| MAUnset | 0 |  |
+| MA100 | 1 |  |
+| MA190 | 2 |  |
+| MA280 | 3 |  |
+| MA360 | 4 |  |
+| MA450 | 5 |  |
+| MA550 | 6 |  |
+| MA630 | 7 |  |
+| MA700 | 8 |  |
+| MA780 | 9 |  |
+| MA880 | 10 |  |
+| MA960 | 11 |  |
+| MA1000 | 12 |  |
+| MA1080 | 13 |  |
+| MA1160 | 14 |  |
+| MA1240 | 15 |  |
+| MA1320 | 16 |  |
+
+
+
+<a name=".GpsOperation"></a>
+
+### GpsOperation
+How the GPS hardware in this unit is operated.
+Note: This is independent of how our location is shared with other devices.  For that see LocationSharing
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| GpsOpUnset | 0 | This is treated as GpsOpMobile - it is the default setting |
+| GpsOpStationary | 1 | Note: This mode was removed, because it is identical go GpsOpMobile with a gps_update_rate of once per day
+
+This node is mostly stationary, we should try to get location only once per day, Once we have that position we should turn the GPS to sleep mode This is the recommended configuration for stationary &#39;router&#39; nodes |
+| GpsOpMobile | 2 | This node is mobile and we should get GPS position at a rate governed by gps_update_rate |
+| GpsOpTimeOnly | 3 | We should only use the GPS to get time (no location data should be acquired/stored) Once we have the time we treat gps_update_interval as MAXINT (i.e. sleep forever) |
+| GpsOpDisabled | 4 | GPS is always turned off - this mode is not recommended - use GpsOpTimeOnly instead |
+
+
+
+<a name=".LocationSharing"></a>
+
+### LocationSharing
+How our location is shared with other nodes (or the local phone)
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LocUnset | 0 | This is the default and treated as LocEnabled) |
+| LocEnabled | 1 | We are sharing our location |
+| LocDisabled | 2 | We are not sharing our location (if the unit has a GPS it will default to only get time - i.e. GpsOpTimeOnly) |
+
+
+
+<a name=".RegionCode"></a>
+
+### RegionCode
+The frequency/regulatory region the user has selected.
+
+Note: In 1.0 builds (which must still be supported by the android app for a
+long time) this field will be unpopulated.
+
+If firmware is ever upgraded from an old 1.0ish build, the old
+MyNodeInfo.region string will be used to set UserPreferences.region and the
+old value will be no longer set.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| Unset | 0 |  |
+| US | 1 |  |
+| EU433 | 2 |  |
+| EU865 | 3 |  |
+| CN | 4 |  |
+| JP | 5 |  |
+| ANZ | 6 |  |
+| KR | 7 |  |
+| TW | 8 |  |
 
 
  
