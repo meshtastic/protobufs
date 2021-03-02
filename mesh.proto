@@ -30,6 +30,9 @@ option java_outer_classname = "MeshProtos";
  * a gps position
  */
 message Position {
+  /* The old (pre 1.2) position encoding sent lat/lon as sint32s in field 7,8.
+  Do not use to prevent confusing old apps */
+  reserved 7, 8;
 
   /*
    * The new preferred location encoding, divide by 1e-7 to get degrees
@@ -692,8 +695,6 @@ message FromRadio {
   /* In the <1.2 versions packet had ID 2, to prevent confusing old apps with our new packets, we've changed */
   reserved 2;
   /* In the <1.2 versions nodeinfo had ID 4, to prevent confusing old apps with our new packets, we've changed */
-  reserved 4;
-  /* In the <1.2 versions nodeinfo had ID 4, to prevent confusing old apps with our new packets, we've changed */
   reserved 6;
 
   /*
@@ -716,7 +717,7 @@ message FromRadio {
      * One packet is sent for each node in the on radio DB
      * starts over with the first node in our DB   
      */
-    NodeInfo node_info = 5;
+    NodeInfo node_info = 4;
 
     /*
      * set to send debug console output over our protobuf stream
