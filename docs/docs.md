@@ -421,11 +421,11 @@ at which point the next item in the FIFO will be populated.
 | ----- | ---- | ----- | ----------- |
 | num | [uint32](#uint32) |  | The packet num, used to allow the phone to request missing read packets from the FIFO, see our bluetooth docs |
 | packet | [MeshPacket](#MeshPacket) |  |  |
-| my_info | [MyNodeInfo](#MyNodeInfo) |  | Tells the phone what our node number is, can be -1 if we&#39;ve not yet joined a mesh. |
+| my_info | [MyNodeInfo](#MyNodeInfo) |  | Tells the phone what our node number is, can be -1 if we&#39;ve not yet joined a mesh. NOTE: This ID must not change - to keep (minimal) compatibility with &lt;1.2 version of android apps. |
 | node_info | [NodeInfo](#NodeInfo) |  | One packet is sent for each node in the on radio DB starts over with the first node in our DB |
 | log_record | [LogRecord](#LogRecord) |  | set to send debug console output over our protobuf stream |
-| config_complete_id | [uint32](#uint32) |  | sent as true once the device has finished sending all of the responses to want_config recipient should check if this ID matches our original request nonce, if not, it means your config responses haven&#39;t started yet. |
-| rebooted | [bool](#bool) |  | Sent to tell clients the radio has just rebooted. Set to true if present. Not used on all transports, currently just used for the serial console. |
+| config_complete_id | [uint32](#uint32) |  | sent as true once the device has finished sending all of the responses to want_config recipient should check if this ID matches our original request nonce, if not, it means your config responses haven&#39;t started yet. NOTE: This ID must not change - to keep (minimal) compatibility with &lt;1.2 version of android apps. |
+| rebooted | [bool](#bool) |  | Sent to tell clients the radio has just rebooted. Set to true if present. Not used on all transports, currently just used for the serial console. NOTE: This ID must not change - to keep (minimal) compatibility with &lt;1.2 version of android apps. |
 
 
 

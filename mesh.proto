@@ -690,6 +690,10 @@ message FromRadio {
 
   /* In the <1.2 versions packet had ID 2, to prevent confusing old apps with our new packets, we've changed */
   reserved 2;
+  /* In the <1.2 versions nodeinfo had ID 4, to prevent confusing old apps with our new packets, we've changed */
+  reserved 4;
+  /* In the <1.2 versions nodeinfo had ID 4, to prevent confusing old apps with our new packets, we've changed */
+  reserved 6;
 
   /*
    * The packet num, used to allow the phone to request missing read packets from the FIFO,
@@ -703,14 +707,15 @@ message FromRadio {
 
     /*
      * Tells the phone what our node number is, can be -1 if we've not yet joined a mesh.
+     * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
      */
     MyNodeInfo my_info = 3;
 
     /*
      * One packet is sent for each node in the on radio DB
-     * starts over with the first node in our DB
+     * starts over with the first node in our DB   
      */
-    NodeInfo node_info = 4;
+    NodeInfo node_info = 5;
 
     /*
      * set to send debug console output over our protobuf stream
@@ -721,12 +726,14 @@ message FromRadio {
      * sent as true once the device has finished sending all of the responses to want_config
      * recipient should check if this ID matches our original request nonce, if
      * not, it means your config responses haven't started yet.
+     * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.     
      */
     uint32 config_complete_id = 8;
 
     /*
      * Sent to tell clients the radio has just rebooted.  Set to true if present.
      * Not used on all transports, currently just used for the serial console.
+     * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps. 
      */
     bool rebooted = 9;
   }
@@ -739,8 +746,10 @@ message FromRadio {
  */
 message ToRadio {
 
-  /* In the <1.2 versions packet had ID 2, to prevent confusing old apps with our new packets, we've changed */
-  reserved 1;
+  /* In the <1.2 versions packet had ID 2, to prevent confusing old apps with our new packets, we've changed.
+  101-103 were used for set_radio, set_owner, set_channel 
+  */
+  reserved 1, 101, 102, 103;
 
   oneof payloadVariant {
 
