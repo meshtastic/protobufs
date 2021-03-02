@@ -1,11 +1,12 @@
 syntax = "proto3";
 
 option java_package = "com.geeksville.mesh";
-option java_outer_classname = "AppOnlyProtos";
 option optimize_for = LITE_RUNTIME;
 
 import "mesh.proto";
 import "channel.proto";
+
+option java_outer_classname = "AppOnlyProtos";
 
 /*
  * This message wraps a MeshPacket with extra metadata about the sender and how it arrived.
