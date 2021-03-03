@@ -17,6 +17,10 @@ option java_outer_classname = "DeviceOnly";
  * the receive queue and use the preferences store for the other stuff
  */
 message DeviceState {
+
+    // Was secondary_channels before 1.2
+    reserved 12;
+
     RadioConfig radio = 1;
   
     /*
@@ -64,5 +68,5 @@ message DeviceState {
     /*
      * The channels our node knows about
      */
-    repeated Channel channels = 12;
+    repeated Channel channels = 13;
   }
