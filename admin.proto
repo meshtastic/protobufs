@@ -13,8 +13,6 @@ option java_outer_classname = "AdminProtos";
 is used to do settings operations to both remote AND local nodes.
 
 (Prior to 1.2 these operations were done via special ToRadio operations)
-
-FIXME - move the radioconfig/user/channel READ operations into AdminMessage as well
 */
 message AdminMessage {
 
