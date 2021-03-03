@@ -392,6 +392,23 @@ message RadioConfig {
     */
     uint32 environmental_measurement_plugin_recovery_interval = 144;
 
+    /* We'll always read the sensor in Celsius, but sometimes we might want to
+    display the results in Farenheit as a "user preference".  s
+    */
+    bool environmental_measurement_plugin_display_farenheit = 145;
+
+    enum EnvironmentalMeasurementSensorType {
+      DHT11 = 0;
+    };
+  
+    /* Specify the sensor type
+    */
+    EnvironmentalMeasurementSensorType environmental_measurement_plugin_sensor_type = 146;
+
+    /* Specify the peferred GPIO Pin for sensor readings
+    */
+    uint32 environmental_measurement_plugin_sensor_pin = 147;
+
 
   }
 
