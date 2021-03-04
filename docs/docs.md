@@ -52,6 +52,7 @@
     - [ChargeCurrent](#.ChargeCurrent)
     - [GpsOperation](#.GpsOperation)
     - [LocationSharing](#.LocationSharing)
+    - [RadioConfig.UserPreferences.EnvironmentalMeasurementSensorType](#.RadioConfig.UserPreferences.EnvironmentalMeasurementSensorType)
     - [RegionCode](#.RegionCode)
   
 - [remote_hardware.proto](#remote_hardware.proto)
@@ -77,8 +78,6 @@ This message is handled by the Admin plugin and is responsible for all settings/
 is used to do settings operations to both remote AND local nodes.
 
 (Prior to 1.2 these operations were done via special ToRadio operations)
-
-FIXME - move the radioconfig/user/channel READ operations into AdminMessage as well
 
 
 | Field | Type | Label | Description |
@@ -832,9 +831,6 @@ Reserved for built-in GPIO/example app. See remote_hardware.proto/HardwareMessag
 | ADMIN_APP | 6 | Admin control packets, payload is a AdminMessage protobuf |
 | REPLY_APP | 32 | Provides a &#39;ping&#39; service that replies to any packet it receives. Also this serves as a small example plugin. |
 | IP_TUNNEL_APP | 33 | Used for the python IP tunnel feature |
-| ENVIRONMENTAL_MEASUREMENT_APP | 34 | Provides a format to send and receive environmental data from the Meshtastic network.
-
-Maintained by Charles Crossan (crossan007) : crossan007@gmail.com |
 | SERIAL_APP | 64 | Provides a hardware serial interface to send and receive from the Meshtastic network. Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network. Maximum packet size of 240 bytes.
 
 Plugin is disabled by default can be turned on by setting SERIALPLUGIN_ENABLED = 1 in SerialPlugh.cpp. Maintained by Jm Casler (MC Hamster) : jm@casler.org |
@@ -844,6 +840,9 @@ Maintained by Jm Casler (MC Hamster) : jm@casler.org |
 | RANGE_TEST_APP | 66 | STORE_FORWARD_APP (Work in Progress)
 
 Maintained by Jm Casler (MC Hamster) : jm@casler.org |
+| ENVIRONMENTAL_MEASUREMENT_APP | 67 | Provides a format to send and receive environmental data from the Meshtastic network.
+
+Maintained by Charles Crossan (crossan007) : crossan007@gmail.com |
 | PRIVATE_APP | 256 | Private applications should use portnums &gt;= 256. To simplify initial development and testing you can use &#34;PRIVATE_APP&#34; in your code without needing to rebuild protobuf files (via bin/regin_protos.sh) |
 | ATAK_FORWARDER | 257 | ATAK Forwarder Plugin https://github.com/paulmandal/atak-forwarder |
 | MAX | 511 | Currently we limit port nums to no higher than this value |
@@ -964,6 +963,9 @@ FIXME - Move this out of UserPreferences and into a section for plugin configura
 | environmental_measurement_plugin_read_error_count_threshold | [uint32](#uint32) |  | Sometimes sensor reads can fail. If this happens, we will retry a configurable number of attempts Each attempt will be delayed by the minimum required refresh rate for that sensor |
 | environmental_measurement_plugin_update_interval | [uint32](#uint32) |  | Interval in seconds of how often we should try to send our measurements to the mesh |
 | environmental_measurement_plugin_recovery_interval | [uint32](#uint32) |  | Sometimes we can end up with more than read_error_count_threshold failures. In this case, we will stop trying to read from the sensor for a while. Wait this long until trying to read from the sensor again |
+| environmental_measurement_plugin_display_farenheit | [bool](#bool) |  | We&#39;ll always read the sensor in Celsius, but sometimes we might want to display the results in Farenheit as a &#34;user preference&#34;. s |
+| environmental_measurement_plugin_sensor_type | [RadioConfig.UserPreferences.EnvironmentalMeasurementSensorType](#RadioConfig.UserPreferences.EnvironmentalMeasurementSensorType) |  | Specify the sensor type |
+| environmental_measurement_plugin_sensor_pin | [uint32](#uint32) |  | Specify the peferred GPIO Pin for sensor readings |
 
 
 
@@ -1028,6 +1030,17 @@ How our location is shared with other nodes (or the local phone)
 | LocUnset | 0 | This is the default and treated as LocEnabled) |
 | LocEnabled | 1 | We are sharing our location |
 | LocDisabled | 2 | We are not sharing our location (if the unit has a GPS it will default to only get time - i.e. GpsOpTimeOnly) |
+
+
+
+<a name=".RadioConfig.UserPreferences.EnvironmentalMeasurementSensorType"></a>
+
+### RadioConfig.UserPreferences.EnvironmentalMeasurementSensorType
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| DHT11 | 0 |  |
 
 
 
