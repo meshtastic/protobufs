@@ -1067,6 +1067,7 @@ old value will be no longer set.
 | ANZ | 6 |  |
 | KR | 7 |  |
 | TW | 8 |  |
+| RU | 9 |  |
 
 
  
