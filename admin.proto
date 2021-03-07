@@ -9,11 +9,11 @@ import "channel.proto";
 
 option java_outer_classname = "AdminProtos";
 
-/* This message is handled by the Admin plugin and is responsible for all settings/channel read/write operations.  This message
-is used to do settings operations to both remote AND local nodes.
-
-(Prior to 1.2 these operations were done via special ToRadio operations)
-*/
+/*
+ * This message is handled by the Admin plugin and is responsible for all settings/channel read/write operations.  This message
+ * is used to do settings operations to both remote AND local nodes.
+ * (Prior to 1.2 these operations were done via special ToRadio operations)
+ */
 message AdminMessage {
 
     oneof variant {

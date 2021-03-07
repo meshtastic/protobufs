@@ -15,7 +15,7 @@ syntax = "proto3";
  *
  * To generate Nanopb c code:
  * /home/kevinh/packages/nanopb-0.4.0-linux-x86/generator-bin/protoc --nanopb_out=/tmp -I=app/src/main/proto mesh.proto
- * 
+ *
  * Nanopb binaries available here: https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.0
  */
 
@@ -30,8 +30,10 @@ option java_outer_classname = "MeshProtos";
  * a gps position
  */
 message Position {
-  /* The old (pre 1.2) position encoding sent lat/lon as sint32s in field 7,8.
-  Do not use to prevent confusing old apps */
+  /*
+   * The old (pre 1.2) position encoding sent lat/lon as sint32s in field 7,8.
+   * Do not use to prevent confusing old apps
+   */
   reserved 7, 8;
 
   /*
@@ -42,12 +44,15 @@ message Position {
 
   sfixed32 longitude_i = 2;
 
-  /* This is a special 'small' position update for lat/lon.  It encodes a signed 16 bit latitude in the upper
-  2 bytes, and a signed longitude in the lower 16 bits.  It is not currently implemented, but can be added in an
-  automatically backwards compatible way later.  Note: ONLY microlatlon OR latitude_i, longitude_i are populated in any particular
-  position.  A microdelta is always relative to the last received full position.
-
-  fixed32 microlatlon = 3; */
+  /*
+   * This is a special 'small' position update for lat/lon.
+   * It encodes a signed 16 bit latitude in the upper 2 bytes, and a signed longitude in the lower 16 bits.
+   * It is not currently implemented, but can be added in an automatically backwards compatible way later.
+   * Note: ONLY microlatlon OR latitude_i, longitude_i are populated in any particular position.
+   * A microdelta is always relative to the last received full position.
+   *
+   * fixed32 microlatlon = 3;
+   */
 
   /*
    * In meters above MSL
@@ -127,91 +132,102 @@ message User {
 message RouteDiscovery {
 
   /*
-  * The list of nodenums this packet has visited so far
-  */
+   * The list of nodenums this packet has visited so far
+   */
   repeated fixed32 route = 2;
 }
 
 
   
-/* A Routing control Data packet handled by the routing plugin
-*/
+/*
+ *A Routing control Data packet handled by the routing plugin
+ */
 message Routing {
 
   /*
-  * A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide
-  * details on the type of failure).
-  */
+   * A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide
+   * details on the type of failure).
+   */
   enum Error {
 
-    /* This message is not a failure */
+    /*
+     * This message is not a failure
+     */
     NONE = 0;
 
     /*
-      * Our node doesn't have a route to the requested destination anymore.
-      */
+     * Our node doesn't have a route to the requested destination anymore.
+     */
     NO_ROUTE = 1;
 
     /*
-      * We received a nak while trying to forward on your behalf
-      */
+     * We received a nak while trying to forward on your behalf
+     */
     GOT_NAK = 2;
 
     TIMEOUT = 3;
 
     /*
-    * No suitable interface could be found for delivering this packet
-    */
+     * No suitable interface could be found for delivering this packet
+     */
     NO_INTERFACE = 4;
 
     /*
-    * We reached the max retransmission count (typically for naive flood routing)
-    */
+     * We reached the max retransmission count (typically for naive flood routing)
+     */
     MAX_RETRANSMIT = 5;
 
-    /* No suitable channel was found for sending this packet (i.e. was requested channel index disabled?) */
+    /*
+     * No suitable channel was found for sending this packet (i.e. was requested channel index disabled?)
+     */
     NO_CHANNEL = 6;
     
-    /* The packet was too big for sending (exceeds interface MTU after encoding) */
+    /*
+     * The packet was too big for sending (exceeds interface MTU after encoding)
+     */
     TOO_LARGE = 7;
   }
 
   oneof variant {
     /*
-    * A route request going from the requester
-    */
+     * A route request going from the requester
+     */
     RouteDiscovery route_request = 1;
 
     /*
-      * A route reply
-      */
+     * A route reply
+     */
     RouteDiscovery route_reply = 2;  
 
     /*
-      * A failure in delivering a message (usually used for routing control messages, but might be provided 
-      * in addition to ack.fail_id to provide details on the type of failure). 
-      */
+     * A failure in delivering a message (usually used for routing control messages, but might be provided 
+     * in addition to ack.fail_id to provide details on the type of failure). 
+     */
     Error error_reason = 3;
 
-    /* Deprecated - this has been replced with error_reason == NONE && request_id != 0
+    /*
+     * Deprecated - this has been replced with error_reason == NONE && request_id != 0
      * This is an ack.
      * This packet is a requested acknoledgement indicating that we have received
      * the specified message ID.  This packet type can be used both for immediate
      * (0 hops) messages or can be routed through multiple hops if dest is set.
      * Note: As an optimization, recipients can _also_ populate a field in payload
      * if they think the recipient would appreciate that extra state.
-     
-     fixed32 success_id = 4;
+     *
+     * fixed32 success_id = 4;
      */
 
-     /* Deprecated - this has been replced with error_reason !== NONE && request_id != 0
+     /*
+      * Deprecated - this has been replced with error_reason !== NONE && request_id != 0
       * This is a nak, we failed to deliver this message.
-     fixed32 fail_id = 5;
-     */
+      *
+      * fixed32 fail_id = 5;
+      */
   } 
 }
 
-/* (Formerly called SubPacket)
+/*
+ * (Formerly called SubPacket)
  * The payload portion fo a packet, this is the actual bytes that are sent
  * inside a radio packet (because from/to are broken out by the comms library)
  */
@@ -264,48 +280,59 @@ message Data {
  */
 message MeshPacket {
 
-  /* The priority of this message for sending.  Higher priorities are sent first
-  (when managing the transmit queue).
-  This field is never sent over the air, it is only used internally inside of a local device node.
-  API clients (either on the local node or connected directly to the node)
-  can set this parameter if necessary.
-
-  (values must be <= 127 to keep protobuf field to one byte in size.
-  
-  Detailed background on this field:
-
-  I noticed a funny side effect of lora being so slow: Usually when making
-  a protocol there isn’t much need to use message priority to change the order
-  of transmission (because interfaces are fairly fast).
-  But for lora where packets can take a few seconds each, it is very important
-  to make sure that critical packets are sent ASAP.
-  In the case of meshtastic that means we want to send protocol acks as soon as possible
-  (to prevent unneeded retransmissions), we want routing messages to be sent next,
-  then messages marked as reliable and finally ‘background’ packets like periodic position updates.
-
-  So I bit the bullet and implemented a new (internal - not sent over the air)
-  field in MeshPacket called ‘priority’.
-  And the transmission queue in the router object is now a priority queue.
-  */
+  /*
+   * The priority of this message for sending.  Higher priorities are sent first
+   * (when managing the transmit queue).
+   * This field is never sent over the air, it is only used internally inside of a local device node.
+   * API clients (either on the local node or connected directly to the node)
+   * can set this parameter if necessary.
+   *
+   * (values must be <= 127 to keep protobuf field to one byte in size.
+   *
+   * Detailed background on this field:
+   *
+   * I noticed a funny side effect of lora being so slow: Usually when making
+   * a protocol there isn’t much need to use message priority to change the order
+   * of transmission (because interfaces are fairly fast).
+   * But for lora where packets can take a few seconds each, it is very important
+   * to make sure that critical packets are sent ASAP.
+   * In the case of meshtastic that means we want to send protocol acks as soon as possible
+   * (to prevent unneeded retransmissions), we want routing messages to be sent next,
+   * then messages marked as reliable and finally ‘background’ packets like periodic position updates.
+   *
+   * So I bit the bullet and implemented a new (internal - not sent over the air)
+   * field in MeshPacket called ‘priority’.
+   * And the transmission queue in the router object is now a priority queue.
+   */
   enum Priority {
-    /* Treated as Priority.DEFAULT */
+    /*
+     * Treated as Priority.DEFAULT
+     */
     UNSET = 0;
 
     MIN = 1;
 
-    /* Background position updates are sent with very low priority -
-     * if the link is super congested they might not go out at all */
+    /*
+     * Background position updates are sent with very low priority -
+     * if the link is super congested they might not go out at all
+     */
     BACKGROUND = 10;
 
-    /* This priority is used for most messages that don't have a priority set */
+    /*
+     * This priority is used for most messages that don't have a priority set
+     */
     DEFAULT = 64;
 
-    /* If priority is unset but the message is marked as want_ack,
-     * assume it is important and use a slightly higher priority */
+    /*
+     * If priority is unset but the message is marked as want_ack,
+     * assume it is important and use a slightly higher priority
+     */
     RELIABLE = 70;
 
-    /* Ack/naks are sent with very high priority to ensure that retransmission
-     * stops as soon as possible */
+    /*
+     * Ack/naks are sent with very high priority to ensure that retransmission
+     * stops as soon as possible
+     */
     ACK = 120;
 
     MAX = 127;
@@ -330,7 +357,6 @@ message MeshPacket {
    * was sent/received on.  If unset, packet was on the primary channel.
    * A particular node might know only a subset of channels in use on the mesh.  Therefore channel_index
    * is inherently a local concept and meaningless to send between nodes.
-   *
    * Very briefly, while sending and receiving deep inside the device Router code, this field instead
    * contains the 'channel hash' instead of the index.  This 'trick' is only used while the payloadVariant is
    * an 'encrypted'.
@@ -401,9 +427,10 @@ message MeshPacket {
    */
   bool want_ack = 11;
 
-  /* The priority of this message for sending. 
-  See MeshPacket.Priority description for more details.
-  */
+  /*
+   * The priority of this message for sending. 
+   * See MeshPacket.Priority description for more details.
+   */
   Priority priority = 12;
 }
 
@@ -482,24 +509,22 @@ message NodeInfo {
    * transmitter, the receiver or both. \return The estimated center frequency
    * offset in Hz of the last received message.
    * int32 frequency_error = 6;
-   *
    * enum RouteState {
    *  Invalid = 0;
    *  Discovering = 1;
    *  Valid = 2;
    * }
-   * 
    * Not needed?
    * RouteState route = 4;
-   * 
    * Our current preferred node node for routing - might be the same as num if
    * we are adjacent Or zero if we don't yet know a route to this node.
    */
   uint32 next_hop = 5;
 }
 
-/** Error codes for critical errors
- * 
+/*
+ * Error codes for critical errors
+ *
  * The device might report these fault codes on the screen.
  * If you encounter a fault code, please post on the meshtastic.discourse.group
  * and we'll try to help.
@@ -579,11 +604,13 @@ message MyNodeInfo {
    */
   uint32 num_bands = 3;
 
-  /* The maximum number of 'software' channels that can be set on this node. 
-  */
+  /*
+   * The maximum number of 'software' channels that can be set on this node. 
+   */
   uint32 max_channels = 15;
 
-  /* Deprecated! ONLY USED IN DEVICE CODE (for upgrading old 1.0 firmwares) DO NOT READ ELSEWHERE.
+  /*
+   * Deprecated! ONLY USED IN DEVICE CODE (for upgrading old 1.0 firmwares) DO NOT READ ELSEWHERE.
    * The region code for my radio (US, CN, etc...)
    * Note: This string is deprecated.  The 1.0 builds populate it based on the
    * flashed firmware name.  But for newer builds this string will be unpopulated
@@ -644,7 +671,8 @@ message MyNodeInfo {
    */
 }
 
-/* Debug output from the device.
+/*
+ * Debug output from the device.
  *
  * To minimize the size of records inside the device code, if a time/source/level is not set 
  * on the message it is assumed to be a continuation of the previously sent message.
@@ -692,9 +720,14 @@ message LogRecord {
  */
 message FromRadio {
 
-  /* In the <1.2 versions packet had ID 2, to prevent confusing old apps with our new packets, we've changed */
+  /*
+   * In the <1.2 versions packet had ID 2, to prevent confusing old apps with our new packets, we've changed
+   */
   reserved 2;
-  /* In the <1.2 versions nodeinfo had ID 4, to prevent confusing old apps with our new packets, we've changed */
+
+  /*
+   * In the <1.2 versions nodeinfo had ID 4, to prevent confusing old apps with our new packets, we've changed
+   */
   reserved 6;
 
   /*
@@ -748,9 +781,10 @@ message FromRadio {
  */
 message ToRadio {
 
-  /* In the <1.2 versions packet had ID 2, to prevent confusing old apps with our new packets, we've changed.
-  101-103 were used for set_radio, set_owner, set_channel 
-  */
+  /*
+   * In the <1.2 versions packet had ID 2, to prevent confusing old apps with our new packets, we've changed.
+   * 101-103 were used for set_radio, set_owner, set_channel 
+   */
   reserved 1, 101, 102, 103;
 
   oneof payloadVariant {
