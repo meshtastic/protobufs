@@ -42,14 +42,10 @@ enum PortNum {
     /*
      * A message receive acknowledgment, sent in cleartext - allows radio to
      * show user that a message has been read by the recipient, optional
-     *
      * Note: this concept has been removed for now.  Once READACK is implemented, use the 
      * new packet type/port number stuff?
-     *
      * @exclude
-     *
      * CLEAR_READACK = 2;
-     *
      * Reserved for built-in GPIO/example app.
      * See remote_hardware.proto/HardwareMessage for details on the message sent/received to this port number
      */ 
@@ -69,10 +65,14 @@ enum PortNum {
      */
     NODEINFO_APP = 4;
 
-    /* Protocol control packets for mesh protocol use, payload is a Routing protobuf */
+    /*
+     * Protocol control packets for mesh protocol use, payload is a Routing protobuf
+     */
     ROUTING_APP = 5;
 
-    /* Admin control packets, payload is a AdminMessage protobuf */
+    /*
+     * Admin control packets, payload is a AdminMessage protobuf
+     */
     ADMIN_APP = 6;
 
     /*
@@ -86,35 +86,30 @@ enum PortNum {
      */
     IP_TUNNEL_APP = 33;
 
-    /** Provides a hardware serial interface to send and receive from the Meshtastic network.
-    Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic
-    network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh
-    network. Maximum packet size of 240 bytes.
-    
-    Plugin is disabled by default can be turned on by setting SERIALPLUGIN_ENABLED = 1 in
-    SerialPlugh.cpp.
-    Maintained by Jm Casler (MC Hamster) : jm@casler.org
-    
-    */
+    /*
+     * Provides a hardware serial interface to send and receive from the Meshtastic network.
+     * Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic
+     * network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network.
+     * Maximum packet size of 240 bytes.
+     * Plugin is disabled by default can be turned on by setting SERIALPLUGIN_ENABLED = 1 in SerialPlugh.cpp.
+     * Maintained by Jm Casler (MC Hamster) : jm@casler.org
+     */
     SERIAL_APP = 64;
 
     /*
      * STORE_FORWARD_APP (Work in Progress)
-     *
      * Maintained by Jm Casler (MC Hamster) : jm@casler.org
      */
     STORE_FORWARD_APP = 65;
 
     /*
      * STORE_FORWARD_APP (Work in Progress)
-     *
      * Maintained by Jm Casler (MC Hamster) : jm@casler.org
      */
     RANGE_TEST_APP = 66;
     
     /*
      * Provides a format to send and receive environmental data from the Meshtastic network.
-     *
      * Maintained by Charles Crossan (crossan007) : crossan007@gmail.com
      */
      ENVIRONMENTAL_MEASUREMENT_APP = 67;
@@ -131,6 +126,8 @@ enum PortNum {
      */
     ATAK_FORWARDER = 257;
 
-    /** Currently we limit port nums to no higher than this value */
+    /*
+     * Currently we limit port nums to no higher than this value
+     */
     MAX = 511;
   }

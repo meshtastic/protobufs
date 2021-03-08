@@ -4,7 +4,8 @@ option java_package = "com.geeksville.mesh";
 option java_outer_classname = "RemoteHardware";
 option optimize_for = LITE_RUNTIME;
 
-/* A example app to show off the plugin system. This message is used for 
+/*
+ * An example app to show off the plugin system. This message is used for 
  * REMOTE_HARDWARE_APP PortNums.
  *
  * Also provides easy remote access to any GPIO.
@@ -33,7 +34,6 @@ message HardwareMessage {
         /*
          * We are now interested in watching the gpio_mask gpios.
          * If the selected gpios change, please broadcast GPIOS_CHANGED.
-         *
          * Will implicitly change the gpios requested to be INPUT gpios.
          */
         WATCH_GPIOS = 2;

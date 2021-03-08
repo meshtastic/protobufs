@@ -15,7 +15,7 @@ syntax = "proto3";
  *
  * To generate Nanopb c code:
  * /home/kevinh/packages/nanopb-0.4.0-linux-x86/generator-bin/protoc --nanopb_out=/tmp -I=app/src/main/proto mesh.proto
- * 
+ *
  * Nanopb binaries available here: https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.0
  */
 
@@ -88,7 +88,6 @@ enum GpsOperation {
 
   /*
    * Note: This mode was removed, because it is identical go GpsOpMobile with a gps_update_rate of once per day
-   *
    * This node is mostly stationary, we should try to get location only once per day,
    * Once we have that position we should turn the GPS to sleep mode
    * This is the recommended configuration for stationary 'router' nodes
@@ -159,9 +158,7 @@ message RadioConfig {
     /*
      * If we miss this many owner messages from a node, we declare the node
      * offline (defaults to 3 - to allow for some lost packets) (FIXME not yet used)
-     */
-     
-    /*
+     *
      * uint32 num_missed_to_fail = 3;
      */
      
@@ -221,7 +218,8 @@ message RadioConfig {
      */
     uint32 min_wake_secs = 11;
 
-    /* If set, this node will try to join the specified wifi network and
+    /*
+     * If set, this node will try to join the specified wifi network and
      * acquire an address via DHCP
      */
     string wifi_ssid = 12;
@@ -281,9 +279,9 @@ message RadioConfig {
      */
     bool debug_log_enabled = 101;
 
-    /**
-    How our location is shared with other nodes (or the local phone)
-    */
+    /*
+     * How our location is shared with other nodes (or the local phone)
+     */
     LocationSharing location_share = 32;
 
     /*
@@ -311,22 +309,18 @@ message RadioConfig {
      * If true, radio should not try to be smart about what packets to queue to
      * the phone
      * bool keep_all_packets = 101;
-     *
-     * If true, we will try to capture all the packets sent on the mesh, not
-     * just the ones destined to our node.
+     * If true, we will try to capture all the packets sent on the mesh, not just the ones destined to our node.
      * bool promiscuous_mode = 102;
-     *
      * For testing it is useful sometimes to force a node to never listen to
      * particular other nodes (simulating radio out of range). All nodenums listed
      * in ignore_incoming will have packets they send droped on receive (by router.cpp)
      */
     repeated uint32 ignore_incoming = 103;
     
-    /**
-    Preferences for the SerialPlugin
-    
-    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-    */
+    /*
+     * Preferences for the SerialPlugin
+     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+     */
     bool serialplugin_enabled = 120;
     bool serialplugin_echo = 121;
     uint32 serialplugin_rxd = 122;
@@ -334,11 +328,10 @@ message RadioConfig {
     uint32 serialplugin_timeout = 124;
     uint32 serialplugin_mode = 125;
 
-    /**
-    Preferences for the ExternalNotificationPlugin
-    
-    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-    */
+    /*
+     * Preferences for the ExternalNotificationPlugin
+     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+     */
     bool ext_notification_plugin_enabled = 126;
     uint32 ext_notification_plugin_output_ms = 127;
     uint32 ext_notification_plugin_output = 128;
@@ -346,68 +339,68 @@ message RadioConfig {
     bool ext_notification_plugin_alert_message = 130;
     bool ext_notification_plugin_alert_bell = 131;
 
-    /**
-    Preferences for the RangeTestPlugin
-    
-    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-    */
+    /*
+     *Preferences for the RangeTestPlugin
+     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+     */
     bool range_test_plugin_enabled = 132;
     uint32 range_test_plugin_sender = 133;
     bool range_test_plugin_save = 134;
 
-    /**
-    Preferences for the StoreForwardPlugin
-    
-    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-    */
+    /*
+     * Preferences for the StoreForwardPlugin
+     *FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+     */
     bool store_forward_plugin_enabled = 136;
     uint32 store_forward_plugin_records = 137;
 
-    /**
-    Preferences for the EnvironmentalMeasurement Plugin
-    FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-    */
     /*
-    * Enable/Disable the environmental measurement plugin measurement collection
-    */
+     * Preferences for the EnvironmentalMeasurement Plugin
+     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+     * Enable/Disable the environmental measurement plugin measurement collection
+     */
     bool environmental_measurement_plugin_measurement_enabled = 140;
     /*
-    * Enable/Disable the environmental measurement plugin on-device display
-    */
+     * Enable/Disable the environmental measurement plugin on-device display
+     */
     bool environmental_measurement_plugin_screen_enabled = 141;
     /* 
-    * Sometimes sensor reads can fail.  If this happens, we 
-    * will retry a configurable number of attempts
-    * Each attempt will be delayed by the minimum 
-    * required refresh rate for that sensor
-    */
+     * Sometimes sensor reads can fail.  If this happens, we 
+     * will retry a configurable number of attempts
+     * Each attempt will be delayed by the minimum 
+     * required refresh rate for that sensor
+     */
     uint32 environmental_measurement_plugin_read_error_count_threshold = 142;
     /*
-    * Interval in seconds of how often we should try to send our 
-    * measurements to the mesh
-    */
+     * Interval in seconds of how often we should try to send our 
+     * measurements to the mesh
+     */
     uint32 environmental_measurement_plugin_update_interval = 143;
-    /* Sometimes we can end up with more than read_error_count_threshold
-    * failures.  In this case, we will stop trying to read from the sensor
-    * for a while.  Wait this long until trying to read from the sensor again
-    */
+    /*
+     * Sometimes we can end up with more than read_error_count_threshold failures.
+     * In this case, we will stop trying to read from the sensor for a while.
+     * Wait this long until trying to read from the sensor again
+     */
     uint32 environmental_measurement_plugin_recovery_interval = 144;
 
-    /* We'll always read the sensor in Celsius, but sometimes we might want to
-    display the results in Farenheit as a "user preference".  s
-    */
+    /*
+     * We'll always read the sensor in Celsius, but sometimes we might want to
+     * display the results in Farenheit as a "user preference".
+     */
     bool environmental_measurement_plugin_display_farenheit = 145;
 
     enum EnvironmentalMeasurementSensorType {
       DHT11 = 0;
     };
   
-    /* Specify the sensor type
-    */
+    /*
+     * Specify the sensor type
+     */
     EnvironmentalMeasurementSensorType environmental_measurement_plugin_sensor_type = 146;
 
-    /* Specify the peferred GPIO Pin for sensor readings
-    */
+    /*
+     * Specify the peferred GPIO Pin for sensor readings
+     */
     uint32 environmental_measurement_plugin_sensor_pin = 147;
 
 
