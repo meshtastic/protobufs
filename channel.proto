@@ -51,7 +51,7 @@ message ChannelSettings {
   /*
    * If zero then, use default max legal continuous power (ie. something that won't
    * burn out the radio hardware)
-   * In most cases you should use zero here.
+   * In most cases you should use zero here.  Units are in dBm.
    */
   int32 tx_power = 1;
 
