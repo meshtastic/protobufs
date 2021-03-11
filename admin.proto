@@ -43,7 +43,17 @@ message AdminMessage {
         * Send the specified channel in the response for this message
         * NOTE: This field is sent with the channel index + 1 (to ensure we never try to send 'zero' - which protobufs treats as not present)
         */
-        uint32 get_channel_request = 6;
-        Channel get_channel_response = 7;
+       uint32 get_channel_request = 6;
+       Channel get_channel_response = 7;
+
+       /* Setting channels/radio config remotely carries the risk that you might
+        * send an invalid config and the radio never talks to your mesh again.
+        * Therefore if setting either of these properties remotely, you must send
+        * a confirm_xxx message within 10 minutes.  If you fail to do so, the radio
+        * will assume loss of comms and revert your changes.
+        * These messages are optional when changing the local node.
+        */ 
+       bool confirm_set_channel = 32;
+       bool confirm_set_radio = 33;
     }
   }
