@@ -106,6 +106,8 @@ message User {
    * A globally unique ID string for this user.  In the case of
    * Signal that would mean +16504442323, for the default macaddr
    * derived id it would be !<8 hexidecimal bytes>
+   * Note: app developers are encouraged to also use the following standard
+   * node IDs "^all" (for broadcast), "^local" (for the locally connected node)
    */
   string id = 1;
 
