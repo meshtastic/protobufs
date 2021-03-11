@@ -215,8 +215,10 @@ message Channel {
 
   /*
    * The index of this channel in the channel table (from 0 to MAX_NUM_CHANNELS-1)
+   * (Someday - not currently implemented) An index of -1 could be used to mean "set by name", 
+   * in which case the target node will find and set the channel by settings.name. 
    */
-  uint32 index = 1;
+  int32 index = 1;
 
   /*
    * The new settings, or NULL to disable that channel
