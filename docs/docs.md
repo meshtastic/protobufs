@@ -18,6 +18,7 @@
     - [ChannelSettings.ModemConfig](#.ChannelSettings.ModemConfig)
   
 - [deviceonly.proto](#deviceonly.proto)
+    - [ChannelFile](#.ChannelFile)
     - [DeviceState](#.DeviceState)
   
 - [environmental_measurement.proto](#environmental_measurement.proto)
@@ -76,7 +77,6 @@
 ### AdminMessage
 This message is handled by the Admin plugin and is responsible for all settings/channel read/write operations.  This message
 is used to do settings operations to both remote AND local nodes.
-
 (Prior to 1.2 these operations were done via special ToRadio operations)
 
 
@@ -89,6 +89,8 @@ is used to do settings operations to both remote AND local nodes.
 | get_radio_response | [RadioConfig](#RadioConfig) |  |  |
 | get_channel_request | [uint32](#uint32) |  | Send the specified channel in the response for this message NOTE: This field is sent with the channel index &#43; 1 (to ensure we never try to send &#39;zero&#39; - which protobufs treats as not present) |
 | get_channel_response | [Channel](#Channel) |  |  |
+| confirm_set_channel | [bool](#bool) |  | Setting channels/radio config remotely carries the risk that you might send an invalid config and the radio never talks to your mesh again. Therefore if setting either of these properties remotely, you must send a confirm_xxx message within 10 minutes. If you fail to do so, the radio will assume loss of comms and revert your changes. These messages are optional when changing the local node. |
+| confirm_set_radio | [bool](#bool) |  |  |
 
 
 
@@ -115,10 +117,8 @@ is used to do settings operations to both remote AND local nodes.
 
 ### ChannelSet
 This is the most compact possible representation for a set of channels.  It includes only one PRIMARY channel (which must be first) and
-any SECONDARY channels.  No DISABLED channels are included.  
-
-This abstraction is used only on the the &#39;app side&#39; of the world (ie python, javascript and android etc) to show a group of Channels
-as a (long) URL
+any SECONDARY channels.  No DISABLED channels are included.
+This abstraction is used only on the the &#39;app side&#39; of the world (ie python, javascript and android etc) to show a group of Channels as a (long) URL
 
 
 | Field | Type | Label | Description |
@@ -187,7 +187,7 @@ A pair of a channel number, mode and the (sharable) settings for that channel
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| index | [uint32](#uint32) |  | The index of this channel in the channel table (from 0 to MAX_NUM_CHANNELS-1) |
+| index | [int32](#int32) |  | The index of this channel in the channel table (from 0 to MAX_NUM_CHANNELS-1) (Someday - not currently implemented) An index of -1 could be used to mean &#34;set by name&#34;, in which case the target node will find and set the channel by settings.name. |
 | settings | [ChannelSettings](#ChannelSettings) |  | The new settings, or NULL to disable that channel |
 | role | [Channel.Role](#Channel.Role) |  |  |
 
@@ -223,13 +223,13 @@ remote gpio are managed as an example
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| tx_power | [int32](#int32) |  | If zero then, use default max legal continuous power (ie. something that won&#39;t burn out the radio hardware) In most cases you should use zero here. |
+| tx_power | [int32](#int32) |  | If zero then, use default max legal continuous power (ie. something that won&#39;t burn out the radio hardware) In most cases you should use zero here. Units are in dBm. |
 | modem_config | [ChannelSettings.ModemConfig](#ChannelSettings.ModemConfig) |  | Note: This is the &#39;old&#39; mechanism for specifying channel parameters. Either modem_config or bandwidth/spreading/coding will be specified - NOT BOTH. As a heuristic: If bandwidth is specified, do not use modem_config. Because protobufs take ZERO space when the value is zero this works out nicely. This value is replaced by bandwidth/spread_factor/coding_rate. If you&#39;d like to experiment with other options add them to MeshRadio.cpp in the device code. |
 | bandwidth | [uint32](#uint32) |  | Bandwidth in MHz Certain bandwidth numbers are &#39;special&#39; and will be converted to the appropriate floating point value: 31 -&gt; 31.25MHz |
 | spread_factor | [uint32](#uint32) |  | A number from 7 to 12. Indicates number of chirps per symbol as 1&lt;&lt;spread_factor. |
 | coding_rate | [uint32](#uint32) |  | The denominator of the coding rate. ie for 4/8, the value is 8. 5/8 the value is 5. |
 | channel_num | [uint32](#uint32) |  | A channel number between 1 and 13 (or whatever the max is in the current region). If ZERO then the rule is &#34;use the old channel name hash based algorithm to derive the channel number&#34;) If using the hash algorithm the channel number will be: hash(channel_name) % NUM_CHANNELS (Where num channels depends on the regulatory region). NUM_CHANNELS_US is 13, for other values see MeshRadio.h in the device code. hash a string into an integer - djb2 by Dan Bernstein. - http://www.cse.yorku.ca/~oz/hash.html unsigned long hash(char *str) { unsigned long hash = 5381; int c; while ((c = *str&#43;&#43;) != 0) hash = ((hash &lt;&lt; 5) &#43; hash) &#43; (unsigned char) c; return hash; } |
-| psk | [bytes](#bytes) |  | A simple pre-shared key for now for crypto. Must be either 0 bytes (no crypto), 16 bytes (AES128), or 32 bytes (AES256) A special shorthand is used for 1 byte long psks. These psks should be treated as only minimally secure, because they are listed in this source code. Those bytes are mapped using the following scheme: 0 = No crypto 1 = The special default channel key: {0xd4, 0xf1, 0xbb, 0x3a, 0x20, 0x29, 0x07, 0x59, 0xf0, 0xbc, 0xff, 0xab, 0xcf, 0x4e, 0x69, 0xbf} 2 through 10 = The default channel key, except with 1 through 9 added to the last byte |
+| psk | [bytes](#bytes) |  | A simple pre-shared key for now for crypto. Must be either 0 bytes (no crypto), 16 bytes (AES128), or 32 bytes (AES256) A special shorthand is used for 1 byte long psks. These psks should be treated as only minimally secure, because they are listed in this source code. Those bytes are mapped using the following scheme: `0` = No crypto `1` = The special default channel key: {0xd4, 0xf1, 0xbb, 0x3a, 0x20, 0x29, 0x07, 0x59, 0xf0, 0xbc, 0xff, 0xab, 0xcf, 0x4e, 0x69, 0xbf} `2` through 10 = The default channel key, except with 1 through 9 added to the last byte |
 | name | [string](#string) |  | A SHORT name that will be packed into the URL. Less than 12 bytes. Something for end users to call the channel If this is the empty string it is assumed that this channel is the special (minimally secure) &#34;Default&#34;channel. In user interfaces it should be rendered as a local language translation of &#34;X&#34;. For channel_num hashing empty string will be treated as &#34;X&#34;. Where &#34;X&#34; is selected based on the English words listed above for ModemConfig |
 | id | [fixed32](#fixed32) |  | Used to construct a globally unique channel ID. The full globally unique ID will be: &#34;name.id&#34; where ID is shown as base36. Assuming that the number of meshtastic users is below 20K (true for a long time) the chance of this 64 bit random number colliding with anyone else is super low. And the penalty for collision is low as well, it just means that anyone trying to decrypt channel messages might need to try multiple candidate channels. Any time a non wire compatible change is made to a channel, this field should be regenerated. There are a small number of &#39;special&#39; globally known (and fairly) insecure standard channels. Those channels do not have a numeric id included in the settings, but instead it is pulled from a table of well known IDs. (see Well Known Channels FIXME) |
 | uplink_enabled | [bool](#bool) |  | If true, messages on the mesh will be sent to the *public* internet by any gateway ndoe |
@@ -292,6 +292,21 @@ Note: these mappings must match ModemConfigChoice in the device code.
 
 
 
+<a name=".ChannelFile"></a>
+
+### ChannelFile
+The on-disk saved channels
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| channels | [Channel](#Channel) | repeated | The channels our node knows about |
+
+
+
+
+
+
 <a name=".DeviceState"></a>
 
 ### DeviceState
@@ -304,7 +319,6 @@ the receive queue and use the preferences store for the other stuff
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| radio | [RadioConfig](#RadioConfig) |  |  |
 | my_node | [MyNodeInfo](#MyNodeInfo) |  | Read only settings/info about this node |
 | owner | [User](#User) |  | My owner info |
 | node_db | [NodeInfo](#NodeInfo) | repeated |  |
@@ -313,7 +327,6 @@ the receive queue and use the preferences store for the other stuff
 | rx_text_message | [MeshPacket](#MeshPacket) |  | We keep the last received text message (only) stored in the device flash, so we can show it on the screen. Might be null |
 | no_save | [bool](#bool) |  | Used only during development. Indicates developer is testing and changes should never be saved to flash. |
 | did_gps_reset | [bool](#bool) |  | Some GPSes seem to have bogus settings from the factory, so we always do one factory reset. |
-| channels | [Channel](#Channel) | repeated | The channels our node knows about |
 
 
 
@@ -466,9 +479,7 @@ The other fields are either not sent at all, or sent in the special 16 byte LORA
 | ----- | ---- | ----- | ----------- |
 | from | [fixed32](#fixed32) |  | The sending node number. Note: Our crypto implementation uses this field as well. See docs/software/crypto.md for details. FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
 | to | [fixed32](#fixed32) |  | The (immediatSee Priority description for more details.y should be fixed32 instead, this encoding only hurts the ble link though. |
-| channel | [uint32](#uint32) |  | (Usually) If set, this indicates the index in the secondary_channels table that this packet was sent/received on. If unset, packet was on the primary channel. A particular node might know only a subset of channels in use on the mesh. Therefore channel_index is inherently a local concept and meaningless to send between nodes.
-
-Very briefly, while sending and receiving deep inside the device Router code, this field instead contains the &#39;channel hash&#39; instead of the index. This &#39;trick&#39; is only used while the payloadVariant is an &#39;encrypted&#39;. |
+| channel | [uint32](#uint32) |  | (Usually) If set, this indicates the index in the secondary_channels table that this packet was sent/received on. If unset, packet was on the primary channel. A particular node might know only a subset of channels in use on the mesh. Therefore channel_index is inherently a local concept and meaningless to send between nodes. Very briefly, while sending and receiving deep inside the device Router code, this field instead contains the &#39;channel hash&#39; instead of the index. This &#39;trick&#39; is only used while the payloadVariant is an &#39;encrypted&#39;. |
 | decoded | [Data](#Data) |  |  |
 | encrypted | [bytes](#bytes) |  |  |
 | id | [fixed32](#fixed32) |  | A unique ID for this packet. Always 0 for no-ack packets or non broadcast packets (and therefore take zero bytes of space). Otherwise a unique ID for this packet, useful for flooding algorithms. ID only needs to be unique on a _per sender_ basis, and it only needs to be unique for a few minutes (long enough to last for the length of any ACK or the completion of a mesh broadcast flood). Note: Our crypto implementation uses this id as well. See docs/software/crypto.md for details. FIXME - really should be fixed32 instead, this encoding only hurts the ble link though. |
@@ -543,13 +554,7 @@ Full information about a node on the mesh
 | user | [User](#User) |  | The user info for this node |
 | position | [Position](#Position) |  | This position data will also contain a time last seen |
 | snr | [float](#float) |  | Returns the Signal-to-noise ratio (SNR) of the last received message, as measured by the receiver. Return SNR of the last received message in dB |
-| next_hop | [uint32](#uint32) |  | Returns the last measured frequency error. The LoRa receiver estimates the frequency offset between the receiver center frequency and that of the received LoRa signal. This function returns the estimates offset (in Hz) of the last received message. Caution: this measurement is not absolute, but is measured relative to the local receiver&#39;s oscillator. Apparent errors may be due to the transmitter, the receiver or both. \return The estimated center frequency offset in Hz of the last received message. int32 frequency_error = 6;
-
-enum RouteState { Invalid = 0; Discovering = 1; Valid = 2; }
-
-Not needed? RouteState route = 4;
-
-Our current preferred node node for routing - might be the same as num if we are adjacent Or zero if we don&#39;t yet know a route to this node. |
+| next_hop | [uint32](#uint32) |  | Returns the last measured frequency error. The LoRa receiver estimates the frequency offset between the receiver center frequency and that of the received LoRa signal. This function returns the estimates offset (in Hz) of the last received message. Caution: this measurement is not absolute, but is measured relative to the local receiver&#39;s oscillator. Apparent errors may be due to the transmitter, the receiver or both. \return The estimated center frequency offset in Hz of the last received message. int32 frequency_error = 6; enum RouteState { Invalid = 0; Discovering = 1; Valid = 2; } Not needed? RouteState route = 4; Our current preferred node node for routing - might be the same as num if we are adjacent Or zero if we don&#39;t yet know a route to this node. |
 
 
 
@@ -655,7 +660,7 @@ A few nodenums are reserved and will never be requested:
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [string](#string) |  | A globally unique ID string for this user. In the case of Signal that would mean &#43;16504442323, for the default macaddr derived id it would be !&lt;8 hexidecimal bytes&gt; |
+| id | [string](#string) |  | A globally unique ID string for this user. In the case of Signal that would mean &#43;16504442323, for the default macaddr derived id it would be !&lt;8 hexidecimal bytes&gt; Note: app developers are encouraged to also use the following standard node IDs &#34;^all&#34; (for broadcast), &#34;^local&#34; (for the locally connected node) |
 | long_name | [string](#string) |  | A full name for this user, i.e. &#34;Kevin Hester&#34; |
 | short_name | [string](#string) |  | A VERY short name, ideally two characters. Suitable for a tiny OLED screen |
 | macaddr | [bytes](#bytes) |  | This is the addr of the radio. Not populated by the phone, but added by the esp32 when broadcasting |
@@ -817,33 +822,17 @@ This change is backwards compatible by treating the legacy OPAQUE/CLEAR_TEXT val
 | ---- | ------ | ----------- |
 | UNKNOWN_APP | 0 | Deprecated: do not use in new code (formerly called OPAQUE) A message sent from a device outside of the mesh, in a form the mesh does not understand NOTE: This must be 0, because it is documented in IMeshService.aidl to be so |
 | TEXT_MESSAGE_APP | 1 | A simple UTF-8 text message, which even the little micros in the mesh can understand and show on their screen eventually in some circumstances even signal might send messages in this form (see below) Formerly called CLEAR_TEXT |
-| REMOTE_HARDWARE_APP | 2 | A message receive acknowledgment, sent in cleartext - allows radio to show user that a message has been read by the recipient, optional
-
-Note: this concept has been removed for now. Once READACK is implemented, use the new packet type/port number stuff?
-
-@exclude
-
-CLEAR_READACK = 2;
-
-Reserved for built-in GPIO/example app. See remote_hardware.proto/HardwareMessage for details on the message sent/received to this port number |
+| REMOTE_HARDWARE_APP | 2 | A message receive acknowledgment, sent in cleartext - allows radio to show user that a message has been read by the recipient, optional Note: this concept has been removed for now. Once READACK is implemented, use the new packet type/port number stuff? @exclude CLEAR_READACK = 2; Reserved for built-in GPIO/example app. See remote_hardware.proto/HardwareMessage for details on the message sent/received to this port number |
 | POSITION_APP | 3 | The built-in position messaging app. See Position for details on the message sent to this port number. payload is a Position protobuf |
 | NODEINFO_APP | 4 | The built-in user info app. See User for details on the message sent to this port number. payload is a User protobuf |
 | ROUTING_APP | 5 | Protocol control packets for mesh protocol use, payload is a Routing protobuf |
 | ADMIN_APP | 6 | Admin control packets, payload is a AdminMessage protobuf |
 | REPLY_APP | 32 | Provides a &#39;ping&#39; service that replies to any packet it receives. Also this serves as a small example plugin. |
 | IP_TUNNEL_APP | 33 | Used for the python IP tunnel feature |
-| SERIAL_APP | 64 | Provides a hardware serial interface to send and receive from the Meshtastic network. Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network. Maximum packet size of 240 bytes.
-
-Plugin is disabled by default can be turned on by setting SERIALPLUGIN_ENABLED = 1 in SerialPlugh.cpp. Maintained by Jm Casler (MC Hamster) : jm@casler.org |
-| STORE_FORWARD_APP | 65 | STORE_FORWARD_APP (Work in Progress)
-
-Maintained by Jm Casler (MC Hamster) : jm@casler.org |
-| RANGE_TEST_APP | 66 | STORE_FORWARD_APP (Work in Progress)
-
-Maintained by Jm Casler (MC Hamster) : jm@casler.org |
-| ENVIRONMENTAL_MEASUREMENT_APP | 67 | Provides a format to send and receive environmental data from the Meshtastic network.
-
-Maintained by Charles Crossan (crossan007) : crossan007@gmail.com |
+| SERIAL_APP | 64 | Provides a hardware serial interface to send and receive from the Meshtastic network. Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network. Maximum packet size of 240 bytes. Plugin is disabled by default can be turned on by setting SERIALPLUGIN_ENABLED = 1 in SerialPlugh.cpp. Maintained by Jm Casler (MC Hamster) : jm@casler.org |
+| STORE_FORWARD_APP | 65 | STORE_FORWARD_APP (Work in Progress) Maintained by Jm Casler (MC Hamster) : jm@casler.org |
+| RANGE_TEST_APP | 66 | STORE_FORWARD_APP (Work in Progress) Maintained by Jm Casler (MC Hamster) : jm@casler.org |
+| ENVIRONMENTAL_MEASUREMENT_APP | 67 | Provides a format to send and receive environmental data from the Meshtastic network. Maintained by Charles Crossan (crossan007) : crossan007@gmail.com |
 | PRIVATE_APP | 256 | Private applications should use portnums &gt;= 256. To simplify initial development and testing you can use &#34;PRIVATE_APP&#34; in your code without needing to rebuild protobuf files (via bin/regin_protos.sh) |
 | ATAK_FORWARDER | 257 | ATAK Forwarder Plugin https://github.com/paulmandal/atak-forwarder |
 | MAX | 511 | Currently we limit port nums to no higher than this value |
@@ -929,42 +918,30 @@ see sw-design.md for more information on these preferences
 | gps_operation | [GpsOperation](#GpsOperation) |  | How the GPS hardware in this unit is operated. Note: This is independent of how our location is shared with other devices. For that see LocationSharing |
 | gps_update_interval | [uint32](#uint32) |  | How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode? or zero for the default of once every 30 seconds or a very large value (maxint) to update only once at boot. |
 | gps_attempt_time | [uint32](#uint32) |  | How long should we try to get our position during each gps_update_interval attempt? (in seconds) Or if zero, use the default of 30 seconds. If we don&#39;t get a new gps fix in that time, the gps will be put into sleep until the next gps_update_rate window. |
-| ignore_incoming | [uint32](#uint32) | repeated | If true, radio should not try to be smart about what packets to queue to the phone bool keep_all_packets = 101;
-
-If true, we will try to capture all the packets sent on the mesh, not just the ones destined to our node. bool promiscuous_mode = 102;
-
-For testing it is useful sometimes to force a node to never listen to particular other nodes (simulating radio out of range). All nodenums listed in ignore_incoming will have packets they send droped on receive (by router.cpp) |
-| serialplugin_enabled | [bool](#bool) |  | Preferences for the SerialPlugin
-
-FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
+| ignore_incoming | [uint32](#uint32) | repeated | If true, radio should not try to be smart about what packets to queue to the phone bool keep_all_packets = 101; If true, we will try to capture all the packets sent on the mesh, not just the ones destined to our node. bool promiscuous_mode = 102; For testing it is useful sometimes to force a node to never listen to particular other nodes (simulating radio out of range). All nodenums listed in ignore_incoming will have packets they send droped on receive (by router.cpp) |
+| serialplugin_enabled | [bool](#bool) |  | Preferences for the SerialPlugin FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
 | serialplugin_echo | [bool](#bool) |  |  |
 | serialplugin_rxd | [uint32](#uint32) |  |  |
 | serialplugin_txd | [uint32](#uint32) |  |  |
 | serialplugin_timeout | [uint32](#uint32) |  |  |
 | serialplugin_mode | [uint32](#uint32) |  |  |
-| ext_notification_plugin_enabled | [bool](#bool) |  | Preferences for the ExternalNotificationPlugin
-
-FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
+| ext_notification_plugin_enabled | [bool](#bool) |  | Preferences for the ExternalNotificationPlugin FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
 | ext_notification_plugin_output_ms | [uint32](#uint32) |  |  |
 | ext_notification_plugin_output | [uint32](#uint32) |  |  |
 | ext_notification_plugin_active | [bool](#bool) |  |  |
 | ext_notification_plugin_alert_message | [bool](#bool) |  |  |
 | ext_notification_plugin_alert_bell | [bool](#bool) |  |  |
-| range_test_plugin_enabled | [bool](#bool) |  | Preferences for the RangeTestPlugin
-
-FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
+| range_test_plugin_enabled | [bool](#bool) |  | Preferences for the RangeTestPlugin FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
 | range_test_plugin_sender | [uint32](#uint32) |  |  |
 | range_test_plugin_save | [bool](#bool) |  |  |
-| store_forward_plugin_enabled | [bool](#bool) |  | Preferences for the StoreForwardPlugin
-
-FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
+| store_forward_plugin_enabled | [bool](#bool) |  | Preferences for the StoreForwardPlugin FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
 | store_forward_plugin_records | [uint32](#uint32) |  |  |
-| environmental_measurement_plugin_measurement_enabled | [bool](#bool) |  | Enable/Disable the environmental measurement plugin measurement collection |
+| environmental_measurement_plugin_measurement_enabled | [bool](#bool) |  | Preferences for the EnvironmentalMeasurement Plugin FIXME - Move this out of UserPreferences and into a section for plugin configuration. Enable/Disable the environmental measurement plugin measurement collection |
 | environmental_measurement_plugin_screen_enabled | [bool](#bool) |  | Enable/Disable the environmental measurement plugin on-device display |
 | environmental_measurement_plugin_read_error_count_threshold | [uint32](#uint32) |  | Sometimes sensor reads can fail. If this happens, we will retry a configurable number of attempts Each attempt will be delayed by the minimum required refresh rate for that sensor |
 | environmental_measurement_plugin_update_interval | [uint32](#uint32) |  | Interval in seconds of how often we should try to send our measurements to the mesh |
 | environmental_measurement_plugin_recovery_interval | [uint32](#uint32) |  | Sometimes we can end up with more than read_error_count_threshold failures. In this case, we will stop trying to read from the sensor for a while. Wait this long until trying to read from the sensor again |
-| environmental_measurement_plugin_display_farenheit | [bool](#bool) |  | We&#39;ll always read the sensor in Celsius, but sometimes we might want to display the results in Farenheit as a &#34;user preference&#34;. s |
+| environmental_measurement_plugin_display_farenheit | [bool](#bool) |  | We&#39;ll always read the sensor in Celsius, but sometimes we might want to display the results in Farenheit as a &#34;user preference&#34;. |
 | environmental_measurement_plugin_sensor_type | [RadioConfig.UserPreferences.EnvironmentalMeasurementSensorType](#RadioConfig.UserPreferences.EnvironmentalMeasurementSensorType) |  | Specify the sensor type |
 | environmental_measurement_plugin_sensor_pin | [uint32](#uint32) |  | Specify the peferred GPIO Pin for sensor readings |
 
@@ -1012,9 +989,7 @@ Note: This is independent of how our location is shared with other devices.  For
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | GpsOpUnset | 0 | This is treated as GpsOpMobile - it is the default setting |
-| GpsOpStationary | 1 | Note: This mode was removed, because it is identical go GpsOpMobile with a gps_update_rate of once per day
-
-This node is mostly stationary, we should try to get location only once per day, Once we have that position we should turn the GPS to sleep mode This is the recommended configuration for stationary &#39;router&#39; nodes |
+| GpsOpStationary | 1 | Note: This mode was removed, because it is identical go GpsOpMobile with a gps_update_rate of once per day This node is mostly stationary, we should try to get location only once per day, Once we have that position we should turn the GPS to sleep mode This is the recommended configuration for stationary &#39;router&#39; nodes |
 | GpsOpMobile | 2 | This node is mobile and we should get GPS position at a rate governed by gps_update_rate |
 | GpsOpTimeOnly | 3 | We should only use the GPS to get time (no location data should be acquired/stored) Once we have the time we treat gps_update_interval as MAXINT (i.e. sleep forever) |
 | GpsOpDisabled | 4 | GPS is always turned off - this mode is not recommended - use GpsOpTimeOnly instead |
@@ -1089,7 +1064,7 @@ old value will be no longer set.
 <a name=".HardwareMessage"></a>
 
 ### HardwareMessage
-A example app to show off the plugin system. This message is used for 
+An example app to show off the plugin system. This message is used for 
 REMOTE_HARDWARE_APP PortNums.
 
 Also provides easy remote access to any GPIO.
@@ -1125,9 +1100,7 @@ It should be off by default and then protected based on some TBD mechanism
 | ---- | ------ | ----------- |
 | UNSET | 0 | Unset/unused |
 | WRITE_GPIOS | 1 | Set gpio gpios based on gpio_mask/gpio_value |
-| WATCH_GPIOS | 2 | We are now interested in watching the gpio_mask gpios. If the selected gpios change, please broadcast GPIOS_CHANGED.
-
-Will implicitly change the gpios requested to be INPUT gpios. |
+| WATCH_GPIOS | 2 | We are now interested in watching the gpio_mask gpios. If the selected gpios change, please broadcast GPIOS_CHANGED. Will implicitly change the gpios requested to be INPUT gpios. |
 | GPIOS_CHANGED | 3 | The gpios listed in gpio_mask have changed, the new values are listed in gpio_value |
 | READ_GPIOS | 4 | Read the gpios specified in gpio_mask, send back a READ_GPIOS_REPLY reply with gpio_value populated |
 | READ_GPIOS_REPLY | 5 | A reply to READ_GPIOS. gpio_mask and gpio_value will be populated |

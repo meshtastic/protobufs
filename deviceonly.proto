@@ -4,7 +4,6 @@ option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 
 import "mesh.proto";
-import "radioconfig.proto";
 import "channel.proto";
 
 option java_outer_classname = "DeviceOnly";
@@ -23,7 +22,8 @@ message DeviceState {
      */
     reserved 12;
 
-    RadioConfig radio = 1;
+    // Moved to its own file
+    // RadioConfig radio = 1;
   
     /*
      * Read only settings/info about this node
@@ -66,9 +66,12 @@ message DeviceState {
      * Some GPSes seem to have bogus settings from the factory, so we always do one factory reset.
      */
     bool did_gps_reset = 11;
-  
+  }
+
+  /** The on-disk saved channels */
+  message ChannelFile {
     /*
      * The channels our node knows about
      */
-    repeated Channel channels = 13;
+     repeated Channel channels = 1;
   }
