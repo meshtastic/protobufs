@@ -20,6 +20,8 @@
 - [deviceonly.proto](#deviceonly.proto)
     - [ChannelFile](#.ChannelFile)
     - [DeviceState](#.DeviceState)
+    - [LegacyRadioConfig](#.LegacyRadioConfig)
+    - [LegacyRadioConfig.LegacyPreferences](#.LegacyRadioConfig.LegacyPreferences)
   
 - [environmental_measurement.proto](#environmental_measurement.proto)
     - [EnvironmentalMeasurement](#.EnvironmentalMeasurement)
@@ -319,6 +321,7 @@ the receive queue and use the preferences store for the other stuff
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| legacyRadio | [LegacyRadioConfig](#LegacyRadioConfig) |  | Moved to its own file, but we keep this here so we can automatically migrate old radio.region settings |
 | my_node | [MyNodeInfo](#MyNodeInfo) |  | Read only settings/info about this node |
 | owner | [User](#User) |  | My owner info |
 | node_db | [NodeInfo](#NodeInfo) | repeated |  |
@@ -327,6 +330,37 @@ the receive queue and use the preferences store for the other stuff
 | rx_text_message | [MeshPacket](#MeshPacket) |  | We keep the last received text message (only) stored in the device flash, so we can show it on the screen. Might be null |
 | no_save | [bool](#bool) |  | Used only during development. Indicates developer is testing and changes should never be saved to flash. |
 | did_gps_reset | [bool](#bool) |  | Some GPSes seem to have bogus settings from the factory, so we always do one factory reset. |
+
+
+
+
+
+
+<a name=".LegacyRadioConfig"></a>
+
+### LegacyRadioConfig
+This is a stub version of the old 1.1 representation of RadioConfig.  But only keeping the region info.  The device firmware uses
+this stub while migrating old nodes to the new preferences system.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| preferences | [LegacyRadioConfig.LegacyPreferences](#LegacyRadioConfig.LegacyPreferences) |  |  |
+
+
+
+
+
+
+<a name=".LegacyRadioConfig.LegacyPreferences"></a>
+
+### LegacyRadioConfig.LegacyPreferences
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| region | [RegionCode](#RegionCode) |  | The region code for my radio (US, CN, EU433, etc...) |
 
 
 
