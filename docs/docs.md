@@ -813,6 +813,7 @@ details on the type of failure).
 | MAX_RETRANSMIT | 5 | We reached the max retransmission count (typically for naive flood routing) |
 | NO_CHANNEL | 6 | No suitable channel was found for sending this packet (i.e. was requested channel index disabled?) |
 | TOO_LARGE | 7 | The packet was too big for sending (exceeds interface MTU after encoding) |
+| NO_RESPONSE | 8 | The request had want_response set, the request reached the destination node, but no service on that node wants to send a response (possibly due to bad channel permissions) |
 
 
  
