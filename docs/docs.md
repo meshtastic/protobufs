@@ -969,7 +969,9 @@ see sw-design.md for more information on these preferences
 | range_test_plugin_enabled | [bool](#bool) |  | Preferences for the RangeTestPlugin FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
 | range_test_plugin_sender | [uint32](#uint32) |  |  |
 | range_test_plugin_save | [bool](#bool) |  |  |
-| store_forward_plugin_enabled | [bool](#bool) |  | Preferences for the StoreForwardPlugin FIXME - Move this out of UserPreferences and into a section for plugin configuration. |
+| store_forward_plugin_enabled | [bool](#bool) |  | Preferences for the StoreForwardPlugin FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+
+was 136 |
 | store_forward_plugin_records | [uint32](#uint32) |  |  |
 | environmental_measurement_plugin_measurement_enabled | [bool](#bool) |  | Preferences for the EnvironmentalMeasurement Plugin FIXME - Move this out of UserPreferences and into a section for plugin configuration. Enable/Disable the environmental measurement plugin measurement collection |
 | environmental_measurement_plugin_screen_enabled | [bool](#bool) |  | Enable/Disable the environmental measurement plugin on-device display |
