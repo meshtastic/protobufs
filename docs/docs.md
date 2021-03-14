@@ -41,9 +41,9 @@
   
     - [Constants](#.Constants)
     - [CriticalErrorCode](#.CriticalErrorCode)
+    - [HardwareModel](#.HardwareModel)
     - [LogRecord.Level](#.LogRecord.Level)
     - [MeshPacket.Priority](#.MeshPacket.Priority)
-    - [NodeInfo.HardwareModel](#.NodeInfo.HardwareModel)
     - [Routing.Error](#.Routing.Error)
   
 - [portnums.proto](#portnums.proto)
@@ -589,7 +589,6 @@ Full information about a node on the mesh
 | user | [User](#User) |  | The user info for this node |
 | position | [Position](#Position) |  | This position data will also contain a time last seen |
 | snr | [float](#float) |  | Returns the Signal-to-noise ratio (SNR) of the last received message, as measured by the receiver. Return SNR of the last received message in dB |
-| hw_model | [NodeInfo.HardwareModel](#NodeInfo.HardwareModel) |  | TBEAM, HELTEC, etc... Starting in 1.2.11 moved to hw_model enum in the NodeInfo object. Apps will still need the string here for older builds (so OTA update can find the right image), but if the enum is available it will be used instead. |
 
 
 
@@ -699,6 +698,7 @@ A few nodenums are reserved and will never be requested:
 | long_name | [string](#string) |  | A full name for this user, i.e. &#34;Kevin Hester&#34; |
 | short_name | [string](#string) |  | A VERY short name, ideally two characters. Suitable for a tiny OLED screen |
 | macaddr | [bytes](#bytes) |  | This is the addr of the radio. Not populated by the phone, but added by the esp32 when broadcasting |
+| hw_model | [HardwareModel](#HardwareModel) |  | TBEAM, HELTEC, etc... Starting in 1.2.11 moved to hw_model enum in the NodeInfo object. Apps will still need the string here for older builds (so OTA update can find the right image), but if the enum is available it will be used instead. |
 
 
 
@@ -740,6 +740,34 @@ and we&#39;ll try to help.
 | InvalidRadioSetting | 7 | The channel tried to set a radio setting which is not supported by this chipset, radio comms settings are now undefined. |
 | TransmitFailed | 8 | Radio transmit hardware failure. We sent data to the radio chip, but it didn&#39;t reply with an interrupt. |
 | Brownout | 9 | We detected that the main CPU voltage dropped below the minumum acceptable value |
+
+
+
+<a name=".HardwareModel"></a>
+
+### HardwareModel
+Note: these enum names must EXACTLY match the string used in the device
+bin/build-all.sh script.  Because they will be used to find firmware filenames
+in the android app for OTA updates.
+To match the old style filenames, _ is converted to -, p is converted to .
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| UNSET | 0 |  |
+| TLORA_V2 | 1 |  |
+| TLORA_V1 | 2 |  |
+| TLORA_V2_1_1p6 | 3 |  |
+| TBEAM | 4 |  |
+| HELTEC | 5 |  |
+| TBEAM0p7 | 6 |  |
+| T_ECHO | 7 |  |
+| TLORA_V1_1p3 | 8 |  |
+| LORA_RELAY_V1 | 32 | Less common/prototype boards listed here (needs one more byte over the air) |
+| NRF52840DK | 33 |  |
+| PPR | 34 |  |
+| GENIEBLOCKS | 35 |  |
+| NRF52_UNKNOWN | 36 |  |
+| PORTDUINO | 37 |  |
 
 
 
@@ -795,34 +823,6 @@ And the transmission queue in the router object is now a priority queue.
 | RELIABLE | 70 | If priority is unset but the message is marked as want_ack, assume it is important and use a slightly higher priority |
 | ACK | 120 | Ack/naks are sent with very high priority to ensure that retransmission stops as soon as possible |
 | MAX | 127 |  |
-
-
-
-<a name=".NodeInfo.HardwareModel"></a>
-
-### NodeInfo.HardwareModel
-Note: these enum names must EXACTLY match the string used in the device
-bin/build-all.sh script.  Because they will be used to find firmware filenames
-in the android app for OTA updates.
-To match the old style filenames, _ is converted to -, p is converted to .
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| UNSET | 0 |  |
-| TLORA_V2 | 1 |  |
-| TLORA_V1 | 2 |  |
-| TLORA_V2_1_1p6 | 3 |  |
-| TBEAM | 4 |  |
-| HELTEC | 5 |  |
-| TBEAM0p7 | 6 |  |
-| T_ECHO | 7 |  |
-| TLORA_V1_1p3 | 8 |  |
-| LORA_RELAY_V1 | 32 | Less common/prototype boards listed here (needs one more byte over the air) |
-| NRF52840DK | 33 |  |
-| PPR | 34 |  |
-| GENIEBLOCKS | 35 |  |
-| NRF52_UNKNOWN | 36 |  |
-| PORTDUINO | 37 |  |
 
 
 
