@@ -43,6 +43,7 @@
     - [CriticalErrorCode](#.CriticalErrorCode)
     - [LogRecord.Level](#.LogRecord.Level)
     - [MeshPacket.Priority](#.MeshPacket.Priority)
+    - [NodeInfo.HardwareModel](#.NodeInfo.HardwareModel)
     - [Routing.Error](#.Routing.Error)
   
 - [portnums.proto](#portnums.proto)
@@ -543,7 +544,7 @@ Sent to the phone in response to WantNodes.
 | num_bands | [uint32](#uint32) |  | # of frequencies that can be used (set at build time in the device flash image). Note: this is different from max_channels, this field is telling the # of frequency bands this node can use. (old name was num_channels) |
 | max_channels | [uint32](#uint32) |  | The maximum number of &#39;software&#39; channels that can be set on this node. |
 | region | [string](#string) |  | **Deprecated.** Deprecated! ONLY USED IN DEVICE CODE (for upgrading old 1.0 firmwares) DO NOT READ ELSEWHERE. The region code for my radio (US, CN, etc...) Note: This string is deprecated. The 1.0 builds populate it based on the flashed firmware name. But for newer builds this string will be unpopulated (missing/null). For those builds you should instead look at the new read/write region enum in UserSettings The format of this string was 1.0-US or 1.0-CN etc.. Or empty string if unset. |
-| hw_model | [string](#string) |  | TBEAM, HELTEC, etc... |
+| hw_model | [string](#string) |  | **Deprecated.** TBEAM, HELTEC, etc... Starting in 1.2.11 moved to hw_model enum in the NodeInfo object. Apps will still need the string here for older builds (so OTA update can find the right image), but if the enum is available it will be used instead. |
 | firmware_version | [string](#string) |  | 0.0.5 etc... |
 | error_code | [CriticalErrorCode](#CriticalErrorCode) |  | An error message we&#39;d like to report back to the mothership through analytics. It indicates a serious bug occurred on the device, the device coped with it, but we still want to tell the devs about the bug. This field will be cleared after the phone reads MyNodeInfo (i.e. it will only be reported once) a numeric error code to go with error message, zero means no error |
 | error_address | [uint32](#uint32) |  | A numeric error address (nonzero if available) |
@@ -588,7 +589,7 @@ Full information about a node on the mesh
 | user | [User](#User) |  | The user info for this node |
 | position | [Position](#Position) |  | This position data will also contain a time last seen |
 | snr | [float](#float) |  | Returns the Signal-to-noise ratio (SNR) of the last received message, as measured by the receiver. Return SNR of the last received message in dB |
-| next_hop | [uint32](#uint32) |  | Returns the last measured frequency error. The LoRa receiver estimates the frequency offset between the receiver center frequency and that of the received LoRa signal. This function returns the estimates offset (in Hz) of the last received message. Caution: this measurement is not absolute, but is measured relative to the local receiver&#39;s oscillator. Apparent errors may be due to the transmitter, the receiver or both. \return The estimated center frequency offset in Hz of the last received message. int32 frequency_error = 6; enum RouteState { Invalid = 0; Discovering = 1; Valid = 2; } Not needed? RouteState route = 4; Our current preferred node node for routing - might be the same as num if we are adjacent Or zero if we don&#39;t yet know a route to this node. |
+| hw_model | [NodeInfo.HardwareModel](#NodeInfo.HardwareModel) |  | TBEAM, HELTEC, etc... Starting in 1.2.11 moved to hw_model enum in the NodeInfo object. Apps will still need the string here for older builds (so OTA update can find the right image), but if the enum is available it will be used instead. |
 
 
 
@@ -794,6 +795,34 @@ And the transmission queue in the router object is now a priority queue.
 | RELIABLE | 70 | If priority is unset but the message is marked as want_ack, assume it is important and use a slightly higher priority |
 | ACK | 120 | Ack/naks are sent with very high priority to ensure that retransmission stops as soon as possible |
 | MAX | 127 |  |
+
+
+
+<a name=".NodeInfo.HardwareModel"></a>
+
+### NodeInfo.HardwareModel
+Note: these enum names must EXACTLY match the string used in the device
+bin/build-all.sh script.  Because they will be used to find firmware filenames
+in the android app for OTA updates.
+To match the old style filenames, _ is converted to -, p is converted to .
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| UNSET | 0 |  |
+| TLORA_V2 | 1 |  |
+| TLORA_V1 | 2 |  |
+| TLORA_V2_1_1p6 | 3 |  |
+| TBEAM | 4 |  |
+| HELTEC | 5 |  |
+| TBEAM0p7 | 6 |  |
+| T_ECHO | 7 |  |
+| TLORA_V1_1p3 | 8 |  |
+| LORA_RELAY_V1 | 32 | Less common/prototype boards listed here (needs one more byte over the air) |
+| NRF52840DK | 33 |  |
+| PPR | 34 |  |
+| GENIEBLOCKS | 35 |  |
+| NRF52_UNKNOWN | 36 |  |
+| PORTDUINO | 37 |  |
 
 
 
