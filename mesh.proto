@@ -672,7 +672,7 @@ message MyNodeInfo {
    * Starting in 1.2.11 moved to hw_model enum in the NodeInfo object.  Apps will still need the string here for older builds
    * (so OTA update can find the right image), but if the enum is available it will be used instead.
    */
-  string hw_model = 5 [deprecated = true];
+  string hw_model_deprecated = 5 [deprecated = true];
 
   /*
    * 0.0.5 etc...

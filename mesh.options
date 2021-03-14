@@ -14,7 +14,7 @@
 *Data.payload max_size:237
 
 *MyNodeInfo.firmware_version max_size:12
-*MyNodeInfo.hw_model max_size:16
+*MyNodeInfo.hw_model_deprecated max_size:16
 *MyNodeInfo.region max_size:12
 
 # Note: the actual limit (because of header bytes) on the size of encrypted payloads is 251 bytes, but I use 256
