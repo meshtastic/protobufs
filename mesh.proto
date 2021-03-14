@@ -98,6 +98,9 @@ message Position {
     GENIEBLOCKS = 35;
     NRF52_UNKNOWN = 36;
     PORTDUINO = 37;
+    
+    // The simulator built into the android app
+    ANDROID_SIM = 38;
   }
 
 /*
