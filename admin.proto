@@ -55,5 +55,10 @@ message AdminMessage {
         */ 
        bool confirm_set_channel = 32;
        bool confirm_set_radio = 33;
+
+       /* This message is only supported for the simulator porduino build.  If received the
+        * simulator will exit successfully/
+        */
+       bool exit_simulator = 34;
     }
   }
