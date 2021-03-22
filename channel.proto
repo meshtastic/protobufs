@@ -114,7 +114,10 @@ message ChannelSettings {
    */
   uint32 coding_rate = 8;
 
-  /*
+  /* NOTE: this field is _independent_ and unrelated to the concepts in channel.proto.
+   * this is controlling the actual hardware frequency the radio is transmitting on.  In a perfect world
+   * we would have called it something else (band?) but I forgot to make this change during the big 1.2 renaming.
+   * Most users should never need to be exposed to this field/concept.
    * A channel number between 1 and 13 (or whatever the max is in the current
    * region). If ZERO then the rule is "use the old channel name hash based
    * algorithm to derive the channel number")
@@ -139,8 +142,8 @@ message ChannelSettings {
    * These psks should be treated as only minimally secure,
    * because they are listed in this source code.  Those bytes are mapped using the following scheme:
    * `0` = No crypto
-   * `1` = The special default channel key: {0xd4, 0xf1, 0xbb, 0x3a, 0x20, 0x29, 0x07, 0x59, 0xf0, 0xbc, 0xff, 0xab, 0xcf, 0x4e, 0x69, 0xbf}
-   * `2` through 10 = The default channel key, except with 1 through 9 added to the last byte
+   * `1` = The special "default" channel key: {0xd4, 0xf1, 0xbb, 0x3a, 0x20, 0x29, 0x07, 0x59, 0xf0, 0xbc, 0xff, 0xab, 0xcf, 0x4e, 0x69, 0xbf}
+   * `2` through 10 = The default channel key, except with 1 through 9 added to the last byte.  Shown to user as simple1 through 10
    */
   bytes psk = 4;
 
