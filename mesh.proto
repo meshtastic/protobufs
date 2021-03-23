@@ -230,6 +230,17 @@ message Routing {
      * (possibly due to bad channel permissions)
      */
     NO_RESPONSE = 8;
+
+    /*
+     * The application layer service on the remote node received your request, but considered your request somehow invalid
+     */
+    BAD_REQUEST = 32;
+
+    /*
+     * The application layer service on the remote node received your request, but considered your request not authorized (i.e you did not
+     * send the request on the required bound channel)
+     */
+     NOT_AUTHORIZED = 33;    
   }
 
   oneof variant {
