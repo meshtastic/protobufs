@@ -476,6 +476,11 @@ message MeshPacket {
    * See MeshPacket.Priority description for more details.
    */
   Priority priority = 12;
+
+  /*
+   * rssi of received packet. Only sent to phone for dispay purposes.
+   */
+   int32 rx_rssi = 13;
 }
 
 /*
