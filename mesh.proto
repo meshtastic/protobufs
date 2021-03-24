@@ -873,5 +873,12 @@ message ToRadio {
      * a stale old partially sent config.
      */
     uint32 want_config_id = 100;
+
+    /*
+     * Tell API server we are disconnecting now.  This is useful for serial links where there is no hardware/protocol based
+     * notification that the client has dropped the link.
+     * (Sending this message is optional for clients)
+     */
+    bool disconnect = 104;
   }
 }

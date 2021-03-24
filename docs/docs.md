@@ -659,6 +659,7 @@ Once the write completes the phone can assume it is handled.
 | ----- | ---- | ----- | ----------- |
 | packet | [MeshPacket](#MeshPacket) |  | send this packet on the mesh |
 | want_config_id | [uint32](#uint32) |  | phone wants radio to send full node db to the phone, This is typically the first packet sent to the radio when the phone gets a bluetooth connection. The radio will respond by sending back a MyNodeInfo, a owner, a radio config and a series of FromRadio.node_infos, and config_complete the integer you write into this field will be reported back in the config_complete_id response this allows clients to never be confused by a stale old partially sent config. |
+| disconnect | [bool](#bool) |  | Tell API server we are disconnecting now. This is useful for serial links where there is no hardware/protocol based notification that the client has dropped the link. (Sending this message is optional for clients) |
 
 
 
