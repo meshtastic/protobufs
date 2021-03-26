@@ -117,7 +117,7 @@ enum GpsOperation {
 enum LocationSharing {
 
   /*
-   * This is the default and treated as LocEnabled)
+   * This is the default and treated as LocEnabled.
    */
   LocUnset = 0;
 

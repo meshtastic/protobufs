@@ -549,7 +549,8 @@ message NodeInfo {
   User user = 2;
 
   /*
-   * This position data will also contain a time last seen
+   * This position data. Note: before 1.2.14 we would also store the last time we've heard from this node in position.time.
+   * That is no longer true.  Position.time now indicates the last time we received a POSITION from that node.
    */
   Position position = 3;
 
@@ -583,6 +584,9 @@ message NodeInfo {
    * we are adjacent Or zero if we don't yet know a route to this node.
    * fixed32 next_hop = 5;
    */
+
+   /** Set to indicate the last time we received a packet from this node */
+   fixed32 last_heard = 4;
 }
 
 /*
@@ -656,11 +660,7 @@ message MyNodeInfo {
   uint32 my_node_num = 1;
 
   /*
-   * Note: this bool no longer means "we have our own GPS".
-   * Because gps_operation is more advanced, but we'd like old phone apps
-   * to keep working.  So for legacy reasons we set this flag as follows:
-   * if false it would be great if the phone can help provide gps coordinates.
-   * If true we don't need location assistance from the phone.
+   * Note: This flag merely means we detected a hardware GPS in our node.  Not the same as UserPreferences.location_sharing
    */
   bool has_gps = 2;
 

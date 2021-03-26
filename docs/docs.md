@@ -542,7 +542,7 @@ Sent to the phone in response to WantNodes.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | my_node_num | [uint32](#uint32) |  | Tells the phone what our node number is, default starting value is lowbyte of macaddr, but it will be fixed if that is already in use |
-| has_gps | [bool](#bool) |  | Note: this bool no longer means &#34;we have our own GPS&#34;. Because gps_operation is more advanced, but we&#39;d like old phone apps to keep working. So for legacy reasons we set this flag as follows: if false it would be great if the phone can help provide gps coordinates. If true we don&#39;t need location assistance from the phone. |
+| has_gps | [bool](#bool) |  | Note: This flag merely means we detected a hardware GPS in our node. Not the same as UserPreferences.location_sharing |
 | num_bands | [uint32](#uint32) |  | # of frequencies that can be used (set at build time in the device flash image). Note: this is different from max_channels, this field is telling the # of frequency bands this node can use. (old name was num_channels) |
 | max_channels | [uint32](#uint32) |  | The maximum number of &#39;software&#39; channels that can be set on this node. |
 | region | [string](#string) |  | **Deprecated.** Deprecated! ONLY USED IN DEVICE CODE (for upgrading old 1.0 firmwares) DO NOT READ ELSEWHERE. The region code for my radio (US, CN, etc...) Note: This string is deprecated. The 1.0 builds populate it based on the flashed firmware name. But for newer builds this string will be unpopulated (missing/null). For those builds you should instead look at the new read/write region enum in UserSettings The format of this string was 1.0-US or 1.0-CN etc.. Or empty string if unset. |
@@ -589,8 +589,9 @@ Full information about a node on the mesh
 | ----- | ---- | ----- | ----------- |
 | num | [uint32](#uint32) |  | the node number |
 | user | [User](#User) |  | The user info for this node |
-| position | [Position](#Position) |  | This position data will also contain a time last seen |
+| position | [Position](#Position) |  | This position data. Note: before 1.2.14 we would also store the last time we&#39;ve heard from this node in position.time. That is no longer true. Position.time now indicates the last time we received a POSITION from that node. |
 | snr | [float](#float) |  | Returns the Signal-to-noise ratio (SNR) of the last received message, as measured by the receiver. Return SNR of the last received message in dB |
+| last_heard | [fixed32](#fixed32) |  | Set to indicate the last time we received a packet from this node |
 
 
 
@@ -1073,7 +1074,7 @@ How our location is shared with other nodes (or the local phone)
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| LocUnset | 0 | This is the default and treated as LocEnabled) |
+| LocUnset | 0 | This is the default and treated as LocEnabled. |
 | LocEnabled | 1 | We are sharing our location |
 | LocDisabled | 2 | We are not sharing our location (if the unit has a GPS it will default to only get time - i.e. GpsOpTimeOnly) |
 
