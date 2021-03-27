@@ -720,6 +720,12 @@ message MyNodeInfo {
   uint32 error_count = 9;
 
   /*
+   * The total number of reboots this node has ever encountered
+   * (well - since the last time we discarded preferences)
+   */
+  uint32 reboot_count = 10;
+
+  /*
    * How long before we consider a message abandoned and we can clear our
    * caches of any messages in flight Normally quite large to handle the worst case
    * message delivery time, 5 minutes.  Formerly called FLOOD_EXPIRE_TIME in the
