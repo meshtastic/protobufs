@@ -95,6 +95,7 @@ is used to do settings operations to both remote AND local nodes.
 | confirm_set_channel | [bool](#bool) |  | Setting channels/radio config remotely carries the risk that you might send an invalid config and the radio never talks to your mesh again. Therefore if setting either of these properties remotely, you must send a confirm_xxx message within 10 minutes. If you fail to do so, the radio will assume loss of comms and revert your changes. These messages are optional when changing the local node. |
 | confirm_set_radio | [bool](#bool) |  |  |
 | exit_simulator | [bool](#bool) |  | This message is only supported for the simulator porduino build. If received the simulator will exit successfully/ |
+| reboot_seconds | [int32](#int32) |  | Tell the node to reboot in this many seconds (or &lt;0 to cancel reboot) |
 
 
 

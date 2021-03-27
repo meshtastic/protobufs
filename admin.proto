@@ -60,5 +60,9 @@ message AdminMessage {
         * simulator will exit successfully/
         */
        bool exit_simulator = 34;
+
+      /** Tell the node to reboot in this many seconds (or <0 to cancel reboot)
+       */
+       int32 reboot_seconds = 35;
     }
   }
