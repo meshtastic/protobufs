@@ -552,6 +552,7 @@ Sent to the phone in response to WantNodes.
 | error_code | [CriticalErrorCode](#CriticalErrorCode) |  | An error message we&#39;d like to report back to the mothership through analytics. It indicates a serious bug occurred on the device, the device coped with it, but we still want to tell the devs about the bug. This field will be cleared after the phone reads MyNodeInfo (i.e. it will only be reported once) a numeric error code to go with error message, zero means no error |
 | error_address | [uint32](#uint32) |  | A numeric error address (nonzero if available) |
 | error_count | [uint32](#uint32) |  | The total number of errors this node has ever encountered (well - since the last time we discarded preferences) |
+| reboot_count | [uint32](#uint32) |  | The total number of reboots this node has ever encountered (well - since the last time we discarded preferences) |
 | message_timeout_msec | [uint32](#uint32) |  | How long before we consider a message abandoned and we can clear our caches of any messages in flight Normally quite large to handle the worst case message delivery time, 5 minutes. Formerly called FLOOD_EXPIRE_TIME in the device code |
 | min_app_version | [uint32](#uint32) |  | The minimum app version that can talk to this device. Phone/PC apps should compare this to their build number and if too low tell the user they must update their app |
 
