@@ -266,6 +266,11 @@ message RadioConfig {
      * The lat/lon/alt can be set by an internal GPS or with the help of the app.
      */
     bool fixed_position = 39;
+    
+    /*
+     * If set, this will disable the SerialConsole by not initilizing the StreamAPI
+     */
+    bool serial_disabled = 40;    
 
     /*
      * This setting is never saved to disk, but if set, all device settings will be
