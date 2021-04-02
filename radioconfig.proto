@@ -298,6 +298,12 @@ message RadioConfig {
      */
     uint32 gps_attempt_time = 36;
 
+    /**
+     * This parameter is for advanced users with advanced test equipment, we do not recommend most users use it.
+     * A frequency offset that is added to to the calculated band center frequency.  Used to correct for crystal calibration errors.
+     */
+    float frequency_offset = 41;
+
     /*
      * This setting is never saved to disk, but if set, all device settings will be
      * returned to factory defaults.  (Region, serial number etc... will be preserved)
