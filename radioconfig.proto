@@ -273,18 +273,6 @@ message RadioConfig {
     bool serial_disabled = 40;    
 
     /*
-     * This setting is never saved to disk, but if set, all device settings will be
-     * returned to factory defaults.  (Region, serial number etc... will be preserved)
-     */
-    bool factory_reset = 100;
-
-    /*
-     * By default we turn off logging as soon as an API client connects (to keep
-     * shared serial link quiet).  Set this to true to leave the debug log outputting even when API is active.
-     */
-    bool debug_log_enabled = 101;
-
-    /*
      * How our location is shared with other nodes (or the local phone)
      */
     LocationSharing location_share = 32;
@@ -309,6 +297,18 @@ message RadioConfig {
      * window. 
      */
     uint32 gps_attempt_time = 36;
+
+    /*
+     * This setting is never saved to disk, but if set, all device settings will be
+     * returned to factory defaults.  (Region, serial number etc... will be preserved)
+     */
+     bool factory_reset = 100;
+
+     /*
+      * By default we turn off logging as soon as an API client connects (to keep
+      * shared serial link quiet).  Set this to true to leave the debug log outputting even when API is active.
+      */
+     bool debug_log_enabled = 101;
 
     /*
      * If true, radio should not try to be smart about what packets to queue to
