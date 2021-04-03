@@ -8,7 +8,6 @@
   
 - [apponly.proto](#apponly.proto)
     - [ChannelSet](#.ChannelSet)
-    - [ServiceEnvelope](#.ServiceEnvelope)
   
 - [channel.proto](#channel.proto)
     - [Channel](#.Channel)
@@ -45,6 +44,9 @@
     - [LogRecord.Level](#.LogRecord.Level)
     - [MeshPacket.Priority](#.MeshPacket.Priority)
     - [Routing.Error](#.Routing.Error)
+  
+- [mqtt.proto](#mqtt.proto)
+    - [ServiceEnvelope](#.ServiceEnvelope)
   
 - [portnums.proto](#portnums.proto)
     - [PortNum](#.PortNum)
@@ -129,23 +131,6 @@ This abstraction is used only on the the &#39;app side&#39; of the world (ie pyt
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | settings | [ChannelSettings](#ChannelSettings) | repeated |  |
-
-
-
-
-
-
-<a name=".ServiceEnvelope"></a>
-
-### ServiceEnvelope
-This message wraps a MeshPacket with extra metadata about the sender and how it arrived.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| packet | [MeshPacket](#MeshPacket) |  | The (probably encrypted) packet |
-| channel_id | [string](#string) |  | The global channel ID it was sent on |
-| gateway_id | [string](#string) |  | The sending gateway. Can we use this to authenticate/prevent fake nodeid impersonation for senders? - i.e. use gateway/mesh id (which is authenticated) &#43; local node id as the globally trusted nodenum |
 
 
 
@@ -853,6 +838,39 @@ details on the type of failure).
 | BAD_REQUEST | 32 | The application layer service on the remote node received your request, but considered your request somehow invalid |
 | NOT_AUTHORIZED | 33 | The application layer service on the remote node received your request, but considered your request not authorized (i.e you did not send the request on the required bound channel) |
 
+
+ 
+
+ 
+
+ 
+
+
+
+<a name="mqtt.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## mqtt.proto
+
+
+
+<a name=".ServiceEnvelope"></a>
+
+### ServiceEnvelope
+This message wraps a MeshPacket with extra metadata about the sender and how it arrived.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| packet | [MeshPacket](#MeshPacket) |  | The (probably encrypted) packet |
+| channel_id | [string](#string) |  | The global channel ID it was sent on |
+| gateway_id | [string](#string) |  | The sending gateway. Can we use this to authenticate/prevent fake nodeid impersonation for senders? - i.e. use gateway/mesh id (which is authenticated) &#43; local node id as the globally trusted nodenum |
+
+
+
+
+
+ 
 
  
 

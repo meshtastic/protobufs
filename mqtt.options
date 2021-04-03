@@ -1,0 +1,3 @@
+*ServiceEnvelope.packet type:FT_POINTER
+*ServiceEnvelope.channel_id type:FT_POINTER
+*ServiceEnvelope.gateway_id type:FT_POINTER
