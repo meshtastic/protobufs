@@ -3,7 +3,6 @@ syntax = "proto3";
 option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 
-import "mesh.proto";
 import "channel.proto";
 
 option java_outer_classname = "AppOnlyProtos";
