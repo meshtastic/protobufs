@@ -304,6 +304,18 @@ message RadioConfig {
      */
     float frequency_offset = 41;
 
+    /** 
+      * The server to use for our MQTT global message gateway feature.  If not set, the default server will be used 
+      */
+    string mqtt_server = 42;
+
+    /** 
+     * If a meshtastic node is able to reach the internet it will normally attempt to gateway any channels that are marked as
+     * is_uplink_enabled or is_downlink_enabled.  
+     * But if this flag is set, all MQTT features will be disabled and no servers will be contacted.
+    */
+    bool mqtt_disabled = 43;
+
     /*
      * This setting is never saved to disk, but if set, all device settings will be
      * returned to factory defaults.  (Region, serial number etc... will be preserved)

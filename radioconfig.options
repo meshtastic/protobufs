@@ -4,3 +4,5 @@
 
 # Max of three ignored nodes for our testing
 *UserPreferences.ignore_incoming max_count:3
+
+*UserPreferences.mqtt_server max_size:32
