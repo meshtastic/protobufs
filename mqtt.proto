@@ -22,7 +22,7 @@ message ServiceEnvelope {
     string channel_id = 2;
 
     /*
-     * The sending gateway. Can we use this to authenticate/prevent fake
+     * The sending gateway node ID. Can we use this to authenticate/prevent fake
      * nodeid impersonation for senders? - i.e. use gateway/mesh id (which is authenticated) + local node id as
      * the globally trusted nodenum
      */
