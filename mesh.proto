@@ -240,7 +240,7 @@ message Routing {
      * The application layer service on the remote node received your request, but considered your request not authorized (i.e you did not
      * send the request on the required bound channel)
      */
-     NOT_AUTHORIZED = 33;    
+    NOT_AUTHORIZED = 33;
   }
 
   oneof variant {
