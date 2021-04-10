@@ -690,6 +690,7 @@ A few nodenums are reserved and will never be requested:
 | short_name | [string](#string) |  | A VERY short name, ideally two characters. Suitable for a tiny OLED screen |
 | macaddr | [bytes](#bytes) |  | This is the addr of the radio. Not populated by the phone, but added by the esp32 when broadcasting |
 | hw_model | [HardwareModel](#HardwareModel) |  | TBEAM, HELTEC, etc... Starting in 1.2.11 moved to hw_model enum in the NodeInfo object. Apps will still need the string here for older builds (so OTA update can find the right image), but if the enum is available it will be used instead. |
+| is_licensed | [bool](#bool) |  | In some regions HAM radio operators have different bandwidth limitations than others. If this user is a licensed operator, set this flag. Also, &#34;long_name&#34; should be their licence number. |
 
 
 
