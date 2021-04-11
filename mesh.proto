@@ -862,6 +862,24 @@ message FromRadio {
 message ToRadio {
 
   /*
+   * Instead of sending want_config_id as a uint32, newer clients send this structure with information about the client.
+   */
+  message PeerInfo {
+    /*
+     * The numeric version code for the client application, which in some cases are used to control device behavior (so the device can 
+     * make assumptions about who is using the API.
+     */
+    uint32 app_version = 1;
+
+    /*
+     * True if the peer device can gateway MQTT packets.  If true, the device will not try to send packets to the internet directly,
+     * instead it will pass the packets to the peer for dispatching.
+     * This feature is optional, if set to false the device will assume the client can not gateway to MQTT.
+     */
+    bool mqtt_gateway = 2;
+  }
+
+  /*
    * In the <1.2 versions packet had ID 2, to prevent confusing old apps with our new packets, we've changed.
    * 101-103 were used for set_radio, set_owner, set_channel 
    */
@@ -873,6 +891,11 @@ message ToRadio {
      * send this packet on the mesh
      */
     MeshPacket packet = 2;
+
+    /*
+     * Information about the peer, sent after the phone sneds want_config_id.  Old clients do not send this, which is fine.
+     */
+    PeerInfo peer_info = 3;
 
     /*
      * phone wants radio to send full node db to the phone, This is

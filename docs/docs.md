@@ -36,6 +36,7 @@
     - [RouteDiscovery](#.RouteDiscovery)
     - [Routing](#.Routing)
     - [ToRadio](#.ToRadio)
+    - [ToRadio.PeerInfo](#.ToRadio.PeerInfo)
     - [User](#.User)
   
     - [Constants](#.Constants)
@@ -646,8 +647,25 @@ Once the write completes the phone can assume it is handled.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | packet | [MeshPacket](#MeshPacket) |  | send this packet on the mesh |
+| peer_info | [ToRadio.PeerInfo](#ToRadio.PeerInfo) |  | Information about the peer, sent after the phone sneds want_config_id. Old clients do not send this, which is fine. |
 | want_config_id | [uint32](#uint32) |  | phone wants radio to send full node db to the phone, This is typically the first packet sent to the radio when the phone gets a bluetooth connection. The radio will respond by sending back a MyNodeInfo, a owner, a radio config and a series of FromRadio.node_infos, and config_complete the integer you write into this field will be reported back in the config_complete_id response this allows clients to never be confused by a stale old partially sent config. |
 | disconnect | [bool](#bool) |  | Tell API server we are disconnecting now. This is useful for serial links where there is no hardware/protocol based notification that the client has dropped the link. (Sending this message is optional for clients) |
+
+
+
+
+
+
+<a name=".ToRadio.PeerInfo"></a>
+
+### ToRadio.PeerInfo
+Instead of sending want_config_id as a uint32, newer clients send this structure with information about the client.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| app_version | [uint32](#uint32) |  | The numeric version code for the client application, which in some cases are used to control device behavior (so the device can make assumptions about who is using the API. |
+| mqtt_gateway | [bool](#bool) |  | True if the peer device can gateway MQTT packets. If true, the device will not try to send packets to the internet directly, instead it will pass the packets to the peer for dispatching. This feature is optional, if set to false the device will assume the client can not gateway to MQTT. |
 
 
 
