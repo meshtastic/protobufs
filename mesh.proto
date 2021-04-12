@@ -90,6 +90,7 @@ message Position {
     TBEAM0p7 = 6;
     T_ECHO = 7;
     TLORA_V1_1p3 = 8;
+    RAK4631 = 9;
 
     // Less common/prototype boards listed here (needs one more byte over the air)
     LORA_RELAY_V1 = 32;

@@ -772,6 +772,7 @@ To match the old style filenames, _ is converted to -, p is converted to .
 | TBEAM0p7 | 6 |  |
 | T_ECHO | 7 |  |
 | TLORA_V1_1p3 | 8 |  |
+| RAK4631 | 9 |  |
 | LORA_RELAY_V1 | 32 | Less common/prototype boards listed here (needs one more byte over the air) |
 | NRF52840DK | 33 |  |
 | PPR | 34 |  |
