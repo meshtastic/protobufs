@@ -10,6 +10,6 @@ jobs:
       - name: Update Docs
         uses: benc-uk/workflow-dispatch@v1
         with:
-          workflow: update_protobufs
+          workflow: "Update protobufs"
           repo: meshtastic/meshtastic
           token: ${{ secrets.ACCESS_TOKEN }}
