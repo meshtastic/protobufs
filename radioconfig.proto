@@ -1,5 +1,5 @@
 syntax = "proto3";
-/* 
+/*
  * Meshtastic protobufs
  *
  * For more information on protobufs (and tools to use them with the language of your choice) see
@@ -77,7 +77,8 @@ enum ChargeCurrent {
 
 /*
  * How the GPS hardware in this unit is operated.
- * Note: This is independent of how our location is shared with other devices.  For that see LocationSharing
+ * Note: This is independent of how our location is shared with other devices.
+ * For that see LocationSharing
  */
 enum GpsOperation {
 
@@ -111,7 +112,7 @@ enum GpsOperation {
   GpsOpDisabled = 4;
 }
 
-/* 
+/*
  * How our location is shared with other nodes (or the local phone)
  */
 enum LocationSharing {
@@ -246,7 +247,8 @@ message RadioConfig {
     ChargeCurrent charge_current = 16;
 
     /*
-     * Are we operating as a router.  Changes behavior in the following ways:
+     * Are we operating as a router.
+     * Changes behavior in the following ways:
      * The device will only sleep for critically low battery level (i.e. always tries to stay alive for the mesh)
      * In the future routing decisions will preferentially route packets through nodes with this attribute (because assumed
      * good line of sight)
@@ -255,14 +257,14 @@ message RadioConfig {
 
     /*
      * If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in
-     * we should try to minimize power consumption as much as possible.  YOU DO NOT NEED TO SET THIS IF YOU'VE
-     * set is_router (it is implied in that case).
+     * we should try to minimize power consumption as much as possible.
+     * YOU DO NOT NEED TO SET THIS IF YOU'VE set is_router (it is implied in that case).
      */
     bool is_low_power = 38;
 
     /*
-     * If set, this node is at a fixed position.  We will generate GPS position updates
-     * at the regular interval, but use whatever the last lat/lon/alt we have for the node.
+     * If set, this node is at a fixed position.
+     * We will generate GPS position updates at the regular interval, but use whatever the last lat/lon/alt we have for the node.
      * The lat/lon/alt can be set by an internal GPS or with the help of the app.
      */
     bool fixed_position = 39;
@@ -279,7 +281,8 @@ message RadioConfig {
 
     /*
      * How the GPS hardware in this unit is operated.
-     * Note: This is independent of how our location is shared with other devices.  For that see LocationSharing
+     * Note: This is independent of how our location is shared with other devices.
+     * For that see LocationSharing
      */
     GpsOperation gps_operation = 33;
     
@@ -298,33 +301,35 @@ message RadioConfig {
      */
     uint32 gps_attempt_time = 36;
 
-    /**
+    /*
      * This parameter is for advanced users with advanced test equipment, we do not recommend most users use it.
-     * A frequency offset that is added to to the calculated band center frequency.  Used to correct for crystal calibration errors.
+     * A frequency offset that is added to to the calculated band center frequency.
+     * Used to correct for crystal calibration errors.
      */
     float frequency_offset = 41;
 
-    /** 
-      * The server to use for our MQTT global message gateway feature.  If not set, the default server will be used 
-      */
+    /*
+     * The server to use for our MQTT global message gateway feature.
+     * If not set, the default server will be used 
+     */
     string mqtt_server = 42;
 
-    /** 
+    /*
      * If a meshtastic node is able to reach the internet it will normally attempt to gateway any channels that are marked as
-     * is_uplink_enabled or is_downlink_enabled.  
+     * is_uplink_enabled or is_downlink_enabled.
      * But if this flag is set, all MQTT features will be disabled and no servers will be contacted.
     */
     bool mqtt_disabled = 43;
 
     /*
-     * This setting is never saved to disk, but if set, all device settings will be
-     * returned to factory defaults.  (Region, serial number etc... will be preserved)
+     * This setting is never saved to disk, but if set, all device settings will be returned to factory defaults.
+     * (Region, serial number etc... will be preserved)
      */
      bool factory_reset = 100;
 
      /*
-      * By default we turn off logging as soon as an API client connects (to keep
-      * shared serial link quiet).  Set this to true to leave the debug log outputting even when API is active.
+      * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
+      * Set this to true to leave the debug log outputting even when API is active.
       */
      bool debug_log_enabled = 101;
 
@@ -384,22 +389,25 @@ message RadioConfig {
      * Enable/Disable the environmental measurement plugin measurement collection
      */
     bool environmental_measurement_plugin_measurement_enabled = 140;
+
     /*
      * Enable/Disable the environmental measurement plugin on-device display
      */
     bool environmental_measurement_plugin_screen_enabled = 141;
-    /* 
-     * Sometimes sensor reads can fail.  If this happens, we 
-     * will retry a configurable number of attempts
-     * Each attempt will be delayed by the minimum 
-     * required refresh rate for that sensor
+
+    /*
+     * Sometimes sensor reads can fail.
+     * If this happens, we will retry a configurable number of attempts,
+     * each attempt will be delayed by the minimum required refresh rate for that sensor
      */
     uint32 environmental_measurement_plugin_read_error_count_threshold = 142;
+
     /*
      * Interval in seconds of how often we should try to send our 
      * measurements to the mesh
      */
     uint32 environmental_measurement_plugin_update_interval = 143;
+
     /*
      * Sometimes we can end up with more than read_error_count_threshold failures.
      * In this case, we will stop trying to read from the sensor for a while.

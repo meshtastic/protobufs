@@ -1,5 +1,5 @@
 syntax = "proto3";
-/* 
+/*
  * Meshtastic protobufs
  *
  * For more information on protobufs (and tools to use them with the language of your choice) see
@@ -74,10 +74,10 @@ message Position {
   fixed32 time = 9;
 }
 
-/** 
+  /*
   * Note: these enum names must EXACTLY match the string used in the device
-  * bin/build-all.sh script.  Because they will be used to find firmware filenames
-  * in the android app for OTA updates.
+  * bin/build-all.sh script.
+  * Because they will be used to find firmware filenames in the android app for OTA updates.
   * To match the old style filenames, _ is converted to -, p is converted to .
   */ 
   enum HardwareModel {
@@ -92,15 +92,19 @@ message Position {
     TLORA_V1_1p3 = 8;
     RAK4631 = 9;
 
-    // Less common/prototype boards listed here (needs one more byte over the air)
+    /*
+     * Less common/prototype boards listed here (needs one more byte over the air)
+     */
     LORA_RELAY_V1 = 32;
     NRF52840DK = 33;
     PPR = 34;
     GENIEBLOCKS = 35;
     NRF52_UNKNOWN = 36;
     PORTDUINO = 37;
-    
-    // The simulator built into the android app
+
+    /*
+     * The simulator built into the android app
+     */
     ANDROID_SIM = 38;
   }
 
@@ -117,8 +121,8 @@ message Position {
  * occurred and the following steps should happen:
  *
  * If the receiving node (that was already in the mesh)'s macaddr is LOWER than the
- * new User who just tried to sign in: it gets to keep its nodenum.  We send a
- * broadcast message of OUR User (we use a broadcast so that the other node can
+ * new User who just tried to sign in: it gets to keep its nodenum.
+ * We send a broadcast message of OUR User (we use a broadcast so that the other node can
  * receive our message, considering we have the same id - it also serves to let
  * observers correct their nodedb) - this case is rare so it should be okay.
  *
@@ -133,9 +137,8 @@ message Position {
 message User {
 
   /*
-   * A globally unique ID string for this user.  In the case of
-   * Signal that would mean +16504442323, for the default macaddr
-   * derived id it would be !<8 hexidecimal bytes>
+   * A globally unique ID string for this user.
+   * In the case of Signal that would mean +16504442323, for the default macaddr derived id it would be !<8 hexidecimal bytes>.
    * Note: app developers are encouraged to also use the following standard
    * node IDs "^all" (for broadcast), "^local" (for the locally connected node)
    */
@@ -147,26 +150,29 @@ message User {
   string long_name = 2;
 
   /*
-   * A VERY short name, ideally two characters.  Suitable for a tiny OLED screen
+   * A VERY short name, ideally two characters.
+   * Suitable for a tiny OLED screen
    */
   string short_name = 3;
 
   /*
-   * This is the addr of the radio.  Not populated by the phone,
-   * but added by the esp32 when broadcasting
+   * This is the addr of the radio.
+   * Not populated by the phone, but added by the esp32 when broadcasting
    */
   bytes macaddr = 4;
 
     /*
    * TBEAM, HELTEC, etc...
-   * Starting in 1.2.11 moved to hw_model enum in the NodeInfo object.  Apps will still need the string here for older builds
+   * Starting in 1.2.11 moved to hw_model enum in the NodeInfo object.
+   * Apps will still need the string here for older builds
    * (so OTA update can find the right image), but if the enum is available it will be used instead.
    */
    HardwareModel hw_model = 6;  
 
    /*
-    * In some regions HAM radio operators have different bandwidth limitations than others.  If this user is a licensed operator,
-    * set this flag.  Also, "long_name" should be their licence number.
+    * In some regions HAM radio operators have different bandwidth limitations than others.
+    * If this user is a licensed operator, set this flag.
+    * Also, "long_name" should be their licence number.
     */
    bool is_licensed = 7;
 }
@@ -271,8 +277,8 @@ message Routing {
      * Deprecated - this has been replced with error_reason == NONE && request_id != 0
      * This is an ack.
      * This packet is a requested acknoledgement indicating that we have received
-     * the specified message ID.  This packet type can be used both for immediate
-     * (0 hops) messages or can be routed through multiple hops if dest is set.
+     * the specified message ID.
+     * This packet type can be used both for immediate (0 hops) messages or can be routed through multiple hops if dest is set.
      * Note: As an optimization, recipients can _also_ populate a field in payload
      * if they think the recipient would appreciate that extra state.
      *
@@ -316,8 +322,8 @@ message Data {
    * The address of the destination node.
    * This field is is filled in by the mesh radio device software, application
    * layer software should never need it.
-   * RouteDiscovery messages _must_ populate this.  Other message types might need
-   * to if they are doing multihop routing.
+   * RouteDiscovery messages _must_ populate this.
+   * Other message types might need to if they are doing multihop routing.
    */
   fixed32 dest = 4;
 
@@ -329,8 +335,8 @@ message Data {
   fixed32 source = 5;
 
   /*
-   * Only used in routing or response messages.  Indicates the original message ID that
-   * this message is reporting failure on. (formerly called original_id)
+   * Only used in routing or response messages.
+   * Indicates the original message ID that this message is reporting failure on. (formerly called original_id)
    */
    fixed32 request_id = 6;     
 }
@@ -343,8 +349,8 @@ message Data {
 message MeshPacket {
 
   /*
-   * The priority of this message for sending.  Higher priorities are sent first
-   * (when managing the transmit queue).
+   * The priority of this message for sending.
+   * Higher priorities are sent first (when managing the transmit queue).
    * This field is never sent over the air, it is only used internally inside of a local device node.
    * API clients (either on the local node or connected directly to the node)
    * can set this parameter if necessary.
@@ -402,8 +408,8 @@ message MeshPacket {
 
   /*
    * The sending node number.
-   * Note: Our crypto implementation uses this field as well.  See
-   * docs/software/crypto.md for details.
+   * Note: Our crypto implementation uses this field as well.
+   * See docs/software/crypto.md for details.
    * FIXME - really should be fixed32 instead, this encoding only hurts the ble link though.
    */
   fixed32 from = 1; 
@@ -415,19 +421,19 @@ message MeshPacket {
   fixed32 to = 2;
 
   /*
-   * (Usually) If set, this indicates the index in the secondary_channels table that this packet 
-   * was sent/received on.  If unset, packet was on the primary channel.
-   * A particular node might know only a subset of channels in use on the mesh.  Therefore channel_index
-   * is inherently a local concept and meaningless to send between nodes.
+   * (Usually) If set, this indicates the index in the secondary_channels table that this packet was sent/received on.
+   * If unset, packet was on the primary channel.
+   * A particular node might know only a subset of channels in use on the mesh.
+   * Therefore channel_index is inherently a local concept and meaningless to send between nodes.
    * Very briefly, while sending and receiving deep inside the device Router code, this field instead
-   * contains the 'channel hash' instead of the index.  This 'trick' is only used while the payloadVariant is
-   * an 'encrypted'.
+   * contains the 'channel hash' instead of the index.
+   * This 'trick' is only used while the payloadVariant is an 'encrypted'.
    */
   uint32 channel = 3;
   
   /*
-   * Internally to the mesh radios we will route SubPackets encrypted per
-   * docs/software/crypto.md.  However, when a particular node has the correct
+   * Internally to the mesh radios we will route SubPackets encrypted per docs/software/crypto.md.
+   * However, when a particular node has the correct
    * key to decode a particular packet, it will decode the payload into a SubPacket protobuf structure.
    * Software outside of the device nodes will never encounter a packet where
    * "decoded" is not populated (i.e. any encryption/decryption happens before reaching the applications)
@@ -440,29 +446,31 @@ message MeshPacket {
   }
 
   /*
-   * A unique ID for this packet.  Always 0 for no-ack packets or non broadcast
-   * packets (and therefore take zero bytes of space).  Otherwise a unique ID for
-   * this packet, useful for flooding algorithms.
+   * A unique ID for this packet.
+   * Always 0 for no-ack packets or non broadcast packets (and therefore take zero bytes of space).
+   * Otherwise a unique ID for this packet, useful for flooding algorithms.
    * ID only needs to be unique on a _per sender_ basis, and it only
    * needs to be unique for a few minutes (long enough to last for the length of
    * any ACK or the completion of a mesh broadcast flood).
-   * Note: Our crypto implementation uses this id as well.  See docs/software/crypto.md for details.
+   * Note: Our crypto implementation uses this id as well.
+   * See docs/software/crypto.md for details.
    * FIXME - really should be fixed32 instead, this encoding only
    * hurts the ble link though.
    */
   fixed32 id = 6; 
 
   /*
-   * The time this message was received by the esp32 (secs since 1970).  Note:
-   * this field is _never_ sent on the radio link itself (to save space) Times
+   * The time this message was received by the esp32 (secs since 1970).
+   * Note: this field is _never_ sent on the radio link itself (to save space) Times
    * are typically not sent over the mesh, but they will be added to any Packet
    * (chain of SubPacket) sent to the phone (so the phone can know exact time of reception)
    */
   fixed32 rx_time = 7;
 
   /*
-   * *Never* sent over the radio links.  Set during reception to indicate the SNR
-   * of this packet.  Used to collect statistics on current link quality.
+   * *Never* sent over the radio links.
+   * Set during reception to indicate the SNR of this packet.
+   * Used to collect statistics on current link quality.
    */
   float rx_snr = 8;
 
@@ -475,16 +483,14 @@ message MeshPacket {
   uint32 hop_limit = 10;
 
   /*
-   * This packet is being sent as a reliable message, we would prefer it to arrive
-   * at the destination.  We would like to receive a ack packet in response.
+   * This packet is being sent as a reliable message, we would prefer it to arrive at the destination.
+   * We would like to receive a ack packet in response.
    * Broadcasts messages treat this flag specially: Since acks for broadcasts would
-   * rapidly flood the channel, the normal ack behavior is suppressed.  Instead,
-   * the original sender listens to see if at least one node is rebroadcasting this
-   * packet (because naive flooding algorithm).  If it hears that the odds (given
-   * typical LoRa topologies) the odds are very high that every node should
-   * eventually receive the message.  So FloodingRouter.cpp generates an implicit
-   * ack which is delivered to the original sender. If after some time we don't
-   * hear anyone rebroadcast our packet, we will timeout and retransmit, using the regular resend logic.
+   * rapidly flood the channel, the normal ack behavior is suppressed.
+   * Instead, the original sender listens to see if at least one node is rebroadcasting this packet (because naive flooding algorithm).
+   * If it hears that the odds (given typical LoRa topologies) the odds are very high that every node should eventually receive the message.
+   * So FloodingRouter.cpp generates an implicit ack which is delivered to the original sender.
+   * If after some time we don't hear anyone rebroadcast our packet, we will timeout and retransmit, using the regular resend logic.
    * Note: This flag is normally sent in a flag bit in the header when sent over the wire
    */
   bool want_ack = 11;
@@ -556,8 +562,8 @@ message NodeInfo {
   User user = 2;
 
   /*
-   * This position data. Note: before 1.2.14 we would also store the last time we've heard from this node in position.time.
-   * That is no longer true.  Position.time now indicates the last time we received a POSITION from that node.
+   * This position data. Note: before 1.2.14 we would also store the last time we've heard from this node in position.time, that is no longer true.
+   * Position.time now indicates the last time we received a POSITION from that node.
    */
   Position position = 3;
 
@@ -592,7 +598,9 @@ message NodeInfo {
    * fixed32 next_hop = 5;
    */
 
-   /** Set to indicate the last time we received a packet from this node */
+   /*
+    * Set to indicate the last time we received a packet from this node
+    */
    fixed32 last_heard = 4;
 }
 
@@ -648,7 +656,9 @@ enum CriticalErrorCode {
    */
   TransmitFailed = 8;
 
-  /* We detected that the main CPU voltage dropped below the minumum acceptable value */
+  /*
+   * We detected that the main CPU voltage dropped below the minumum acceptable value
+   */
   Brownout = 9;
 
 }
@@ -667,13 +677,15 @@ message MyNodeInfo {
   uint32 my_node_num = 1;
 
   /*
-   * Note: This flag merely means we detected a hardware GPS in our node.  Not the same as UserPreferences.location_sharing
+   * Note: This flag merely means we detected a hardware GPS in our node.
+   * Not the same as UserPreferences.location_sharing
    */
   bool has_gps = 2;
 
   /*
-   * # of frequencies that can be used (set at build time in the device flash image).  Note: this is different from max_channels, this field 
-   * is telling the # of frequency bands this node can use.  (old name was num_channels)
+   * # of frequencies that can be used (set at build time in the device flash image).
+   * Note: this is different from max_channels, this field is telling the # of frequency bands this node can use.
+   * (old name was num_channels)
    */
   uint32 num_bands = 3;
 
@@ -685,17 +697,18 @@ message MyNodeInfo {
   /*
    * Deprecated! ONLY USED IN DEVICE CODE (for upgrading old 1.0 firmwares) DO NOT READ ELSEWHERE.
    * The region code for my radio (US, CN, etc...)
-   * Note: This string is deprecated.  The 1.0 builds populate it based on the
-   * flashed firmware name.  But for newer builds this string will be unpopulated
-   * (missing/null).  For those builds you should instead look at the new
-   * read/write region enum in UserSettings   
+   * Note: This string is deprecated.
+   * The 1.0 builds populate it based on the flashed firmware name.
+   * But for newer builds this string will be unpopulated (missing/null).
+   * For those builds you should instead look at the new read/write region enum in UserSettings
    * The format of this string was 1.0-US or 1.0-CN etc.. Or empty string if unset.
    */
   string region = 4 [deprecated = true];
 
   /*
    * TBEAM, HELTEC, etc...
-   * Starting in 1.2.11 moved to hw_model enum in the NodeInfo object.  Apps will still need the string here for older builds
+   * Starting in 1.2.11 moved to hw_model enum in the NodeInfo object.
+   * Apps will still need the string here for older builds
    * (so OTA update can find the right image), but if the enum is available it will be used instead.
    */
   string hw_model_deprecated = 5 [deprecated = true];
@@ -735,15 +748,14 @@ message MyNodeInfo {
   /*
    * How long before we consider a message abandoned and we can clear our
    * caches of any messages in flight Normally quite large to handle the worst case
-   * message delivery time, 5 minutes.  Formerly called FLOOD_EXPIRE_TIME in the
-   * device code
+   * message delivery time, 5 minutes.
+   * Formerly called FLOOD_EXPIRE_TIME in the device code
    */
   uint32 message_timeout_msec = 13;
 
   /*
-   * The minimum app version that can talk to this device.  Phone/PC apps should
-   * compare this to their build number and if too low tell the user they must
-   * update their app
+   * The minimum app version that can talk to this device.
+   * Phone/PC apps should compare this to their build number and if too low tell the user they must update their app
    */
   uint32 min_app_version = 14;
 
@@ -842,12 +854,13 @@ message FromRadio {
      * sent as true once the device has finished sending all of the responses to want_config
      * recipient should check if this ID matches our original request nonce, if
      * not, it means your config responses haven't started yet.
-     * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.     
+     * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
      */
     uint32 config_complete_id = 8;
 
     /*
-     * Sent to tell clients the radio has just rebooted.  Set to true if present.
+     * Sent to tell clients the radio has just rebooted.
+     * Set to true if present.
      * Not used on all transports, currently just used for the serial console.
      * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps. 
      */
@@ -873,7 +886,8 @@ message ToRadio {
     uint32 app_version = 1;
 
     /*
-     * True if the peer device can gateway MQTT packets.  If true, the device will not try to send packets to the internet directly,
+     * True if the peer device can gateway MQTT packets.
+     * If true, the device will not try to send packets to the internet directly,
      * instead it will pass the packets to the peer for dispatching.
      * This feature is optional, if set to false the device will assume the client can not gateway to MQTT.
      */
@@ -894,7 +908,8 @@ message ToRadio {
     MeshPacket packet = 2;
 
     /*
-     * Information about the peer, sent after the phone sneds want_config_id.  Old clients do not send this, which is fine.
+     * Information about the peer, sent after the phone sneds want_config_id.
+     * Old clients do not send this, which is fine.
      */
     PeerInfo peer_info = 3;
 
@@ -911,8 +926,8 @@ message ToRadio {
     uint32 want_config_id = 100;
 
     /*
-     * Tell API server we are disconnecting now.  This is useful for serial links where there is no hardware/protocol based
-     * notification that the client has dropped the link.
+     * Tell API server we are disconnecting now.
+     * This is useful for serial links where there is no hardware/protocol based notification that the client has dropped the link.
      * (Sending this message is optional for clients)
      */
     bool disconnect = 104;

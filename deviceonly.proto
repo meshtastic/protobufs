@@ -9,14 +9,17 @@ import "radioconfig.proto";
 
 option java_outer_classname = "DeviceOnly";
 
-/* This is a stub version of the old 1.1 representation of RadioConfig.  But only keeping the region info.  The device firmware uses
-this stub while migrating old nodes to the new preferences system.
-*/
+/*
+ * This is a stub version of the old 1.1 representation of RadioConfig.
+ * But only keeping the region info.
+ * The device firmware uses this stub while migrating old nodes to the new preferences system.
+ */
 message LegacyRadioConfig {
     message LegacyPreferences {
+      
       /*
-      * The region code for my radio (US, CN, EU433, etc...)
-      */
+       * The region code for my radio (US, CN, EU433, etc...)
+       */
       RegionCode region = 15;
     }
 
@@ -37,7 +40,9 @@ message DeviceState {
      */
     reserved 12;
 
-    // Moved to its own file, but we keep this here so we can automatically migrate old radio.region settings
+    /*
+     * Moved to its own file, but we keep this here so we can automatically migrate old radio.region settings
+     */
     LegacyRadioConfig legacyRadio = 1;
   
     /*
@@ -72,8 +77,8 @@ message DeviceState {
     MeshPacket rx_text_message = 7;
   
     /*
-     * Used only during development.  Indicates developer is testing and changes
-     * should never be saved to flash.
+     * Used only during development.
+     * Indicates developer is testing and changes should never be saved to flash.
      */
     bool no_save = 9;
   
@@ -83,7 +88,9 @@ message DeviceState {
     bool did_gps_reset = 11;
   }
 
-  /** The on-disk saved channels */
+  /*
+   * The on-disk saved channels
+   */
   message ChannelFile {
     /*
      * The channels our node knows about

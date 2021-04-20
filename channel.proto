@@ -1,5 +1,5 @@
 syntax = "proto3";
-/* 
+/*
  * Meshtastic protobufs
  *
  * For more information on protobufs (and tools to use them with the language of your choice) see
@@ -35,23 +35,24 @@ option java_outer_classname = "ChannelProtos";
  * channel - so that if the user changes anything about the channel (which does
  * force a new PSK) this letter will also change. Thus preventing user confusion if
  * two friends try to type in a channel name of "BobsChan" and then can't talk
- * because their PSKs will be different.  The PSK is hashed into this letter by
- * "0x41 + [xor all bytes of the psk ] modulo 26"
+ * because their PSKs will be different.
+ * The PSK is hashed into this letter by "0x41 + [xor all bytes of the psk ] modulo 26"
  * This also allows the option of someday if people have the PSK off (zero), the
  * users COULD type in a channel name and be able to talk.
  * Y is a lower case letter from a-z that represents the channel 'speed' settings
  * (for some future definition of speed)
  *
  * FIXME: Add description of multi-channel support and how primary vs secondary channels are used.
- * FIXME: explain how apps use channels for security.  explain how remote settings and 
- * remote gpio are managed as an example
+ * FIXME: explain how apps use channels for security.
+ * explain how remote settings and remote gpio are managed as an example
  */
 message ChannelSettings {
 
   /*
    * If zero then, use default max legal continuous power (ie. something that won't
    * burn out the radio hardware)
-   * In most cases you should use zero here.  Units are in dBm.
+   * In most cases you should use zero here.
+   * Units are in dBm.
    */
   int32 tx_power = 1;
 
@@ -104,19 +105,21 @@ message ChannelSettings {
   uint32 bandwidth = 6;
 
   /*
-   * A number from 7 to 12.  Indicates number of chirps per symbol as
-   * 1<<spread_factor.
+   * A number from 7 to 12.
+   * Indicates number of chirps per symbol as 1<<spread_factor.
    */
   uint32 spread_factor = 7;
 
   /*
-   * The denominator of the coding rate.  ie for 4/8, the value is 8. 5/8 the value is 5.
+   * The denominator of the coding rate.
+   * ie for 4/8, the value is 8. 5/8 the value is 5.
    */
   uint32 coding_rate = 8;
 
-  /* NOTE: this field is _independent_ and unrelated to the concepts in channel.proto.
-   * this is controlling the actual hardware frequency the radio is transmitting on.  In a perfect world
-   * we would have called it something else (band?) but I forgot to make this change during the big 1.2 renaming.
+  /*
+   * NOTE: this field is _independent_ and unrelated to the concepts in channel.proto.
+   * this is controlling the actual hardware frequency the radio is transmitting on.
+   * In a perfect world we would have called it something else (band?) but I forgot to make this change during the big 1.2 renaming.
    * Most users should never need to be exposed to this field/concept.
    * A channel number between 1 and 13 (or whatever the max is in the current
    * region). If ZERO then the rule is "use the old channel name hash based
@@ -136,38 +139,43 @@ message ChannelSettings {
   uint32 channel_num = 9;
 
   /*
-   * A simple pre-shared key for now for crypto.  Must be either 0 bytes (no
-   * crypto), 16 bytes (AES128), or 32 bytes (AES256)
+   * A simple pre-shared key for now for crypto.
+   * Must be either 0 bytes (no crypto), 16 bytes (AES128), or 32 bytes (AES256).
    * A special shorthand is used for 1 byte long psks.
    * These psks should be treated as only minimally secure,
-   * because they are listed in this source code.  Those bytes are mapped using the following scheme:
+   * because they are listed in this source code.
+   * Those bytes are mapped using the following scheme:
    * `0` = No crypto
    * `1` = The special "default" channel key: {0xd4, 0xf1, 0xbb, 0x3a, 0x20, 0x29, 0x07, 0x59, 0xf0, 0xbc, 0xff, 0xab, 0xcf, 0x4e, 0x69, 0xbf}
-   * `2` through 10 = The default channel key, except with 1 through 9 added to the last byte.  Shown to user as simple1 through 10
+   * `2` through 10 = The default channel key, except with 1 through 9 added to the last byte.
+   * Shown to user as simple1 through 10
    */
   bytes psk = 4;
 
   /*
-   * A SHORT name that will be packed into the URL.  Less than 12 bytes.
+   * A SHORT name that will be packed into the URL.
+   * Less than 12 bytes.
    * Something for end users to call the channel
    * If this is the empty string it is assumed that this channel
    * is the special (minimally secure) "Default"channel.
-   * In user interfaces it should be rendered as a local language translation of "X".  For channel_num
-   * hashing empty string will be treated as "X".
+   * In user interfaces it should be rendered as a local language translation of "X".
+   * For channel_num hashing empty string will be treated as "X".
    * Where "X" is selected based on the English words listed above for ModemConfig
    */
   string name = 5;
 
   /*
-   * Used to construct a globally unique channel ID.  The full globally unique ID will be: "name.id"
-   * where ID is shown as base36.  Assuming that the number of meshtastic users is below 20K (true for a long time)
-   * the chance of this 64 bit random number colliding with anyone else is super low.  And the penalty for
-   * collision is low as well, it just means that anyone trying to decrypt channel messages might need to
+   * Used to construct a globally unique channel ID.
+   * The full globally unique ID will be: "name.id" where ID is shown as base36.
+   * Assuming that the number of meshtastic users is below 20K (true for a long time)
+   * the chance of this 64 bit random number colliding with anyone else is super low.
+   * And the penalty for collision is low as well, it just means that anyone trying to decrypt channel messages might need to
    * try multiple candidate channels.
    * Any time a non wire compatible change is made to a channel, this field should be regenerated.
-   * There are a small number of 'special' globally known (and fairly) insecure standard channels.  
+   * There are a small number of 'special' globally known (and fairly) insecure standard channels.
    * Those channels do not have a numeric id included in the settings, but instead it is pulled from
-   * a table of well known IDs.  (see Well Known Channels FIXME)
+   * a table of well known IDs.
+   * (see Well Known Channels FIXME)
    */
   fixed32 id = 10;
 
@@ -190,12 +198,14 @@ message Channel {
   /*
    * How this channel is being used (or not).
    *
-   * Note: this field is an enum to give us options for the future.  In particular, someday
-   * we might make a 'SCANNING' option.  SCANNING channels could have different frequencies and the radio would
+   * Note: this field is an enum to give us options for the future.
+   * In particular, someday we might make a 'SCANNING' option.
+   * SCANNING channels could have different frequencies and the radio would
    * occasionally check that freq to see if anything is being transmitted.
    *
    * For devices that have multiple physical radios attached, we could keep multiple PRIMARY/SCANNING channels active at once to allow
-   * cross band routing as needed.  If a device has only a single radio (the common case) only one channel can be PRIMARY at a time
+   * cross band routing as needed.
+   * If a device has only a single radio (the common case) only one channel can be PRIMARY at a time
    * (but any number of SECONDARY channels can't be sent received on that common frequency)
    */
   enum Role {
@@ -210,8 +220,8 @@ message Channel {
     PRIMARY = 1;
 
     /*
-     * Secondary channels are only used for encryption/decryption/authentication purposes.  Their radio settings (freq etc)
-     * are ignored, only psk is used. 
+     * Secondary channels are only used for encryption/decryption/authentication purposes.
+     * Their radio settings (freq etc) are ignored, only psk is used. 
      */
     SECONDARY = 2;
   }

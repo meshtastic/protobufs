@@ -10,8 +10,8 @@ import "channel.proto";
 option java_outer_classname = "AdminProtos";
 
 /*
- * This message is handled by the Admin plugin and is responsible for all settings/channel read/write operations.  This message
- * is used to do settings operations to both remote AND local nodes.
+ * This message is handled by the Admin plugin and is responsible for all settings/channel read/write operations.
+ * This message is used to do settings operations to both remote AND local nodes.
  * (Prior to 1.2 these operations were done via special ToRadio operations)
  */
 message AdminMessage {
@@ -29,12 +29,16 @@ message AdminMessage {
        User set_owner = 2; 
    
        /*
-        * Set channels (using the new API).  A special channel is the "primary channel".  The other records are secondary channels.
-        * Note: only one channel can be marked as primary.  If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically */
+        * Set channels (using the new API).
+        * A special channel is the "primary channel".
+        * The other records are secondary channels.
+        * Note: only one channel can be marked as primary.
+        * If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically.
+        */
        Channel set_channel = 3;
   
        /*
-        * Send the current RadioConfig in the response for this message
+        * Send the current RadioConfig in the response for this message.
         */
        bool get_radio_request = 4;
        RadioConfig get_radio_response = 5;
@@ -46,22 +50,23 @@ message AdminMessage {
        uint32 get_channel_request = 6;
        Channel get_channel_response = 7;
 
-       /* Setting channels/radio config remotely carries the risk that you might
-        * send an invalid config and the radio never talks to your mesh again.
-        * Therefore if setting either of these properties remotely, you must send
-        * a confirm_xxx message within 10 minutes.  If you fail to do so, the radio
-        * will assume loss of comms and revert your changes.
+       /*
+        * Setting channels/radio config remotely carries the risk that you might send an invalid config and the radio never talks to your mesh again.
+        * Therefore if setting either of these properties remotely, you must send a confirm_xxx message within 10 minutes.
+        * If you fail to do so, the radio will assume loss of comms and revert your changes.
         * These messages are optional when changing the local node.
         */ 
        bool confirm_set_channel = 32;
        bool confirm_set_radio = 33;
 
-       /* This message is only supported for the simulator porduino build.  If received the
-        * simulator will exit successfully/
+       /*
+        * This message is only supported for the simulator porduino build.
+        * If received the simulator will exit successfully.
         */
        bool exit_simulator = 34;
 
-      /** Tell the node to reboot in this many seconds (or <0 to cancel reboot)
+      /*
+       * Tell the node to reboot in this many seconds (or <0 to cancel reboot)
        */
        int32 reboot_seconds = 35;
     }
