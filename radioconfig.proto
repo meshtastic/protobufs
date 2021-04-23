@@ -141,7 +141,7 @@ enum LocationSharing {
 message RadioConfig {
 
   /*
-   * see sw-design.md for more information on these preferences
+   * see [software design](/software/other/sw-design.md) for more information on these preferences
    */
   message UserPreferences {
 
@@ -165,56 +165,56 @@ message RadioConfig {
      
     /*
      * Power management state machine option.
-     * See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details.
+     * See [power management](/software/other/power.md) for details.
      * 0 for default of 1 minute
      */
     uint32 wait_bluetooth_secs = 4;
     
     /*
      * Power management state machine option.
-     * See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details.
+     * See [power management](/software/other/power.md) for details.
      * 0 for default of one minute
      */
     uint32 screen_on_secs = 5;
     
     /*
      * Power management state machine option.
-     * See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details.
+     * See [power management](/software/other/power.md) for details.
      * 0 for default of 15 minutes
      */
     uint32 phone_timeout_secs = 6;
     
     /*
      * Power management state machine option.
-     * See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details.
+     * See [power management](/software/other/power.md) for details.
      * 0 for default of two hours, MAXUINT for disabled
      */
     uint32 phone_sds_timeout_sec = 7;
     
     /*
      * Power management state machine option.
-     * See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details.
+     * See [power management](/software/other/power.md) for details.
      * 0 for default of two hours, MAXUINT for disabled
      */
     uint32 mesh_sds_timeout_secs = 8;
     
     /*
      * Power management state machine option.
-     * See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details.
+     * See [power management](/software/other/power.md) for details.
      * 0 for default of one year
      */
     uint32 sds_secs = 9;
     
     /*
      * Power management state machine option.
-     * See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details.
+     * See [power management](/software/other/power.md) for details.
      * 0 for default of 3600
      */
     uint32 ls_secs = 10;
     
     /*
      * Power management state machine option.
-     * See https://github.com/meshtastic/Meshtastic-device/blob/master/docs/software/power.md for details.
+     * See [power management](/software/other/power.md) for details.
      * 0 for default of 10 seconds
      */
     uint32 min_wake_secs = 11;
