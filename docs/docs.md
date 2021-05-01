@@ -750,6 +750,8 @@ and we&#39;ll try to help.
 | InvalidRadioSetting | 7 | The channel tried to set a radio setting which is not supported by this chipset, radio comms settings are now undefined. |
 | TransmitFailed | 8 | Radio transmit hardware failure. We sent data to the radio chip, but it didn&#39;t reply with an interrupt. |
 | Brownout | 9 | We detected that the main CPU voltage dropped below the minumum acceptable value |
+| SX1262Failure | 10 | Selftest of SX1262 radio chip failed |
+| RadioSpiBug | 11 | A (likely software but possibly hardware) failure was detected while trying to send packets. If this occurs on your board, please post in the forum so that we can ask you to collect some information to allow fixing this bug |
 
 
 
