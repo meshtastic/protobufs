@@ -5,8 +5,8 @@ syntax = "proto3";
  */
 
 /*
- * Placeholder for data we will eventually set during initial programming.  This
- * will allow us to stop having a load for each region.
+ * Placeholder for data we will eventually set during initial programming.
+ * This will allow us to stop having a load for each region.
  */
 message ManufacturingData {
 

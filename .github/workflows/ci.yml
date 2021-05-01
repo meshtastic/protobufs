@@ -1,0 +1,15 @@
+name: "CI"
+on: push
+
+jobs:
+  update-docs:
+    environment: Production
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Update Docs
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: "Update protobufs"
+          repo: meshtastic/meshtastic
+          token: ${{ secrets.ACCESS_TOKEN }}

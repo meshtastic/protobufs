@@ -10,7 +10,7 @@
 *RouteDiscovery.route max_count:8
 
 # FIXME, max out based on total Data size And do fragmentation and reassembly (for larger payloads) at the Android layer, not the esp32 layer.
-# note: this payload length is ONLY the bytes that are sent inside of the radiohead packet.  The 16 byte header is outside of this envelope
+# note: this payload length is ONLY the bytes that are sent inside of the radiohead packet. The 16 byte header is outside of this envelope
 *Data.payload max_size:237
 
 # Big enough for 1.2.28.568032c-d
