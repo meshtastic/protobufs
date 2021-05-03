@@ -181,6 +181,7 @@ message RadioConfig {
      * Power management state machine option.
      * See [power management](/software/other/power.md) for details.
      * 0 for default of 15 minutes
+     * IMPORTANT NOTE FOR DEVICE CLIENTS: YOU MUST SEND SOME SORT OF PACKET TO THE PHONE AT LEAST THIS OFTEN OR THE DEVICE WILL DECIDE YOU ARE GONE!
      */
     uint32 phone_timeout_secs = 6;
     
