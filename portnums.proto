@@ -47,6 +47,9 @@ enum PortNum {
      * Once READACK is implemented, use the new packet type/port number stuff?
      * @exclude
      * CLEAR_READACK = 2;
+     */
+
+    /*
      * Reserved for built-in GPIO/example app.
      * See remote_hardware.proto/HardwareMessage for details on the message sent/received to this port number
      */ 
@@ -54,31 +57,31 @@ enum PortNum {
 
     /*
      * The built-in position messaging app.
-     * See Position for details on the message sent to this port number.
-     * payload is a Position protobuf
+     * Payload is a [Position](/developers/protobufs/api.md#position) message
      */
     POSITION_APP = 3;
 
     /*
      * The built-in user info app.
-     * See User for details on the message sent to this port number.
-     * payload is a User protobuf
+     * Payload is a [User](/developers/protobufs/api.md#user) message
      */
     NODEINFO_APP = 4;
 
     /*
-     * Protocol control packets for mesh protocol use, payload is a Routing protobuf
+     * Protocol control packets for mesh protocol use.
+     * Payload is a [Routing](/developers/protobufs/api.md#routing) message
      */
     ROUTING_APP = 5;
 
     /*
-     * Admin control packets, payload is a AdminMessage protobuf
+     * Admin control packets.
+     * Payload is a [AdminMessage](/developers/protobufs/api.md#adminmessage) message
      */
     ADMIN_APP = 6;
 
     /*
      * Provides a 'ping' service that replies to any packet it receives.
-     * Also this serves as a small example plugin.
+     * Also serves as a small example plugin.
      */
     REPLY_APP = 32;
 
@@ -118,7 +121,7 @@ enum PortNum {
     /*
      * Private applications should use portnums >= 256.
      * To simplify initial development and testing you can use "PRIVATE_APP"
-     * in your code without needing to rebuild protobuf files (via bin/regin_protos.sh)
+     * in your code without needing to rebuild protobuf files (via [regen-protos.sh](https://github.com/meshtastic/Meshtastic-device/blob/master/bin/regen-protos.sh))
      */
     PRIVATE_APP = 256;
 
