@@ -86,11 +86,17 @@ message Position {
     TLORA_V1 = 2;
     TLORA_V2_1_1p6 = 3;
     TBEAM = 4;
-    HELTEC = 5;
+
+    // The original heltec WiFi_Lora_32_V2, which had battery voltage sensing hooked to GPIO 13 (see HELTEC_V2 for the new version).  
+    HELTEC_V2_0 = 5;
+
     TBEAM0p7 = 6;
     T_ECHO = 7;
     TLORA_V1_1p3 = 8;
     RAK4631 = 9;
+
+    // The new version of the heltec WiFi_Lora_32_V2 board that has battery sensing hooked to GPIO 37.  Sadly they did not update anything on the silkscreen to identify this board
+    HELTEC_V2_1 = 10;
 
     /*
      * Less common/prototype boards listed here (needs one more byte over the air)
