@@ -3,6 +3,7 @@ syntax = "proto3";
 option java_package = "com.geeksville.mesh";
 option java_outer_classname = "RemoteHardware";
 option optimize_for = LITE_RUNTIME;
+option go_package = "github.com/meshtastic/gomeshproto";
 
 /*
  * An example app to show off the plugin system. This message is used for 
