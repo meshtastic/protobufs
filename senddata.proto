@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+message Data2send {
+
+  float data1 = 1; 
+  float data2 = 2;
+  float data3 = 3;
+  string data4 = 4;
+
+} 
