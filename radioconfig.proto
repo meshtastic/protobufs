@@ -114,6 +114,39 @@ enum GpsOperation {
 }
 
 /*
+ * How the GPS coordinates are displayed on the OLED screen.
+ */
+enum GpsCoordinateFormat {
+
+  /*
+   * GPS coordinates are displayed in the normal decimal degrees format: 
+   * DD.DDDDDD DDD.DDDDDD
+   */
+  GpsFormatDec = 0;
+
+  /*
+   * GPS coordinates are displayed in the degrees minutes seconds format: 
+   * DD°MM'SS"C DDD°MM'SS"C, where C is the compass point representing the locations quadrant
+   */
+  GpsFormatDMS = 1;
+
+  /*
+   * GPS coordinates are displayed in Universal Transverse Mercator format: 
+   * ZZB EEEEEE NNNNNNN, where Z is zone, B is band, E is easting, N is northing
+   */
+  GpsFormatUTM = 2;
+
+  /*
+   * GPS coordinates are displayed in Military Grid Reference System format: 
+   * ZZB CD EEEEE NNNNN, where Z is zone, B is band, C is the east 100k square, D is the north 100k square, 
+   * E is easting, N is northing
+   */
+  GpsFormatMGRS = 3;
+
+  // GpsFormatOLC = 4; // Plus Codes, maybe one day?
+}
+
+/*
  * How our location is shared with other nodes (or the local phone)
  */
 enum LocationSharing {
@@ -322,6 +355,11 @@ message RadioConfig {
      * But if this flag is set, all MQTT features will be disabled and no servers will be contacted.
     */
     bool mqtt_disabled = 43;
+    
+    /*
+     * How the GPS coordinates are displayed on the OLED screen.
+     */
+    GpsCoordinateFormat gps_format = 44;
 
     /*
      * This setting is never saved to disk, but if set, all device settings will be returned to factory defaults.
