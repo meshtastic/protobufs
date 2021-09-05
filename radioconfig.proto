@@ -143,7 +143,17 @@ enum GpsCoordinateFormat {
    */
   GpsFormatMGRS = 3;
 
-  // GpsFormatOLC = 4; // Plus Codes, maybe one day?
+  /*
+   * GPS coordinates are displayed in Open Location Code (aka Plus Codes).
+   */
+  GpsFormatOLC = 4;
+  
+  /*
+   * GPS coordinates are displayed in Ordnance Survey Grid Reference (the National Grid System of the UK).
+   * Format: AB EEEEE NNNNN, where A is the east 100k square, B is the north 100k square, E is the easting,
+   * N is the northing
+   */
+  GpsFormatOSGR = 5;
 }
 
 /*
