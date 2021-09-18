@@ -113,6 +113,11 @@ message Position {
      * The simulator built into the android app
      */
     ANDROID_SIM = 38;
+
+    /*
+     * Custom DIY device based on @NanoVHF schematics: https://github.com/NanoVHF/Meshtastic-DIY/tree/main/Schematics
+     */
+    DIY_V1 = 39;
   }
 
 /*
