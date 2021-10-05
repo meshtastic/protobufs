@@ -56,7 +56,7 @@ message Position {
    */
 
   /*
-   * In meters above MSL (see also altitude_hae, refer issue #359)
+   * In meters above MSL (but see issue #359)
    */
   int32 altitude = 3;
 
@@ -83,10 +83,10 @@ message Position {
    * How the location was acquired: manual, onboard GPS, external (EUD) GPS
    */
   enum LocSource {
-    LOC_UNSPECIFIED = 0;
-    LOC_MANUAL_ENTRY = 1;
-    LOC_GPS_INTERNAL = 2;
-    LOC_GPS_EXTERNAL = 3;
+    LOCSRC_UNSPECIFIED = 0;
+    LOCSRC_MANUAL_ENTRY = 1;
+    LOCSRC_GPS_INTERNAL = 2;
+    LOCSRC_GPS_EXTERNAL = 3;
     /*
      * More location sources can be added here when available:
      *   GSM, radio beacons (BLE etc), location fingerprinting etc
@@ -96,15 +96,15 @@ message Position {
   LocSource location_source = 10;
 
   /*
-   * How the altitude was acquired: manual, GPS int/ext, 
+   * How the altitude was acquired: manual, GPS int/ext, etc
    * Default: same as location_source if present
    */
   enum AltSource {
-    ALT_UNSPECIFIED = 0;
-    ALT_MANUAL_ENTRY = 1;
-    ALT_GPS_INTERNAL = 2;
-    ALT_GPS_EXTERNAL = 3;
-    ALT_BAROMETRIC = 4;
+    ALTSRC_UNSPECIFIED = 0;
+    ALTSRC_MANUAL_ENTRY = 1;
+    ALTSRC_GPS_INTERNAL = 2;
+    ALTSRC_GPS_EXTERNAL = 3;
+    ALTSRC_BAROMETRIC = 4;
   }
 
   AltSource altitude_source = 11;
@@ -125,14 +125,14 @@ message Position {
   sint32 altitude_hae = 14;
 
   /*
-   * Geoidal height in meters
+   * Geoidal separation in meters
    */
-  sint32 geoidal_height = 15;
+  sint32 alt_geoid_sep = 15;
 
   /*
    * Horizontal, Vertical and Position Dilution of Precision, in 1/100 units
    * - PDOP is sufficient for most cases
-   * - for higher precision scenarios, HDOP+VDOP can be used instead,
+   * - for higher precision scenarios, HDOP and VDOP can be used instead,
    *   in which case PDOP becomes redundant (PDOP=sqrt(HDOP^2 + VDOP^2))
    */
   uint32 PDOP = 16;
@@ -155,7 +155,7 @@ message Position {
    * - "yaw" indicates a relative rotation about the vertical axis
    */
   uint32 ground_speed = 20;
-  uint32 tn_track = 21;
+  uint32 track_TN = 21;
 
   /*
    * GPS fix quality (from NMEA GxGGA statement or similar)
@@ -178,19 +178,19 @@ message Position {
   uint32 sensor_id = 25;
 
   /*
-   * Values relevant to airborne users mainly
+   * Values relevant mainly to airborne users
    */
 
   /*
-   * Euler angles
+   * Orientation angles of aircraft:
    * - heading: True North direction in which the fuselage is pointing
    * - roll: angle between trans axis and trans-long plane (positive = right wing low)
    * - pitch: angle between horizontal axis and horizontal plane (positive = nose up)
    * All values in 1/100 degrees
    */
-  int32 heading = 30;
-  int32 roll = 31;
-  int32 pitch = 32;
+  uint32 heading_TN = 30;
+  sint32 roll = 31;
+  sint32 pitch = 32;
 
   /*
    * True air speed in meters/second
