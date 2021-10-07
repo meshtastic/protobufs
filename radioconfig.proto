@@ -178,6 +178,46 @@ enum LocationSharing {
 }
 
 /*
+ * Bit field of boolean configuration options, indicating which optional 
+ *   fields to include when assembling POSITION messages
+ * Longitude and latitude are always included (also time if GPS-synced)
+ *
+ * NOTE: the more fields are included, the larger the message will be -
+ *   leading to longer airtime and a higher risk of packet loss
+ */
+enum PositionFlags {
+    /* Required for compilation */
+    POS_UNDEFINED = 0x0000;
+
+    /* Include an altitude value (if available) */
+    POS_ALTITUDE  = 0x0001;
+
+    /* Altitude value is MSL */
+    POS_ALT_MSL   = 0x0002;
+
+    /* Include geoidal separation */
+    POS_GEO_SEP   = 0x0004;
+
+    /* Include the DOP value ; PDOP used by default, see below */
+    POS_DOP       = 0x0008;
+
+    /* If POS_DOP set, send separate HDOP / VDOP values instead of PDOP */
+    POS_HVDOP     = 0x0010;
+
+    /* Include battery level */
+    POS_BATTERY   = 0x0020;
+
+    /* Include number of "satellites in view" */
+    POS_SATINVIEW = 0x0040;
+
+    /* Include a sequence number incremented per packet */
+    POS_SEQ_NOS   = 0x0080;
+
+    /* Include positional timestamp (from GPS solution) */
+    POS_TIMESTAMP = 0x0100;
+}
+
+/*
  * The entire set of user settable/readable settings for our radio device.
  * Includes both the current channel settings and any preferences the user has
  * set for behavior of their node
@@ -485,6 +525,11 @@ message RadioConfig {
      */
     uint32 environmental_measurement_plugin_sensor_pin = 147;
 
+    /*
+     * Bit field of boolean configuration options for POSITION messages
+     * (bitwise OR of PositionFlags)
+     */
+    uint32 position_flags = 150;
 
   }
 
