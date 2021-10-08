@@ -140,11 +140,11 @@ message Position {
   uint32 VDOP = 18;
 
   /*
-   * GPS precision (a hardware specific constant) in mm
-   *   multiplied with DOP to calculate position accuracy
+   * GPS accuracy (a hardware specific constant) in mm
+   *   multiplied with DOP to calculate positional accuracy
    * Default: "'bout three meters-ish" :)
    */
-  uint32 gps_precision = 19;
+  uint32 gps_accuracy = 19;
 
   /*
    * Ground speed in m/s and True North TRACK in 1/100 degrees
