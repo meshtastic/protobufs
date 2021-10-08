@@ -155,7 +155,7 @@ message Position {
    * - "yaw" indicates a relative rotation about the vertical axis
    */
   uint32 ground_speed = 20;
-  uint32 track_TN = 21;
+  uint32 ground_track = 21;
 
   /*
    * GPS fix quality (from NMEA GxGGA statement or similar)
@@ -188,7 +188,7 @@ message Position {
    * - pitch: angle between horizontal axis and horizontal plane (positive = nose up)
    * All values in 1/100 degrees
    */
-  uint32 heading_TN = 30;
+  uint32 heading = 30;
   sint32 roll = 31;
   sint32 pitch = 32;
 
