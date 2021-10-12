@@ -56,7 +56,7 @@ message Position {
    */
 
   /*
-   * In meters above MSL
+   * In meters above MSL (but see issue #359)
    */
   int32 altitude = 3;
 
@@ -73,6 +73,157 @@ message Position {
    * seconds since 1970
    */
   fixed32 time = 9;
+
+  /*
+   * Precision positioning elements - optional and usually not included
+   * ------------------------------------------------------------------
+   */
+
+  /*
+   * How the location was acquired: manual, onboard GPS, external (EUD) GPS
+   */
+  enum LocSource {
+    LOCSRC_UNSPECIFIED = 0;
+    LOCSRC_MANUAL_ENTRY = 1;
+    LOCSRC_GPS_INTERNAL = 2;
+    LOCSRC_GPS_EXTERNAL = 3;
+    /*
+     * More location sources can be added here when available:
+     *   GSM, radio beacons (BLE etc), location fingerprinting etc
+     */
+  }
+
+  LocSource location_source = 10;
+
+  /*
+   * How the altitude was acquired: manual, GPS int/ext, etc
+   * Default: same as location_source if present
+   */
+  enum AltSource {
+    ALTSRC_UNSPECIFIED = 0;
+    ALTSRC_MANUAL_ENTRY = 1;
+    ALTSRC_GPS_INTERNAL = 2;
+    ALTSRC_GPS_EXTERNAL = 3;
+    ALTSRC_BAROMETRIC = 4;
+  }
+
+  AltSource altitude_source = 11;
+
+  /*
+   * Positional timestamp (actual timestamp of GPS solution) in integer epoch seconds
+   */
+  fixed32 pos_timestamp = 12;
+
+  /*
+   * Pos. timestamp milliseconds adjustment (rarely available or required)
+   */
+  int32 pos_time_millis = 13;
+
+  /*
+   * HAE altitude in meters - can be used instead of MSL altitude
+   */
+  sint32 altitude_hae = 14;
+
+  /*
+   * Geoidal separation in meters
+   */
+  sint32 alt_geoid_sep = 15;
+
+  /*
+   * Horizontal, Vertical and Position Dilution of Precision, in 1/100 units
+   * - PDOP is sufficient for most cases
+   * - for higher precision scenarios, HDOP and VDOP can be used instead,
+   *   in which case PDOP becomes redundant (PDOP=sqrt(HDOP^2 + VDOP^2))
+   */
+  uint32 PDOP = 16;
+  uint32 HDOP = 17;
+  uint32 VDOP = 18;
+
+  /*
+   * GPS accuracy (a hardware specific constant) in mm
+   *   multiplied with DOP to calculate positional accuracy
+   * Default: "'bout three meters-ish" :)
+   */
+  uint32 gps_accuracy = 19;
+
+  /*
+   * Ground speed in m/s and True North TRACK in 1/100 degrees
+   *
+   * Clarification of terms:
+   * - "track" is the direction of motion (measured in horizontal plane)
+   * - "heading" is where the fuselage points (measured in horizontal plane)
+   * - "yaw" indicates a relative rotation about the vertical axis
+   */
+  uint32 ground_speed = 20;
+  uint32 ground_track = 21;
+
+  /*
+   * GPS fix quality (from NMEA GxGGA statement or similar)
+   */
+  uint32 fix_quality = 22;
+
+  /*
+   * GPS fix type 2D/3D (from NMEA GxGSA statement)
+   */
+  uint32 fix_type = 23;
+
+  /*
+   * GPS "Satellites in View" number
+   */
+  uint32 sats_in_view = 24;
+
+  /*
+   * Sensor ID - in case multiple positioning sensors are being used
+   */
+  uint32 sensor_id = 25;
+
+  /*
+   * Values relevant mainly to airborne users
+   */
+
+  /*
+   * Orientation angles of aircraft:
+   * - heading: True North direction in which the fuselage is pointing
+   * - roll: angle between trans axis and trans-long plane (positive = right wing low)
+   * - pitch: angle between horizontal axis and horizontal plane (positive = nose up)
+   * All values in 1/100 degrees
+   */
+  uint32 heading = 30;
+  sint32 roll = 31;
+  sint32 pitch = 32;
+
+  /*
+   * True air speed in meters/second
+   */
+  uint32 air_speed = 33;
+
+  /*
+   * Distance to ground (measured directly, i.e by a range sensor)
+   *   in cm (1/100 of meters)
+   */
+  uint32 ground_distance_cm = 34;
+
+  /*
+   * End of values relevant to airborne users
+   */
+
+  /*
+   * Estimated/expected time (in seconds) until next update:
+   * - if we update at fixed intervals of X seconds, use X
+   * - if we update at dynamic intervals (based on relative movement etc),
+   *   but "AT LEAST every Y seconds", use Y
+   */
+  uint32 pos_next_update = 40;
+
+  /*
+   * A sequence number, incremented with each Position message to help
+   *   detect lost updates if needed
+   */
+  uint32 pos_seq_number = 41;
+
+  /*
+   * END precision positioning elements
+   */
 }
 
   /*
