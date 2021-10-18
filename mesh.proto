@@ -178,36 +178,6 @@ message Position {
   uint32 sensor_id = 25;
 
   /*
-   * Values relevant mainly to airborne users
-   */
-
-  /*
-   * Orientation angles of aircraft:
-   * - heading: True North direction in which the fuselage is pointing
-   * - roll: angle between trans axis and trans-long plane (positive = right wing low)
-   * - pitch: angle between horizontal axis and horizontal plane (positive = nose up)
-   * All values in 1/100 degrees
-   */
-  uint32 heading = 30;
-  sint32 roll = 31;
-  sint32 pitch = 32;
-
-  /*
-   * True air speed in meters/second
-   */
-  uint32 air_speed = 33;
-
-  /*
-   * Distance to ground (measured directly, i.e by a range sensor)
-   *   in cm (1/100 of meters)
-   */
-  uint32 ground_distance_cm = 34;
-
-  /*
-   * End of values relevant to airborne users
-   */
-
-  /*
    * Estimated/expected time (in seconds) until next update:
    * - if we update at fixed intervals of X seconds, use X
    * - if we update at dynamic intervals (based on relative movement etc),
