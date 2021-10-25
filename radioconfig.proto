@@ -387,6 +387,23 @@ message RadioConfig {
     uint32 gps_attempt_time = 36;
 
     /*
+     * Shall we accept 2D GPS fixes? By default, only 3D fixes are accepted
+     * (during a 2D fix, altitude values are unreliable and will be excluded)
+     */
+    bool gps_accept_2d = 45;
+
+    /*
+     * GPS maximum DOP accepted (dilution of precision)
+     * Set a rejection threshold for GPS readings based on their precision,
+     * relative to the GPS rated accuracy (which is typically ~3m)
+     * Solutions above this value will be treated as retryable errors!
+     *
+     * Useful range is between 1 - 64 (3m - <~200m)
+     * By default (if zero), accept all GPS readings
+     */
+    uint32 gps_max_dop = 46;
+
+    /*
      * This parameter is for advanced users with advanced test equipment, we do not recommend most users use it.
      * A frequency offset that is added to to the calculated band center frequency.
      * Used to correct for crystal calibration errors.
@@ -530,7 +547,6 @@ message RadioConfig {
      * (bitwise OR of PositionFlags)
      */
     uint32 position_flags = 150;
-
   }
 
   UserPreferences preferences = 1;
