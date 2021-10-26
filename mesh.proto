@@ -255,11 +255,11 @@ enum Team {
     RED = 6;
     MAROON = 7;
     PURPLE = 8;
-    DARKBLUE = 9;
+    DARK_BLUE = 9;
     BLUE = 10;
     TEAL = 11;
     GREEN = 12;
-    DARKGREEN = 13;
+    DARK_GREEN = 13;
     BROWN = 14;
 }
 
