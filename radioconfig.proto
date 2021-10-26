@@ -530,6 +530,7 @@ message RadioConfig {
 
     enum EnvironmentalMeasurementSensorType {
       DHT11 = 0;
+      DS18B20 = 1;
     };
   
     /*
