@@ -242,6 +242,28 @@ message Position {
   }
 
 /*
+ * The team colors are based on the names of "friendly teams" in ATAK:
+ * https://github.com/deptofdefense/AndroidTacticalAssaultKit-CIV/blob/master/atak/ATAK/app/src/main/assets/filters/team_filters.xml
+ */
+enum Team {
+    CLEAR = 0;  /* the default (unset) is "achromatic" (unaffiliated) */
+    CYAN = 1;
+    WHITE = 2;
+    YELLOW = 3;
+    ORANGE = 4;
+    MAGENTA = 5;
+    RED = 6;
+    MAROON = 7;
+    PURPLE = 8;
+    DARK_BLUE = 9;
+    BLUE = 10;
+    TEAL = 11;
+    GREEN = 12;
+    DARK_GREEN = 13;
+    BROWN = 14;
+}
+
+/*
  * Broadcast when a newly powered mesh node wants to find a node num it can use
  * Sent from the phone over bluetooth to set the user id for the owner of this node.
  * Also sent from nodes to each other when a new node signs on (so all clients can have this info)
@@ -308,6 +330,15 @@ message User {
     * Also, "long_name" should be their licence number.
     */
    bool is_licensed = 7;
+
+    /*
+     * Participants in the same network can self-group into different teams.
+     * Short-term this can be used to visually differentiate them on the map;
+     * in the longer term it could also help users to semi-automatically
+     * select or ignore messages according to team affiliation. 
+     * In total, 14 teams are defined (encoded in 4 bits)
+     */
+    Team team = 8;
 }
 
 /*
