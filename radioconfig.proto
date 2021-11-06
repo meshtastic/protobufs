@@ -553,7 +553,7 @@ message RadioConfig {
      * Circumvents the logic block for determining whether the device is powered or not. 
      * Useful for devices with finicky ADC issues on the battery sense pins.
      */
-    bool always_powered = 151;
+    bool is_always_powered = 151;
   }
 
   UserPreferences preferences = 1;
