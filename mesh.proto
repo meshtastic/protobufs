@@ -339,6 +339,26 @@ message User {
      * In total, 14 teams are defined (encoded in 4 bits)
      */
     Team team = 8;
+
+    /*
+     * Transmit power at antenna connector, in decibel-milliwatt
+     * An optional self-reported value useful in network planning, discovery
+     * and positioning - along with ant_gain_dbi and ant_azimuth below
+     */
+    uint32 tx_power_dbm = 10;
+
+    /*
+     * Antenna gain (applicable to both Tx and Rx), in decibel-isotropic
+     */
+    uint32 ant_gain_dbi = 11;
+
+    /*
+     * Directional antenna true azimuth *if applicable*, in degrees (0-360)
+     * Only applicable in case of stationary nodes with a directional antenna
+     * Zero = not applicable (mobile or omni) or not specified
+     * (use a value of 360 to indicate an antenna azimuth of zero degrees)
+     */
+    uint32 ant_azimuth = 12;
 }
 
 /*
