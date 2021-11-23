@@ -5,4 +5,21 @@ The protobuf definitions for the Meshtastic project (used by apps and the device
 
 For questions on using these protobufs please post in our [forum](meshtastic.discourse.group). We are friendly and we love people building/extending this work.
 
-For documentation please visit the [Meshtastic Docs](https://meshtastic.org/docs/developers/protobufs/api).
+For documentation please visit:
+* [Meshtastic Docs](https://meshtastic.org/docs/developers/protobufs/api).
+
+For more information on protobufs (and tools to use them with the language of your choice) see
+* https://developers.google.com/protocol-buffers/docs/proto3
+
+We are not placing any of these defs inside a package, because if you do the
+resulting nanopb version is super verbose package mesh.
+
+Protobuf build instructions:
+* To build java classes for reading writing:
+* protoc -I=. --java_out /tmp mesh.proto
+
+To generate Nanopb c code:
+* /home/kevinh/packages/nanopb-0.4.0-linux-x86/generator-bin/protoc --nanopb_out=/tmp -I=app/src/main/proto mesh.proto
+
+Nanopb binaries available here:
+* https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.0
