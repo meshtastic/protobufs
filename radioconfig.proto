@@ -236,6 +236,12 @@ message RadioConfig {
     uint32 position_broadcast_secs = 1;
 
     /*
+     * We should send our position this often (but only if it has changed significantly)
+     * Defaults to 15 minutes
+     */
+    bool position_broadcast_smart = 17;
+
+    /*
      * Send our owner info at least this often (also we always send once at boot - to rejoin the mesh)
      */
     uint32 send_owner_interval = 2;
