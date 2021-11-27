@@ -110,9 +110,9 @@ message StoreAndForwardMessage {
         uint32 HistoryMessages = 1;
 
         /*
-        * Earliest message (seconds since now)
+        * The window of messages that was used to filter the history client requested
         */
-        uint32 Earliest = 2;
+        uint32 Window = 2;
 
     }
 
