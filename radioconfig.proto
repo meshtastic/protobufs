@@ -493,7 +493,10 @@ message RadioConfig {
      *FIXME - Move this out of UserPreferences and into a section for plugin configuration. (was 136)
      */
     bool store_forward_plugin_enabled = 148; 
+    bool store_forward_plugin_heartbeat = 149; 
     uint32 store_forward_plugin_records = 137;
+    uint32 store_forward_plugin_history_return_max = 138;
+    uint32 store_forward_plugin_history_return_window = 139;
     reserved 136;
 
     /*

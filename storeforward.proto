@@ -1,0 +1,143 @@
+syntax = "proto3";
+
+option java_package = "com.geeksville.mesh";
+option java_outer_classname = "StoreAndForward";
+option optimize_for = LITE_RUNTIME;
+option go_package = "github.com/meshtastic/gomeshproto";
+
+
+
+    
+
+message StoreAndForwardMessage {
+
+    /*
+     * 1   - 99  = From Router
+     * 101 - 199 = From Client
+     */
+    enum RequestResponse {
+        /*
+         * Unset/unused
+         */
+        UNSET = 0;
+
+        ROUTER_ERROR = 1;
+
+        ROUTER_HEARTBEAT = 2;
+
+        /*
+         * Router has requested the client respond. This can work as a
+         * "are you there" message.
+         */
+        ROUTER_PING = 3;
+
+        /*
+         * The response to a "Ping"
+         */
+        ROUTER_PONG = 4;
+
+        /*
+         * Router is currently busy. Please try again later.
+         */
+        ROUTER_BUSY = 5;
+
+        CLIENT_ERROR = 101;
+
+        /*
+         * Client has requested a replay from the router.
+         */
+        CLIENT_HISTORY = 102;
+
+        /*
+         * Client has requested stats from the router.
+         */
+        CLIENT_STATS = 103;
+
+        /*
+         * Client has requested the router respond. This can work as a
+         * "are you there" message.
+         */
+        CLIENT_PING = 104;
+
+        /*
+         * The response to a "Ping"
+         */
+        CLIENT_PONG = 105;
+
+        MAX = 255;
+    }
+
+
+    message Statistics {
+
+        /*
+        * Number of messages we have ever seen
+        */
+        uint32 MessagesTotal = 1;
+
+        /*
+        * Number of messages we have currently saved our history.
+        */
+        uint32 MessagesSaved = 2;
+
+        /*
+        * Maximum number of messages we will save
+        */
+        uint32 MessagesMax = 3;
+
+        /*
+        * Router uptime in seconds
+        */
+        uint32 UpTime = 4;
+
+        /*
+        * Number of times any client sent a request to the S&F.
+        */
+        uint32 Requests = 5;
+
+        /*
+        * Number of times the history was requested.
+        */
+        uint32 RequestsHistory = 6;
+
+        /*
+        * Is the heartbeat enabled on the server?
+        */
+        bool Heartbeat = 7;
+
+        /*
+        * Is the heartbeat enabled on the server?
+        */
+        uint32 ReturnMax = 8;
+
+        /*
+        * Is the heartbeat enabled on the server?
+        */
+        uint32 ReturnWindow = 9;
+
+
+    }
+
+    message History {
+
+        /*
+        * Number of that will be sent to the client
+        */
+        uint32 HistoryMessages = 1;
+
+        /*
+        * The window of messages that was used to filter the history client requested
+        */
+        uint32 Window = 2;
+
+    }
+
+
+    RequestResponse rr = 1;
+
+    Statistics stats = 2;
+
+    History history = 3;
+
+
+}
