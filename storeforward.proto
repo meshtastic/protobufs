@@ -12,8 +12,8 @@ option go_package = "github.com/meshtastic/gomeshproto";
 message StoreAndForwardMessage {
 
     /*
-     * 1 - 100 = From router
-     * 101-200 = From client
+     * 1   - 99  = From Router
+     * 101 - 199 = From Client
      */
     enum RequestResponse {
         /*
@@ -99,6 +99,22 @@ message StoreAndForwardMessage {
         * Number of times the history was requested.
         */
         uint32 RequestsHistory = 6;
+
+        /*
+        * Is the heartbeat enabled on the server?
+        */
+        bool Heartbeat = 7;
+
+        /*
+        * Is the heartbeat enabled on the server?
+        */
+        uint32 ReturnMax = 8;
+
+        /*
+        * Is the heartbeat enabled on the server?
+        */
+        uint32 ReturnWindow = 9;
+
 
     }
 
