@@ -119,26 +119,26 @@ enum GpsOperation {
 enum GpsCoordinateFormat {
 
   /*
-   * GPS coordinates are displayed in the normal decimal degrees format: 
+   * GPS coordinates are displayed in the normal decimal degrees format:
    * DD.DDDDDD DDD.DDDDDD
    */
   GpsFormatDec = 0;
 
   /*
-   * GPS coordinates are displayed in the degrees minutes seconds format: 
+   * GPS coordinates are displayed in the degrees minutes seconds format:
    * DD°MM'SS"C DDD°MM'SS"C, where C is the compass point representing the locations quadrant
    */
   GpsFormatDMS = 1;
 
   /*
-   * GPS coordinates are displayed in Universal Transverse Mercator format: 
+   * GPS coordinates are displayed in Universal Transverse Mercator format:
    * ZZB EEEEEE NNNNNNN, where Z is zone, B is band, E is easting, N is northing
    */
   GpsFormatUTM = 2;
 
   /*
-   * GPS coordinates are displayed in Military Grid Reference System format: 
-   * ZZB CD EEEEE NNNNN, where Z is zone, B is band, C is the east 100k square, D is the north 100k square, 
+   * GPS coordinates are displayed in Military Grid Reference System format:
+   * ZZB CD EEEEE NNNNN, where Z is zone, B is band, C is the east 100k square, D is the north 100k square,
    * E is easting, N is northing
    */
   GpsFormatMGRS = 3;
@@ -147,7 +147,7 @@ enum GpsCoordinateFormat {
    * GPS coordinates are displayed in Open Location Code (aka Plus Codes).
    */
   GpsFormatOLC = 4;
-  
+
   /*
    * GPS coordinates are displayed in Ordnance Survey Grid Reference (the National Grid System of the UK).
    * Format: AB EEEEE NNNNN, where A is the east 100k square, B is the north 100k square, E is the easting,
@@ -178,7 +178,7 @@ enum LocationSharing {
 }
 
 /*
- * Bit field of boolean configuration options, indicating which optional 
+ * Bit field of boolean configuration options, indicating which optional
  *   fields to include when assembling POSITION messages
  * Longitude and latitude are always included (also time if GPS-synced)
  *
@@ -186,35 +186,35 @@ enum LocationSharing {
  *   leading to longer airtime and a higher risk of packet loss
  */
 enum PositionFlags {
-    /* Required for compilation */
-    POS_UNDEFINED = 0x0000;
+  /* Required for compilation */
+  POS_UNDEFINED = 0x0000;
 
-    /* Include an altitude value (if available) */
-    POS_ALTITUDE  = 0x0001;
+  /* Include an altitude value (if available) */
+  POS_ALTITUDE  = 0x0001;
 
-    /* Altitude value is MSL */
-    POS_ALT_MSL   = 0x0002;
+  /* Altitude value is MSL */
+  POS_ALT_MSL   = 0x0002;
 
-    /* Include geoidal separation */
-    POS_GEO_SEP   = 0x0004;
+  /* Include geoidal separation */
+  POS_GEO_SEP   = 0x0004;
 
-    /* Include the DOP value ; PDOP used by default, see below */
-    POS_DOP       = 0x0008;
+  /* Include the DOP value ; PDOP used by default, see below */
+  POS_DOP       = 0x0008;
 
-    /* If POS_DOP set, send separate HDOP / VDOP values instead of PDOP */
-    POS_HVDOP     = 0x0010;
+  /* If POS_DOP set, send separate HDOP / VDOP values instead of PDOP */
+  POS_HVDOP     = 0x0010;
 
-    /* Include battery level */
-    POS_BATTERY   = 0x0020;
+  /* Include battery level */
+  POS_BATTERY   = 0x0020;
 
-    /* Include number of "satellites in view" */
-    POS_SATINVIEW = 0x0040;
+  /* Include number of "satellites in view" */
+  POS_SATINVIEW = 0x0040;
 
-    /* Include a sequence number incremented per packet */
-    POS_SEQ_NOS   = 0x0080;
+  /* Include a sequence number incremented per packet */
+  POS_SEQ_NOS   = 0x0080;
 
-    /* Include positional timestamp (from GPS solution) */
-    POS_TIMESTAMP = 0x0100;
+  /* Include positional timestamp (from GPS solution) */
+  POS_TIMESTAMP = 0x0100;
 }
 
 /*
@@ -252,21 +252,21 @@ message RadioConfig {
      *
      * uint32 num_missed_to_fail = 3;
      */
-     
+
     /*
      * Power management state machine option.
      * See [power management](/software/other/power.md) for details.
      * 0 for default of 1 minute
      */
     uint32 wait_bluetooth_secs = 4;
-    
+
     /*
      * Power management state machine option.
      * See [power management](/software/other/power.md) for details.
      * 0 for default of one minute
      */
     uint32 screen_on_secs = 5;
-    
+
     /*
      * Power management state machine option.
      * See [power management](/software/other/power.md) for details.
@@ -274,35 +274,35 @@ message RadioConfig {
      * IMPORTANT NOTE FOR DEVICE CLIENTS: YOU MUST SEND SOME SORT OF PACKET TO THE PHONE AT LEAST THIS OFTEN OR THE DEVICE WILL DECIDE YOU ARE GONE!
      */
     uint32 phone_timeout_secs = 6;
-    
+
     /*
      * Power management state machine option.
      * See [power management](/software/other/power.md) for details.
      * 0 for default of two hours, MAXUINT for disabled
      */
     uint32 phone_sds_timeout_sec = 7;
-    
+
     /*
      * Power management state machine option.
      * See [power management](/software/other/power.md) for details.
      * 0 for default of two hours, MAXUINT for disabled
      */
     uint32 mesh_sds_timeout_secs = 8;
-    
+
     /*
      * Power management state machine option.
      * See [power management](/software/other/power.md) for details.
      * 0 for default of one year
      */
     uint32 sds_secs = 9;
-    
+
     /*
      * Power management state machine option.
      * See [power management](/software/other/power.md) for details.
      * 0 for default of 3600
      */
     uint32 ls_secs = 10;
-    
+
     /*
      * Power management state machine option.
      * See [power management](/software/other/power.md) for details.
@@ -315,7 +315,7 @@ message RadioConfig {
      * acquire an address via DHCP
      */
     string wifi_ssid = 12;
-    
+
     /*
      * If set, will be use to authenticate to the named wifi
      */
@@ -331,7 +331,7 @@ message RadioConfig {
      * The region code for my radio (US, CN, EU433, etc...)
      */
     RegionCode region = 15;
-    
+
     /*
      * Sets the current of the battery charger
      */
@@ -359,11 +359,11 @@ message RadioConfig {
      * The lat/lon/alt can be set by an internal GPS or with the help of the app.
      */
     bool fixed_position = 39;
-    
+
     /*
      * If set, this will disable the SerialConsole by not initilizing the StreamAPI
      */
-    bool serial_disabled = 40;    
+    bool serial_disabled = 40;
 
     /*
      * How our location is shared with other nodes (or the local phone)
@@ -376,7 +376,7 @@ message RadioConfig {
      * For that see LocationSharing
      */
     GpsOperation gps_operation = 33;
-    
+
     /*
      * How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode?
      * or zero for the default of once every 30 seconds
@@ -388,7 +388,7 @@ message RadioConfig {
      * How long should we try to get our position during each gps_update_interval attempt?  (in seconds)
      * Or if zero, use the default of 30 seconds.
      * If we don't get a new gps fix in that time, the gps will be put into sleep until  the next gps_update_rate
-     * window. 
+     * window.
      */
     uint32 gps_attempt_time = 36;
 
@@ -418,7 +418,7 @@ message RadioConfig {
 
     /*
      * The server to use for our MQTT global message gateway feature.
-     * If not set, the default server will be used 
+     * If not set, the default server will be used
      */
     string mqtt_server = 42;
 
@@ -428,7 +428,7 @@ message RadioConfig {
      * But if this flag is set, all MQTT features will be disabled and no servers will be contacted.
     */
     bool mqtt_disabled = 43;
-    
+
     /*
      * How the GPS coordinates are displayed on the OLED screen.
      */
@@ -438,13 +438,13 @@ message RadioConfig {
      * This setting is never saved to disk, but if set, all device settings will be returned to factory defaults.
      * (Region, serial number etc... will be preserved)
      */
-     bool factory_reset = 100;
+    bool factory_reset = 100;
 
-     /*
+    /*
       * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
       * Set this to true to leave the debug log outputting even when API is active.
       */
-     bool debug_log_enabled = 101;
+    bool debug_log_enabled = 101;
 
     /*
      * If true, radio should not try to be smart about what packets to queue to
@@ -457,7 +457,7 @@ message RadioConfig {
      * in ignore_incoming will have packets they send droped on receive (by router.cpp)
      */
     repeated uint32 ignore_incoming = 103;
-    
+
     /*
      * Preferences for the SerialPlugin
      * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
@@ -492,8 +492,8 @@ message RadioConfig {
      * Preferences for the StoreForwardPlugin
      *FIXME - Move this out of UserPreferences and into a section for plugin configuration. (was 136)
      */
-    bool store_forward_plugin_enabled = 148; 
-    bool store_forward_plugin_heartbeat = 149; 
+    bool store_forward_plugin_enabled = 148;
+    bool store_forward_plugin_heartbeat = 149;
     uint32 store_forward_plugin_records = 137;
     uint32 store_forward_plugin_history_return_max = 138;
     uint32 store_forward_plugin_history_return_window = 139;
@@ -519,7 +519,7 @@ message RadioConfig {
     uint32 environmental_measurement_plugin_read_error_count_threshold = 142;
 
     /*
-     * Interval in seconds of how often we should try to send our 
+     * Interval in seconds of how often we should try to send our
      * measurements to the mesh
      */
     uint32 environmental_measurement_plugin_update_interval = 143;
@@ -541,7 +541,7 @@ message RadioConfig {
       DHT11 = 0;
       DS18B20 = 1;
     };
-  
+
     /*
      * Specify the sensor type
      */
@@ -557,15 +557,15 @@ message RadioConfig {
      * (bitwise OR of PositionFlags)
      */
     uint32 position_flags = 150;
-    
+
     /*
-     * Circumvents the logic block for determining whether the device is powered or not. 
+     * Circumvents the logic block for determining whether the device is powered or not.
      * Useful for devices with finicky ADC issues on the battery sense pins.
      */
     bool is_always_powered = 151;
-    
+
     /*
-     * Automatically toggles to the next page on the screen like a carousel, based the specified interval in seconds. 
+     * Automatically toggles to the next page on the screen like a carousel, based the specified interval in second
      * Potentially useful for devices without user buttons.
      */
     uint32 auto_screen_carousel_secs = 152;

@@ -12,21 +12,21 @@ option java_outer_classname = "MQTTProtos";
  * This message wraps a MeshPacket with extra metadata about the sender and how it arrived.
  */
 message ServiceEnvelope {
-    /*
-     * The (probably encrypted) packet
-     */
-    MeshPacket packet = 1;
+  /*
+   * The (probably encrypted) packet
+   */
+  MeshPacket packet = 1;
 
-    /*
-     * The global channel ID it was sent on
-     */
-    string channel_id = 2;
+  /*
+   * The global channel ID it was sent on
+   */
+  string channel_id = 2;
 
-    /*
-     * The sending gateway node ID. Can we use this to authenticate/prevent fake
-     * nodeid impersonation for senders? - i.e. use gateway/mesh id (which is authenticated) + local node id as
-     * the globally trusted nodenum
-     */
-    string gateway_id = 3;
+  /*
+   * The sending gateway node ID. Can we use this to authenticate/prevent fake
+   * nodeid impersonation for senders? - i.e. use gateway/mesh id (which is authenticated) + local node id as
+   * the globally trusted nodenum
+   */
+  string gateway_id = 3;
 }
 

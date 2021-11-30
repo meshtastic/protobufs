@@ -23,3 +23,9 @@ To generate Nanopb c code:
 
 Nanopb binaries available here:
 * https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.4
+
+To lint:
+* Install protolint: brew tap yoheimuta/protolint; brew install protolint
+* Run it from the main directory: *protolint* lint .
+* (optional) Have it fix the mundane warnings: *protolint* lint -fix .
+* See https://github.com/yoheimuta/protolint for more info

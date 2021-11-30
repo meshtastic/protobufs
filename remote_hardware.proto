@@ -6,7 +6,7 @@ option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
 /*
- * An example app to show off the plugin system. This message is used for 
+ * An example app to show off the plugin system. This message is used for
  * REMOTE_HARDWARE_APP PortNums.
  *
  * Also provides easy remote access to any GPIO.
@@ -20,54 +20,54 @@ option go_package = "github.com/meshtastic/gomeshproto";
  * (a special channel once multichannel support is included?)
  */
 message HardwareMessage {
-    enum Type {
-
-        /*
-         * Unset/unused
-         */
-        UNSET = 0;
-
-        /*
-         * Set gpio gpios based on gpio_mask/gpio_value
-         */
-        WRITE_GPIOS = 1;
-
-        /*
-         * We are now interested in watching the gpio_mask gpios.
-         * If the selected gpios change, please broadcast GPIOS_CHANGED.
-         * Will implicitly change the gpios requested to be INPUT gpios.
-         */
-        WATCH_GPIOS = 2;
-
-        /*
-         * The gpios listed in gpio_mask have changed, the new values are listed in gpio_value
-         */
-        GPIOS_CHANGED = 3;
-
-        /*
-         * Read the gpios specified in gpio_mask, send back a READ_GPIOS_REPLY reply with gpio_value populated
-         */
-        READ_GPIOS = 4;
-
-        /*
-         * A reply to READ_GPIOS. gpio_mask and gpio_value will be populated
-         */
-        READ_GPIOS_REPLY = 5;
-    }
+  enum Type {
 
     /*
-     * What type of HardwareMessage is this?
+     * Unset/unused
      */
-    Type typ = 1;
+    UNSET = 0;
 
     /*
-     * What gpios are we changing. Not used for all MessageTypes, see MessageType for details
+     * Set gpio gpios based on gpio_mask/gpio_value
      */
-    uint64 gpio_mask = 2;
+    WRITE_GPIOS = 1;
 
     /*
-     * For gpios that were listed in gpio_mask as valid, what are the signal levels for those gpios.
-     * Not used for all MessageTypes, see MessageType for details
+     * We are now interested in watching the gpio_mask gpios.
+     * If the selected gpios change, please broadcast GPIOS_CHANGED.
+     * Will implicitly change the gpios requested to be INPUT gpios.
      */
-    uint64 gpio_value = 3;
+    WATCH_GPIOS = 2;
+
+    /*
+     * The gpios listed in gpio_mask have changed, the new values are listed in gpio_value
+     */
+    GPIOS_CHANGED = 3;
+
+    /*
+     * Read the gpios specified in gpio_mask, send back a READ_GPIOS_REPLY reply with gpio_value populated
+     */
+    READ_GPIOS = 4;
+
+    /*
+     * A reply to READ_GPIOS. gpio_mask and gpio_value will be populated
+     */
+    READ_GPIOS_REPLY = 5;
+  }
+
+  /*
+   * What type of HardwareMessage is this?
+   */
+  Type typ = 1;
+
+  /*
+   * What gpios are we changing. Not used for all MessageTypes, see MessageType for details
+   */
+  uint64 gpio_mask = 2;
+
+  /*
+   * For gpios that were listed in gpio_mask as valid, what are the signal levels for those gpios.
+   * Not used for all MessageTypes, see MessageType for details
+   */
+  uint64 gpio_value = 3;
 }
