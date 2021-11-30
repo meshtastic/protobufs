@@ -29,4 +29,3 @@ message ServiceEnvelope {
    */
   string gateway_id = 3;
 }
-

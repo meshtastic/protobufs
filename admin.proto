@@ -20,7 +20,7 @@ message AdminMessage {
   oneof variant {
 
     /*
-     * set the radio provisioning for this node
+     * Set the radio provisioning for this node
      */
     RadioConfig set_radio = 1;
 

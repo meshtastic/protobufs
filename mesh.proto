@@ -372,8 +372,6 @@ message RouteDiscovery {
   repeated fixed32 route = 2;
 }
 
-
-
 /*
  * A Routing control Data packet handled by the routing plugin
  */
@@ -736,7 +734,7 @@ enum Constants {
 message NodeInfo {
 
   /*
-   * the node number
+   * The node number
    */
   uint32 num = 1;
 
@@ -783,8 +781,8 @@ message NodeInfo {
    */
 
   /*
-    * Set to indicate the last time we received a packet from this node
-    */
+   * Set to indicate the last time we received a packet from this node
+   */
   fixed32 last_heard = 4;
 }
 
@@ -1036,12 +1034,12 @@ message FromRadio {
     NodeInfo node_info = 4;
 
     /*
-     * set to send debug console output over our protobuf stream
+     * Set to send debug console output over our protobuf stream
      */
     LogRecord log_record = 7;
 
     /*
-     * sent as true once the device has finished sending all of the responses to want_config
+     * Sent as true once the device has finished sending all of the responses to want_config
      * recipient should check if this ID matches our original request nonce, if
      * not, it means your config responses haven't started yet.
      * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
@@ -1060,7 +1058,7 @@ message FromRadio {
 
 
 /*
- * packets/commands to the radio will be written (reliably) to the toRadio characteristic.
+ * Packets/commands to the radio will be written (reliably) to the toRadio characteristic.
  * Once the write completes the phone can assume it is handled.
  */
 message ToRadio {
@@ -1093,7 +1091,7 @@ message ToRadio {
   oneof payloadVariant {
 
     /*
-     * send this packet on the mesh
+     * Send this packet on the mesh
      */
     MeshPacket packet = 2;
 
@@ -1104,7 +1102,7 @@ message ToRadio {
     PeerInfo peer_info = 3;
 
     /*
-     * phone wants radio to send full node db to the phone, This is
+     * Phone wants radio to send full node db to the phone, This is
      * typically the first packet sent to the radio when the phone gets a
      * bluetooth connection. The radio will respond by sending back a
      * MyNodeInfo, a owner, a radio config and a series of

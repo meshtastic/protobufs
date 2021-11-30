@@ -225,7 +225,7 @@ enum PositionFlags {
 message RadioConfig {
 
   /*
-   * see [software design](/software/other/sw-design.md) for more information on these preferences
+   * See [software design](/software/other/sw-design.md) for more information on these preferences
    */
   message UserPreferences {
 
@@ -481,7 +481,7 @@ message RadioConfig {
     bool ext_notification_plugin_alert_bell = 131;
 
     /*
-     *Preferences for the RangeTestPlugin
+     * Preferences for the RangeTestPlugin
      * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
      */
     bool range_test_plugin_enabled = 132;
@@ -565,7 +565,7 @@ message RadioConfig {
     bool is_always_powered = 151;
 
     /*
-     * Automatically toggles to the next page on the screen like a carousel, based the specified interval in second
+     * Automatically toggles to the next page on the screen like a carousel, based the specified interval in seconds.
      * Potentially useful for devices without user buttons.
      */
     uint32 auto_screen_carousel_secs = 152;

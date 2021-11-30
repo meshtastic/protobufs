@@ -135,5 +135,4 @@ message StoreAndForwardMessage {
 
   History history = 3;
 
-
 }
