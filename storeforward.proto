@@ -9,7 +9,7 @@ option go_package = "github.com/meshtastic/gomeshproto";
 
     
 
-message StoreAndForward {
+message StoreAndForwardMessage {
 
     /*
      * 1   - 99  = From Router
