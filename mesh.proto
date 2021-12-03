@@ -196,71 +196,71 @@ message Position {
    */
 }
 
-  /*
+/*
   * Note: these enum names must EXACTLY match the string used in the device
   * bin/build-all.sh script.
   * Because they will be used to find firmware filenames in the android app for OTA updates.
   * To match the old style filenames, _ is converted to -, p is converted to .
-  */ 
-  enum HardwareModel {
-    UNSET = 0;
-    TLORA_V2 = 1;
-    TLORA_V1 = 2;
-    TLORA_V2_1_1p6 = 3;
-    TBEAM = 4;
+  */
+enum HardwareModel {
+  UNSET = 0;
+  TLORA_V2 = 1;
+  TLORA_V1 = 2;
+  TLORA_V2_1_1p6 = 3;
+  TBEAM = 4;
 
-    // The original heltec WiFi_Lora_32_V2, which had battery voltage sensing hooked to GPIO 13 (see HELTEC_V2 for the new version).  
-    HELTEC_V2_0 = 5;
+  // The original heltec WiFi_Lora_32_V2, which had battery voltage sensing hooked to GPIO 13 (see HELTEC_V2 for the new version).
+  HELTEC_V2_0 = 5;
 
-    TBEAM0p7 = 6;
-    T_ECHO = 7;
-    TLORA_V1_1p3 = 8;
-    RAK4631 = 9;
+  TBEAM0p7 = 6;
+  T_ECHO = 7;
+  TLORA_V1_1p3 = 8;
+  RAK4631 = 9;
 
-    // The new version of the heltec WiFi_Lora_32_V2 board that has battery sensing hooked to GPIO 37.  Sadly they did not update anything on the silkscreen to identify this board
-    HELTEC_V2_1 = 10;
+  // The new version of the heltec WiFi_Lora_32_V2 board that has battery sensing hooked to GPIO 37.  Sadly they did not update anything on the silkscreen to identify this board
+  HELTEC_V2_1 = 10;
 
-    /*
-     * Less common/prototype boards listed here (needs one more byte over the air)
-     */
-    LORA_RELAY_V1 = 32;
-    NRF52840DK = 33;
-    PPR = 34;
-    GENIEBLOCKS = 35;
-    NRF52_UNKNOWN = 36;
-    PORTDUINO = 37;
+  /*
+   * Less common/prototype boards listed here (needs one more byte over the air)
+   */
+  LORA_RELAY_V1 = 32;
+  NRF52840DK = 33;
+  PPR = 34;
+  GENIEBLOCKS = 35;
+  NRF52_UNKNOWN = 36;
+  PORTDUINO = 37;
 
-    /*
-     * The simulator built into the android app
-     */
-    ANDROID_SIM = 38;
+  /*
+   * The simulator built into the android app
+   */
+  ANDROID_SIM = 38;
 
-    /*
-     * Custom DIY device based on @NanoVHF schematics: https://github.com/NanoVHF/Meshtastic-DIY/tree/main/Schematics
-     */
-    DIY_V1 = 39;
-  }
+  /*
+   * Custom DIY device based on @NanoVHF schematics: https://github.com/NanoVHF/Meshtastic-DIY/tree/main/Schematics
+   */
+  DIY_V1 = 39;
+}
 
 /*
  * The team colors are based on the names of "friendly teams" in ATAK:
  * https://github.com/deptofdefense/AndroidTacticalAssaultKit-CIV/blob/master/atak/ATAK/app/src/main/assets/filters/team_filters.xml
  */
 enum Team {
-    CLEAR = 0;  /* the default (unset) is "achromatic" (unaffiliated) */
-    CYAN = 1;
-    WHITE = 2;
-    YELLOW = 3;
-    ORANGE = 4;
-    MAGENTA = 5;
-    RED = 6;
-    MAROON = 7;
-    PURPLE = 8;
-    DARK_BLUE = 9;
-    BLUE = 10;
-    TEAL = 11;
-    GREEN = 12;
-    DARK_GREEN = 13;
-    BROWN = 14;
+  CLEAR = 0;  /* the default (unset) is "achromatic" (unaffiliated) */
+  CYAN = 1;
+  WHITE = 2;
+  YELLOW = 3;
+  ORANGE = 4;
+  MAGENTA = 5;
+  RED = 6;
+  MAROON = 7;
+  PURPLE = 8;
+  DARK_BLUE = 9;
+  BLUE = 10;
+  TEAL = 11;
+  GREEN = 12;
+  DARK_GREEN = 13;
+  BROWN = 14;
 }
 
 /*
@@ -316,49 +316,49 @@ message User {
    */
   bytes macaddr = 4;
 
-    /*
+  /*
    * TBEAM, HELTEC, etc...
    * Starting in 1.2.11 moved to hw_model enum in the NodeInfo object.
    * Apps will still need the string here for older builds
    * (so OTA update can find the right image), but if the enum is available it will be used instead.
    */
-   HardwareModel hw_model = 6;  
+  HardwareModel hw_model = 6;
 
-   /*
-    * In some regions HAM radio operators have different bandwidth limitations than others.
-    * If this user is a licensed operator, set this flag.
-    * Also, "long_name" should be their licence number.
-    */
-   bool is_licensed = 7;
+  /*
+   * In some regions HAM radio operators have different bandwidth limitations than others.
+   * If this user is a licensed operator, set this flag.
+   * Also, "long_name" should be their licence number.
+   */
+  bool is_licensed = 7;
 
-    /*
-     * Participants in the same network can self-group into different teams.
-     * Short-term this can be used to visually differentiate them on the map;
-     * in the longer term it could also help users to semi-automatically
-     * select or ignore messages according to team affiliation. 
-     * In total, 14 teams are defined (encoded in 4 bits)
-     */
-    Team team = 8;
+  /*
+   * Participants in the same network can self-group into different teams.
+   * Short-term this can be used to visually differentiate them on the map;
+   * in the longer term it could also help users to semi-automatically
+   * select or ignore messages according to team affiliation.
+   * In total, 14 teams are defined (encoded in 4 bits)
+   */
+  Team team = 8;
 
-    /*
-     * Transmit power at antenna connector, in decibel-milliwatt
-     * An optional self-reported value useful in network planning, discovery
-     * and positioning - along with ant_gain_dbi and ant_azimuth below
-     */
-    uint32 tx_power_dbm = 10;
+  /*
+   * Transmit power at antenna connector, in decibel-milliwatt
+   * An optional self-reported value useful in network planning, discovery
+   * and positioning - along with ant_gain_dbi and ant_azimuth below
+   */
+  uint32 tx_power_dbm = 10;
 
-    /*
-     * Antenna gain (applicable to both Tx and Rx), in decibel-isotropic
-     */
-    uint32 ant_gain_dbi = 11;
+  /*
+   * Antenna gain (applicable to both Tx and Rx), in decibel-isotropic
+   */
+  uint32 ant_gain_dbi = 11;
 
-    /*
-     * Directional antenna true azimuth *if applicable*, in degrees (0-360)
-     * Only applicable in case of stationary nodes with a directional antenna
-     * Zero = not applicable (mobile or omni) or not specified
-     * (use a value of 360 to indicate an antenna azimuth of zero degrees)
-     */
-    uint32 ant_azimuth = 12;
+  /*
+   * Directional antenna true azimuth *if applicable*, in degrees (0-360)
+   * Only applicable in case of stationary nodes with a directional antenna
+   * Zero = not applicable (mobile or omni) or not specified
+   * (use a value of 360 to indicate an antenna azimuth of zero degrees)
+   */
+  uint32 ant_azimuth = 12;
 }
 
 /*
@@ -372,10 +372,8 @@ message RouteDiscovery {
   repeated fixed32 route = 2;
 }
 
-
-  
 /*
- *A Routing control Data packet handled by the routing plugin
+ * A Routing control Data packet handled by the routing plugin
  */
 message Routing {
 
@@ -416,7 +414,7 @@ message Routing {
      * No suitable channel was found for sending this packet (i.e. was requested channel index disabled?)
      */
     NO_CHANNEL = 6;
-    
+
     /*
      * The packet was too big for sending (exceeds interface MTU after encoding)
      */
@@ -449,11 +447,11 @@ message Routing {
     /*
      * A route reply
      */
-    RouteDiscovery route_reply = 2;  
+    RouteDiscovery route_reply = 2;
 
     /*
-     * A failure in delivering a message (usually used for routing control messages, but might be provided 
-     * in addition to ack.fail_id to provide details on the type of failure). 
+     * A failure in delivering a message (usually used for routing control messages, but might be provided
+     * in addition to ack.fail_id to provide details on the type of failure).
      */
     Error error_reason = 3;
 
@@ -475,7 +473,7 @@ message Routing {
       *
       * fixed32 fail_id = 5;
       */
-  } 
+  }
 }
 
 /*
@@ -488,12 +486,12 @@ message Data {
   /*
    * Formerly named typ and of type Type
    */
-   PortNum portnum = 1;
+  PortNum portnum = 1;
 
-   /*
-    * Required
-    */
-   bytes payload = 2;
+  /*
+   * Required
+   */
+  bytes payload = 2;
 
   /*
    * Not normally used, but for testing a sender can request that recipient
@@ -522,7 +520,7 @@ message Data {
    * Only used in routing or response messages.
    * Indicates the original message ID that this message is reporting failure on. (formerly called original_id)
    */
-   fixed32 request_id = 6;     
+  fixed32 request_id = 6;
 }
 
 /*
@@ -596,7 +594,7 @@ message MeshPacket {
    * See [crypto](/developers/device/encryption.md) for details.
    * FIXME - really should be fixed32 instead, this encoding only hurts the ble link though.
    */
-  fixed32 from = 1; 
+  fixed32 from = 1;
 
   /*
    * The (immediatSee Priority description for more details.y should be fixed32 instead, this encoding only
@@ -614,7 +612,7 @@ message MeshPacket {
    * This 'trick' is only used while the payloadVariant is an 'encrypted'.
    */
   uint32 channel = 3;
-  
+
   /*
    * Internally to the mesh radios we will route SubPackets encrypted per [this](/developers/device/encryption.md).
    * However, when a particular node has the correct
@@ -623,7 +621,7 @@ message MeshPacket {
    * "decoded" is not populated (i.e. any encryption/decryption happens before reaching the applications)
    * The numeric IDs for these fields were selected to keep backwards compatibility with old applications.
    */
-  
+
   oneof payloadVariant {
     Data decoded = 4;
     bytes encrypted = 5;
@@ -641,7 +639,7 @@ message MeshPacket {
    * FIXME - really should be fixed32 instead, this encoding only
    * hurts the ble link though.
    */
-  fixed32 id = 6; 
+  fixed32 id = 6;
 
   /*
    * The time this message was received by the esp32 (secs since 1970).
@@ -680,7 +678,7 @@ message MeshPacket {
   bool want_ack = 11;
 
   /*
-   * The priority of this message for sending. 
+   * The priority of this message for sending.
    * See MeshPacket.Priority description for more details.
    */
   Priority priority = 12;
@@ -688,7 +686,7 @@ message MeshPacket {
   /*
    * rssi of received packet. Only sent to phone for dispay purposes.
    */
-   int32 rx_rssi = 13;
+  int32 rx_rssi = 13;
 }
 
 /*
@@ -700,8 +698,8 @@ enum Constants {
    * First enum must be zero, and we are just using this enum to
    * pass int constants between two very different environments
    */
-  Unused = 0; 
-  
+  Unused = 0;
+
   /*
    * From mesh.options
    * note: this payload length is ONLY the bytes that are sent inside of the Data protobuf (excluding protobuf overhead). The 16 byte header is
@@ -736,7 +734,7 @@ enum Constants {
 message NodeInfo {
 
   /*
-   * the node number
+   * The node number
    */
   uint32 num = 1;
 
@@ -776,16 +774,16 @@ message NodeInfo {
    * RouteState route = 4;
    */
 
-   /*
+  /*
    * Not currently used (till full DSR deployment?) Our current preferred node node for routing - might be the same as num if
    * we are adjacent Or zero if we don't yet know a route to this node.
    * fixed32 next_hop = 5;
    */
 
-   /*
-    * Set to indicate the last time we received a packet from this node
-    */
-   fixed32 last_heard = 4;
+  /*
+   * Set to indicate the last time we received a packet from this node
+   */
+  fixed32 last_heard = 4;
 }
 
 /*
@@ -795,7 +793,7 @@ message NodeInfo {
  * If you encounter a fault code, please post on the meshtastic.discourse.group
  * and we'll try to help.
  */
-enum CriticalErrorCode { 
+enum CriticalErrorCode {
   None = 0;
 
   /*
@@ -806,7 +804,7 @@ enum CriticalErrorCode {
   /*
    * A software bug was detected on entry to sleep
    */
-  SleepEnterWait = 2; 
+  SleepEnterWait = 2;
 
   /*
    * No Lora radio hardware could be found
@@ -880,7 +878,7 @@ message MyNodeInfo {
   uint32 num_bands = 3;
 
   /*
-   * The maximum number of 'software' channels that can be set on this node. 
+   * The maximum number of 'software' channels that can be set on this node.
    */
   uint32 max_channels = 15;
 
@@ -916,7 +914,7 @@ message MyNodeInfo {
    * (i.e. it will only be reported once)
    * a numeric error code to go with error message, zero means no error
    */
-   CriticalErrorCode error_code = 7;
+  CriticalErrorCode error_code = 7;
 
   /*
    * A numeric error address (nonzero if available)
@@ -957,7 +955,7 @@ message MyNodeInfo {
 /*
  * Debug output from the device.
  *
- * To minimize the size of records inside the device code, if a time/source/level is not set 
+ * To minimize the size of records inside the device code, if a time/source/level is not set
  * on the message it is assumed to be a continuation of the previously sent message.
  * This allows the device code to use fixed maxlen 64 byte strings for messages,
  * and then extend as needed by emitting multiple records.
@@ -1031,17 +1029,17 @@ message FromRadio {
 
     /*
      * One packet is sent for each node in the on radio DB
-     * starts over with the first node in our DB   
+     * starts over with the first node in our DB
      */
     NodeInfo node_info = 4;
 
     /*
-     * set to send debug console output over our protobuf stream
+     * Set to send debug console output over our protobuf stream
      */
     LogRecord log_record = 7;
 
     /*
-     * sent as true once the device has finished sending all of the responses to want_config
+     * Sent as true once the device has finished sending all of the responses to want_config
      * recipient should check if this ID matches our original request nonce, if
      * not, it means your config responses haven't started yet.
      * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
@@ -1052,7 +1050,7 @@ message FromRadio {
      * Sent to tell clients the radio has just rebooted.
      * Set to true if present.
      * Not used on all transports, currently just used for the serial console.
-     * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps. 
+     * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
      */
     bool rebooted = 9;
   }
@@ -1060,7 +1058,7 @@ message FromRadio {
 
 
 /*
- * packets/commands to the radio will be written (reliably) to the toRadio characteristic.
+ * Packets/commands to the radio will be written (reliably) to the toRadio characteristic.
  * Once the write completes the phone can assume it is handled.
  */
 message ToRadio {
@@ -1070,7 +1068,7 @@ message ToRadio {
    */
   message PeerInfo {
     /*
-     * The numeric version code for the client application, which in some cases are used to control device behavior (so the device can 
+     * The numeric version code for the client application, which in some cases are used to control device behavior (so the device can
      * make assumptions about who is using the API.
      */
     uint32 app_version = 1;
@@ -1086,14 +1084,14 @@ message ToRadio {
 
   /*
    * In the <1.2 versions packet had ID 2, to prevent confusing old apps with our new packets, we've changed.
-   * 101-103 were used for set_radio, set_owner, set_channel 
+   * 101-103 were used for set_radio, set_owner, set_channel
    */
   reserved 1, 101, 102, 103;
 
   oneof payloadVariant {
 
     /*
-     * send this packet on the mesh
+     * Send this packet on the mesh
      */
     MeshPacket packet = 2;
 
@@ -1104,7 +1102,7 @@ message ToRadio {
     PeerInfo peer_info = 3;
 
     /*
-     * phone wants radio to send full node db to the phone, This is
+     * Phone wants radio to send full node db to the phone, This is
      * typically the first packet sent to the radio when the phone gets a
      * bluetooth connection. The radio will respond by sending back a
      * MyNodeInfo, a owner, a radio config and a series of

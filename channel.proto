@@ -59,11 +59,11 @@ message ChannelSettings {
   int32 tx_power = 1;
 
   /*
-   * Standard predefined channel settings 
+   * Standard predefined channel settings
    * Note: these mappings must match ModemConfigChoice in the device code.
    */
   enum ModemConfig {
-  
+
     /*
      * < Bw = 125 kHz, Cr = 4/5, Sf(7) = 128chips/symbol, CRC
      * < on. Default medium range (5.469 kbps)
@@ -75,19 +75,19 @@ message ChannelSettings {
      * < on. Fast+short range (21.875 kbps)
      */
     Bw500Cr45Sf128 = 1;
-    
+
     /*
      * < Bw = 31.25 kHz, Cr = 4/8, Sf(9) = 512chips/symbol,
      * < CRC on. Slow+long range (275 bps)
      */
     Bw31_25Cr48Sf512 = 2;
-    
+
     /*
      * < Bw = 125 kHz, Cr = 4/8, Sf(12) = 4096chips/symbol, CRC
      * < on. Slow+long range (183 bps)
      */
     Bw125Cr48Sf4096 = 3;
-  } 
+  }
 
   /*
    * Note: This is the 'old' mechanism for specifying channel parameters.
@@ -223,15 +223,15 @@ message Channel {
 
     /*
      * Secondary channels are only used for encryption/decryption/authentication purposes.
-     * Their radio settings (freq etc) are ignored, only psk is used. 
+     * Their radio settings (freq etc) are ignored, only psk is used.
      */
     SECONDARY = 2;
   }
 
   /*
    * The index of this channel in the channel table (from 0 to MAX_NUM_CHANNELS-1)
-   * (Someday - not currently implemented) An index of -1 could be used to mean "set by name", 
-   * in which case the target node will find and set the channel by settings.name. 
+   * (Someday - not currently implemented) An index of -1 could be used to mean "set by name",
+   * in which case the target node will find and set the channel by settings.name.
    */
   int32 index = 1;
 
