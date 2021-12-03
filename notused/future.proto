@@ -13,9 +13,9 @@ message ManufacturingData {
   /*
    * center frequency for the radio hardware that was stuffed
    */
-   uint32 fradioFreq = 1;
+  uint32 fradioFreq = 1;
 
-   /*
+  /*
    * TBEAM, HELTEC, etc...
    */
   string hw_model = 2;

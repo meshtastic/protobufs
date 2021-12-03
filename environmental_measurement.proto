@@ -3,7 +3,7 @@ option go_package = "github.com/meshtastic/gomeshproto";
 
 message EnvironmentalMeasurement {
 
-  float temperature = 1; 
+  float temperature = 1;
   float relative_humidity = 2;
   float barometric_pressure = 3;
 

@@ -4,8 +4,8 @@ option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
-import "mesh.proto";
 import "channel.proto";
+import "mesh.proto";
 import "radioconfig.proto";
 
 option java_outer_classname = "DeviceOnly";
@@ -16,15 +16,15 @@ option java_outer_classname = "DeviceOnly";
  * The device firmware uses this stub while migrating old nodes to the new preferences system.
  */
 message LegacyRadioConfig {
-    message LegacyPreferences {
-      
-      /*
-       * The region code for my radio (US, CN, EU433, etc...)
-       */
-      RegionCode region = 15;
-    }
+  message LegacyPreferences {
 
-     LegacyPreferences preferences = 1;
+    /*
+     * The region code for my radio (US, CN, EU433, etc...)
+     */
+    RegionCode region = 15;
+  }
+
+  LegacyPreferences preferences = 1;
 }
 
 /*
@@ -36,65 +36,65 @@ message LegacyRadioConfig {
  */
 message DeviceState {
 
-    /*
-     * Was secondary_channels before 1.2
-     */
-    reserved 12;
-
-    /*
-     * Moved to its own file, but we keep this here so we can automatically migrate old radio.region settings
-     */
-    LegacyRadioConfig legacyRadio = 1;
-  
-    /*
-     * Read only settings/info about this node
-     */
-    MyNodeInfo my_node = 2;
-  
-    /*
-     * My owner info
-     */
-    User owner = 3;
-  
-    repeated NodeInfo node_db = 4;
-  
-    /*
-     * Received packets saved for delivery to the phone
-     */
-    repeated MeshPacket receive_queue = 5;
-  
-    /*
-     * A version integer used to invalidate old save files when we make
-     * incompatible changes This integer is set at build time and is private to
-     * NodeDB.cpp in the device code.
-     */
-    uint32 version = 8;
-  
-    /*
-     * We keep the last received text message (only) stored in the device flash,
-     * so we can show it on the screen.
-     * Might be null
-     */
-    MeshPacket rx_text_message = 7;
-  
-    /*
-     * Used only during development.
-     * Indicates developer is testing and changes should never be saved to flash.
-     */
-    bool no_save = 9;
-  
-    /*
-     * Some GPSes seem to have bogus settings from the factory, so we always do one factory reset.
-     */
-    bool did_gps_reset = 11;
-  }
+  /*
+   * Was secondary_channels before 1.2
+   */
+  reserved 12;
 
   /*
-   * The on-disk saved channels
+   * Moved to its own file, but we keep this here so we can automatically migrate old radio.region settings
    */
-  message ChannelFile {
-    /*
-     * The channels our node knows about
-     */
-     repeated Channel channels = 1;
-  }
+  LegacyRadioConfig legacyRadio = 1;
+
+  /*
+   * Read only settings/info about this node
+   */
+  MyNodeInfo my_node = 2;
+
+  /*
+   * My owner info
+   */
+  User owner = 3;
+
+  repeated NodeInfo node_db = 4;
+
+  /*
+   * Received packets saved for delivery to the phone
+   */
+  repeated MeshPacket receive_queue = 5;
+
+  /*
+   * A version integer used to invalidate old save files when we make
+   * incompatible changes This integer is set at build time and is private to
+   * NodeDB.cpp in the device code.
+   */
+  uint32 version = 8;
+
+  /*
+   * We keep the last received text message (only) stored in the device flash,
+   * so we can show it on the screen.
+   * Might be null
+   */
+  MeshPacket rx_text_message = 7;
+
+  /*
+   * Used only during development.
+   * Indicates developer is testing and changes should never be saved to flash.
+   */
+  bool no_save = 9;
+
+  /*
+   * Some GPSes seem to have bogus settings from the factory, so we always do one factory reset.
+   */
+  bool did_gps_reset = 11;
+}
+
+/*
+ * The on-disk saved channels
+ */
+message ChannelFile {
+  /*
+   * The channels our node knows about
+   */
+  repeated Channel channels = 1;
+}
