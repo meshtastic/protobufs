@@ -934,7 +934,7 @@ message MyNodeInfo {
   uint32 reboot_count = 10;
 
   /*
-   * Calculated bitrate of the current channel (in kbps)
+   * Calculated bitrate of the current channel (in Bytes Per Second)
    */
   float bitrate = 11;
 
