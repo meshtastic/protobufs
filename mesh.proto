@@ -934,6 +934,11 @@ message MyNodeInfo {
   uint32 reboot_count = 10;
 
   /*
+   * Calculated bitrate of the current channel (in kbps)
+   */
+  float bitrate = 11;
+
+  /*
    * How long before we consider a message abandoned and we can clear our
    * caches of any messages in flight Normally quite large to handle the worst case
    * message delivery time, 5 minutes.
