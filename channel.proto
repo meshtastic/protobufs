@@ -66,27 +66,39 @@ message ChannelSettings {
 
     /*
      * < Bw = 125 kHz, Cr = 4/5, Sf(7) = 128chips/symbol, CRC
-     * < on. Default medium range (5.469 kbps)
+     * < on. ShortSlow | Short Range / Slow (5.469 kbps)
      */
     Bw125Cr45Sf128 = 0;
 
     /*
      * < Bw = 500 kHz, Cr = 4/5, Sf(7) = 128chips/symbol, CRC
-     * < on. Fast+short range (21.875 kbps)
+     * < on. ShortFast | Short Range / Fast (21.875 kbps)
      */
     Bw500Cr45Sf128 = 1;
 
     /*
      * < Bw = 31.25 kHz, Cr = 4/8, Sf(9) = 512chips/symbol,
-     * < CRC on. Slow+long range (275 bps)
+     * < CRC on. LongFast | Long Range / Fast (275 bps)
      */
     Bw31_25Cr48Sf512 = 2;
 
     /*
      * < Bw = 125 kHz, Cr = 4/8, Sf(12) = 4096chips/symbol, CRC
-     * < on. Slow+long range (183 bps)
+     * < on. LongSlow | Long Range / Slow (183 bps)
      */
     Bw125Cr48Sf4096 = 3;
+
+    /*
+     * < Bw = 250 kHz, Cr = 4/6, Sf(11) = 2048chips/symbol, CRC
+     * < on. MediumSlow | Medium Range / Slow (895 bps)
+     */
+    Bw250Cr46Sf2048 = 4;
+
+    /*
+     * < Bw = 250 kHz, Cr = 4/7, Sf(10) = 1024chips/symbol, CRC
+     * < on. MediumFast | Medium Range / Fast (1400 bps)
+     */
+    Bw250Cr47Sf1024 = 5;
   }
 
   /*
