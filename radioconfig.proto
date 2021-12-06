@@ -569,6 +569,12 @@ message RadioConfig {
      * Potentially useful for devices without user buttons.
      */
     uint32 auto_screen_carousel_secs = 152;
+
+    /*
+     * If non-zero, the device will fully power off this many seconds after external power is removed.
+     * 
+     */
+    uint32 on_battery_shutdown_after_secs = 153;
   }
 
   UserPreferences preferences = 1;
