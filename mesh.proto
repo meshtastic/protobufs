@@ -963,12 +963,6 @@ message MyNodeInfo {
   repeated uint32 air_period_rx = 17;
 
   /*
-   *  48 time windows of 1hr each with the airtime of valid lora packets. This includes
-   *  packets that doesn't belong to your mesh.
-   */
-  repeated uint32 air_period_rx_all = 18;
-
-  /*
    * FIXME - add more useful debugging state (queue depths etc)
    */
 }

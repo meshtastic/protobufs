@@ -38,3 +38,6 @@
 # MyMessage.name         max_size:40 
 # or fixed_length or fixed_count, or max_count
 
+*MyNodeInfo.air_period_tx       max_count:24
+*MyNodeInfo.air_period_rx       max_count:24
+# *MyNodeInfo.air_period_rx_all   max_count:12
