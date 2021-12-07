@@ -953,6 +953,22 @@ message MyNodeInfo {
   uint32 min_app_version = 14;
 
   /*
+   * 48 time windows of 1hr each with the airtime transmitted out of the device per hour.
+   */
+  repeated uint32 air_period_tx = 16;
+
+  /*
+   * 48 time windows of 1hr each with the airtime of valid packets for your mesh.
+   */
+  repeated uint32 air_period_rx = 17;
+
+  /*
+   *  48 time windows of 1hr each with the airtime of valid lora packets. This includes
+   *  packets that doesn't belong to your mesh.
+   */
+  repeated uint32 air_period_tx_all = 18;
+
+  /*
    * FIXME - add more useful debugging state (queue depths etc)
    */
 }
