@@ -575,6 +575,13 @@ message RadioConfig {
      * 
      */
     uint32 on_battery_shutdown_after_secs = 153;
+
+    /*
+     * Do not decrease the `hop_limit` value when forwarding messages.
+     * Use carefully (for _one_ node which connects two separated groups).
+     * Useful for tightly mounted devices to do not waste `hop_limit` (but enable it only for one node).
+     */
+    bool is_immutable_hop_limit = 154;
   }
 
   UserPreferences preferences = 1;
