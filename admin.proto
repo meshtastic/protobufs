@@ -5,8 +5,8 @@ option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
 import "channel.proto";
-import "mesh.proto";
 import "radioconfig.proto";
+import "mesh.proto";
 
 option java_outer_classname = "AdminProtos";
 
@@ -39,17 +39,23 @@ message AdminMessage {
     Channel set_channel = 3;
 
     /*
-     * Send the current RadioConfig in the response for this message.
+     * Send the current RadioConfig in the response to this message.
      */
     bool get_radio_request = 4;
     RadioConfig get_radio_response = 5;
 
     /*
-     * Send the specified channel in the response for this message
+     * Send the specified channel in the response to this message
      * NOTE: This field is sent with the channel index + 1 (to ensure we never try to send 'zero' - which protobufs treats as not present)
      */
     uint32 get_channel_request = 6;
     Channel get_channel_response = 7;
+
+    /*
+     * Send the current owner data in the response to this message.
+     */
+     bool get_owner_request = 8;
+     User get_owner_response = 9;
 
     /*
      * Setting channels/radio config remotely carries the risk that you might send an invalid config and the radio never talks to your mesh again.
