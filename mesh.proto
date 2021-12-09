@@ -963,6 +963,12 @@ message MyNodeInfo {
   repeated uint32 air_period_rx = 17;
 
   /*
+   * Is the device wifi capable?
+   */
+   bool has_wifi = 18;
+
+
+  /*
    * FIXME - add more useful debugging state (queue depths etc)
    */
 }
