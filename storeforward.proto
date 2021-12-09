@@ -156,7 +156,12 @@ message StoreAndForward {
     /*
      * Number of that will be sent to the client
      */
-    uint32 heartbeatPeriod = 1;
+    uint32 Period = 1;
+
+    /*
+     * If set, this is not the primary Store & Forward router on the mesh
+     */
+     uint32 Secondary = 1;
 
   }
 
