@@ -17,8 +17,14 @@ message StoreAndForward {
      */
     UNSET = 0;
 
+    /*
+     * Router is an in error state.
+     */
     ROUTER_ERROR = 1;
 
+    /*
+     * Router heartbeat
+     */
     ROUTER_HEARTBEAT = 2;
 
     /*
@@ -37,6 +43,14 @@ message StoreAndForward {
      */
     ROUTER_BUSY = 5;
 
+    /*
+     * Router is responding to a request for history.
+     */
+    ROUTER_HISTORY = 6;
+
+    /*
+     * Client is an in error state.
+     */
     CLIENT_ERROR = 101;
 
     /*
@@ -59,6 +73,11 @@ message StoreAndForward {
      * The response to a "Ping"
      */
     CLIENT_PONG = 105;
+
+    /*
+     * Client has requested that the router abort processing the client's request
+     */
+    CLIENT_ABORT = 106;
 
   }
 
@@ -125,13 +144,28 @@ message StoreAndForward {
      */
     uint32 Window = 2;
 
+    /*
+     * The window of messages that was used to filter the history client requested
+     */
+    uint32 LastRequest = 3;
+
   }
 
+  message Heartbeat {
+
+    /*
+     * Number of that will be sent to the client
+     */
+    uint32 heartbeatPeriod = 1;
+
+  }
 
   RequestResponse rr = 1;
 
   Statistics stats = 2;
 
   History history = 3;
+
+  Heartbeat heartbeat = 4;
 
 }
