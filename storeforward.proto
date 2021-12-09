@@ -87,47 +87,47 @@ message StoreAndForward {
     /*
      * Number of messages we have ever seen
      */
-    uint32 MessagesTotal = 1;
+    uint32 messages_total = 1;
 
     /*
      * Number of messages we have currently saved our history.
      */
-    uint32 MessagesSaved = 2;
+    uint32 messages_saved = 2;
 
     /*
      * Maximum number of messages we will save
      */
-    uint32 MessagesMax = 3;
+    uint32 messages_max = 3;
 
     /*
      * Router uptime in seconds
      */
-    uint32 UpTime = 4;
+    uint32 up_time = 4;
 
     /*
      * Number of times any client sent a request to the S&F.
      */
-    uint32 Requests = 5;
+    uint32 requests = 5;
 
     /*
      * Number of times the history was requested.
      */
-    uint32 RequestsHistory = 6;
+    uint32 requests_history = 6;
 
     /*
      * Is the heartbeat enabled on the server?
      */
-    bool Heartbeat = 7;
+    bool heartbeat = 7;
 
     /*
      * Is the heartbeat enabled on the server?
      */
-    uint32 ReturnMax = 8;
+    uint32 return_max = 8;
 
     /*
      * Is the heartbeat enabled on the server?
      */
-    uint32 ReturnWindow = 9;
+    uint32 return_window = 9;
 
 
   }
@@ -137,17 +137,17 @@ message StoreAndForward {
     /*
      * Number of that will be sent to the client
      */
-    uint32 HistoryMessages = 1;
+    uint32 history_messages = 1;
 
     /*
      * The window of messages that was used to filter the history client requested
      */
-    uint32 Window = 2;
+    uint32 window = 2;
 
     /*
      * The window of messages that was used to filter the history client requested
      */
-    uint32 LastRequest = 3;
+    uint32 last_request = 3;
 
   }
 
@@ -156,12 +156,12 @@ message StoreAndForward {
     /*
      * Number of that will be sent to the client
      */
-    uint32 Period = 1;
+    uint32 period = 1;
 
     /*
      * If set, this is not the primary Store & Forward router on the mesh
      */
-     uint32 Secondary = 1;
+     uint32 secondary = 2;
 
   }
 
