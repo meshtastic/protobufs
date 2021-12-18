@@ -575,6 +575,12 @@ message RadioConfig {
      * 
      */
     uint32 on_battery_shutdown_after_secs = 153;
+
+    /*
+     * Overrides HOPS_RELIABLE and sets the maximum number of hops. This can't be greater than 7.
+     * 
+     */
+    uint32 hop_limit = 154;
   }
 
   UserPreferences preferences = 1;
