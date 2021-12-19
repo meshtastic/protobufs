@@ -589,6 +589,26 @@ message MeshPacket {
   }
 
   /*
+   * Identify if this is a delayed packet
+   */
+  enum Delayed {
+    /*
+     * If unset, the message is being sent in real time.
+     */
+    NO_DELAY = 0;
+
+    /*
+     * The message is delayed and was originally a broadcast
+     */
+    DELAYED_BROADCAST = 1;
+
+    /*
+     * The message is delayed and was originally a direct message
+     */
+    DELAYED_DIRECT = 2;
+  }
+
+  /*
    * The sending node number.
    * Note: Our crypto implementation uses this field as well.
    * See [crypto](/developers/device/encryption.md) for details.
@@ -687,6 +707,11 @@ message MeshPacket {
    * rssi of received packet. Only sent to phone for dispay purposes.
    */
   int32 rx_rssi = 13;
+
+  /*
+   * Describe if this message is delayed
+   */
+   Delayed delayed = 15;
 }
 
 /*
