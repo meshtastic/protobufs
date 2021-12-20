@@ -581,6 +581,14 @@ message RadioConfig {
      * 
      */
     uint32 hop_limit = 154;
+
+    /*
+     * If set, will override the hardcoded mqtt credentials
+     *
+     */
+    string mqtt_username = 155;
+    string mqtt_password = 156;
+
   }
 
   UserPreferences preferences = 1;
