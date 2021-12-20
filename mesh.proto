@@ -359,6 +359,12 @@ message User {
    * (use a value of 360 to indicate an antenna azimuth of zero degrees)
    */
   uint32 ant_azimuth = 12;
+
+  /*
+   * The public key of the user's device.
+   * This is used for direct message payload encryption.
+   */
+  bytes public_key = 13;
 }
 
 /*
@@ -992,6 +998,11 @@ message MyNodeInfo {
    */
    bool has_wifi = 18;
 
+   /*
+    * The private key for this device.
+    * This is used to generate a shared key via Diffie-Hellman key exchange.
+    */
+   bytes private_key = 20;
 
   /*
    * FIXME - add more useful debugging state (queue depths etc)

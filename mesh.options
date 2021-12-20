@@ -3,6 +3,8 @@
 
 *macaddr max_size:6 fixed_length:true # macaddrs
 *id max_size:16 # node id strings
+*public_key max_size:32 fixed_length:true
+*private_key max_size:32 fixed_length:True
 
 *User.long_name max_size:40
 *User.short_name max_size:5
