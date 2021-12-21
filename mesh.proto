@@ -1004,6 +1004,8 @@ message MyNodeInfo {
     */
    bytes private_key = 20;
 
+   bool bluetooth_paired = 21;
+
   /*
    * FIXME - add more useful debugging state (queue depths etc)
    */
