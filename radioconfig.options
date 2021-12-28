@@ -6,3 +6,6 @@
 *UserPreferences.ignore_incoming max_count:3
 
 *UserPreferences.mqtt_server max_size:32
+*UserPreferences.mqtt_username max_size:32
+*UserPreferences.mqtt_password max_size:32
+
