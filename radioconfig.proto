@@ -583,10 +583,17 @@ message RadioConfig {
     uint32 hop_limit = 154;
 
     /*
-     * If set, will override the hardcoded mqtt credentials
-     *
+     * MQTT username to use (most useful for a custom MQTT server).
+     * If using a custom server, this will be honoured even if empty.
+     * If using the default server, this will only be honoured if set, otherwise the device will use the default username
      */
     string mqtt_username = 155;
+    
+    /*
+     * MQTT password to use (most useful for a custom MQTT server).
+     * If using a custom server, this will be honoured even if empty.
+     * If using the default server, this will only be honoured if set, otherwise the device will use the default password
+     */
     string mqtt_password = 156;
 
   }
