@@ -992,6 +992,11 @@ message MyNodeInfo {
    */
    bool has_wifi = 18;
 
+  /*
+   * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
+   */
+   float channel_utilization = 19;
+
 
   /*
    * FIXME - add more useful debugging state (queue depths etc)
