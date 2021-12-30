@@ -219,7 +219,10 @@ enum HardwareModel {
 
   // The new version of the heltec WiFi_Lora_32_V2 board that has battery sensing hooked to GPIO 37.  Sadly they did not update anything on the silkscreen to identify this board
   HELTEC_V2_1 = 10;
-
+  
+  // Ancient heltec WiFi_Lora_32 board 
+  HELTEC_V1 = 11;
+  
   /*
    * Less common/prototype boards listed here (needs one more byte over the air)
    */
