@@ -10,7 +10,6 @@ on:
 jobs:
 
   lint:
-    environment: Production
     runs-on: ubuntu-latest
 
     steps:
@@ -21,15 +20,3 @@ jobs:
       uses: plexsystems/protolint-action@v0.2.0
       with:
         configDirectory: .
-
-  update-docs:
-    environment: Production
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Update Docs
-        uses: benc-uk/workflow-dispatch@v1
-        with:
-          workflow: "Update protobufs"
-          repo: meshtastic/meshtastic
-          token: ${{ secrets.ACCESS_TOKEN }}
