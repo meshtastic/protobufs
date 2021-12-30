@@ -16,6 +16,8 @@ jobs:
 
     - name: run protolint
       uses: plexsystems/protolint-action@v0.2.0
+      with:
+        configDirectory: .
 
   update-docs:
     environment: Production
