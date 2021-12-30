@@ -3,13 +3,16 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
 
   lint:
     environment: Production
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: checkout source
       uses: actions/checkout@v1

@@ -5,8 +5,8 @@ option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
 import "channel.proto";
-import "radioconfig.proto";
 import "mesh.proto";
+import "radioconfig.proto";
 
 option java_outer_classname = "AdminProtos";
 

@@ -1002,12 +1002,12 @@ message MyNodeInfo {
   /*
    * Is the device wifi capable?
    */
-   bool has_wifi = 18;
+  bool has_wifi = 18;
 
   /*
    * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
    */
-   float channel_utilization = 19;
+  float channel_utilization = 19;
 
 
   /*
