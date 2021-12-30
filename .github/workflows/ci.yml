@@ -5,6 +5,18 @@ on:
       - main
 
 jobs:
+
+  lint:
+    environment: Production
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: checkout source
+      uses: actions/checkout@v1
+
+    - name: run protolint
+      uses: plexsystems/protolint-action@v0.2.0
+
   update-docs:
     environment: Production
     runs-on: ubuntu-latest
