@@ -161,7 +161,7 @@ message StoreAndForward {
     /*
      * If set, this is not the primary Store & Forward router on the mesh
      */
-     uint32 secondary = 2;
+    uint32 secondary = 2;
 
   }
 
