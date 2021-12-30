@@ -54,8 +54,8 @@ message AdminMessage {
     /*
      * Send the current owner data in the response to this message.
      */
-     bool get_owner_request = 8;
-     User get_owner_response = 9;
+    bool get_owner_request = 8;
+    User get_owner_response = 9;
 
     /*
      * Setting channels/radio config remotely carries the risk that you might send an invalid config and the radio never talks to your mesh again.
