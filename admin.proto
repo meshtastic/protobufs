@@ -22,7 +22,7 @@ message AdminMessage {
     /*
      * Set the radio provisioning for this node
      */
-     RadioConfig set_radio = 1;
+    RadioConfig set_radio = 1;
 
     /*
      * Set the owner for this node
