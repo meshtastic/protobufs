@@ -403,7 +403,6 @@ message RadioConfig {
      * Set a rejection threshold for GPS readings based on their precision,
      * relative to the GPS rated accuracy (which is typically ~3m)
      * Solutions above this value will be treated as retryable errors!
-     *
      * Useful range is between 1 - 64 (3m - <~200m)
      * By default (if zero), accept all GPS readings
      */
