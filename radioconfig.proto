@@ -595,6 +595,12 @@ message RadioConfig {
      */
     string mqtt_password = 156;
 
+    /*
+     * Disable TX from the LoRa radio. Useful for hot-swapping antennas and other tests.
+     * Defaults to false
+     */
+    bool is_lora_tx_disabled = 157;
+
   }
 
   UserPreferences preferences = 1;
