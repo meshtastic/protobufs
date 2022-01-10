@@ -601,7 +601,12 @@ message RadioConfig {
      */
     bool is_lora_tx_disabled = 157;
 
-  }
+    /*
+     * If set to true, enable power saving features of the esp32
+     */
+    bool is_power_saving = 158;
+
+    }
 
   UserPreferences preferences = 1;
 }
