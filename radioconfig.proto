@@ -217,6 +217,18 @@ enum PositionFlags {
   POS_TIMESTAMP = 0x0100;
 }
 
+enum InputEventChar {
+  NULL  = 0;
+  UP    = 17;
+  DOWN  = 18;
+  LEFT  = 19;
+  RIGHT =  20;
+  /* '\n' */
+  SELECT = 10;
+  BACK  = 27;
+  CANCEL = 24;
+}
+
 /*
  * The entire set of user settable/readable settings for our radio device.
  * Includes both the current channel settings and any preferences the user has
@@ -606,7 +618,63 @@ message RadioConfig {
      */
     bool is_power_saving = 158;
 
-    }
+    /*
+     * Enable the rotary encoder #1
+     */
+    bool rotary1_enabled = 160;
+
+    /*
+     * GPIO pin for rotary encoder A port.
+     */
+    uint32 rotary1_pin_a = 161;
+
+    /*
+     * GPIO pin for rotary encoder B port.
+     */
+    uint32 rotary1_pin_b = 162;
+
+    /*
+     * GPIO pin for rotary encoder Press port.
+     */
+    uint32 rotary1_pin_press = 163;
+
+    /*
+     * Generate input event on CW of this kind.
+     */
+    InputEventChar rotary1_event_cw = 164;
+
+    /*
+     * Generate input event on CCW of this kind.
+     */
+    InputEventChar rotary1_event_ccw = 165;
+
+    /*
+     * Generate input event on Press of this kind.
+     */
+    InputEventChar rotary1_event_press = 166;
+
+    /*
+     * Enable/disable CannedMessagePlugin.
+     */
+    bool canned_message_plugin_enabled = 170;
+
+    /*
+     * Input event origin accepted by the canned message plugin.
+     * Can be e.g. "rotEnc1" or keyword "_any"
+     */
+    string canned_message_plugin_allow_input_origin = 171;
+
+    /*
+     * Predefined messages for CannedMessagePlugin separated by '|' characters.
+     */
+    string canned_message_plugin_messages = 172;
+
+    /*
+     * CannedMessagePlugin also sends a bell character with the messages.
+     * ExternalNotificationPlugin can benefit from this feature.
+     */
+    bool canned_message_plugin_send_bell = 173;
+  }
 
   UserPreferences preferences = 1;
 }
