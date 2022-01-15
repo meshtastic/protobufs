@@ -993,12 +993,12 @@ message MyNodeInfo {
   uint32 min_app_version = 14;
 
   /*
-   * 48 time windows of 1hr each with the airtime transmitted out of the device per hour.
+   * 24 time windows of 1hr each with the airtime transmitted out of the device per hour.
    */
   repeated uint32 air_period_tx = 16;
 
   /*
-   * 48 time windows of 1hr each with the airtime of valid packets for your mesh.
+   * 24 time windows of 1hr each with the airtime of valid packets for your mesh.
    */
   repeated uint32 air_period_rx = 17;
 
@@ -1011,6 +1011,13 @@ message MyNodeInfo {
    * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
    */
   float channel_utilization = 19;
+  
+  /*
+   * Percent of airtime for transmission used within the last hour.
+   */
+  float air_util_tx = 20;
+
+
 
 
   /*
