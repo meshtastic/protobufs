@@ -586,13 +586,13 @@ message RadioConfig {
 
     /*
      * If non-zero, the device will fully power off this many seconds after external power is removed.
-     * 
+     *
      */
     uint32 on_battery_shutdown_after_secs = 153;
 
     /*
      * Overrides HOPS_RELIABLE and sets the maximum number of hops. This can't be greater than 7.
-     * 
+     *
      */
     uint32 hop_limit = 154;
 
@@ -602,7 +602,7 @@ message RadioConfig {
      * If using the default server, this will only be honoured if set, otherwise the device will use the default username
      */
     string mqtt_username = 155;
-    
+
     /*
      * MQTT password to use (most useful for a custom MQTT server).
      * If using a custom server, this will be honoured even if empty.
@@ -669,8 +669,11 @@ message RadioConfig {
 
     /*
      * Predefined messages for CannedMessagePlugin separated by '|' characters.
+     * Note: Split out the messages out to their own messages because we want to store 1,000 characters.
+     * and the entire message must fit within 256 bytes.
+     * Not sure if we should deprecate this or just remove it since we're in dev phase.
      */
-    string canned_message_plugin_messages = 172;
+    string canned_message_plugin_messages = 172 [deprecated = true];
 
     /*
      * CannedMessagePlugin also sends a bell character with the messages.
@@ -678,6 +681,7 @@ message RadioConfig {
      */
     bool canned_message_plugin_send_bell = 173;
   }
-
   UserPreferences preferences = 1;
-}
+
+} // RadioConfig
+
