@@ -586,13 +586,13 @@ message RadioConfig {
 
     /*
      * If non-zero, the device will fully power off this many seconds after external power is removed.
-     * 
+     *
      */
     uint32 on_battery_shutdown_after_secs = 153;
 
     /*
      * Overrides HOPS_RELIABLE and sets the maximum number of hops. This can't be greater than 7.
-     * 
+     *
      */
     uint32 hop_limit = 154;
 
@@ -602,7 +602,7 @@ message RadioConfig {
      * If using the default server, this will only be honoured if set, otherwise the device will use the default username
      */
     string mqtt_username = 155;
-    
+
     /*
      * MQTT password to use (most useful for a custom MQTT server).
      * If using a custom server, this will be honoured even if empty.
@@ -669,8 +669,11 @@ message RadioConfig {
 
     /*
      * Predefined messages for CannedMessagePlugin separated by '|' characters.
+     * Note: Split out the messages out to their own messages because we want to store 1,000 characters.
+     * and the entire message must fit within 256 bytes.
+     * Not sure if we should deprecate this or just remove it since we're in dev phase.
      */
-    string canned_message_plugin_messages = 172;
+    //string canned_message_plugin_messages = 172;
 
     /*
      * CannedMessagePlugin also sends a bell character with the messages.
@@ -678,6 +681,56 @@ message RadioConfig {
      */
     bool canned_message_plugin_send_bell = 173;
   }
-
   UserPreferences preferences = 1;
+
+
+  message CannedMessagePluginMessagePart1 {
+    /*
+     * Predefined messages for canned message plugin separated by '|' characters.
+     * This is part 1.
+     */
+    string text = 1;
+  }
+  CannedMessagePluginMessagePart1 canned_message_plugin_message_part1 = 2;
+
+
+  message CannedMessagePluginMessagePart2 {
+    /*
+     * Predefined messages for canned message plugin separated by '|' characters.
+     * This is part 2.
+     */
+    string text = 1;
+  }
+  CannedMessagePluginMessagePart2 canned_message_plugin_message_part2 = 3;
+
+
+  message CannedMessagePluginMessagePart3 {
+    /*
+     * Predefined messages for canned message plugin separated by '|' characters.
+     * This is part 3.
+     */
+    string text = 1;
+  }
+  CannedMessagePluginMessagePart3 canned_message_plugin_message_part3 = 4;
+
+
+  message CannedMessagePluginMessagePart4 {
+    /*
+     * Predefined messages for canned message plugin separated by '|' characters.
+     * This is part 4.
+     */
+    string text = 1;
+  }
+  CannedMessagePluginMessagePart4 canned_message_plugin_message_part4 = 5;
+
+
+  message CannedMessagePluginMessagePart5 {
+    /*
+     * Predefined messages for canned message plugin separated by '|' characters.
+     * This is part 5.
+     */
+    string text = 1;
+  }
+  CannedMessagePluginMessagePart5 canned_message_plugin_message_part5 = 6;
+
 }

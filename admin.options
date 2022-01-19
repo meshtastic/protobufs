@@ -1,1 +1,7 @@
 *AdminMessage.variant anonymous_oneof:true
+
+*AdminMessage.set_canned_message_plugin_part1 max_size:200
+*AdminMessage.set_canned_message_plugin_part2 max_size:200
+*AdminMessage.set_canned_message_plugin_part3 max_size:200
+*AdminMessage.set_canned_message_plugin_part4 max_size:200
+*AdminMessage.set_canned_message_plugin_part5 max_size:200

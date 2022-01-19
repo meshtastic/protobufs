@@ -76,5 +76,62 @@ message AdminMessage {
      * Tell the node to reboot in this many seconds (or <0 to cancel reboot)
      */
     int32 reboot_seconds = 35;
+
+    /*
+     * Get the Canned Message Plugin message part1 in the response to this message.
+     */
+    bool get_canned_message_plugin_part1_request = 36;
+    RadioConfig get_canned_message_plugin_part1_response = 37;
+
+
+    /*
+     * Get the Canned Message Plugin message part2 in the response to this message.
+     */
+    bool get_canned_message_plugin_part2_request = 38;
+    RadioConfig get_canned_message_plugin_part2_response = 39;
+
+    /*
+     * Get the Canned Message Plugin message part3 in the response to this message.
+     */
+    bool get_canned_message_plugin_part3_request = 40;
+    RadioConfig get_canned_message_plugin_part3_response = 41;
+
+    /*
+     * Get the Canned Message Plugin message part4 in the response to this message.
+     */
+    bool get_canned_message_plugin_part4_request = 42;
+    RadioConfig get_canned_message_plugin_part4_response = 43;
+
+    /*
+     * Get the Canned Message Plugin message part5 in the response to this message.
+     */
+    bool get_canned_message_plugin_part5_request = 44;
+    RadioConfig get_canned_message_plugin_part5_response = 45;
+
+   /*
+    * Set the canned message plugin part 1 text.
+    */
+    string set_canned_message_plugin_part1 = 46;
+
+   /*
+    * Set the canned message plugin part 2 text.
+    */
+    string set_canned_message_plugin_part2 = 47;
+
+   /*
+    * Set the canned message plugin part 3 text.
+    */
+    string set_canned_message_plugin_part3 = 48;
+
+   /*
+    * Set the canned message plugin part 4 text.
+    */
+    string set_canned_message_plugin_part4 = 49;
+
+   /*
+    * Set the canned message plugin part 5 text.
+    */
+    string set_canned_message_plugin_part5 = 50;
+
   }
-}
+} // AdminMessage

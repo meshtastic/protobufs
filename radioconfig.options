@@ -10,4 +10,9 @@
 *UserPreferences.mqtt_password max_size:32
 
 *UserPreferences.canned_message_plugin_allow_input_source max_size:16
-*UserPreferences.canned_message_plugin_messages max_size:1024
+
+*CannedMessagePluginMessagePart1.text max_size:200
+*CannedMessagePluginMessagePart2.text max_size:200
+*CannedMessagePluginMessagePart3.text max_size:200
+*CannedMessagePluginMessagePart4.text max_size:200
+*CannedMessagePluginMessagePart5.text max_size:200
