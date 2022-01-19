@@ -111,27 +111,27 @@ message AdminMessage {
    /*
     * Set the canned message plugin part 1 text.
     */
-    string set_canned_message_plugin_part1 = 46;
+    CannedMessagePluginMessagePart1 set_canned_message_plugin_part1 = 46;
 
    /*
     * Set the canned message plugin part 2 text.
     */
-    string set_canned_message_plugin_part2 = 47;
+    CannedMessagePluginMessagePart2 set_canned_message_plugin_part2 = 47;
 
    /*
     * Set the canned message plugin part 3 text.
     */
-    string set_canned_message_plugin_part3 = 48;
+    CannedMessagePluginMessagePart3 set_canned_message_plugin_part3 = 48;
 
    /*
     * Set the canned message plugin part 4 text.
     */
-    string set_canned_message_plugin_part4 = 49;
+    CannedMessagePluginMessagePart4 set_canned_message_plugin_part4 = 49;
 
    /*
     * Set the canned message plugin part 5 text.
     */
-    string set_canned_message_plugin_part5 = 50;
+    CannedMessagePluginMessagePart5 set_canned_message_plugin_part5 = 50;
 
   }
 } // AdminMessage
