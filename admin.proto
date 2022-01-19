@@ -4,10 +4,10 @@ option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
+import "cannedmessages.proto";
 import "channel.proto";
 import "mesh.proto";
 import "radioconfig.proto";
-import "cannedmessages.proto";
 
 option java_outer_classname = "AdminProtos";
 
@@ -108,29 +108,29 @@ message AdminMessage {
     bool get_canned_message_plugin_part5_request = 44;
     CannedMessagePluginMessagePart5 get_canned_message_plugin_part5_response = 45;
 
-   /*
-    * Set the canned message plugin part 1 text.
-    */
+    /*
+     * Set the canned message plugin part 1 text.
+     */
     CannedMessagePluginMessagePart1 set_canned_message_plugin_part1 = 46;
 
-   /*
-    * Set the canned message plugin part 2 text.
-    */
+    /*
+     * Set the canned message plugin part 2 text.
+     */
     CannedMessagePluginMessagePart2 set_canned_message_plugin_part2 = 47;
 
-   /*
-    * Set the canned message plugin part 3 text.
-    */
+    /*
+     * Set the canned message plugin part 3 text.
+     */
     CannedMessagePluginMessagePart3 set_canned_message_plugin_part3 = 48;
 
-   /*
-    * Set the canned message plugin part 4 text.
-    */
+    /*
+     * Set the canned message plugin part 4 text.
+     */
     CannedMessagePluginMessagePart4 set_canned_message_plugin_part4 = 49;
 
-   /*
-    * Set the canned message plugin part 5 text.
-    */
+    /*
+     * Set the canned message plugin part 5 text.
+     */
     CannedMessagePluginMessagePart5 set_canned_message_plugin_part5 = 50;
 
   }

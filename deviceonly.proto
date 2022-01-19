@@ -113,7 +113,7 @@ message DeviceState {
    */
   string canned_message_plugin_message_part5 = 17;
 
-} // DeviceState
+}
 
 /*
  * The on-disk saved channels

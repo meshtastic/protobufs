@@ -673,7 +673,7 @@ message RadioConfig {
      * and the entire message must fit within 256 bytes.
      * Not sure if we should deprecate this or just remove it since we're in dev phase.
      */
-    //string canned_message_plugin_messages = 172;
+    string canned_message_plugin_messages = 172 [deprecated = true];
 
     /*
      * CannedMessagePlugin also sends a bell character with the messages.
