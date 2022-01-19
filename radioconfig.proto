@@ -218,15 +218,15 @@ enum PositionFlags {
 }
 
 enum InputEventChar {
-  NULL  = 0;
-  UP    = 17;
-  DOWN  = 18;
-  LEFT  = 19;
-  RIGHT =  20;
+  KEY_NONE  = 0;
+  KEY_UP    = 17;
+  KEY_DOWN  = 18;
+  KEY_LEFT  = 19;
+  KEY_RIGHT =  20;
   /* '\n' */
-  SELECT = 10;
-  BACK  = 27;
-  CANCEL = 24;
+  KEY_SELECT = 10;
+  KEY_BACK  = 27;
+  KEY_CANCEL = 24;
 }
 
 /*
