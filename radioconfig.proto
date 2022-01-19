@@ -683,54 +683,5 @@ message RadioConfig {
   }
   UserPreferences preferences = 1;
 
+} // RadioConfig
 
-  message CannedMessagePluginMessagePart1 {
-    /*
-     * Predefined messages for canned message plugin separated by '|' characters.
-     * This is part 1.
-     */
-    string text = 1;
-  }
-  CannedMessagePluginMessagePart1 canned_message_plugin_message_part1 = 2;
-
-
-  message CannedMessagePluginMessagePart2 {
-    /*
-     * Predefined messages for canned message plugin separated by '|' characters.
-     * This is part 2.
-     */
-    string text = 1;
-  }
-  CannedMessagePluginMessagePart2 canned_message_plugin_message_part2 = 3;
-
-
-  message CannedMessagePluginMessagePart3 {
-    /*
-     * Predefined messages for canned message plugin separated by '|' characters.
-     * This is part 3.
-     */
-    string text = 1;
-  }
-  CannedMessagePluginMessagePart3 canned_message_plugin_message_part3 = 4;
-
-
-  message CannedMessagePluginMessagePart4 {
-    /*
-     * Predefined messages for canned message plugin separated by '|' characters.
-     * This is part 4.
-     */
-    string text = 1;
-  }
-  CannedMessagePluginMessagePart4 canned_message_plugin_message_part4 = 5;
-
-
-  message CannedMessagePluginMessagePart5 {
-    /*
-     * Predefined messages for canned message plugin separated by '|' characters.
-     * This is part 5.
-     */
-    string text = 1;
-  }
-  CannedMessagePluginMessagePart5 canned_message_plugin_message_part5 = 6;
-
-}
