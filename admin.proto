@@ -133,5 +133,9 @@ message AdminMessage {
      */
     CannedMessagePluginMessagePart5 set_canned_message_plugin_part5 = 50;
 
+    /*
+     * Tell the node to shutdown in this many seconds (or <0 to cancel shutdown)
+     */
+    int32 shutdown_seconds = 51;
   }
 } // AdminMessage
