@@ -554,6 +554,8 @@ message RadioConfig {
       DHT12 = 2;
       DHT21 = 3;
       DHT22 = 4;
+      BME280 = 5;
+      BME680 = 6;
     };
 
     /*
