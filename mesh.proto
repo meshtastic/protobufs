@@ -727,17 +727,6 @@ message MeshPacket {
    */
   Delayed delayed = 15;
 
-  /*
-   * If set, this message is intened to be a reply to a previously sent message with the defined id.
-   */
-  fixed32 reply_id = 16;
-
-  /*
-   * Defaults to false. If true, then what is in the payload should be treated as an emoji like giving
-   * a message a heart or poop emoji.
-   */
-  bool is_tapback = 17;
-
 }
 
 /*
