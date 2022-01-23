@@ -530,10 +530,10 @@ message Data {
    */
   fixed32 reply_id = 7;
 
-   /*
-    * Defaults to false. If true, then what is in the payload should be treated as an emoji like giving
-    * a message a heart or poop emoji.
-    */
+  /*
+   * Defaults to false. If true, then what is in the payload should be treated as an emoji like giving
+   * a message a heart or poop emoji.
+   */
   bool is_tapback = 8;
 }
 
