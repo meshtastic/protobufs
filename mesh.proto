@@ -524,6 +524,17 @@ message Data {
    * Indicates the original message ID that this message is reporting failure on. (formerly called original_id)
    */
   fixed32 request_id = 6;
+
+  /*
+   * If set, this message is intened to be a reply to a previously sent message with the defined id.
+   */
+  fixed32 reply_id = 7;
+
+  /*
+   * Defaults to false. If true, then what is in the payload should be treated as an emoji like giving
+   * a message a heart or poop emoji.
+   */
+  bool is_tapback = 8;
 }
 
 /*
@@ -715,17 +726,6 @@ message MeshPacket {
    * Describe if this message is delayed
    */
   Delayed delayed = 15;
-
-  /*
-   * If set, this message is intened to be a reply to a previously sent message with the defined id.
-   */
-  fixed32 reply_id = 16;
-
-  /*
-   * Defaults to false. If true, then what is in the payload should be treated as an emoji like giving
-   * a message a heart or poop emoji.
-   */
-  bool is_tapback = 17;
 
 }
 
