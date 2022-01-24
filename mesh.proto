@@ -242,6 +242,10 @@ enum HardwareModel {
    * Custom DIY device based on @NanoVHF schematics: https://github.com/NanoVHF/Meshtastic-DIY/tree/main/Schematics
    */
   DIY_V1 = 39;
+  /*
+   * RAK WisBlock ESP32 core: https://docs.rakwireless.com/Product-Categories/WisBlock/RAK11200/Overview/
+   */
+  RAK11200 = 40;
 }
 
 /*
