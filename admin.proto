@@ -4,7 +4,6 @@ option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
-import "cannedmessages.proto";
 import "channel.proto";
 import "mesh.proto";
 import "radioconfig.proto";
@@ -82,56 +81,45 @@ message AdminMessage {
      * Get the Canned Message Plugin message part1 in the response to this message.
      */
     bool get_canned_message_plugin_part1_request = 36;
-    CannedMessagePluginMessagePart1 get_canned_message_plugin_part1_response = 37;
+    string get_canned_message_plugin_part1_response = 37;
 
     /*
      * Get the Canned Message Plugin message part2 in the response to this message.
      */
     bool get_canned_message_plugin_part2_request = 38;
-    CannedMessagePluginMessagePart2 get_canned_message_plugin_part2_response = 39;
+    string get_canned_message_plugin_part2_response = 39;
 
     /*
      * Get the Canned Message Plugin message part3 in the response to this message.
      */
     bool get_canned_message_plugin_part3_request = 40;
-    CannedMessagePluginMessagePart3 get_canned_message_plugin_part3_response = 41;
+    string get_canned_message_plugin_part3_response = 41;
 
     /*
      * Get the Canned Message Plugin message part4 in the response to this message.
      */
     bool get_canned_message_plugin_part4_request = 42;
-    CannedMessagePluginMessagePart4 get_canned_message_plugin_part4_response = 43;
-
-    /*
-     * Get the Canned Message Plugin message part5 in the response to this message.
-     */
-    bool get_canned_message_plugin_part5_request = 44;
-    CannedMessagePluginMessagePart5 get_canned_message_plugin_part5_response = 45;
+    string get_canned_message_plugin_part4_response = 43;
 
     /*
      * Set the canned message plugin part 1 text.
      */
-    CannedMessagePluginMessagePart1 set_canned_message_plugin_part1 = 46;
+    string set_canned_message_plugin_part1 = 44;
 
     /*
      * Set the canned message plugin part 2 text.
      */
-    CannedMessagePluginMessagePart2 set_canned_message_plugin_part2 = 47;
+    string set_canned_message_plugin_part2 = 45;
 
     /*
      * Set the canned message plugin part 3 text.
      */
-    CannedMessagePluginMessagePart3 set_canned_message_plugin_part3 = 48;
+    string set_canned_message_plugin_part3 = 46;
 
     /*
      * Set the canned message plugin part 4 text.
      */
-    CannedMessagePluginMessagePart4 set_canned_message_plugin_part4 = 49;
-
-    /*
-     * Set the canned message plugin part 5 text.
-     */
-    CannedMessagePluginMessagePart5 set_canned_message_plugin_part5 = 50;
+    string set_canned_message_plugin_part4 = 47;
 
     /*
      * Tell the node to shutdown in this many seconds (or <0 to cancel shutdown)
