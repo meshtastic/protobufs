@@ -7,4 +7,7 @@ message EnvironmentalMeasurement {
   float relative_humidity = 2;
   float barometric_pressure = 3;
   float gas_resistance = 4;
+  float voltage = 5;
+  float current = 6;
+  
 }
