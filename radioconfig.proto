@@ -682,6 +682,15 @@ message RadioConfig {
      * ExternalNotificationPlugin can benefit from this feature.
      */
     bool canned_message_plugin_send_bell = 173;
+
+    /*
+     * Whether to send encrypted or decrypted packets to MQTT.
+     * This parameter is only honoured if you also set mqtt_server
+     * (the default official mqtt.meshtastic.org server can handle encrypted packets)
+     * 
+     * Decrypted packets may be useful for external systems that want to consume meshtastic packets
+     */
+    bool mqtt_encryption_enabled = 174;
   }
   UserPreferences preferences = 1;
 
