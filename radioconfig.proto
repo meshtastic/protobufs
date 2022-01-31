@@ -556,6 +556,7 @@ message RadioConfig {
       DHT22 = 4;
       BME280 = 5;
       BME680 = 6;
+      MCP9808 = 7;
     };
 
     /*
