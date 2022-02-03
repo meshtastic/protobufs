@@ -692,6 +692,12 @@ message RadioConfig {
      * Decrypted packets may be useful for external systems that want to consume meshtastic packets
      */
     bool mqtt_encryption_enabled = 174;
+    
+    /*
+     * Ratio of voltage divider for battery pin eg. 3.20 (R1=100k, R2=220k)
+     * Overrides the ADC_MULTIPLIER defined in variant for battery voltage calculation.
+     */
+    float adc_multiplier_override = 175;
   }
   UserPreferences preferences = 1;
 
