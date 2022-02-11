@@ -557,6 +557,7 @@ message RadioConfig {
       BME280 = 5;
       BME680 = 6;
       MCP9808 = 7;
+      SHTC3 = 8;
     };
 
     /*
