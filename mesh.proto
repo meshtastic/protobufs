@@ -919,13 +919,6 @@ message MyNodeInfo {
   bool has_gps = 2;
 
   /*
-   * # of frequencies that can be used (set at build time in the device flash image).
-   * Note: this is different from max_channels, this field is telling the # of frequency bands this node can use.
-   * (old name was num_channels)
-   */
-  uint32 num_bands = 3;
-
-  /*
    * The maximum number of 'software' channels that can be set on this node.
    */
   uint32 max_channels = 15;
