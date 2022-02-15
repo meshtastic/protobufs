@@ -39,7 +39,7 @@ enum RegionCode {
   Unset = 0;
   US = 1;
   EU433 = 2;
-  EU865 = 3;
+  EU868 = 3;
   CN = 4;
   JP = 5;
   ANZ = 6;
