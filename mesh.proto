@@ -466,24 +466,6 @@ message Routing {
      */
     Error error_reason = 3;
 
-    /*
-     * Deprecated - this has been replced with error_reason == NONE && request_id != 0
-     * This is an ack.
-     * This packet is a requested acknoledgement indicating that we have received
-     * the specified message ID.
-     * This packet type can be used both for immediate (0 hops) messages or can be routed through multiple hops if dest is set.
-     * Note: As an optimization, recipients can _also_ populate a field in payload
-     * if they think the recipient would appreciate that extra state.
-     *
-     * fixed32 success_id = 4;
-     */
-
-     /*
-      * Deprecated - this has been replced with error_reason !== NONE && request_id != 0
-      * This is a nak, we failed to deliver this message.
-      *
-      * fixed32 fail_id = 5;
-      */
   }
 }
 
@@ -933,14 +915,6 @@ message MyNodeInfo {
    * The format of this string was 1.0-US or 1.0-CN etc.. Or empty string if unset.
    */
   string region = 4 [deprecated = true];
-
-  /*
-   * TBEAM, HELTEC, etc...
-   * Starting in 1.2.11 moved to hw_model enum in the NodeInfo object.
-   * Apps will still need the string here for older builds
-   * (so OTA update can find the right image), but if the enum is available it will be used instead.
-   */
-  string hw_model_deprecated = 5 [deprecated = true];
 
   /*
    * 0.0.5 etc...
