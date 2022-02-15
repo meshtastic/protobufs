@@ -46,6 +46,8 @@ enum RegionCode {
   KR = 7;
   TW = 8;
   RU = 9;
+  IN = 10;
+  TH = 11;
 
   /*
    * Add new regions here
