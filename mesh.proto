@@ -888,6 +888,14 @@ enum CriticalErrorCode {
 }
 
 /*
+ * GroupInfo for group chats like #FoodFreaks and #CoolPeopleOnly
+ */
+message GroupInfo {
+  repeated string group = 1 [(nanopb).max_length = 16, (nanopb).max_count = 10];
+}
+
+
+/*
  * Unique local debugging info for this node
  * Note: we don't include position or the user info, because that will come in the
  * Sent to the phone in response to WantNodes.
