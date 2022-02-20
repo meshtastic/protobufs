@@ -1115,6 +1115,11 @@ message FromRadio {
      * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
      */
     bool rebooted = 9;
+
+    /*
+     * Groups
+     */
+    GroupInfo groups = 12;
   }
 }
 
