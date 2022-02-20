@@ -12,6 +12,9 @@
 # note: this payload length is ONLY the bytes that are sent inside of the Data protobuf (excluding protobuf overhead). The 16 byte header is
 # outside of this envelope
 *Data.payload max_size:237
+*Data.int_size:8
+
+*GroupInfo.group max_length:16 max_count:10
 
 # Big enough for 1.2.28.568032c-d
 *MyNodeInfo.firmware_version max_size:18
@@ -39,4 +42,3 @@
 
 *MyNodeInfo.air_period_tx       max_count:24
 *MyNodeInfo.air_period_rx       max_count:24
-# *MyNodeInfo.air_period_rx_all   max_count:12
