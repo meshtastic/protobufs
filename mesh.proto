@@ -525,6 +525,12 @@ message Data {
    * a message a heart or poop emoji.
    */
   bool is_tapback = 8;
+
+  /*
+   * Defaults to false. If true, then what is in the payload should be treated as an emoji like giving
+   * a message a heart or poop emoji.
+   */
+   uint32 group_id = 9;
 }
 
 /*
@@ -880,6 +886,14 @@ enum CriticalErrorCode {
   post in the forum so that we can ask you to collect some information to allow fixing this bug */
   RadioSpiBug = 11;
 }
+
+/*
+ * GroupInfo for group chats like #FoodFreaks and #CoolPeopleOnly
+ */
+message GroupInfo {
+  repeated string group = 1 [(nanopb).max_length = 16, (nanopb).max_count = 10];
+}
+
 
 /*
  * Unique local debugging info for this node
