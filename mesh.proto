@@ -891,7 +891,7 @@ enum CriticalErrorCode {
  * GroupInfo for group chats like #FoodFreaks and #CoolPeopleOnly
  */
 message GroupInfo {
-  repeated string group = 1 [(nanopb).max_length = 16, (nanopb).max_count = 10];
+  repeated string group = 1;
 }
 
 
