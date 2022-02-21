@@ -477,6 +477,18 @@ message RadioConfig {
     bool serialplugin_echo = 121;
     uint32 serialplugin_rxd = 122;
     uint32 serialplugin_txd = 123;
+    enum serialplugin_baud {
+      38400 = 0;
+      600 = 1;
+      1200 = 2;
+      2400 = 3;
+      4800 = 4;
+      9600 = 5;
+      19200 = 6;
+      57600 = 7;
+      76800 = 8;
+      115200 = 9;
+    }
     uint32 serialplugin_timeout = 124;
     uint32 serialplugin_mode = 125;
 
