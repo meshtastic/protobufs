@@ -48,6 +48,7 @@ enum PortNum {
    * Once READACK is implemented, use the new packet type/port number stuff?
    * @exclude
    * CLEAR_READACK = 2;
+   * TODO: REMOVE/INTEGRATE
    */
 
   /*

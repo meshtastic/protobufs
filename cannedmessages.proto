@@ -28,6 +28,7 @@ option go_package = "github.com/meshtastic/gomeshproto";
  * Canned message plugin part 1
  */
 message CannedMessagePluginMessagePart1 {
+
   /*
    * Predefined messages for canned message plugin separated by '|' characters.
    * This is part 1.
@@ -39,6 +40,7 @@ message CannedMessagePluginMessagePart1 {
  * Canned message plugin part 2
  */
 message CannedMessagePluginMessagePart2 {
+
   /*
    * Predefined messages for canned message plugin separated by '|' characters.
    * This is part 2.
@@ -50,6 +52,7 @@ message CannedMessagePluginMessagePart2 {
  * Canned message plugin part 3
  */
 message CannedMessagePluginMessagePart3 {
+
   /*
    * Predefined messages for canned message plugin separated by '|' characters.
    * This is part 3.
@@ -61,6 +64,7 @@ message CannedMessagePluginMessagePart3 {
  * Canned message plugin part 4
  */
 message CannedMessagePluginMessagePart4 {
+
   /*
    * Predefined messages for canned message plugin separated by '|' characters.
    * This is part 4.
@@ -72,6 +76,7 @@ message CannedMessagePluginMessagePart4 {
  * Canned message plugin part 5
  */
 message CannedMessagePluginMessagePart5 {
+
   /*
    * Predefined messages for canned message plugin separated by '|' characters.
    * This is part 5.

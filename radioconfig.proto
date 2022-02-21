@@ -36,22 +36,65 @@ option go_package = "github.com/meshtastic/gomeshproto";
  */
 enum RegionCode {
 
+  /*
+   * TODO: REPLACE
+   */
   Unset = 0;
-  US = 1;
-  EU433 = 2;
-  EU868 = 3;
-  CN = 4;
-  JP = 5;
-  ANZ = 6;
-  KR = 7;
-  TW = 8;
-  RU = 9;
-  IN = 10;
-  TH = 11;
 
   /*
-   * Add new regions here
+   * TODO: REPLACE
    */
+  US = 1;
+
+  /*
+   * TODO: REPLACE
+   */
+  EU433 = 2;
+
+  /*
+   * TODO: REPLACE
+   */
+  EU868 = 3;
+
+  /*
+   * TODO: REPLACE
+   */
+  CN = 4;
+
+  /*
+   * TODO: REPLACE
+   */
+  JP = 5;
+
+  /*
+   * TODO: REPLACE
+   */
+  ANZ = 6;
+
+  /*
+   * TODO: REPLACE
+   */
+  KR = 7;
+
+  /*
+   * TODO: REPLACE
+   */
+  TW = 8;
+
+  /*
+   * TODO: REPLACE
+   */
+  RU = 9;
+
+  /*
+   * TODO: REPLACE
+   */
+  IN = 10;
+
+  /*
+   * TODO: REPLACE
+   */
+  TH = 11;
 }
 
 /*
@@ -59,22 +102,90 @@ enum RegionCode {
  * configured. This is passed into the axp power management chip like on the tbeam.
  */
 enum ChargeCurrent {
+
+  /*
+   * TODO: REPLACE
+   */
   MAUnset = 0;
+
+  /*
+   * TODO: REPLACE
+   */
   MA100 = 1;
+
+  /*
+   * TODO: REPLACE
+   */
   MA190 = 2;
+
+  /*
+   * TODO: REPLACE
+   */
   MA280 = 3;
+
+  /*
+   * TODO: REPLACE
+   */
   MA360 = 4;
+
+  /*
+   * TODO: REPLACE
+   */
   MA450 = 5;
+
+  /*
+   * TODO: REPLACE
+   */
   MA550 = 6;
+
+  /*
+   * TODO: REPLACE
+   */
   MA630 = 7;
+
+  /*
+   * TODO: REPLACE
+   */
   MA700 = 8;
+
+  /*
+   * TODO: REPLACE
+   */
   MA780 = 9;
+
+  /*
+   * TODO: REPLACE
+   */
   MA880 = 10;
+
+  /*
+   * TODO: REPLACE
+   */
   MA960 = 11;
+
+  /*
+   * TODO: REPLACE
+   */
   MA1000 = 12;
+  
+  /*
+   * TODO: REPLACE
+   */
   MA1080 = 13;
+
+  /*
+   * TODO: REPLACE
+   */
   MA1160 = 14;
+
+  /*
+   * TODO: REPLACE
+   */
   MA1240 = 15;
+
+  /*
+   * TODO: REPLACE
+   */
   MA1320 = 16;
 }
 
@@ -188,46 +299,100 @@ enum LocationSharing {
  *   leading to longer airtime and a higher risk of packet loss
  */
 enum PositionFlags {
-  /* Required for compilation */
+  /*
+   * Required for compilation
+   */
   POS_UNDEFINED = 0x0000;
 
-  /* Include an altitude value (if available) */
+  /*
+   * Include an altitude value (if available)
+   */
   POS_ALTITUDE  = 0x0001;
 
-  /* Altitude value is MSL */
+  /*
+   * Altitude value is MSL
+   */
   POS_ALT_MSL   = 0x0002;
 
-  /* Include geoidal separation */
+  /*
+   * Include geoidal separation
+   */
   POS_GEO_SEP   = 0x0004;
 
-  /* Include the DOP value ; PDOP used by default, see below */
+  /*
+   * Include the DOP value ; PDOP used by default, see below
+   */
   POS_DOP       = 0x0008;
 
-  /* If POS_DOP set, send separate HDOP / VDOP values instead of PDOP */
+  /*
+   * If POS_DOP set, send separate HDOP / VDOP values instead of PDOP
+   */
   POS_HVDOP     = 0x0010;
 
-  /* Include battery level */
+  /*
+   * Include battery level
+   */
   POS_BATTERY   = 0x0020;
 
-  /* Include number of "satellites in view" */
+  /*
+   * Include number of "satellites in view"
+   */
   POS_SATINVIEW = 0x0040;
 
-  /* Include a sequence number incremented per packet */
+  /*
+   * Include a sequence number incremented per packet
+   */
   POS_SEQ_NOS   = 0x0080;
 
-  /* Include positional timestamp (from GPS solution) */
+  /*
+   * Include positional timestamp (from GPS solution)
+   */
   POS_TIMESTAMP = 0x0100;
 }
 
+/*
+ * TODO: REPLACE
+ */
 enum InputEventChar {
+
+  /*
+   * TODO: REPLACE
+   */
   KEY_NONE  = 0;
+
+  /*
+   * TODO: REPLACE
+   */
   KEY_UP    = 17;
+
+  /*
+   * TODO: REPLACE
+   */
   KEY_DOWN  = 18;
+
+  /*
+   * TODO: REPLACE
+   */
   KEY_LEFT  = 19;
+
+  /*
+   * TODO: REPLACE
+   */
   KEY_RIGHT =  20;
-  /* '\n' */
+
+  /*
+   * '\n'
+   */
   KEY_SELECT = 10;
+
+  /*
+   * TODO: REPLACE
+   */
   KEY_BACK  = 27;
+
+  /*
+   * TODO: REPLACE
+   */
   KEY_CANCEL = 24;
 }
 
@@ -265,6 +430,7 @@ message RadioConfig {
      * offline (defaults to 3 - to allow for some lost packets) (FIXME not yet used)
      *
      * uint32 num_missed_to_fail = 3;
+     TODO: REMOVE/INTEGRATE
      */
 
     /*
@@ -476,10 +642,30 @@ message RadioConfig {
      * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
      */
     bool serialplugin_enabled = 120;
+
+    /*
+     * TODO: REPLACE
+     */
     bool serialplugin_echo = 121;
+
+    /*
+     * TODO: REPLACE
+     */
     uint32 serialplugin_rxd = 122;
+
+    /*
+     * TODO: REPLACE
+     */
     uint32 serialplugin_txd = 123;
+
+    /*
+     * TODO: REPLACE
+     */
     uint32 serialplugin_timeout = 124;
+
+    /*
+     * TODO: REPLACE
+     */
     uint32 serialplugin_mode = 125;
 
     /*
@@ -487,10 +673,30 @@ message RadioConfig {
      * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
      */
     bool ext_notification_plugin_enabled = 126;
+
+    /*
+     * TODO: REPLACE
+     */
     uint32 ext_notification_plugin_output_ms = 127;
+
+    /*
+     * TODO: REPLACE
+     */
     uint32 ext_notification_plugin_output = 128;
+
+    /*
+     * TODO: REPLACE
+     */
     bool ext_notification_plugin_active = 129;
+
+    /*
+     * TODO: REPLACE
+     */
     bool ext_notification_plugin_alert_message = 130;
+
+    /*
+     * TODO: REPLACE
+     */
     bool ext_notification_plugin_alert_bell = 131;
 
     /*
@@ -498,7 +704,15 @@ message RadioConfig {
      * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
      */
     bool range_test_plugin_enabled = 132;
+
+    /*
+     * TODO: REPLACE
+     */
     uint32 range_test_plugin_sender = 133;
+
+    /*
+     * TODO: REPLACE
+     */
     bool range_test_plugin_save = 134;
 
     /*
@@ -506,10 +720,30 @@ message RadioConfig {
      *FIXME - Move this out of UserPreferences and into a section for plugin configuration. (was 136)
      */
     bool store_forward_plugin_enabled = 148;
+
+    /*
+     * TODO: REPLACE
+     */
     bool store_forward_plugin_heartbeat = 149;
+
+    /*
+     * TODO: REPLACE
+     */
     uint32 store_forward_plugin_records = 137;
+
+    /*
+     * TODO: REPLACE
+     */
     uint32 store_forward_plugin_history_return_max = 138;
+
+    /*
+     * TODO: REPLACE
+     */
     uint32 store_forward_plugin_history_return_window = 139;
+
+    /*
+     * TODO: REPLACE
+     */
     reserved 136;
 
     /*
@@ -550,15 +784,54 @@ message RadioConfig {
      */
     bool environmental_measurement_plugin_display_farenheit = 145;
 
+    /*
+     * TODO: REPLACE
+     */
     enum EnvironmentalMeasurementSensorType {
+
+      /*
+       * TODO: REPLACE
+       */
       DHT11 = 0;
+
+      /*
+       * TODO: REPLACE
+       */
       DS18B20 = 1;
+
+      /*
+       * TODO: REPLACE
+       */
       DHT12 = 2;
+
+      /*
+       * TODO: REPLACE
+       */
       DHT21 = 3;
+
+      /*
+       * TODO: REPLACE
+       */
       DHT22 = 4;
+
+      /*
+       * TODO: REPLACE
+       */
       BME280 = 5;
+
+      /*
+       * TODO: REPLACE
+       */
       BME680 = 6;
+
+      /*
+       * TODO: REPLACE
+       */
       MCP9808 = 7;
+
+      /*
+       * TODO: REPLACE
+       */
       SHTC3 = 8;
     };
 
@@ -674,11 +947,11 @@ message RadioConfig {
     string canned_message_plugin_allow_input_source = 171;
 
     /*
-      * Predefined messages for CannedMessagePlugin separated by '|' characters.
-      * Note: Split out the messages out to their own messages because we want to store 1,000 characters.
-      * and the entire message must fit within 256 bytes.
-      * Not sure if we should deprecate this or just remove it since we're in dev phase.
-      */
+     * Predefined messages for CannedMessagePlugin separated by '|' characters.
+     * Note: Split out the messages out to their own messages because we want to store 1,000 characters.
+     * and the entire message must fit within 256 bytes.
+     * Not sure if we should deprecate this or just remove it since we're in dev phase.
+     */
     string canned_message_plugin_messages = 172 [deprecated = true];
 
     /*
@@ -702,7 +975,10 @@ message RadioConfig {
      */
     float adc_multiplier_override = 175;
   }
+
+  /*
+   * TODO: REPLACE
+   */
   UserPreferences preferences = 1;
 
-} // RadioConfig
-
+}

@@ -31,6 +31,7 @@ option java_outer_classname = "MeshProtos";
  * a gps position
  */
 message Position {
+
   /*
    * The old (pre 1.2) position encoding sent lat/lon as sint32s in field 7,8.
    * Do not use to prevent confusing old apps
@@ -43,9 +44,13 @@ message Position {
    */
   sfixed32 latitude_i = 1;
 
+  /*
+   * TODO: REPLACE
+   */
   sfixed32 longitude_i = 2;
 
   /*
+   * TODO: REMOTE/INTEGRATE
    * This is a special 'small' position update for lat/lon.
    * It encodes a signed 16 bit latitude in the upper 2 bytes, and a signed longitude in the lower 16 bits.
    * It is not currently implemented, but can be added in an automatically backwards compatible way later.
@@ -77,22 +82,43 @@ message Position {
   /*
    * Precision positioning elements - optional and usually not included
    * ------------------------------------------------------------------
+   * TODO: REMOVE/INTEGRATE
    */
 
   /*
    * How the location was acquired: manual, onboard GPS, external (EUD) GPS
    */
   enum LocSource {
+
+    /*
+     * TODO: REPLACE
+     */
     LOCSRC_UNSPECIFIED = 0;
+
+    /*
+     * TODO: REPLACE
+     */
     LOCSRC_MANUAL_ENTRY = 1;
+
+    /*
+     * TODO: REPLACE
+     */
     LOCSRC_GPS_INTERNAL = 2;
+
+    /*
+     * TODO: REPLACE
+     */
     LOCSRC_GPS_EXTERNAL = 3;
     /*
      * More location sources can be added here when available:
      *   GSM, radio beacons (BLE etc), location fingerprinting etc
+     * TODO: REMOVE/INTEGRATE
      */
   }
 
+  /*
+   * TODO: REPLACE
+   */
   LocSource location_source = 10;
 
   /*
@@ -100,13 +126,36 @@ message Position {
    * Default: same as location_source if present
    */
   enum AltSource {
+
+    /*
+     * TODO: REPLACE
+     */
     ALTSRC_UNSPECIFIED = 0;
+
+    /*
+     * TODO: REPLACE
+     */
     ALTSRC_MANUAL_ENTRY = 1;
+
+    /*
+     * TODO: REPLACE
+     */
     ALTSRC_GPS_INTERNAL = 2;
+
+    /*
+     * TODO: REPLACE
+     */
     ALTSRC_GPS_EXTERNAL = 3;
+
+    /*
+     * TODO: REPLACE
+     */
     ALTSRC_BAROMETRIC = 4;
   }
 
+  /*
+   * TODO: REPLACE
+   */
   AltSource altitude_source = 11;
 
   /*
@@ -134,9 +183,18 @@ message Position {
    * - PDOP is sufficient for most cases
    * - for higher precision scenarios, HDOP and VDOP can be used instead,
    *   in which case PDOP becomes redundant (PDOP=sqrt(HDOP^2 + VDOP^2))
+   * TODO: REMOVE/INTEGRATE
    */
   uint32 PDOP = 16;
+
+  /*
+   * TODO: REPLACE
+   */
   uint32 HDOP = 17;
+
+  /*
+   * TODO: REPLACE
+   */
   uint32 VDOP = 18;
 
   /*
@@ -153,8 +211,13 @@ message Position {
    * - "track" is the direction of motion (measured in horizontal plane)
    * - "heading" is where the fuselage points (measured in horizontal plane)
    * - "yaw" indicates a relative rotation about the vertical axis
+   * TODO: REMOVE/INTEGRATE
    */
   uint32 ground_speed = 20;
+
+  /*
+   * TODO: REPLACE
+   */
   uint32 ground_track = 21;
 
   /*
@@ -193,6 +256,7 @@ message Position {
 
   /*
    * END precision positioning elements
+   * TODO: REMOVE/INTEGRATE
    */
 }
 
@@ -203,34 +267,97 @@ message Position {
   * To match the old style filenames, _ is converted to -, p is converted to .
   */
 enum HardwareModel {
+
+  /*
+   * TODO: REPLACE
+   */
   UNSET = 0;
+
+  /*
+   * TODO: REPLACE
+   */
   TLORA_V2 = 1;
+
+  /*
+   * TODO: REPLACE
+   */
   TLORA_V1 = 2;
+
+  /*
+   * TODO: REPLACE
+   */
   TLORA_V2_1_1p6 = 3;
+
+  /*
+   * TODO: REPLACE
+   */
   TBEAM = 4;
 
-  // The original heltec WiFi_Lora_32_V2, which had battery voltage sensing hooked to GPIO 13 (see HELTEC_V2 for the new version).
+  /*
+   * The original heltec WiFi_Lora_32_V2, which had battery voltage sensing hooked to GPIO 13
+   * (see HELTEC_V2 for the new version).
+   */
   HELTEC_V2_0 = 5;
 
+  /*
+   * TODO: REPLACE
+   */
   TBEAM0p7 = 6;
+
+  /*
+   * TODO: REPLACE
+   */
   T_ECHO = 7;
+
+  /*
+   * TODO: REPLACE
+   */
   TLORA_V1_1p3 = 8;
+
+  /*
+   * TODO: REPLACE
+   */
   RAK4631 = 9;
 
-  // The new version of the heltec WiFi_Lora_32_V2 board that has battery sensing hooked to GPIO 37.  Sadly they did not update anything on the silkscreen to identify this board
+  /*
+   * The new version of the heltec WiFi_Lora_32_V2 board that has battery sensing hooked to GPIO 37.
+   * Sadly they did not update anything on the silkscreen to identify this board
+   */
   HELTEC_V2_1 = 10;
   
-  // Ancient heltec WiFi_Lora_32 board 
+  /*
+   * Ancient heltec WiFi_Lora_32 board
+   */
   HELTEC_V1 = 11;
   
   /*
    * Less common/prototype boards listed here (needs one more byte over the air)
    */
   LORA_RELAY_V1 = 32;
+
+  /*
+   * TODO: REPLACE
+   */
   NRF52840DK = 33;
+
+  /*
+   * TODO: REPLACE
+   */
   PPR = 34;
+
+  /*
+   * TODO: REPLACE
+   */
   GENIEBLOCKS = 35;
+
+  /*
+   * TODO: REPLACE
+   */
   NRF52_UNKNOWN = 36;
+
+  /*
+   * TODO: REPLACE
+   */
   PORTDUINO = 37;
 
   /*
@@ -242,10 +369,12 @@ enum HardwareModel {
    * Custom DIY device based on @NanoVHF schematics: https://github.com/NanoVHF/Meshtastic-DIY/tree/main/Schematics
    */
   DIY_V1 = 39;
+
   /*
    * RAK WisBlock ESP32 core: https://docs.rakwireless.com/Product-Categories/WisBlock/RAK11200/Overview/
    */
   RAK11200 = 40;
+
   /*
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    */
@@ -257,20 +386,80 @@ enum HardwareModel {
  * https://github.com/deptofdefense/AndroidTacticalAssaultKit-CIV/blob/master/atak/ATAK/app/src/main/assets/filters/team_filters.xml
  */
 enum Team {
-  CLEAR = 0;  /* the default (unset) is "achromatic" (unaffiliated) */
+
+  /*
+   * the default (unset) is "achromatic" (unaffiliated)
+   */
+  CLEAR = 0;
+
+  /*
+   * TODO: REPLACE
+   */
   CYAN = 1;
+
+  /*
+   * TODO: REPLACE
+   */
   WHITE = 2;
+
+  /*
+   * TODO: REPLACE
+   */
   YELLOW = 3;
+
+  /*
+   * TODO: REPLACE
+   */
   ORANGE = 4;
+
+  /*
+   * TODO: REPLACE
+   */
   MAGENTA = 5;
+
+  /*
+   * TODO: REPLACE
+   */
   RED = 6;
+
+  /*
+   * TODO: REPLACE
+   */
   MAROON = 7;
+
+  /*
+   * TODO: REPLACE
+   */
   PURPLE = 8;
+  
+  /*
+   * TODO: REPLACE
+   */
   DARK_BLUE = 9;
+
+  /*
+   * TODO: REPLACE
+   */
   BLUE = 10;
+
+  /*
+   * TODO: REPLACE
+   */
   TEAL = 11;
+
+  /*
+   * TODO: REPLACE
+   */
   GREEN = 12;
+
+  /*
+   * TODO: REPLACE
+   */
   DARK_GREEN = 13;
+
+  /*
+   * TODO: REPLACE
+   */
   BROWN = 14;
 }
 
@@ -409,6 +598,9 @@ message Routing {
      */
     GOT_NAK = 2;
 
+    /*
+     * TODO: REPLACE
+     */
     TIMEOUT = 3;
 
     /*
@@ -443,13 +635,14 @@ message Routing {
     BAD_REQUEST = 32;
 
     /*
-     * The application layer service on the remote node received your request, but considered your request not authorized (i.e you did not
-     * send the request on the required bound channel)
+     * The application layer service on the remote node received your request, but considered your request not authorized
+     * (i.e you did not send the request on the required bound channel)
      */
     NOT_AUTHORIZED = 33;
   }
 
   oneof variant {
+
     /*
      * A route request going from the requester
      */
@@ -482,7 +675,7 @@ message Data {
   PortNum portnum = 1;
 
   /*
-   * Required
+   * TODO: REPLACE
    */
   bytes payload = 2;
 
@@ -565,11 +758,15 @@ message MeshPacket {
    * And the transmission queue in the router object is now a priority queue.
    */
   enum Priority {
+
     /*
      * Treated as Priority.DEFAULT
      */
     UNSET = 0;
 
+    /*
+     * TODO: REPLACE
+     */
     MIN = 1;
 
     /*
@@ -595,6 +792,9 @@ message MeshPacket {
      */
     ACK = 120;
 
+    /*
+     * TODO: REPLACE
+     */
     MAX = 127;
   }
 
@@ -602,6 +802,7 @@ message MeshPacket {
    * Identify if this is a delayed packet
    */
   enum Delayed {
+
     /*
      * If unset, the message is being sent in real time.
      */
@@ -653,7 +854,15 @@ message MeshPacket {
    */
 
   oneof payloadVariant {
+
+    /*
+     * TODO: REPLACE
+     */
     Data decoded = 4;
+
+    /*
+     * TODO: REPLACE
+     */
     bytes encrypted = 5;
   }
 
@@ -792,6 +1001,7 @@ message NodeInfo {
   float snr = 7;
 
   /*
+   * TODO: REMOVE/INTEGRATE 
    * Returns the last measured frequency error.
    * The LoRa receiver estimates the frequency offset between the receiver
    * center frequency and that of the received LoRa signal. This function
@@ -811,6 +1021,7 @@ message NodeInfo {
    */
 
   /*
+   * TODO: REMOVE/INTEGRATE
    * Not currently used (till full DSR deployment?) Our current preferred node node for routing - might be the same as num if
    * we are adjacent Or zero if we don't yet know a route to this node.
    * fixed32 next_hop = 5;
@@ -830,6 +1041,10 @@ message NodeInfo {
  * and we'll try to help.
  */
 enum CriticalErrorCode {
+
+  /*
+   * TODO: REPLACE
+   */
   None = 0;
 
   /*
@@ -882,8 +1097,10 @@ enum CriticalErrorCode {
   /* Selftest of SX1262 radio chip failed */
   SX1262Failure = 10;
 
-  /* A (likely software but possibly hardware) failure was detected while trying to send packets. If this occurs on your board, please
-  post in the forum so that we can ask you to collect some information to allow fixing this bug */
+  /*
+   * A (likely software but possibly hardware) failure was detected while trying to send packets.
+   * If this occurs on your board, please post in the forum so that we can ask you to collect some information to allow fixing this bug
+   */
   RadioSpiBug = 11;
 }
 
@@ -891,6 +1108,10 @@ enum CriticalErrorCode {
  * GroupInfo for group chats like #FoodFreaks and #CoolPeopleOnly
  */
 message GroupInfo {
+
+  /*
+   * TODO: REPLACE
+   */
   repeated string group = 1;
 }
 
@@ -1006,10 +1227,8 @@ message MyNodeInfo {
    */
   float air_util_tx = 20;
 
-
-
-
   /*
+   * TODO: REPLACE
    * FIXME - add more useful debugging state (queue depths etc)
    */
 }
@@ -1028,15 +1247,45 @@ message LogRecord {
    * Log levels, chosen to match python logging conventions.
    */
   enum Level {
+    /*
+     * Log levels, chosen to match python logging conventions.
+     */
     UNSET = 0;
+
+    /*
+     * Log levels, chosen to match python logging conventions.
+     */
     CRITICAL = 50;
+
+    /*
+     * Log levels, chosen to match python logging conventions.
+     */
     ERROR = 40;
+
+    /*
+     * Log levels, chosen to match python logging conventions.
+     */
     WARNING = 30;
+
+    /*
+     * Log levels, chosen to match python logging conventions.
+     */
     INFO = 20;
+
+    /*
+     * Log levels, chosen to match python logging conventions.
+     */
     DEBUG = 10;
+
+    /*
+     * Log levels, chosen to match python logging conventions.
+     */
     TRACE = 5;
   }
 
+  /*
+   * Log levels, chosen to match python logging conventions.
+   */
   string message = 1;
 
   /*
@@ -1079,8 +1328,14 @@ message FromRadio {
    */
   uint32 num = 1;
 
+  /*
+   * Log levels, chosen to match python logging conventions.
+   */
   oneof payloadVariant {
 
+    /*
+     * Log levels, chosen to match python logging conventions.
+     */
     MeshPacket packet = 11;
 
     /*
@@ -1134,6 +1389,7 @@ message ToRadio {
    * Instead of sending want_config_id as a uint32, newer clients send this structure with information about the client.
    */
   message PeerInfo {
+
     /*
      * The numeric version code for the client application, which in some cases are used to control device behavior (so the device can
      * make assumptions about who is using the API.
@@ -1155,6 +1411,9 @@ message ToRadio {
    */
   reserved 1, 101, 102, 103;
 
+  /*
+   * Log levels, chosen to match python logging conventions.
+   */
   oneof payloadVariant {
 
     /*
