@@ -491,7 +491,6 @@ message RadioConfig {
       Baudrate76800 = 8;
       Baudrate115200 = 9;
     };
->>>>>>> Stashed changes
     uint32 serialplugin_timeout = 124;
     uint32 serialplugin_mode = 125;
 
