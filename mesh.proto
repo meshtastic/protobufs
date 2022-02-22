@@ -530,7 +530,7 @@ message Data {
    * Defaults to false. If true, then what is in the payload should be treated as an emoji like giving
    * a message a heart or poop emoji.
    */
-   uint32 group_id = 9;
+  uint32 group_id = 9;
 }
 
 /*
