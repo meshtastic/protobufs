@@ -479,18 +479,7 @@ message RadioConfig {
     bool serialplugin_echo = 121;
     uint32 serialplugin_rxd = 122;
     uint32 serialplugin_txd = 123;
-    enum serialplugin_baud {
-      Baudrate600 = 0;
-      Baudrate1200 = 1;
-      Baudrate2400 = 2;
-      Baudrate4800 = 3;
-      Baudrate9600 = 4;
-      Baudrate19200 = 5;
-      Baudrate38400 = 6;
-      Baudrate57600 = 7;
-      Baudrate76800 = 8;
-      Baudrate115200 = 9;
-    };
+    uint32 serialplugin_baud = 176;
     uint32 serialplugin_timeout = 124;
     uint32 serialplugin_mode = 125;
 
