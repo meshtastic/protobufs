@@ -674,14 +674,6 @@ message RadioConfig {
     string canned_message_plugin_allow_input_source = 171;
 
     /*
-      * Predefined messages for CannedMessagePlugin separated by '|' characters.
-      * Note: Split out the messages out to their own messages because we want to store 1,000 characters.
-      * and the entire message must fit within 256 bytes.
-      * Not sure if we should deprecate this or just remove it since we're in dev phase.
-      */
-    string canned_message_plugin_messages = 172 [deprecated = true];
-
-    /*
      * CannedMessagePlugin also sends a bell character with the messages.
      * ExternalNotificationPlugin can benefit from this feature.
      */
