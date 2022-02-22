@@ -479,6 +479,7 @@ message RadioConfig {
     bool serialplugin_echo = 121;
     uint32 serialplugin_rxd = 122;
     uint32 serialplugin_txd = 123;
+    uint32 serialplugin_baud = 176;
     uint32 serialplugin_timeout = 124;
     uint32 serialplugin_mode = 125;
 
