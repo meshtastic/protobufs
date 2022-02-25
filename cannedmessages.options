@@ -1,5 +1,4 @@
-*CannedMessagePluginMessagePart1.text max_size:200
-*CannedMessagePluginMessagePart2.text max_size:200
-*CannedMessagePluginMessagePart3.text max_size:200
-*CannedMessagePluginMessagePart4.text max_size:200
-*CannedMessagePluginMessagePart5.text max_size:200
+*CannedMessagePluginConfig.messagesPart1 max_size:201
+*CannedMessagePluginConfig.messagesPart2 max_size:201
+*CannedMessagePluginConfig.messagesPart3 max_size:201
+*CannedMessagePluginConfig.messagesPart4 max_size:201
