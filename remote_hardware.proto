@@ -20,6 +20,10 @@ option go_package = "github.com/meshtastic/gomeshproto";
  * (a special channel once multichannel support is included?)
  */
 message HardwareMessage {
+
+  /*
+   * TODO: REPLACE
+   */
   enum Type {
 
     /*

@@ -1,13 +1,38 @@
 syntax = "proto3";
 option go_package = "github.com/meshtastic/gomeshproto";
 
+/*
+ * TODO: REPLACE
+ */
 message EnvironmentalMeasurement {
 
+  /*
+   * TODO: REPLACE
+   */
   float temperature = 1;
+
+  /*
+   * TODO: REPLACE
+   */
   float relative_humidity = 2;
+
+  /*
+   * TODO: REPLACE
+   */
   float barometric_pressure = 3;
+
+  /*
+   * TODO: REPLACE
+   */
   float gas_resistance = 4;
+
+  /*
+   * TODO: REPLACE
+   */
   float voltage = 5;
+
+  /*
+   * TODO: REPLACE
+   */
   float current = 6;
-  
 }

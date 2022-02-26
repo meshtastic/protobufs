@@ -65,30 +65,37 @@ message ChannelSettings {
   enum ModemConfig {
 
     /*
+     * TODO: REPLACE
      */
     VLongSlow = 0;
 
     /*
+     * TODO: REPLACE
      */
     LongSlow = 1;
 
     /*
+     * TODO: REPLACE
      */
     LongFast = 2;
 
     /*
+     * TODO: REPLACE
      */
     MidSlow = 3;
 
     /*
+     * TODO: REPLACE
      */
     MidFast = 4;
 
     /*
+     * TODO: REPLACE
      */
     ShortSlow = 5;
 
     /*
+     * TODO: REPLACE
      */
     ShortFast = 6;
   }
@@ -215,6 +222,7 @@ message Channel {
    * (but any number of SECONDARY channels can't be sent received on that common frequency)
    */
   enum Role {
+
     /*
      * This channel is not in use right now
      */
@@ -244,5 +252,8 @@ message Channel {
    */
   ChannelSettings settings = 2;
 
+  /*
+   * TODO: REPLACE
+   */
   Role role = 3;
 }

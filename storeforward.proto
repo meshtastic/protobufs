@@ -5,6 +5,9 @@ option java_outer_classname = "StoreAndForwardProtos";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
+/*
+ * TODO: REPLACE
+ */
 message StoreAndForward {
 
   /*
@@ -12,6 +15,7 @@ message StoreAndForward {
    * 101 - 199 = From Client
    */
   enum RequestResponse {
+
     /*
      * Unset/unused
      */
@@ -78,10 +82,11 @@ message StoreAndForward {
      * Client has requested that the router abort processing the client's request
      */
     CLIENT_ABORT = 106;
-
   }
 
-
+  /*
+   * TODO: REPLACE
+   */
   message Statistics {
 
     /*
@@ -128,10 +133,11 @@ message StoreAndForward {
      * Is the heartbeat enabled on the server?
      */
     uint32 return_window = 9;
-
-
   }
 
+  /*
+   * TODO: REPLACE
+   */
   message History {
 
     /*
@@ -148,9 +154,11 @@ message StoreAndForward {
      * The window of messages that was used to filter the history client requested
      */
     uint32 last_request = 3;
-
   }
 
+  /*
+   * TODO: REPLACE
+   */
   message Heartbeat {
 
     /*
@@ -162,15 +170,26 @@ message StoreAndForward {
      * If set, this is not the primary Store & Forward router on the mesh
      */
     uint32 secondary = 2;
-
   }
 
+  /*
+   * TODO: REPLACE
+   */
   RequestResponse rr = 1;
 
+  /*
+   * TODO: REPLACE
+   */
   Statistics stats = 2;
 
+  /*
+   * TODO: REPLACE
+   */
   History history = 3;
 
+  /*
+   * TODO: REPLACE
+   */
   Heartbeat heartbeat = 4;
 
 }
