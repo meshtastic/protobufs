@@ -7,11 +7,5 @@
 # FIXME - max_count is actually 32 but we save/load this as one long string of preencoded MeshPacket bytes - not a big array in RAM
 *DeviceState.receive_queue max_count:1
 
-*DeviceState.canned_message_plugin_message_part1 max_size:200
-*DeviceState.canned_message_plugin_message_part2 max_size:200
-*DeviceState.canned_message_plugin_message_part3 max_size:200
-*DeviceState.canned_message_plugin_message_part4 max_size:200
-*DeviceState.canned_message_plugin_message_part5 max_size:200
-
 *ChannelFile.channels max_count:8
 

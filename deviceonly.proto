@@ -45,11 +45,6 @@ message DeviceState {
   repeated MeshPacket receive_queue = 5;
 
   /*
-   * Group Info
-   */
-  GroupInfo group_info = 6;
-
-  /*
    * A version integer used to invalidate old save files when we make
    * incompatible changes This integer is set at build time and is private to
    * NodeDB.cpp in the device code.
@@ -73,31 +68,6 @@ message DeviceState {
    * Some GPSes seem to have bogus settings from the factory, so we always do one factory reset.
    */
   bool did_gps_reset = 11;
-
-  /*
-   * Canned Message Plugin message part1.
-   */
-  string canned_message_plugin_message_part1 = 13;
-
-  /*
-   * Canned Message Plugin message part2.
-   */
-  string canned_message_plugin_message_part2 = 14;
-
-  /*
-   * Canned Message Plugin message part3.
-   */
-  string canned_message_plugin_message_part3 = 15;
-
-  /*
-   * Canned Message Plugin message part4.
-   */
-  string canned_message_plugin_message_part4 = 16;
-
-  /*
-   * Canned Message Plugin message part5.
-   */
-  string canned_message_plugin_message_part5 = 17;
 
 }
 
