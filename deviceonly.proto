@@ -10,6 +10,22 @@ import "radioconfig.proto";
 
 option java_outer_classname = "DeviceOnly";
 
+/*
+ * This is a stub version of the old 1.1 representation of RadioConfig.
+ * But only keeping the region info.
+ * The device firmware uses this stub while migrating old nodes to the new preferences system.
+ */
+message LegacyRadioConfig {
+  message LegacyPreferences {
+
+    /*
+     * The region code for my radio (US, CN, EU433, etc...)
+     */
+    RegionCode region = 15;
+  }
+
+  LegacyPreferences preferences = 1;
+}
 
 /*
  * This message is never sent over the wire, but it is used for serializing DB
@@ -24,6 +40,11 @@ message DeviceState {
    * Was secondary_channels before 1.2
    */
   reserved 12;
+
+  /*
+   * Moved to its own file, but we keep this here so we can automatically migrate old radio.region settings
+   */
+  LegacyRadioConfig legacyRadio = 1;
 
   /*
    * Read only settings/info about this node
@@ -41,11 +62,6 @@ message DeviceState {
    * Received packets saved for delivery to the phone
    */
   repeated MeshPacket receive_queue = 5;
-
-  /*
-   * Group Info
-   */
-  GroupInfo group_info = 6;
 
   /*
    * A version integer used to invalidate old save files when we make

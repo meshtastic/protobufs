@@ -466,6 +466,24 @@ message Routing {
      */
     Error error_reason = 3;
 
+    /*
+     * Deprecated - this has been replced with error_reason == NONE && request_id != 0
+     * This is an ack.
+     * This packet is a requested acknoledgement indicating that we have received
+     * the specified message ID.
+     * This packet type can be used both for immediate (0 hops) messages or can be routed through multiple hops if dest is set.
+     * Note: As an optimization, recipients can _also_ populate a field in payload
+     * if they think the recipient would appreciate that extra state.
+     *
+     * fixed32 success_id = 4;
+     */
+
+     /*
+      * Deprecated - this has been replced with error_reason !== NONE && request_id != 0
+      * This is a nak, we failed to deliver this message.
+      *
+      * fixed32 fail_id = 5;
+      */
   }
 }
 
@@ -525,12 +543,6 @@ message Data {
    * a message a heart or poop emoji.
    */
   bool is_tapback = 8;
-
-  /*
-   * Defaults to false. If true, then what is in the payload should be treated as an emoji like giving
-   * a message a heart or poop emoji.
-   */
-  uint32 group_id = 9;
 }
 
 /*
@@ -888,14 +900,6 @@ enum CriticalErrorCode {
 }
 
 /*
- * GroupInfo for group chats like #FoodFreaks and #CoolPeopleOnly
- */
-message GroupInfo {
-  repeated string group = 1;
-}
-
-
-/*
  * Unique local debugging info for this node
  * Note: we don't include position or the user info, because that will come in the
  * Sent to the phone in response to WantNodes.
@@ -915,6 +919,13 @@ message MyNodeInfo {
   bool has_gps = 2;
 
   /*
+   * # of frequencies that can be used (set at build time in the device flash image).
+   * Note: this is different from max_channels, this field is telling the # of frequency bands this node can use.
+   * (old name was num_channels)
+   */
+  uint32 num_bands = 3;
+
+  /*
    * The maximum number of 'software' channels that can be set on this node.
    */
   uint32 max_channels = 15;
@@ -929,6 +940,14 @@ message MyNodeInfo {
    * The format of this string was 1.0-US or 1.0-CN etc.. Or empty string if unset.
    */
   string region = 4 [deprecated = true];
+
+  /*
+   * TBEAM, HELTEC, etc...
+   * Starting in 1.2.11 moved to hw_model enum in the NodeInfo object.
+   * Apps will still need the string here for older builds
+   * (so OTA update can find the right image), but if the enum is available it will be used instead.
+   */
+  string hw_model_deprecated = 5 [deprecated = true];
 
   /*
    * 0.0.5 etc...
@@ -1115,11 +1134,6 @@ message FromRadio {
      * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
      */
     bool rebooted = 9;
-
-    /*
-     * Groups
-     */
-    GroupInfo groups = 12;
   }
 }
 
