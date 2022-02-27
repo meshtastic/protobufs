@@ -11,7 +11,7 @@ import "radioconfig.proto";
 option java_outer_classname = "AdminProtos";
 
 /*
- * This message is handled by the Admin plugin and is responsible for all settings/channel read/write operations.
+ * This message is handled by the Admin module and is responsible for all settings/channel read/write operations.
  * This message is used to do settings operations to both remote AND local nodes.
  * (Prior to 1.2 these operations were done via special ToRadio operations)
  */
@@ -183,64 +183,64 @@ message AdminMessage {
     int32 reboot_seconds = 35;
 
     /*
-     * Get the Canned Message Plugin message part1 in the response to this message.
+     * Get the Canned Message Module message part1 in the response to this message.
      */
-    bool get_canned_message_plugin_part1_request = 36;
+    bool get_canned_message_module_part1_request = 36;
 
     /*
      * TODO: REPLACE
      */
-    string get_canned_message_plugin_part1_response = 37;
+    string get_canned_message_module_part1_response = 37;
 
     /*
-     * Get the Canned Message Plugin message part2 in the response to this message.
+     * Get the Canned Message Module message part2 in the response to this message.
      */
-    bool get_canned_message_plugin_part2_request = 38;
-
-    /*
-     * TODO: REPLACE
-     */
-    string get_canned_message_plugin_part2_response = 39;
-
-    /*
-     * Get the Canned Message Plugin message part3 in the response to this message.
-     */
-    bool get_canned_message_plugin_part3_request = 40;
+    bool get_canned_message_module_part2_request = 38;
 
     /*
      * TODO: REPLACE
      */
-    string get_canned_message_plugin_part3_response = 41;
+    string get_canned_message_module_part2_response = 39;
 
     /*
-     * Get the Canned Message Plugin message part4 in the response to this message.
+     * Get the Canned Message Module message part3 in the response to this message.
      */
-    bool get_canned_message_plugin_part4_request = 42;
+    bool get_canned_message_module_part3_request = 40;
 
     /*
      * TODO: REPLACE
      */
-    string get_canned_message_plugin_part4_response = 43;
+    string get_canned_message_module_part3_response = 41;
 
     /*
-     * Set the canned message plugin part 1 text.
+     * Get the Canned Message Module message part4 in the response to this message.
      */
-    string set_canned_message_plugin_part1 = 44;
+    bool get_canned_message_module_part4_request = 42;
 
     /*
-     * Set the canned message plugin part 2 text.
+     * TODO: REPLACE
      */
-    string set_canned_message_plugin_part2 = 45;
+    string get_canned_message_module_part4_response = 43;
 
     /*
-     * Set the canned message plugin part 3 text.
+     * Set the canned message module part 1 text.
      */
-    string set_canned_message_plugin_part3 = 46;
+    string set_canned_message_module_part1 = 44;
 
     /*
-     * Set the canned message plugin part 4 text.
+     * Set the canned message module part 2 text.
      */
-    string set_canned_message_plugin_part4 = 47;
+    string set_canned_message_module_part2 = 45;
+
+    /*
+     * Set the canned message module part 3 text.
+     */
+    string set_canned_message_module_part3 = 46;
+
+    /*
+     * Set the canned message module part 4 text.
+     */
+    string set_canned_message_module_part4 = 47;
 
     /*
      * Tell the node to shutdown in this many seconds (or <0 to cancel shutdown)

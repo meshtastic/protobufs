@@ -25,12 +25,12 @@ option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
 /*
- * Canned message plugin configuration.
+ * Canned message module configuration.
  */
-message CannedMessagePluginConfig {
+message CannedMessageModuleConfig {
 
   /*
-   * Predefined messages for canned message plugin separated by '|' characters.
+   * Predefined messages for canned message module separated by '|' characters.
    */
   string messagesPart1 = 11;
 
