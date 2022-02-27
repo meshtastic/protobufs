@@ -111,14 +111,14 @@ enum RegionCode {
  *     Functions as a router
  *
  *   Repeater
- *     Repeats all packets. This is similiar to the behavior in Meshtastic 1.2.
+ *     - Repeats all packets.
  */
 enum Role {
 
   /*
    * Default device role
    */
-  Unset = 0;
+  Default = 0;
 
   /*
    * Router device role
