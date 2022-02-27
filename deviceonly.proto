@@ -6,7 +6,6 @@ option go_package = "github.com/meshtastic/gomeshproto";
 
 import "channel.proto";
 import "mesh.proto";
-import "radioconfig.proto";
 
 option java_outer_classname = "DeviceOnly";
 
@@ -35,6 +34,9 @@ message DeviceState {
    */
   User owner = 3;
 
+  /*
+   * TODO: REPLACE
+   */
   repeated NodeInfo node_db = 4;
 
   /*
@@ -73,6 +75,7 @@ message DeviceState {
  * The on-disk saved channels
  */
 message ChannelFile {
+
   /*
    * The channels our node knows about
    */
