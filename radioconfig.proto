@@ -25,383 +25,6 @@ option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
 /*
- * The frequency/regulatory region the user has selected.
- *
- * Note: In 1.0 builds (which must still be supported by the android app for a
- * long time) this field will be unpopulated.
- *
- * If firmware is ever upgraded from an old 1.0ish build, the old
- * MyNodeInfo.region string will be used to set UserPreferences.region and the
- * old value will be no longer set.
- */
-enum RegionCode {
-
-  /*
-   * TODO: REPLACE
-   */
-  Unset = 0;
-
-  /*
-   * TODO: REPLACE
-   */
-  US = 1;
-
-  /*
-   * TODO: REPLACE
-   */
-  EU433 = 2;
-
-  /*
-   * TODO: REPLACE
-   */
-  EU868 = 3;
-
-  /*
-   * TODO: REPLACE
-   */
-  CN = 4;
-
-  /*
-   * TODO: REPLACE
-   */
-  JP = 5;
-
-  /*
-   * TODO: REPLACE
-   */
-  ANZ = 6;
-
-  /*
-   * TODO: REPLACE
-   */
-  KR = 7;
-
-  /*
-   * TODO: REPLACE
-   */
-  TW = 8;
-
-  /*
-   * TODO: REPLACE
-   */
-  RU = 9;
-
-  /*
-   * TODO: REPLACE
-   */
-  IN = 10;
-
-  /*
-   * TODO: REPLACE
-   */
-  NZ865 = 11;
-
-  /*
-   * TODO: REPLACE
-   */
-  TH = 12;
-}
-
-/*
- * Sets the charge control current of devices with a battery charger that can be
- * configured. This is passed into the axp power management chip like on the tbeam.
- */
-enum ChargeCurrent {
-
-  /*
-   * TODO: REPLACE
-   */
-  MAUnset = 0;
-
-  /*
-   * TODO: REPLACE
-   */
-  MA100 = 1;
-
-  /*
-   * TODO: REPLACE
-   */
-  MA190 = 2;
-
-  /*
-   * TODO: REPLACE
-   */
-  MA280 = 3;
-
-  /*
-   * TODO: REPLACE
-   */
-  MA360 = 4;
-
-  /*
-   * TODO: REPLACE
-   */
-  MA450 = 5;
-
-  /*
-   * TODO: REPLACE
-   */
-  MA550 = 6;
-
-  /*
-   * TODO: REPLACE
-   */
-  MA630 = 7;
-
-  /*
-   * TODO: REPLACE
-   */
-  MA700 = 8;
-
-  /*
-   * TODO: REPLACE
-   */
-  MA780 = 9;
-
-  /*
-   * TODO: REPLACE
-   */
-  MA880 = 10;
-
-  /*
-   * TODO: REPLACE
-   */
-  MA960 = 11;
-
-  /*
-   * TODO: REPLACE
-   */
-  MA1000 = 12;
-  
-  /*
-   * TODO: REPLACE
-   */
-  MA1080 = 13;
-
-  /*
-   * TODO: REPLACE
-   */
-  MA1160 = 14;
-
-  /*
-   * TODO: REPLACE
-   */
-  MA1240 = 15;
-
-  /*
-   * TODO: REPLACE
-   */
-  MA1320 = 16;
-}
-
-/*
- * How the GPS hardware in this unit is operated.
- * Note: This is independent of how our location is shared with other devices.
- * For that see LocationSharing
- */
-enum GpsOperation {
-
-  /*
-   * This is treated as GpsOpMobile - it is the default setting
-   */
-  GpsOpUnset = 0;
-
-  /*
-   * Note: This mode was removed, because it is identical go GpsOpMobile with a gps_update_rate of once per day
-   * This node is mostly stationary, we should try to get location only once per day,
-   * Once we have that position we should turn the GPS to sleep mode
-   * This is the recommended configuration for stationary 'router' nodes
-   */
-  GpsOpStationary = 1;
-
-  /*
-   * This node is mobile and we should get GPS position at a rate governed by gps_update_rate
-   */
-  GpsOpMobile = 2;
-
-  /*
-   * We should only use the GPS to get time (no location data should be acquired/stored)
-   * Once we have the time we treat gps_update_interval as MAXINT (i.e. sleep forever)
-   */
-  GpsOpTimeOnly = 3;
-
-  /*
-   * GPS is always turned off - this mode is not recommended - use GpsOpTimeOnly instead
-   */
-  GpsOpDisabled = 4;
-}
-
-/*
- * How the GPS coordinates are displayed on the OLED screen.
- */
-enum GpsCoordinateFormat {
-
-  /*
-   * GPS coordinates are displayed in the normal decimal degrees format:
-   * DD.DDDDDD DDD.DDDDDD
-   */
-  GpsFormatDec = 0;
-
-  /*
-   * GPS coordinates are displayed in the degrees minutes seconds format:
-   * DD°MM'SS"C DDD°MM'SS"C, where C is the compass point representing the locations quadrant
-   */
-  GpsFormatDMS = 1;
-
-  /*
-   * GPS coordinates are displayed in Universal Transverse Mercator format:
-   * ZZB EEEEEE NNNNNNN, where Z is zone, B is band, E is easting, N is northing
-   */
-  GpsFormatUTM = 2;
-
-  /*
-   * GPS coordinates are displayed in Military Grid Reference System format:
-   * ZZB CD EEEEE NNNNN, where Z is zone, B is band, C is the east 100k square, D is the north 100k square,
-   * E is easting, N is northing
-   */
-  GpsFormatMGRS = 3;
-
-  /*
-   * GPS coordinates are displayed in Open Location Code (aka Plus Codes).
-   */
-  GpsFormatOLC = 4;
-
-  /*
-   * GPS coordinates are displayed in Ordnance Survey Grid Reference (the National Grid System of the UK).
-   * Format: AB EEEEE NNNNN, where A is the east 100k square, B is the north 100k square, E is the easting,
-   * N is the northing
-   */
-  GpsFormatOSGR = 5;
-}
-
-/*
- * How our location is shared with other nodes (or the local phone)
- */
-enum LocationSharing {
-
-  /*
-   * This is the default and treated as LocEnabled.
-   */
-  LocUnset = 0;
-
-  /*
-   * We are sharing our location
-   */
-  LocEnabled = 1;
-
-  /*
-   * We are not sharing our location (if the unit has a GPS it will default to only get time - i.e. GpsOpTimeOnly)
-   */
-  LocDisabled = 2;
-}
-
-/*
- * Bit field of boolean configuration options, indicating which optional
- *   fields to include when assembling POSITION messages
- * Longitude and latitude are always included (also time if GPS-synced)
- *
- * NOTE: the more fields are included, the larger the message will be -
- *   leading to longer airtime and a higher risk of packet loss
- */
-enum PositionFlags {
-  /*
-   * Required for compilation
-   */
-  POS_UNDEFINED = 0x0000;
-
-  /*
-   * Include an altitude value (if available)
-   */
-  POS_ALTITUDE  = 0x0001;
-
-  /*
-   * Altitude value is MSL
-   */
-  POS_ALT_MSL   = 0x0002;
-
-  /*
-   * Include geoidal separation
-   */
-  POS_GEO_SEP   = 0x0004;
-
-  /*
-   * Include the DOP value ; PDOP used by default, see below
-   */
-  POS_DOP       = 0x0008;
-
-  /*
-   * If POS_DOP set, send separate HDOP / VDOP values instead of PDOP
-   */
-  POS_HVDOP     = 0x0010;
-
-  /*
-   * Include battery level
-   */
-  POS_BATTERY   = 0x0020;
-
-  /*
-   * Include number of "satellites in view"
-   */
-  POS_SATINVIEW = 0x0040;
-
-  /*
-   * Include a sequence number incremented per packet
-   */
-  POS_SEQ_NOS   = 0x0080;
-
-  /*
-   * Include positional timestamp (from GPS solution)
-   */
-  POS_TIMESTAMP = 0x0100;
-}
-
-/*
- * TODO: REPLACE
- */
-enum InputEventChar {
-
-  /*
-   * TODO: REPLACE
-   */
-  KEY_NONE  = 0;
-
-  /*
-   * TODO: REPLACE
-   */
-  KEY_UP    = 17;
-
-  /*
-   * TODO: REPLACE
-   */
-  KEY_DOWN  = 18;
-
-  /*
-   * TODO: REPLACE
-   */
-  KEY_LEFT  = 19;
-
-  /*
-   * TODO: REPLACE
-   */
-  KEY_RIGHT =  20;
-
-  /*
-   * '\n'
-   */
-  KEY_SELECT = 10;
-
-  /*
-   * TODO: REPLACE
-   */
-  KEY_BACK  = 27;
-
-  /*
-   * TODO: REPLACE
-   */
-  KEY_CANCEL = 24;
-}
-
-/*
  * The entire set of user settable/readable settings for our radio device.
  * Includes both the current channel settings and any preferences the user has
  * set for behavior of their node
@@ -449,17 +72,130 @@ message RadioConfig {
      * in ignore_incoming will have packets they send droped on receive (by router.cpp)
      */
     repeated uint32 ignore_incoming = 103;
-
-    /*
-     * TODO: REPLACE
-     */
-    reserved 136;
   }
 
   /*
    * TODO: REPLACE
    */
   message GpsConfig {
+
+    /*
+     * How our location is shared with other nodes (or the local phone)
+     */
+    enum LocationSharing {
+
+      /*
+       * This is the default and treated as LocEnabled.
+       */
+      LocUnset = 0;
+
+      /*
+       * We are sharing our location
+       */
+      LocEnabled = 1;
+
+      /*
+       * We are not sharing our location (if the unit has a GPS it will default to only get time - i.e. GpsOpTimeOnly)
+       */
+      LocDisabled = 2;
+    }
+
+    /*
+     * Bit field of boolean configuration options, indicating which optional
+     *   fields to include when assembling POSITION messages
+     * Longitude and latitude are always included (also time if GPS-synced)
+     *
+     * NOTE: the more fields are included, the larger the message will be -
+     *   leading to longer airtime and a higher risk of packet loss
+     */
+    enum PositionFlags {
+      /*
+       * Required for compilation
+       */
+      POS_UNDEFINED = 0x0000;
+
+      /*
+       * Include an altitude value (if available)
+       */
+      POS_ALTITUDE  = 0x0001;
+
+      /*
+       * Altitude value is MSL
+       */
+      POS_ALT_MSL   = 0x0002;
+
+      /*
+       * Include geoidal separation
+       */
+      POS_GEO_SEP   = 0x0004;
+
+      /*
+       * Include the DOP value ; PDOP used by default, see below
+       */
+      POS_DOP       = 0x0008;
+
+      /*
+       * If POS_DOP set, send separate HDOP / VDOP values instead of PDOP
+       */
+      POS_HVDOP     = 0x0010;
+
+      /*
+       * Include battery level
+       */
+      POS_BATTERY   = 0x0020;
+
+      /*
+       * Include number of "satellites in view"
+       */
+      POS_SATINVIEW = 0x0040;
+
+      /*
+       * Include a sequence number incremented per packet
+       */
+      POS_SEQ_NOS   = 0x0080;
+
+      /*
+       * Include positional timestamp (from GPS solution)
+       */
+      POS_TIMESTAMP = 0x0100;
+    }
+
+    /*
+     * How the GPS hardware in this unit is operated.
+     * Note: This is independent of how our location is shared with other devices.
+     * For that see LocationSharing
+     */
+    enum GpsOperation {
+
+      /*
+       * This is treated as GpsOpMobile - it is the default setting
+       */
+      GpsOpUnset = 0;
+
+      /*
+       * Note: This mode was removed, because it is identical go GpsOpMobile with a gps_update_rate of once per day
+       * This node is mostly stationary, we should try to get location only once per day,
+       * Once we have that position we should turn the GPS to sleep mode
+       * This is the recommended configuration for stationary 'router' nodes
+       */
+      GpsOpStationary = 1;
+
+      /*
+       * This node is mobile and we should get GPS position at a rate governed by gps_update_rate
+       */
+      GpsOpMobile = 2;
+
+      /*
+       * We should only use the GPS to get time (no location data should be acquired/stored)
+       * Once we have the time we treat gps_update_interval as MAXINT (i.e. sleep forever)
+       */
+      GpsOpTimeOnly = 3;
+
+      /*
+       * GPS is always turned off - this mode is not recommended - use GpsOpTimeOnly instead
+       */
+      GpsOpDisabled = 4;
+    }
 
     /*
      * We should send our position this often (but only if it has changed significantly)
@@ -529,17 +265,104 @@ message RadioConfig {
      */
     uint32 position_flags = 150;
 
-    /*
-     * How the GPS coordinates are displayed on the OLED screen.
-     */
-    GpsCoordinateFormat gps_format = 44;
-
   }
 
   /*
    * TODO: REPLACE
    */
   message PowerConfig {
+
+    /*
+     * Sets the charge control current of devices with a battery charger that can be
+     * configured. This is passed into the axp power management chip like on the tbeam.
+     */
+    enum ChargeCurrent {
+
+      /*
+       * TODO: REPLACE
+       */
+      MAUnset = 0;
+
+      /*
+       * TODO: REPLACE
+       */
+      MA100 = 1;
+
+      /*
+       * TODO: REPLACE
+       */
+      MA190 = 2;
+
+      /*
+       * TODO: REPLACE
+       */
+      MA280 = 3;
+
+      /*
+       * TODO: REPLACE
+       */
+      MA360 = 4;
+
+      /*
+       * TODO: REPLACE
+       */
+      MA450 = 5;
+
+      /*
+       * TODO: REPLACE
+       */
+      MA550 = 6;
+
+      /*
+       * TODO: REPLACE
+       */
+      MA630 = 7;
+
+      /*
+       * TODO: REPLACE
+       */
+      MA700 = 8;
+
+      /*
+       * TODO: REPLACE
+       */
+      MA780 = 9;
+
+      /*
+       * TODO: REPLACE
+       */
+      MA880 = 10;
+
+      /*
+       * TODO: REPLACE
+       */
+      MA960 = 11;
+
+      /*
+       * TODO: REPLACE
+       */
+      MA1000 = 12;
+      
+      /*
+       * TODO: REPLACE
+       */
+      MA1080 = 13;
+
+      /*
+       * TODO: REPLACE
+       */
+      MA1160 = 14;
+
+      /*
+       * TODO: REPLACE
+       */
+      MA1240 = 15;
+
+      /*
+       * TODO: REPLACE
+       */
+      MA1320 = 16;
+    }
 
     /*
      * Sets the current of the battery charger
@@ -656,6 +479,49 @@ message RadioConfig {
   message DisplayConfig {
 
     /*
+     * How the GPS coordinates are displayed on the OLED screen.
+     */
+    enum GpsCoordinateFormat {
+
+      /*
+       * GPS coordinates are displayed in the normal decimal degrees format:
+       * DD.DDDDDD DDD.DDDDDD
+       */
+      GpsFormatDec = 0;
+
+      /*
+       * GPS coordinates are displayed in the degrees minutes seconds format:
+       * DD°MM'SS"C DDD°MM'SS"C, where C is the compass point representing the locations quadrant
+       */
+      GpsFormatDMS = 1;
+
+      /*
+       * GPS coordinates are displayed in Universal Transverse Mercator format:
+       * ZZB EEEEEE NNNNNNN, where Z is zone, B is band, E is easting, N is northing
+       */
+      GpsFormatUTM = 2;
+
+      /*
+       * GPS coordinates are displayed in Military Grid Reference System format:
+       * ZZB CD EEEEE NNNNN, where Z is zone, B is band, C is the east 100k square, D is the north 100k square,
+       * E is easting, N is northing
+       */
+      GpsFormatMGRS = 3;
+
+      /*
+       * GPS coordinates are displayed in Open Location Code (aka Plus Codes).
+       */
+      GpsFormatOLC = 4;
+
+      /*
+       * GPS coordinates are displayed in Ordnance Survey Grid Reference (the National Grid System of the UK).
+       * Format: AB EEEEE NNNNN, where A is the east 100k square, B is the north 100k square, E is the easting,
+       * N is the northing
+       */
+      GpsFormatOSGR = 5;
+    }
+
+    /*
      * Power management state machine option.
      * See [power management](/software/other/power.md) for details.
      * 0 for default of one minute
@@ -667,12 +533,95 @@ message RadioConfig {
      * Potentially useful for devices without user buttons.
      */
     uint32 auto_screen_carousel_secs = 152;
+
+    /*
+     * How the GPS coordinates are displayed on the OLED screen.
+     */
+    GpsCoordinateFormat gps_format = 44;
   }
 
   /*
    * TODO: REPLACE
    */
   message LoRaConfig {
+
+    /*
+     * The frequency/regulatory region the user has selected.
+     *
+     * Note: In 1.0 builds (which must still be supported by the android app for a
+     * long time) this field will be unpopulated.
+     *
+     * If firmware is ever upgraded from an old 1.0ish build, the old
+     * MyNodeInfo.region string will be used to set UserPreferences.region and the
+     * old value will be no longer set.
+     */
+    enum RegionCode {
+
+      /*
+       * TODO: REPLACE
+       */
+      Unset = 0;
+
+      /*
+       * TODO: REPLACE
+       */
+      US = 1;
+
+      /*
+       * TODO: REPLACE
+       */
+      EU433 = 2;
+
+      /*
+       * TODO: REPLACE
+       */
+      EU868 = 3;
+
+      /*
+       * TODO: REPLACE
+       */
+      CN = 4;
+
+      /*
+       * TODO: REPLACE
+       */
+      JP = 5;
+
+      /*
+       * TODO: REPLACE
+       */
+      ANZ = 6;
+
+      /*
+       * TODO: REPLACE
+       */
+      KR = 7;
+
+      /*
+       * TODO: REPLACE
+       */
+      TW = 8;
+
+      /*
+       * TODO: REPLACE
+       */
+      RU = 9;
+
+      /*
+       * TODO: REPLACE
+       */
+      IN = 10;
+
+      /*
+       * TODO: REPLACE
+       */
+      NZ865 = 11;
+
+      /*
+       * TODO: REPLACE
+       */
+      TH = 12;
+    }
 
     /*
      * Overrides HOPS_RELIABLE and sets the maximum number of hops. This can't be greater than 7.
@@ -1003,6 +952,52 @@ message RadioConfig {
      * TODO: REPLACE
      */
     message CannedMessageConfig {
+
+      /*
+       * TODO: REPLACE
+       */
+      enum InputEventChar {
+
+        /*
+         * TODO: REPLACE
+         */
+        KEY_NONE  = 0;
+
+        /*
+         * TODO: REPLACE
+         */
+        KEY_UP    = 17;
+
+        /*
+         * TODO: REPLACE
+         */
+        KEY_DOWN  = 18;
+
+        /*
+         * TODO: REPLACE
+         */
+        KEY_LEFT  = 19;
+
+        /*
+         * TODO: REPLACE
+         */
+        KEY_RIGHT =  20;
+
+        /*
+         * '\n'
+         */
+        KEY_SELECT = 10;
+
+        /*
+         * TODO: REPLACE
+         */
+        KEY_BACK  = 27;
+
+        /*
+         * TODO: REPLACE
+         */
+        KEY_CANCEL = 24;
+      }
 
       /*
        * Enable the rotary encoder #1
