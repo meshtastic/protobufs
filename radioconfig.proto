@@ -94,7 +94,12 @@ enum RegionCode {
   /*
    * TODO: REPLACE
    */
-  TH = 11;
+  NZ865 = 11;
+
+  /*
+   * TODO: REPLACE
+   */
+  TH = 12;
 }
 
 /*
@@ -892,50 +897,50 @@ message RadioConfig {
     /*
      * TODO: REPLACE
      */
-    message EnvironmentalConfig {
+    message Telemetry {
 
       /*
-       * Preferences for the EnvironmentalMeasurement Plugin
+       * Preferences for the Teletry Plugin
        * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-       * Enable/Disable the environmental measurement plugin measurement collection
+       * Enable/Disable the telemetry measurement plugin measurement collection
        */
-      bool environmental_measurement_plugin_measurement_enabled = 140;
+      bool telemetry_module_measurement_enabled = 140;
 
       /*
-       * Enable/Disable the environmental measurement plugin on-device display
+       * Enable/Disable the telemetry measurement plugin on-device display
        */
-      bool environmental_measurement_plugin_screen_enabled = 141;
+      bool telemetry_module_screen_enabled = 141;
 
       /*
        * Sometimes sensor reads can fail.
        * If this happens, we will retry a configurable number of attempts,
        * each attempt will be delayed by the minimum required refresh rate for that sensor
        */
-      uint32 environmental_measurement_plugin_read_error_count_threshold = 142;
+      uint32 telemetry_module_read_error_count_threshold = 142;
 
       /*
        * Interval in seconds of how often we should try to send our
        * measurements to the mesh
        */
-      uint32 environmental_measurement_plugin_update_interval = 143;
+      uint32 telemetry_module_update_interval = 143;
 
       /*
        * Sometimes we can end up with more than read_error_count_threshold failures.
        * In this case, we will stop trying to read from the sensor for a while.
        * Wait this long until trying to read from the sensor again
        */
-      uint32 environmental_measurement_plugin_recovery_interval = 144;
+      uint32 telemetry_module_recovery_interval = 144;
 
       /*
        * We'll always read the sensor in Celsius, but sometimes we might want to
        * display the results in Farenheit as a "user preference".
        */
-      bool environmental_measurement_plugin_display_farenheit = 145;
+      bool telemetry_module_display_farenheit = 145;
 
       /*
        * TODO: REPLACE
        */
-      enum EnvironmentalMeasurementSensorType {
+      enum TelemetrySensorType {
 
         /*
          * TODO: REPLACE
@@ -986,12 +991,12 @@ message RadioConfig {
       /*
        * Specify the sensor type
        */
-      EnvironmentalMeasurementSensorType environmental_measurement_plugin_sensor_type = 146;
+      TelemetrySensorType telemetry_module_sensor_type = 146;
 
       /*
        * Specify the peferred GPIO Pin for sensor readings
        */
-      uint32 environmental_measurement_plugin_sensor_pin = 147;
+      uint32 telemetry_module_sensor_pin = 147;
     }
 
     /*
@@ -1082,7 +1087,7 @@ message RadioConfig {
       /*
        * TODO: REPLACE
        */
-      EnvironmentalConfig environmental_config = 1;
+      TelemetryConfig telemetry_config = 1;
 
       /*
        * TODO: REPLACE
