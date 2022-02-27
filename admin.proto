@@ -21,6 +21,7 @@ message AdminMessage {
    * TODO: REPLACE
    */
   enum RadioConfigType {
+
     /*
      * TODO: REPLACE
      */
@@ -29,57 +30,77 @@ message AdminMessage {
     /*
      * TODO: REPLACE
      */
-    CORE_ONLY = 1;
+    CORE_ONLY = 2;
 
     /*
      * TODO: REPLACE
      */
-    DEVICE_CONFIG = 1;
+    MODULE_ONLY = 3;
 
     /*
      * TODO: REPLACE
      */
-    GPS_CONFIG = 1;
+    DEVICE_CONFIG = 4;
 
     /*
      * TODO: REPLACE
      */
-    POWER_CONFIG = 1;
+    GPS_CONFIG = 5;
 
     /*
      * TODO: REPLACE
      */
-    MODULE_MQTT_CONFIG = 1;
+    POWER_CONFIG = 6;
 
     /*
      * TODO: REPLACE
      */
-    MODULE_SERIAL_CONFIG = 1;
+    WIFI_CONFIG = 7;
 
     /*
      * TODO: REPLACE
      */
-    MODULE_EXTNOTIF_CONFIG = 1;
+    DISPLAY_CONFIG = 8;
 
     /*
      * TODO: REPLACE
      */
-    MODULE_STOREFORWARD_CONFIG = 1;
+    LORA_CONFIG = 9;
 
     /*
      * TODO: REPLACE
      */
-    MODULE_RANGETEST_CONFIG = 1;
+    MODULE_MQTT_CONFIG = 10;
 
     /*
      * TODO: REPLACE
      */
-    MODULE_ENVIRONMENTAL_CONFIG = 1;
+    MODULE_SERIAL_CONFIG = 11;
 
     /*
      * TODO: REPLACE
      */
-    MODULE_CANNEDMSG_CONFIG = 1;
+    MODULE_EXTNOTIF_CONFIG = 12;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_STOREFORWARD_CONFIG = 13;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_RANGETEST_CONFIG = 14;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_ENVIRONMENTAL_CONFIG = 15;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_CANNEDMSG_CONFIG = 16;
   }
 
   /*
