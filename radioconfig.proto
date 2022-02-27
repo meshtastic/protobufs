@@ -407,158 +407,48 @@ message RadioConfig {
    * TODO: REPLACE
    */
   message DeviceConfig {
-    /*
-     * Send our owner info at least this often (also we always send once at boot - to rejoin the mesh)
-     */
-    uint32 send_owner_interval = 2;
 
     /*
-      * If we miss this many owner messages from a node, we declare the node
-      * offline (defaults to 3 - to allow for some lost packets) (FIXME not yet used)
-      *
-      * uint32 num_missed_to_fail = 3;
-      TODO: REMOVE/INTEGRATE
-      */
- 
+     * If we miss this many owner messages from a node, we declare the node
+     * offline (defaults to 3 - to allow for some lost packets) (FIXME not yet used)
+     *
+     * uint32 num_missed_to_fail = 3;
+     * TODO: REMOVE/INTEGRATE
+     */
+
     /*
-      * Power management state machine option.
-      * See [power management](/software/other/power.md) for details.
-      * 0 for default of 1 minute
-      */
-    uint32 wait_bluetooth_secs = 4;
- 
-    /*
-      * Power management state machine option.
-      * See [power management](/software/other/power.md) for details.
-      * 0 for default of one minute
-      */
-    uint32 screen_on_secs = 5;
- 
-    /*
-      * Power management state machine option.
-      * See [power management](/software/other/power.md) for details.
-      * 0 for default of 15 minutes
-      * IMPORTANT NOTE FOR DEVICE CLIENTS: YOU MUST SEND SOME SORT OF PACKET TO THE PHONE AT LEAST THIS OFTEN OR THE DEVICE WILL DECIDE YOU ARE GONE!
-      */
-    uint32 phone_timeout_secs = 6;
- 
-    /*
-      * Power management state machine option.
-      * See [power management](/software/other/power.md) for details.
-      * 0 for default of two hours, MAXUINT for disabled
-      */
-    uint32 phone_sds_timeout_sec = 7;
- 
-    /*
-      * Power management state machine option.
-      * See [power management](/software/other/power.md) for details.
-      * 0 for default of two hours, MAXUINT for disabled
-      */
-    uint32 mesh_sds_timeout_secs = 8;
- 
-    /*
-      * Power management state machine option.
-      * See [power management](/software/other/power.md) for details.
-      * 0 for default of one year
-      */
-    uint32 sds_secs = 9;
- 
-    /*
-      * Power management state machine option.
-      * See [power management](/software/other/power.md) for details.
-      * 0 for default of 3600
-      */
-    uint32 ls_secs = 10;
- 
-    /*
-      * If set, this node will try to join the specified wifi network and
-      * acquire an address via DHCP
-      */
-    string wifi_ssid = 12;
- 
-    /*
-      * If set, will be use to authenticate to the named wifi
-      */
-    string wifi_password = 13;
- 
-    /*
-      * If set, the node will operate as an AP (and DHCP server), otherwise it
-      * will be a station
-      */
-    bool wifi_ap_mode = 14;
- 
-    /*
-      * The region code for my radio (US, CN, EU433, etc...)
-      */
-    RegionCode region = 15;
- 
-    /*
-      * Are we operating as a router.
-      * Changes behavior in the following ways:
-      * The device will only sleep for critically low battery level (i.e. always tries to stay alive for the mesh)
-      * In the future routing decisions will preferentially route packets through nodes with this attribute (because assumed
-      * good line of sight)
-      */
-    bool is_router = 37;
- 
-    /*
-      * If set, this will disable the SerialConsole by not initilizing the StreamAPI
-      */
+     * If set, this will disable the SerialConsole by not initilizing the StreamAPI
+     */
     bool serial_disabled = 40;
- 
-    /*
-      * This parameter is for advanced users with advanced test equipment, we do not recommend most users use it.
-      * A frequency offset that is added to to the calculated band center frequency.
-      * Used to correct for crystal calibration errors.
-      */
-    float frequency_offset = 41;
- 
+
     /*
       * This setting is never saved to disk, but if set, all device settings will be returned to factory defaults.
       * (Region, serial number etc... will be preserved)
       */
     bool factory_reset = 100;
- 
+
     /*
-       * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
-       * Set this to true to leave the debug log outputting even when API is active.
-       */
+     * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
+     * Set this to true to leave the debug log outputting even when API is active.
+     */
     bool debug_log_enabled = 101;
- 
+
     /*
-      * If true, radio should not try to be smart about what packets to queue to
-      * the phone
-      * bool keep_all_packets = 101;
-      * If true, we will try to capture all the packets sent on the mesh, not just the ones destined to our node.
-      * bool promiscuous_mode = 102;
-      * For testing it is useful sometimes to force a node to never listen to
-      * particular other nodes (simulating radio out of range). All nodenums listed
-      * in ignore_incoming will have packets they send droped on receive (by router.cpp)
-      */
+     * If true, radio should not try to be smart about what packets to queue to
+     * the phone
+     * bool keep_all_packets = 101;
+     * If true, we will try to capture all the packets sent on the mesh, not just the ones destined to our node.
+     * bool promiscuous_mode = 102;
+     * For testing it is useful sometimes to force a node to never listen to
+     * particular other nodes (simulating radio out of range). All nodenums listed
+     * in ignore_incoming will have packets they send droped on receive (by router.cpp)
+     */
     repeated uint32 ignore_incoming = 103;
- 
+
     /*
-      * TODO: REPLACE
-      */
+     * TODO: REPLACE
+     */
     reserved 136;
- 
-    /*
-      * Automatically toggles to the next page on the screen like a carousel, based the specified interval in seconds.
-      * Potentially useful for devices without user buttons.
-      */
-    uint32 auto_screen_carousel_secs = 152;
- 
-    /*
-      * Overrides HOPS_RELIABLE and sets the maximum number of hops. This can't be greater than 7.
-      *
-      */
-    uint32 hop_limit = 154;
- 
-    /*
-      * Disable TX from the LoRa radio. Useful for hot-swapping antennas and other tests.
-      * Defaults to false
-      */
-    bool is_lora_tx_disabled = 157;
   }
 
   /*
@@ -687,6 +577,136 @@ message RadioConfig {
      * 0 for default of 10 seconds
      */
     uint32 min_wake_secs = 11;
+
+    /*
+     * Power management state machine option.
+     * See [power management](/software/other/power.md) for details.
+     * 0 for default of 15 minutes
+     * IMPORTANT NOTE FOR DEVICE CLIENTS: YOU MUST SEND SOME SORT OF PACKET TO THE PHONE AT LEAST THIS OFTEN OR THE DEVICE WILL DECIDE YOU ARE GONE!
+     */
+    uint32 phone_timeout_secs = 6;
+
+    /*
+     * Power management state machine option.
+     * See [power management](/software/other/power.md) for details.
+     * 0 for default of two hours, MAXUINT for disabled
+     */
+    uint32 phone_sds_timeout_sec = 7;
+  
+    /*
+     * Power management state machine option.
+     * See [power management](/software/other/power.md) for details.
+     * 0 for default of two hours, MAXUINT for disabled
+     */
+    uint32 mesh_sds_timeout_secs = 8;
+  
+    /*
+     * Power management state machine option.
+     * See [power management](/software/other/power.md) for details.
+     * 0 for default of one year
+     */
+    uint32 sds_secs = 9;
+  
+    /*
+     * Power management state machine option.
+     * See [power management](/software/other/power.md) for details.
+     * 0 for default of 3600
+     */
+    uint32 ls_secs = 10;
+
+    /*
+     * Power management state machine option.
+     * See [power management](/software/other/power.md) for details.
+     * 0 for default of 1 minute
+     */
+    uint32 wait_bluetooth_secs = 4;
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  message WiFiConfig {
+
+    /*
+     * If set, this node will try to join the specified wifi network and
+     * acquire an address via DHCP
+     */
+    string wifi_ssid = 12;
+ 
+    /*
+     * If set, will be use to authenticate to the named wifi
+     */
+    string wifi_password = 13;
+  
+    /*
+     * If set, the node will operate as an AP (and DHCP server), otherwise it
+     * will be a station
+     */
+    bool wifi_ap_mode = 14;
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  message DisplayConfig {
+
+    /*
+     * Power management state machine option.
+     * See [power management](/software/other/power.md) for details.
+     * 0 for default of one minute
+     */
+    uint32 screen_on_secs = 5;
+
+    /*
+     * Automatically toggles to the next page on the screen like a carousel, based the specified interval in seconds.
+     * Potentially useful for devices without user buttons.
+     */
+    uint32 auto_screen_carousel_secs = 152;
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  message LoRaConfig {
+
+    /*
+     * Overrides HOPS_RELIABLE and sets the maximum number of hops. This can't be greater than 7.
+     *
+     */
+    uint32 hop_limit = 154;
+
+    /*
+     * Disable TX from the LoRa radio. Useful for hot-swapping antennas and other tests.
+     * Defaults to false
+     */
+    bool is_lora_tx_disabled = 157;
+
+    /*
+     * Are we operating as a router.
+     * Changes behavior in the following ways:
+     * The device will only sleep for critically low battery level (i.e. always tries to stay alive for the mesh)
+     * In the future routing decisions will preferentially route packets through nodes with this attribute (because assumed
+     * good line of sight)
+     */
+    bool is_router = 37;
+
+    /*
+     * Send our owner info at least this often (also we always send once at boot - to rejoin the mesh)
+     */
+    uint32 send_owner_interval = 2;
+
+    /*
+      * This parameter is for advanced users with advanced test equipment, we do not recommend most users use it.
+      * A frequency offset that is added to to the calculated band center frequency.
+      * Used to correct for crystal calibration errors.
+      */
+    float frequency_offset = 41;
+
+    /*
+     * The region code for my radio (US, CN, EU433, etc...)
+     */
+    RegionCode region = 15;
+
   }
 
   /*
@@ -1092,7 +1112,22 @@ message RadioConfig {
     /*
      * TODO: REPLACE
      */
-    ModuleConfig module_config = 3;
+    WiFiConfig wifi_config = 4;
+
+    /*
+     * TODO: REPLACE
+     */
+    DisplayConfig display_config = 5;
+    
+    /*
+     * TODO: REPLACE
+     */
+    LoRaConfig lora_config = 6;
+
+    /*
+     * TODO: REPLACE
+     */
+    ModuleConfig module_config = 7;
 
   }
 
