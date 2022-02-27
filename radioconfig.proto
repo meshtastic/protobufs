@@ -643,7 +643,7 @@ message RadioConfig {
     repeated uint32 ignore_incoming = 103;
 
     /*
-     * Preferences for the SerialPlugin
+     * Preferences for the SerialModule
      * FIXME - Move this out of UserPreferences and into a section for module configuration.
      */
     bool serialmodule_enabled = 120;
@@ -679,7 +679,7 @@ message RadioConfig {
     uint32 serialmodule_mode = 125;
 
     /*
-     * Preferences for the ExternalNotificationPlugin
+     * Preferences for the ExternalNotificationModule
      * FIXME - Move this out of UserPreferences and into a section for module configuration.
      */
     bool ext_notification_module_enabled = 126;
@@ -710,7 +710,7 @@ message RadioConfig {
     bool ext_notification_module_alert_bell = 131;
 
     /*
-     * Preferences for the RangeTestPlugin
+     * Preferences for the RangeTestModule
      * FIXME - Move this out of UserPreferences and into a section for module configuration.
      */
     bool range_test_module_enabled = 132;
@@ -726,7 +726,7 @@ message RadioConfig {
     bool range_test_module_save = 134;
 
     /*
-     * Preferences for the StoreForwardPlugin
+     * Preferences for the StoreForwardModule
      *FIXME - Move this out of UserPreferences and into a section for module configuration. (was 136)
      */
     bool store_forward_module_enabled = 148;
@@ -757,7 +757,7 @@ message RadioConfig {
     reserved 136;
 
     /*
-     * Preferences for the Teletry Plugin
+     * Preferences for the Teletry Module
      * FIXME - Move this out of UserPreferences and into a section for module configuration.
      * Enable/Disable the telemetry measurement module measurement collection
      */
@@ -946,7 +946,7 @@ message RadioConfig {
     InputEventChar rotary1_event_press = 166;
 
     /*
-     * Enable/disable CannedMessagePlugin.
+     * Enable/disable CannedMessageModule.
      */
     bool canned_message_module_enabled = 170;
 
@@ -957,8 +957,8 @@ message RadioConfig {
     string canned_message_module_allow_input_source = 171;
 
     /*
-     * CannedMessagePlugin also sends a bell character with the messages.
-     * ExternalNotificationPlugin can benefit from this feature.
+     * CannedMessageModule also sends a bell character with the messages.
+     * ExternalNotificationModule can benefit from this feature.
      */
     bool canned_message_module_send_bell = 173;
 
