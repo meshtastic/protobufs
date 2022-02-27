@@ -20,6 +20,71 @@ message AdminMessage {
   /*
    * TODO: REPLACE
    */
+  enum RadioConfigType {
+    /*
+     * TODO: REPLACE
+     */
+    ALL = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    CORE_ONLY = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    DEVICE_CONFIG = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    GPS_CONFIG = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    POWER_CONFIG = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_MQTT_CONFIG = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+     MODULE_SERIAL_CONFIG = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_EXTNOTIF_CONFIG = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_STOREFORWARD_CONFIG = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_RANGETEST_CONFIG = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_ENVIRONMENTAL_CONFIG = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_CANNEDMSG_CONFIG = 1;
+  }
+
+  /*
+   * TODO: REPLACE
+   */
   oneof variant {
 
     /*
@@ -44,7 +109,7 @@ message AdminMessage {
     /*
      * Send the current RadioConfig in the response to this message.
      */
-    bool get_radio_request = 4;
+    RadioConfigType get_radio_request = 4;
 
     /*
      * TODO: REPLACE
