@@ -4,7 +4,7 @@ option go_package = "github.com/meshtastic/gomeshproto";
 /*
  * TODO: REPLACE
  */
-message EnvironmentalMeasurement {
+message Telemetry {
 
   /*
    * TODO: REPLACE
