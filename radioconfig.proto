@@ -406,8 +406,159 @@ message RadioConfig {
   /*
    * TODO: REPLACE
    */
-  message ModemConfig {
-      
+  message DeviceConfig {
+    /*
+     * Send our owner info at least this often (also we always send once at boot - to rejoin the mesh)
+     */
+    uint32 send_owner_interval = 2;
+
+     /*
+      * If we miss this many owner messages from a node, we declare the node
+      * offline (defaults to 3 - to allow for some lost packets) (FIXME not yet used)
+      *
+      * uint32 num_missed_to_fail = 3;
+      TODO: REMOVE/INTEGRATE
+      */
+ 
+     /*
+      * Power management state machine option.
+      * See [power management](/software/other/power.md) for details.
+      * 0 for default of 1 minute
+      */
+     uint32 wait_bluetooth_secs = 4;
+ 
+     /*
+      * Power management state machine option.
+      * See [power management](/software/other/power.md) for details.
+      * 0 for default of one minute
+      */
+     uint32 screen_on_secs = 5;
+ 
+     /*
+      * Power management state machine option.
+      * See [power management](/software/other/power.md) for details.
+      * 0 for default of 15 minutes
+      * IMPORTANT NOTE FOR DEVICE CLIENTS: YOU MUST SEND SOME SORT OF PACKET TO THE PHONE AT LEAST THIS OFTEN OR THE DEVICE WILL DECIDE YOU ARE GONE!
+      */
+     uint32 phone_timeout_secs = 6;
+ 
+     /*
+      * Power management state machine option.
+      * See [power management](/software/other/power.md) for details.
+      * 0 for default of two hours, MAXUINT for disabled
+      */
+     uint32 phone_sds_timeout_sec = 7;
+ 
+     /*
+      * Power management state machine option.
+      * See [power management](/software/other/power.md) for details.
+      * 0 for default of two hours, MAXUINT for disabled
+      */
+     uint32 mesh_sds_timeout_secs = 8;
+ 
+     /*
+      * Power management state machine option.
+      * See [power management](/software/other/power.md) for details.
+      * 0 for default of one year
+      */
+     uint32 sds_secs = 9;
+ 
+     /*
+      * Power management state machine option.
+      * See [power management](/software/other/power.md) for details.
+      * 0 for default of 3600
+      */
+     uint32 ls_secs = 10;
+ 
+     /*
+      * If set, this node will try to join the specified wifi network and
+      * acquire an address via DHCP
+      */
+     string wifi_ssid = 12;
+ 
+     /*
+      * If set, will be use to authenticate to the named wifi
+      */
+     string wifi_password = 13;
+ 
+     /*
+      * If set, the node will operate as an AP (and DHCP server), otherwise it
+      * will be a station
+      */
+     bool wifi_ap_mode = 14;
+ 
+     /*
+      * The region code for my radio (US, CN, EU433, etc...)
+      */
+     RegionCode region = 15;
+ 
+     /*
+      * Are we operating as a router.
+      * Changes behavior in the following ways:
+      * The device will only sleep for critically low battery level (i.e. always tries to stay alive for the mesh)
+      * In the future routing decisions will preferentially route packets through nodes with this attribute (because assumed
+      * good line of sight)
+      */
+     bool is_router = 37;
+ 
+     /*
+      * If set, this will disable the SerialConsole by not initilizing the StreamAPI
+      */
+     bool serial_disabled = 40;
+ 
+     /*
+      * This parameter is for advanced users with advanced test equipment, we do not recommend most users use it.
+      * A frequency offset that is added to to the calculated band center frequency.
+      * Used to correct for crystal calibration errors.
+      */
+     float frequency_offset = 41;
+ 
+     /*
+      * This setting is never saved to disk, but if set, all device settings will be returned to factory defaults.
+      * (Region, serial number etc... will be preserved)
+      */
+     bool factory_reset = 100;
+ 
+     /*
+       * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
+       * Set this to true to leave the debug log outputting even when API is active.
+       */
+     bool debug_log_enabled = 101;
+ 
+     /*
+      * If true, radio should not try to be smart about what packets to queue to
+      * the phone
+      * bool keep_all_packets = 101;
+      * If true, we will try to capture all the packets sent on the mesh, not just the ones destined to our node.
+      * bool promiscuous_mode = 102;
+      * For testing it is useful sometimes to force a node to never listen to
+      * particular other nodes (simulating radio out of range). All nodenums listed
+      * in ignore_incoming will have packets they send droped on receive (by router.cpp)
+      */
+     repeated uint32 ignore_incoming = 103;
+ 
+     /*
+      * TODO: REPLACE
+      */
+     reserved 136;
+ 
+     /*
+      * Automatically toggles to the next page on the screen like a carousel, based the specified interval in seconds.
+      * Potentially useful for devices without user buttons.
+      */
+     uint32 auto_screen_carousel_secs = 152;
+ 
+     /*
+      * Overrides HOPS_RELIABLE and sets the maximum number of hops. This can't be greater than 7.
+      *
+      */
+     uint32 hop_limit = 154;
+ 
+     /*
+      * Disable TX from the LoRa radio. Useful for hot-swapping antennas and other tests.
+      * Defaults to false
+      */
+     bool is_lora_tx_disabled = 157;
   }
 
   /*
@@ -420,6 +571,12 @@ message RadioConfig {
      * Defaults to 15 minutes
      */
     uint32 position_broadcast_secs = 1;
+
+    /*
+     * We should send our position this often (but only if it has changed significantly)
+     * Defaults to 15 minutes
+     */
+    bool position_broadcast_smart = 17;
 
     /*
      * If set, this node is at a fixed position.
@@ -440,201 +597,59 @@ message RadioConfig {
      */
     GpsOperation gps_operation = 33;
 
-     /*
-      * How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode?
-      * or zero for the default of once every 30 seconds
-      * or a very large value (maxint) to update only once at boot.
-      */
-     uint32 gps_update_interval = 34;
- 
-     /*
-      * How long should we try to get our position during each gps_update_interval attempt?  (in seconds)
-      * Or if zero, use the default of 30 seconds.
-      * If we don't get a new gps fix in that time, the gps will be put into sleep until  the next gps_update_rate
-      * window.
-      */
-     uint32 gps_attempt_time = 36;
- 
-     /*
-      * Shall we accept 2D GPS fixes? By default, only 3D fixes are accepted
-      * (during a 2D fix, altitude values are unreliable and will be excluded)
-      */
-     bool gps_accept_2d = 45;
- 
-     /*
-      * GPS maximum DOP accepted (dilution of precision)
-      * Set a rejection threshold for GPS readings based on their precision,
-      * relative to the GPS rated accuracy (which is typically ~3m)
-      * Solutions above this value will be treated as retryable errors!
-      * Useful range is between 1 - 64 (3m - <~200m)
-      * By default (if zero), accept all GPS readings
-      */
-     uint32 gps_max_dop = 46;
+    /*
+     * How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode?
+     * or zero for the default of once every 30 seconds
+     * or a very large value (maxint) to update only once at boot.
+     */
+    uint32 gps_update_interval = 34;
 
-     /*
+    /*
+     * How long should we try to get our position during each gps_update_interval attempt?  (in seconds)
+     * Or if zero, use the default of 30 seconds.
+     * If we don't get a new gps fix in that time, the gps will be put into sleep until  the next gps_update_rate
+     * window.
+     */
+    uint32 gps_attempt_time = 36;
+
+    /*
+     * Shall we accept 2D GPS fixes? By default, only 3D fixes are accepted
+     * (during a 2D fix, altitude values are unreliable and will be excluded)
+     */
+    bool gps_accept_2d = 45;
+
+    /*
+     * GPS maximum DOP accepted (dilution of precision)
+     * Set a rejection threshold for GPS readings based on their precision,
+     * relative to the GPS rated accuracy (which is typically ~3m)
+     * Solutions above this value will be treated as retryable errors!
+     * Useful range is between 1 - 64 (3m - <~200m)
+     * By default (if zero), accept all GPS readings
+     */
+    uint32 gps_max_dop = 46;
+
+    /*
      * Bit field of boolean configuration options for POSITION messages
      * (bitwise OR of PositionFlags)
      */
-     uint32 position_flags = 150;
+    uint32 position_flags = 150;
+
+    /*
+     * How the GPS coordinates are displayed on the OLED screen.
+     */
+    GpsCoordinateFormat gps_format = 44;
 
   }
 
   /*
    * TODO: REPLACE
    */
-   message PowerConfig {
-      
-  }
-
-  /*
-   * TODO: REPLACE
-   */
-   message MQTTConfig {
-      
-  }
-
-  oneof payloadVariant {
-
-    /*
-     * TODO: REPLACE
-     */
-     ModemConfig modem_config = 1;
-
-     /*
-      * TODO: REPLACE
-      */
-     GpsConfig gps_config = 2;
- 
-     /*
-      * TODO: REPLACE
-      */
-     PowerConfig power_config = 3;
- 
-     /*
-      * TODO: REPLACE
-      */
-     MQTTConfig mqtt_config = 3;
-
-  }
-
-  /*
-   * See [software design](/software/other/sw-design.md) for more information on these preferences
-   */
-  message UserPreferences {
-
-    
-
-      /*
-      * We should send our position this often (but only if it has changed significantly)
-      * Defaults to 15 minutes
-      */
-      bool position_broadcast_smart = 17;
-
-    /*
-     * Send our owner info at least this often (also we always send once at boot - to rejoin the mesh)
-     */
-    uint32 send_owner_interval = 2;
-
-    /*
-     * If we miss this many owner messages from a node, we declare the node
-     * offline (defaults to 3 - to allow for some lost packets) (FIXME not yet used)
-     *
-     * uint32 num_missed_to_fail = 3;
-     TODO: REMOVE/INTEGRATE
-     */
-
-    /*
-     * Power management state machine option.
-     * See [power management](/software/other/power.md) for details.
-     * 0 for default of 1 minute
-     */
-    uint32 wait_bluetooth_secs = 4;
-
-    /*
-     * Power management state machine option.
-     * See [power management](/software/other/power.md) for details.
-     * 0 for default of one minute
-     */
-    uint32 screen_on_secs = 5;
-
-    /*
-     * Power management state machine option.
-     * See [power management](/software/other/power.md) for details.
-     * 0 for default of 15 minutes
-     * IMPORTANT NOTE FOR DEVICE CLIENTS: YOU MUST SEND SOME SORT OF PACKET TO THE PHONE AT LEAST THIS OFTEN OR THE DEVICE WILL DECIDE YOU ARE GONE!
-     */
-    uint32 phone_timeout_secs = 6;
-
-    /*
-     * Power management state machine option.
-     * See [power management](/software/other/power.md) for details.
-     * 0 for default of two hours, MAXUINT for disabled
-     */
-    uint32 phone_sds_timeout_sec = 7;
-
-    /*
-     * Power management state machine option.
-     * See [power management](/software/other/power.md) for details.
-     * 0 for default of two hours, MAXUINT for disabled
-     */
-    uint32 mesh_sds_timeout_secs = 8;
-
-    /*
-     * Power management state machine option.
-     * See [power management](/software/other/power.md) for details.
-     * 0 for default of one year
-     */
-    uint32 sds_secs = 9;
-
-    /*
-     * Power management state machine option.
-     * See [power management](/software/other/power.md) for details.
-     * 0 for default of 3600
-     */
-    uint32 ls_secs = 10;
-
-    /*
-     * Power management state machine option.
-     * See [power management](/software/other/power.md) for details.
-     * 0 for default of 10 seconds
-     */
-    uint32 min_wake_secs = 11;
-
-    /*
-     * If set, this node will try to join the specified wifi network and
-     * acquire an address via DHCP
-     */
-    string wifi_ssid = 12;
-
-    /*
-     * If set, will be use to authenticate to the named wifi
-     */
-    string wifi_password = 13;
-
-    /*
-     * If set, the node will operate as an AP (and DHCP server), otherwise it
-     * will be a station
-     */
-    bool wifi_ap_mode = 14;
-
-    /*
-     * The region code for my radio (US, CN, EU433, etc...)
-     */
-    RegionCode region = 15;
+  message PowerConfig {
 
     /*
      * Sets the current of the battery charger
      */
     ChargeCurrent charge_current = 16;
-
-    /*
-     * Are we operating as a router.
-     * Changes behavior in the following ways:
-     * The device will only sleep for critically low battery level (i.e. always tries to stay alive for the mesh)
-     * In the future routing decisions will preferentially route packets through nodes with this attribute (because assumed
-     * good line of sight)
-     */
-    bool is_router = 37;
 
     /*
      * If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in
@@ -644,283 +659,10 @@ message RadioConfig {
     bool is_low_power = 38;
 
     /*
-     * If set, this will disable the SerialConsole by not initilizing the StreamAPI
-     */
-    bool serial_disabled = 40;
-
-    /*
-     * This parameter is for advanced users with advanced test equipment, we do not recommend most users use it.
-     * A frequency offset that is added to to the calculated band center frequency.
-     * Used to correct for crystal calibration errors.
-     */
-    float frequency_offset = 41;
-
-    /*
-     * The server to use for our MQTT global message gateway feature.
-     * If not set, the default server will be used
-     */
-    string mqtt_server = 42;
-
-    /*
-     * If a meshtastic node is able to reach the internet it will normally attempt to gateway any channels that are marked as
-     * is_uplink_enabled or is_downlink_enabled.
-     * But if this flag is set, all MQTT features will be disabled and no servers will be contacted.
-    */
-    bool mqtt_disabled = 43;
-
-    /*
-     * How the GPS coordinates are displayed on the OLED screen.
-     */
-    GpsCoordinateFormat gps_format = 44;
-
-    /*
-     * This setting is never saved to disk, but if set, all device settings will be returned to factory defaults.
-     * (Region, serial number etc... will be preserved)
-     */
-    bool factory_reset = 100;
-
-    /*
-      * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
-      * Set this to true to leave the debug log outputting even when API is active.
-      */
-    bool debug_log_enabled = 101;
-
-    /*
-     * If true, radio should not try to be smart about what packets to queue to
-     * the phone
-     * bool keep_all_packets = 101;
-     * If true, we will try to capture all the packets sent on the mesh, not just the ones destined to our node.
-     * bool promiscuous_mode = 102;
-     * For testing it is useful sometimes to force a node to never listen to
-     * particular other nodes (simulating radio out of range). All nodenums listed
-     * in ignore_incoming will have packets they send droped on receive (by router.cpp)
-     */
-    repeated uint32 ignore_incoming = 103;
-
-    /*
-     * Preferences for the SerialPlugin
-     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-     */
-    bool serialplugin_enabled = 120;
-
-    /*
-     * TODO: REPLACE
-     */
-    bool serialplugin_echo = 121;
-
-    /*
-     * TODO: REPLACE
-     */
-    uint32 serialplugin_rxd = 122;
-
-    /*
-     * TODO: REPLACE
-     */
-    uint32 serialplugin_txd = 123;
-
-    /*
-     * TODO: REPLACE
-     */
-    uint32 serialplugin_baud = 176;
-
-    /*
-     * TODO: REPLACE
-     */
-    uint32 serialplugin_timeout = 124;
-
-    /*
-     * TODO: REPLACE
-     */
-    uint32 serialplugin_mode = 125;
-
-    /*
-     * Preferences for the ExternalNotificationPlugin
-     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-     */
-    bool ext_notification_plugin_enabled = 126;
-
-    /*
-     * TODO: REPLACE
-     */
-    uint32 ext_notification_plugin_output_ms = 127;
-
-    /*
-     * TODO: REPLACE
-     */
-    uint32 ext_notification_plugin_output = 128;
-
-    /*
-     * TODO: REPLACE
-     */
-    bool ext_notification_plugin_active = 129;
-
-    /*
-     * TODO: REPLACE
-     */
-    bool ext_notification_plugin_alert_message = 130;
-
-    /*
-     * TODO: REPLACE
-     */
-    bool ext_notification_plugin_alert_bell = 131;
-
-    /*
-     * Preferences for the RangeTestPlugin
-     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-     */
-    bool range_test_plugin_enabled = 132;
-
-    /*
-     * TODO: REPLACE
-     */
-    uint32 range_test_plugin_sender = 133;
-
-    /*
-     * TODO: REPLACE
-     */
-    bool range_test_plugin_save = 134;
-
-    /*
-     * Preferences for the StoreForwardPlugin
-     *FIXME - Move this out of UserPreferences and into a section for plugin configuration. (was 136)
-     */
-    bool store_forward_plugin_enabled = 148;
-
-    /*
-     * TODO: REPLACE
-     */
-    bool store_forward_plugin_heartbeat = 149;
-
-    /*
-     * TODO: REPLACE
-     */
-    uint32 store_forward_plugin_records = 137;
-
-    /*
-     * TODO: REPLACE
-     */
-    uint32 store_forward_plugin_history_return_max = 138;
-
-    /*
-     * TODO: REPLACE
-     */
-    uint32 store_forward_plugin_history_return_window = 139;
-
-    /*
-     * TODO: REPLACE
-     */
-    reserved 136;
-
-    /*
-     * Preferences for the EnvironmentalMeasurement Plugin
-     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-     * Enable/Disable the environmental measurement plugin measurement collection
-     */
-    bool environmental_measurement_plugin_measurement_enabled = 140;
-
-    /*
-     * Enable/Disable the environmental measurement plugin on-device display
-     */
-    bool environmental_measurement_plugin_screen_enabled = 141;
-
-    /*
-     * Sometimes sensor reads can fail.
-     * If this happens, we will retry a configurable number of attempts,
-     * each attempt will be delayed by the minimum required refresh rate for that sensor
-     */
-    uint32 environmental_measurement_plugin_read_error_count_threshold = 142;
-
-    /*
-     * Interval in seconds of how often we should try to send our
-     * measurements to the mesh
-     */
-    uint32 environmental_measurement_plugin_update_interval = 143;
-
-    /*
-     * Sometimes we can end up with more than read_error_count_threshold failures.
-     * In this case, we will stop trying to read from the sensor for a while.
-     * Wait this long until trying to read from the sensor again
-     */
-    uint32 environmental_measurement_plugin_recovery_interval = 144;
-
-    /*
-     * We'll always read the sensor in Celsius, but sometimes we might want to
-     * display the results in Farenheit as a "user preference".
-     */
-    bool environmental_measurement_plugin_display_farenheit = 145;
-
-    /*
-     * TODO: REPLACE
-     */
-    enum EnvironmentalMeasurementSensorType {
-
-      /*
-       * TODO: REPLACE
-       */
-      DHT11 = 0;
-
-      /*
-       * TODO: REPLACE
-       */
-      DS18B20 = 1;
-
-      /*
-       * TODO: REPLACE
-       */
-      DHT12 = 2;
-
-      /*
-       * TODO: REPLACE
-       */
-      DHT21 = 3;
-
-      /*
-       * TODO: REPLACE
-       */
-      DHT22 = 4;
-
-      /*
-       * TODO: REPLACE
-       */
-      BME280 = 5;
-
-      /*
-       * TODO: REPLACE
-       */
-      BME680 = 6;
-
-      /*
-       * TODO: REPLACE
-       */
-      MCP9808 = 7;
-
-      /*
-       * TODO: REPLACE
-       */
-      SHTC3 = 8;
-    };
-
-    /*
-     * Specify the sensor type
-     */
-    EnvironmentalMeasurementSensorType environmental_measurement_plugin_sensor_type = 146;
-
-    /*
-     * Specify the peferred GPIO Pin for sensor readings
-     */
-    uint32 environmental_measurement_plugin_sensor_pin = 147;
-
-    /*
      * Circumvents the logic block for determining whether the device is powered or not.
      * Useful for devices with finicky ADC issues on the battery sense pins.
      */
     bool is_always_powered = 151;
-
-    /*
-     * Automatically toggles to the next page on the screen like a carousel, based the specified interval in seconds.
-     * Potentially useful for devices without user buttons.
-     */
-    uint32 auto_screen_carousel_secs = 152;
 
     /*
      * If non-zero, the device will fully power off this many seconds after external power is removed.
@@ -929,107 +671,429 @@ message RadioConfig {
     uint32 on_battery_shutdown_after_secs = 153;
 
     /*
-     * Overrides HOPS_RELIABLE and sets the maximum number of hops. This can't be greater than 7.
-     *
-     */
-    uint32 hop_limit = 154;
-
-    /*
-     * MQTT username to use (most useful for a custom MQTT server).
-     * If using a custom server, this will be honoured even if empty.
-     * If using the default server, this will only be honoured if set, otherwise the device will use the default username
-     */
-    string mqtt_username = 155;
-
-    /*
-     * MQTT password to use (most useful for a custom MQTT server).
-     * If using a custom server, this will be honoured even if empty.
-     * If using the default server, this will only be honoured if set, otherwise the device will use the default password
-     */
-    string mqtt_password = 156;
-
-    /*
-     * Disable TX from the LoRa radio. Useful for hot-swapping antennas and other tests.
-     * Defaults to false
-     */
-    bool is_lora_tx_disabled = 157;
-
-    /*
      * If set to true, enable power saving features of the esp32
      */
     bool is_power_saving = 158;
-
-    /*
-     * Enable the rotary encoder #1
-     */
-    bool rotary1_enabled = 160;
-
-    /*
-     * GPIO pin for rotary encoder A port.
-     */
-    uint32 rotary1_pin_a = 161;
-
-    /*
-     * GPIO pin for rotary encoder B port.
-     */
-    uint32 rotary1_pin_b = 162;
-
-    /*
-     * GPIO pin for rotary encoder Press port.
-     */
-    uint32 rotary1_pin_press = 163;
-
-    /*
-     * Generate input event on CW of this kind.
-     */
-    InputEventChar rotary1_event_cw = 164;
-
-    /*
-     * Generate input event on CCW of this kind.
-     */
-    InputEventChar rotary1_event_ccw = 165;
-
-    /*
-     * Generate input event on Press of this kind.
-     */
-    InputEventChar rotary1_event_press = 166;
-
-    /*
-     * Enable/disable CannedMessagePlugin.
-     */
-    bool canned_message_plugin_enabled = 170;
-
-    /*
-     * Input event origin accepted by the canned message plugin.
-     * Can be e.g. "rotEnc1" or keyword "_any"
-     */
-    string canned_message_plugin_allow_input_source = 171;
-
-    /*
-     * CannedMessagePlugin also sends a bell character with the messages.
-     * ExternalNotificationPlugin can benefit from this feature.
-     */
-    bool canned_message_plugin_send_bell = 173;
-
-    /*
-     * Whether to send encrypted or decrypted packets to MQTT.
-     * This parameter is only honoured if you also set mqtt_server
-     * (the default official mqtt.meshtastic.org server can handle encrypted packets)
-     * 
-     * Decrypted packets may be useful for external systems that want to consume meshtastic packets
-     */
-    bool mqtt_encryption_enabled = 174;
     
     /*
      * Ratio of voltage divider for battery pin eg. 3.20 (R1=100k, R2=220k)
      * Overrides the ADC_MULTIPLIER defined in variant for battery voltage calculation.
      */
     float adc_multiplier_override = 175;
+
+    /*
+     * Power management state machine option.
+     * See [power management](/software/other/power.md) for details.
+     * 0 for default of 10 seconds
+     */
+    uint32 min_wake_secs = 11;
   }
 
   /*
    * TODO: REPLACE
    */
-  UserPreferences preferences = 1;
+  message ModuleConfig {
+
+    /*
+     * TODO: REPLACE
+     */
+    message MQTTConfig {
+
+      /*
+       * The server to use for our MQTT global message gateway feature.
+       * If not set, the default server will be used
+       */
+      string mqtt_server = 42;
+
+      /*
+       * MQTT username to use (most useful for a custom MQTT server).
+       * If using a custom server, this will be honoured even if empty.
+       * If using the default server, this will only be honoured if set, otherwise the device will use the default username
+       */
+      string mqtt_username = 155;
+
+      /*
+       * MQTT password to use (most useful for a custom MQTT server).
+       * If using a custom server, this will be honoured even if empty.
+       * If using the default server, this will only be honoured if set, otherwise the device will use the default password
+       */
+      string mqtt_password = 156;
+
+      /*
+       * If a meshtastic node is able to reach the internet it will normally attempt to gateway any channels that are marked as
+       * is_uplink_enabled or is_downlink_enabled.
+       * But if this flag is set, all MQTT features will be disabled and no servers will be contacted.
+       */
+      bool mqtt_disabled = 43;
+
+      /*
+       * Whether to send encrypted or decrypted packets to MQTT.
+       * This parameter is only honoured if you also set mqtt_server
+       * (the default official mqtt.meshtastic.org server can handle encrypted packets)
+       * 
+       * Decrypted packets may be useful for external systems that want to consume meshtastic packets
+       */
+      bool mqtt_encryption_enabled = 174;
+    }
+
+    /*
+     * TODO: REPLACE
+     */
+    message SerialConfig {
+
+      /*
+       * Preferences for the SerialPlugin
+       * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+       */
+      bool serialplugin_enabled = 120;
+
+      /*
+       * TODO: REPLACE
+       */
+      bool serialplugin_echo = 121;
+
+      /*
+       * TODO: REPLACE
+       */
+      uint32 serialplugin_rxd = 122;
+
+      /*
+       * TODO: REPLACE
+       */
+      uint32 serialplugin_txd = 123;
+
+      /*
+       * TODO: REPLACE
+       */
+      uint32 serialplugin_baud = 176;
+
+      /*
+       * TODO: REPLACE
+       */
+      uint32 serialplugin_timeout = 124;
+
+      /*
+       * TODO: REPLACE
+       */
+      uint32 serialplugin_mode = 125;
+    }
+
+    /*
+     * TODO: REPLACE
+     */
+    message ExternalNotificationConfig {
+
+      /*
+       * Preferences for the ExternalNotificationPlugin
+       * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+       */
+      bool ext_notification_plugin_enabled = 126;
+
+      /*
+       * TODO: REPLACE
+       */
+      uint32 ext_notification_plugin_output_ms = 127;
+
+      /*
+       * TODO: REPLACE
+       */
+      uint32 ext_notification_plugin_output = 128;
+
+      /*
+       * TODO: REPLACE
+       */
+      bool ext_notification_plugin_active = 129;
+
+      /*
+       * TODO: REPLACE
+       */
+      bool ext_notification_plugin_alert_message = 130;
+
+      /*
+       * TODO: REPLACE
+       */
+      bool ext_notification_plugin_alert_bell = 131;
+    }
+    
+    /*
+     * TODO: REPLACE
+     */
+    message StoreForwardConfig {
+
+      /*
+       * Preferences for the StoreForwardPlugin
+       *FIXME - Move this out of UserPreferences and into a section for plugin configuration. (was 136)
+       */
+      bool store_forward_plugin_enabled = 148;
+
+      /*
+       * TODO: REPLACE
+       */
+      bool store_forward_plugin_heartbeat = 149;
+
+      /*
+       * TODO: REPLACE
+       */
+      uint32 store_forward_plugin_records = 137;
+
+      /*
+       * TODO: REPLACE
+       */
+      uint32 store_forward_plugin_history_return_max = 138;
+
+      /*
+       * TODO: REPLACE
+       */
+      uint32 store_forward_plugin_history_return_window = 139;
+    }
+
+    /*
+     * TODO: REPLACE
+     */
+    message RangeTestConfig {
+
+      /*
+       * Preferences for the RangeTestPlugin
+       * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+       */
+      bool range_test_plugin_enabled = 132;
+
+      /*
+       * TODO: REPLACE
+       */
+      uint32 range_test_plugin_sender = 133;
+
+      /*
+       * TODO: REPLACE
+       */
+      bool range_test_plugin_save = 134;
+    }
+
+    /*
+     * TODO: REPLACE
+     */
+    message EnvironmentalConfig {
+
+      /*
+       * Preferences for the EnvironmentalMeasurement Plugin
+       * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+       * Enable/Disable the environmental measurement plugin measurement collection
+       */
+      bool environmental_measurement_plugin_measurement_enabled = 140;
+
+      /*
+       * Enable/Disable the environmental measurement plugin on-device display
+       */
+      bool environmental_measurement_plugin_screen_enabled = 141;
+
+      /*
+       * Sometimes sensor reads can fail.
+       * If this happens, we will retry a configurable number of attempts,
+       * each attempt will be delayed by the minimum required refresh rate for that sensor
+       */
+      uint32 environmental_measurement_plugin_read_error_count_threshold = 142;
+
+      /*
+       * Interval in seconds of how often we should try to send our
+       * measurements to the mesh
+       */
+      uint32 environmental_measurement_plugin_update_interval = 143;
+
+      /*
+       * Sometimes we can end up with more than read_error_count_threshold failures.
+       * In this case, we will stop trying to read from the sensor for a while.
+       * Wait this long until trying to read from the sensor again
+       */
+      uint32 environmental_measurement_plugin_recovery_interval = 144;
+
+      /*
+       * We'll always read the sensor in Celsius, but sometimes we might want to
+       * display the results in Farenheit as a "user preference".
+       */
+      bool environmental_measurement_plugin_display_farenheit = 145;
+
+      /*
+       * TODO: REPLACE
+       */
+      enum EnvironmentalMeasurementSensorType {
+
+        /*
+         * TODO: REPLACE
+         */
+        DHT11 = 0;
+
+        /*
+         * TODO: REPLACE
+         */
+        DS18B20 = 1;
+
+        /*
+         * TODO: REPLACE
+         */
+        DHT12 = 2;
+
+        /*
+         * TODO: REPLACE
+         */
+        DHT21 = 3;
+
+        /*
+         * TODO: REPLACE
+         */
+        DHT22 = 4;
+
+        /*
+         * TODO: REPLACE
+         */
+        BME280 = 5;
+
+        /*
+         * TODO: REPLACE
+         */
+        BME680 = 6;
+
+        /*
+         * TODO: REPLACE
+         */
+        MCP9808 = 7;
+
+        /*
+         * TODO: REPLACE
+         */
+        SHTC3 = 8;
+      };
+
+      /*
+       * Specify the sensor type
+       */
+      EnvironmentalMeasurementSensorType environmental_measurement_plugin_sensor_type = 146;
+
+      /*
+       * Specify the peferred GPIO Pin for sensor readings
+       */
+      uint32 environmental_measurement_plugin_sensor_pin = 147;
+    }
+
+    /*
+     * TODO: REPLACE
+     */
+    message CannedMessageConfig {
+
+      /*
+       * Enable the rotary encoder #1
+       */
+      bool rotary1_enabled = 160;
+
+      /*
+       * GPIO pin for rotary encoder A port.
+       */
+      uint32 rotary1_pin_a = 161;
+
+      /*
+       * GPIO pin for rotary encoder B port.
+       */
+      uint32 rotary1_pin_b = 162;
+
+      /*
+       * GPIO pin for rotary encoder Press port.
+       */
+      uint32 rotary1_pin_press = 163;
+
+      /*
+       * Generate input event on CW of this kind.
+       */
+      InputEventChar rotary1_event_cw = 164;
+
+      /*
+       * Generate input event on CCW of this kind.
+       */
+      InputEventChar rotary1_event_ccw = 165;
+
+      /*
+       * Generate input event on Press of this kind.
+       */
+      InputEventChar rotary1_event_press = 166;
+
+      /*
+       * Enable/disable CannedMessagePlugin.
+       */
+      bool canned_message_plugin_enabled = 170;
+
+      /*
+       * Input event origin accepted by the canned message plugin.
+       * Can be e.g. "rotEnc1" or keyword "_any"
+       */
+      string canned_message_plugin_allow_input_source = 171;
+
+      /*
+       * CannedMessagePlugin also sends a bell character with the messages.
+       * ExternalNotificationPlugin can benefit from this feature.
+       */
+      bool canned_message_plugin_send_bell = 173;
+    }
+
+    oneof payloadVariant {
+
+      /*
+       * TODO: REPLACE
+       */
+      MQTTConfig mqtt_config = 1;
+
+      /*
+       * TODO: REPLACE
+       */
+      SerialConfig serial_config = 1;
+
+      /*
+       * TODO: REPLACE
+       */
+      ExternalNotificationConfig external_notification_config = 1;
+
+      /*
+       * TODO: REPLACE
+       */
+      StoreForwardConfig store_forward_config = 1;
+
+      /*
+       * TODO: REPLACE
+       */
+      RangeTestConfig range_test_config = 1;
+
+      /*
+       * TODO: REPLACE
+       */
+      EnvironmentalConfig environmental_config = 1;
+
+      /*
+       * TODO: REPLACE
+       */
+      CannedMessageConfig canned_message_config = 1;
+
+    }
+  }
+
+  oneof payloadVariant {
+
+    /*
+     * TODO: REPLACE
+     */
+    DeviceConfig device_config = 1;
+
+     /*
+      * TODO: REPLACE
+      */
+    GpsConfig gps_config = 2;
+ 
+     /*
+      * TODO: REPLACE
+      */
+    PowerConfig power_config = 3;
+
+     /*
+      * TODO: REPLACE
+      */
+    ModuleConfig module_config = 3;
+
+  }
 
 }
