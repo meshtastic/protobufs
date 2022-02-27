@@ -103,6 +103,36 @@ enum RegionCode {
 }
 
 /*
+ * Defines the device's role on the Mesh network
+ *   unset
+ *     - If there's no router, don't repeat packets that are below a certain treshold.
+ *
+ *   Router
+ *     Functions as a router
+ *
+ *   Repeater
+ *     Repeats all packets. This is similiar to the behavior in Meshtastic 1.2.
+ */
+enum Role {
+
+  /*
+   * Default device role
+   */
+  Unset = 0;
+
+  /*
+   * Router device role
+   */
+  Router = 1;
+
+  /*
+   * Repeater device role
+   */
+  Repeater = 2;
+
+}
+
+/*
  * Sets the charge control current of devices with a battery charger that can be
  * configured. This is passed into the axp power management chip like on the tbeam.
  */
@@ -521,6 +551,11 @@ message RadioConfig {
      * Sets the current of the battery charger
      */
     ChargeCurrent charge_current = 16;
+
+    /*
+     * Sets the current of the battery charger
+    */
+    Role role = 17;
 
     /*
      * Are we operating as a router.
