@@ -120,10 +120,10 @@ enum PortNum {
   RANGE_TEST_APP = 66;
 
   /*
-   * Provides a format to send and receive environmental data from the Meshtastic network.
+   * Provides a format to send and receive telemetry data from the Meshtastic network.
    * Maintained by Charles Crossan (crossan007) : crossan007@gmail.com
    */
-  ENVIRONMENTAL_MEASUREMENT_APP = 67;
+  TELEMETRY_APP = 67;
 
   /*
    * Experimental tools for estimating node position without a GPS
