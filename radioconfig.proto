@@ -94,7 +94,12 @@ enum RegionCode {
   /*
    * TODO: REPLACE
    */
-  TH = 11;
+  NZ866 = 11;
+
+  /*
+   * TODO: REPLACE
+   */
+  TH = 12;
 }
 
 /*
