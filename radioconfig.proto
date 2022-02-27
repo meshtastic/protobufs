@@ -644,112 +644,112 @@ message RadioConfig {
 
     /*
      * Preferences for the SerialPlugin
-     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+     * FIXME - Move this out of UserPreferences and into a section for module configuration.
      */
-    bool serialplugin_enabled = 120;
+    bool serialmodule_enabled = 120;
 
     /*
      * TODO: REPLACE
      */
-    bool serialplugin_echo = 121;
+    bool serialmodule_echo = 121;
 
     /*
      * TODO: REPLACE
      */
-    uint32 serialplugin_rxd = 122;
+    uint32 serialmodule_rxd = 122;
 
     /*
      * TODO: REPLACE
      */
-    uint32 serialplugin_txd = 123;
+    uint32 serialmodule_txd = 123;
 
     /*
      * TODO: REPLACE
      */
-    uint32 serialplugin_baud = 176;
+    uint32 serialmodule_baud = 176;
 
     /*
      * TODO: REPLACE
      */
-    uint32 serialplugin_timeout = 124;
+    uint32 serialmodule_timeout = 124;
 
     /*
      * TODO: REPLACE
      */
-    uint32 serialplugin_mode = 125;
+    uint32 serialmodule_mode = 125;
 
     /*
      * Preferences for the ExternalNotificationPlugin
-     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+     * FIXME - Move this out of UserPreferences and into a section for module configuration.
      */
-    bool ext_notification_plugin_enabled = 126;
+    bool ext_notification_module_enabled = 126;
 
     /*
      * TODO: REPLACE
      */
-    uint32 ext_notification_plugin_output_ms = 127;
+    uint32 ext_notification_module_output_ms = 127;
 
     /*
      * TODO: REPLACE
      */
-    uint32 ext_notification_plugin_output = 128;
+    uint32 ext_notification_module_output = 128;
 
     /*
      * TODO: REPLACE
      */
-    bool ext_notification_plugin_active = 129;
+    bool ext_notification_module_active = 129;
 
     /*
      * TODO: REPLACE
      */
-    bool ext_notification_plugin_alert_message = 130;
+    bool ext_notification_module_alert_message = 130;
 
     /*
      * TODO: REPLACE
      */
-    bool ext_notification_plugin_alert_bell = 131;
+    bool ext_notification_module_alert_bell = 131;
 
     /*
      * Preferences for the RangeTestPlugin
-     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
+     * FIXME - Move this out of UserPreferences and into a section for module configuration.
      */
-    bool range_test_plugin_enabled = 132;
+    bool range_test_module_enabled = 132;
 
     /*
      * TODO: REPLACE
      */
-    uint32 range_test_plugin_sender = 133;
+    uint32 range_test_module_sender = 133;
 
     /*
      * TODO: REPLACE
      */
-    bool range_test_plugin_save = 134;
+    bool range_test_module_save = 134;
 
     /*
      * Preferences for the StoreForwardPlugin
-     *FIXME - Move this out of UserPreferences and into a section for plugin configuration. (was 136)
+     *FIXME - Move this out of UserPreferences and into a section for module configuration. (was 136)
      */
-    bool store_forward_plugin_enabled = 148;
+    bool store_forward_module_enabled = 148;
 
     /*
      * TODO: REPLACE
      */
-    bool store_forward_plugin_heartbeat = 149;
+    bool store_forward_module_heartbeat = 149;
 
     /*
      * TODO: REPLACE
      */
-    uint32 store_forward_plugin_records = 137;
+    uint32 store_forward_module_records = 137;
 
     /*
      * TODO: REPLACE
      */
-    uint32 store_forward_plugin_history_return_max = 138;
+    uint32 store_forward_module_history_return_max = 138;
 
     /*
      * TODO: REPLACE
      */
-    uint32 store_forward_plugin_history_return_window = 139;
+    uint32 store_forward_module_history_return_window = 139;
 
     /*
      * TODO: REPLACE
@@ -758,13 +758,13 @@ message RadioConfig {
 
     /*
      * Preferences for the Teletry Plugin
-     * FIXME - Move this out of UserPreferences and into a section for plugin configuration.
-     * Enable/Disable the telemetry measurement plugin measurement collection
+     * FIXME - Move this out of UserPreferences and into a section for module configuration.
+     * Enable/Disable the telemetry measurement module measurement collection
      */
     bool telemetry_module_measurement_enabled = 140;
 
     /*
-     * Enable/Disable the telemetry measurement plugin on-device display
+     * Enable/Disable the telemetry measurement module on-device display
      */
     bool telemetry_module_screen_enabled = 141;
 
@@ -948,19 +948,19 @@ message RadioConfig {
     /*
      * Enable/disable CannedMessagePlugin.
      */
-    bool canned_message_plugin_enabled = 170;
+    bool canned_message_module_enabled = 170;
 
     /*
-     * Input event origin accepted by the canned message plugin.
+     * Input event origin accepted by the canned message module.
      * Can be e.g. "rotEnc1" or keyword "_any"
      */
-    string canned_message_plugin_allow_input_source = 171;
+    string canned_message_module_allow_input_source = 171;
 
     /*
      * CannedMessagePlugin also sends a bell character with the messages.
      * ExternalNotificationPlugin can benefit from this feature.
      */
-    bool canned_message_plugin_send_bell = 173;
+    bool canned_message_module_send_bell = 173;
 
     /*
      * Whether to send encrypted or decrypted packets to MQTT.
