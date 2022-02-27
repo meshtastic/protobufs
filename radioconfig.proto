@@ -555,7 +555,7 @@ message RadioConfig {
     /*
      * Sets the current of the battery charger
     */
-    Role role = 17;
+    Role role = 18;
 
     /*
      * Are we operating as a router.
