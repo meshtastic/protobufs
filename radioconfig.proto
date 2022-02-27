@@ -94,7 +94,7 @@ enum RegionCode {
   /*
    * TODO: REPLACE
    */
-  NZ866 = 11;
+  NZ865 = 11;
 
   /*
    * TODO: REPLACE
