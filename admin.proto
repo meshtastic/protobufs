@@ -54,7 +54,7 @@ message AdminMessage {
     /*
      * TODO: REPLACE
      */
-     MODULE_SERIAL_CONFIG = 1;
+    MODULE_SERIAL_CONFIG = 1;
 
     /*
      * TODO: REPLACE
