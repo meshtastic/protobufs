@@ -83,7 +83,7 @@ enum PortNum {
 
   /*
    * Provides a 'ping' service that replies to any packet it receives.
-   * Also serves as a small example plugin.
+   * Also serves as a small example module.
    */
   REPLY_APP = 32;
 
@@ -93,7 +93,7 @@ enum PortNum {
   IP_TUNNEL_APP = 33;
 
   /*
-   * Used for the router plugin
+   * Used for the router module
    */
   ROUTER_APP = 34;
 
@@ -102,7 +102,7 @@ enum PortNum {
    * Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic
    * network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network.
    * Maximum packet size of 240 bytes.
-   * Plugin is disabled by default can be turned on by setting SERIALPLUGIN_ENABLED = 1 in SerialPlugh.cpp.
+   * Module is disabled by default can be turned on by setting SERIALMODULE_ENABLED = 1 in SerialPlugh.cpp.
    * Maintained by Jm Casler (MC Hamster) : jm@casler.org
    */
   SERIAL_APP = 64;
@@ -140,7 +140,7 @@ enum PortNum {
   PRIVATE_APP = 256;
 
   /*
-   * ATAK Forwarder Plugin https://github.com/paulmandal/atak-forwarder
+   * ATAK Forwarder Module https://github.com/paulmandal/atak-forwarder
    */
   ATAK_FORWARDER = 257;
 

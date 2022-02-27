@@ -573,7 +573,7 @@ message RouteDiscovery {
 }
 
 /*
- * A Routing control Data packet handled by the routing plugin
+ * A Routing control Data packet handled by the routing module
  */
 message Routing {
 
