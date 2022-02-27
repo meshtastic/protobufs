@@ -404,9 +404,16 @@ enum InputEventChar {
 message RadioConfig {
 
   /*
-   * See [software design](/software/other/sw-design.md) for more information on these preferences
+   * TODO: REPLACE
    */
-  message UserPreferences {
+  message ModemConfig {
+      
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  message GpsConfig {
 
     /*
      * We should send our position this often (but only if it has changed significantly)
@@ -415,10 +422,113 @@ message RadioConfig {
     uint32 position_broadcast_secs = 1;
 
     /*
-     * We should send our position this often (but only if it has changed significantly)
-     * Defaults to 15 minutes
+     * If set, this node is at a fixed position.
+     * We will generate GPS position updates at the regular interval, but use whatever the last lat/lon/alt we have for the node.
+     * The lat/lon/alt can be set by an internal GPS or with the help of the app.
      */
-    bool position_broadcast_smart = 17;
+     bool fixed_position = 39;
+
+    /*
+     * How our location is shared with other nodes (or the local phone)
+     */
+    LocationSharing location_share = 32;
+
+    /*
+     * How the GPS hardware in this unit is operated.
+     * Note: This is independent of how our location is shared with other devices.
+     * For that see LocationSharing
+     */
+    GpsOperation gps_operation = 33;
+
+     /*
+      * How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode?
+      * or zero for the default of once every 30 seconds
+      * or a very large value (maxint) to update only once at boot.
+      */
+     uint32 gps_update_interval = 34;
+ 
+     /*
+      * How long should we try to get our position during each gps_update_interval attempt?  (in seconds)
+      * Or if zero, use the default of 30 seconds.
+      * If we don't get a new gps fix in that time, the gps will be put into sleep until  the next gps_update_rate
+      * window.
+      */
+     uint32 gps_attempt_time = 36;
+ 
+     /*
+      * Shall we accept 2D GPS fixes? By default, only 3D fixes are accepted
+      * (during a 2D fix, altitude values are unreliable and will be excluded)
+      */
+     bool gps_accept_2d = 45;
+ 
+     /*
+      * GPS maximum DOP accepted (dilution of precision)
+      * Set a rejection threshold for GPS readings based on their precision,
+      * relative to the GPS rated accuracy (which is typically ~3m)
+      * Solutions above this value will be treated as retryable errors!
+      * Useful range is between 1 - 64 (3m - <~200m)
+      * By default (if zero), accept all GPS readings
+      */
+     uint32 gps_max_dop = 46;
+
+     /*
+     * Bit field of boolean configuration options for POSITION messages
+     * (bitwise OR of PositionFlags)
+     */
+     uint32 position_flags = 150;
+
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+   message PowerConfig {
+      
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+   message MQTTConfig {
+      
+  }
+
+  oneof payloadVariant {
+
+    /*
+     * TODO: REPLACE
+     */
+     ModemConfig modem_config = 1;
+
+     /*
+      * TODO: REPLACE
+      */
+     GpsConfig gps_config = 2;
+ 
+     /*
+      * TODO: REPLACE
+      */
+     PowerConfig power_config = 3;
+ 
+     /*
+      * TODO: REPLACE
+      */
+     MQTTConfig mqtt_config = 3;
+
+  }
+
+  /*
+   * See [software design](/software/other/sw-design.md) for more information on these preferences
+   */
+  message UserPreferences {
+
+    
+
+      /*
+      * We should send our position this often (but only if it has changed significantly)
+      * Defaults to 15 minutes
+      */
+      bool position_broadcast_smart = 17;
 
     /*
      * Send our owner info at least this often (also we always send once at boot - to rejoin the mesh)
@@ -534,59 +644,9 @@ message RadioConfig {
     bool is_low_power = 38;
 
     /*
-     * If set, this node is at a fixed position.
-     * We will generate GPS position updates at the regular interval, but use whatever the last lat/lon/alt we have for the node.
-     * The lat/lon/alt can be set by an internal GPS or with the help of the app.
-     */
-    bool fixed_position = 39;
-
-    /*
      * If set, this will disable the SerialConsole by not initilizing the StreamAPI
      */
     bool serial_disabled = 40;
-
-    /*
-     * How our location is shared with other nodes (or the local phone)
-     */
-    LocationSharing location_share = 32;
-
-    /*
-     * How the GPS hardware in this unit is operated.
-     * Note: This is independent of how our location is shared with other devices.
-     * For that see LocationSharing
-     */
-    GpsOperation gps_operation = 33;
-
-    /*
-     * How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode?
-     * or zero for the default of once every 30 seconds
-     * or a very large value (maxint) to update only once at boot.
-     */
-    uint32 gps_update_interval = 34;
-
-    /*
-     * How long should we try to get our position during each gps_update_interval attempt?  (in seconds)
-     * Or if zero, use the default of 30 seconds.
-     * If we don't get a new gps fix in that time, the gps will be put into sleep until  the next gps_update_rate
-     * window.
-     */
-    uint32 gps_attempt_time = 36;
-
-    /*
-     * Shall we accept 2D GPS fixes? By default, only 3D fixes are accepted
-     * (during a 2D fix, altitude values are unreliable and will be excluded)
-     */
-    bool gps_accept_2d = 45;
-
-    /*
-     * GPS maximum DOP accepted (dilution of precision)
-     * Set a rejection threshold for GPS readings based on their precision,
-     * relative to the GPS rated accuracy (which is typically ~3m)
-     * Solutions above this value will be treated as retryable errors!
-     * Useful range is between 1 - 64 (3m - <~200m)
-     * By default (if zero), accept all GPS readings
-     */
-    uint32 gps_max_dop = 46;
 
     /*
      * This parameter is for advanced users with advanced test equipment, we do not recommend most users use it.
@@ -849,12 +909,6 @@ message RadioConfig {
      * Specify the peferred GPIO Pin for sensor readings
      */
     uint32 environmental_measurement_plugin_sensor_pin = 147;
-
-    /*
-     * Bit field of boolean configuration options for POSITION messages
-     * (bitwise OR of PositionFlags)
-     */
-    uint32 position_flags = 150;
 
     /*
      * Circumvents the logic block for determining whether the device is powered or not.
