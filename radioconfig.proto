@@ -37,6 +37,35 @@ message RadioConfig {
   message DeviceConfig {
 
     /*
+     * Defines the device's role on the Mesh network
+     *   unset
+     *     - If there's no router, don't repeat packets that are below a certain treshold.
+     *
+     *   Router
+     *     Functions as a router
+     *
+     *   Repeater
+     *     - Repeats all packets.
+     */
+    enum Role {
+
+      /*
+       * Default device role
+       */
+       Default = 0;
+
+      /*
+       * Router device role
+       */
+      Router = 1;
+
+      /*
+       * Repeater device role
+       */
+      Repeater = 2;
+    }
+
+    /*
      * If we miss this many owner messages from a node, we declare the node
      * offline (defaults to 3 - to allow for some lost packets) (FIXME not yet used)
      *
@@ -72,6 +101,11 @@ message RadioConfig {
      * in ignore_incoming will have packets they send droped on receive (by router.cpp)
      */
     repeated uint32 ignore_incoming = 103;
+
+    /*
+     * Sets the current of the battery charger
+     */
+    Role role = 18;
   }
 
   /*
