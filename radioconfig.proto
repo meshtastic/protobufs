@@ -52,7 +52,7 @@ message RadioConfig {
       /*
        * Default device role
        */
-       Default = 0;
+      Default = 0;
 
       /*
        * Router device role
