@@ -31,13 +31,6 @@ option java_outer_classname = "MeshProtos";
  * a gps position
  */
 message Position {
-
-  /*
-   * The old (pre 1.2) position encoding sent lat/lon as sint32s in field 7,8.
-   * Do not use to prevent confusing old apps
-   */
-  reserved 7, 8;
-
   /*
    * The new preferred location encoding, divide by 1e-7 to get degrees
    * in floating point
@@ -69,6 +62,15 @@ message Position {
    * 1-100 (0 means not provided)
    */
   int32 battery_level = 4;
+
+  /*
+   * This is sent by node only if it a router and if hop_limit is set to 0
+   *   and is not being sent as a reliable message.
+   *
+   *   Note to Ben & Garth : When position is refactored, please move this to the same message
+   *                         "time" is moving to.
+   */
+  bool router_heartbeat = 5;
 
   /*
    * This is usually not sent over the mesh (to save space), but it is sent

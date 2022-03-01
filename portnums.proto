@@ -93,17 +93,11 @@ enum PortNum {
   IP_TUNNEL_APP = 33;
 
   /*
-   * Used for the router module
-   */
-  ROUTER_APP = 34;
-
-  /*
    * Provides a hardware serial interface to send and receive from the Meshtastic network.
    * Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic
    * network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network.
    * Maximum packet size of 240 bytes.
    * Module is disabled by default can be turned on by setting SERIALMODULE_ENABLED = 1 in SerialPlugh.cpp.
-   * Maintained by Jm Casler (MC Hamster) : jm@casler.org
    */
   SERIAL_APP = 64;
 
@@ -114,8 +108,7 @@ enum PortNum {
   STORE_FORWARD_APP = 65;
 
   /*
-   * STORE_FORWARD_APP (Work in Progress)
-   * Maintained by Jm Casler (MC Hamster) : jm@casler.org
+   * Optional port for messages for the range test module.
    */
   RANGE_TEST_APP = 66;
 
