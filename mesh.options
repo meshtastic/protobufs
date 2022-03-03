@@ -18,8 +18,8 @@
 
 *MyNodeInfo.region max_size:12
 
-*MyNodeInfo.air_period_tx       max_count:24
-*MyNodeInfo.air_period_rx       max_count:24
+*MyNodeInfo.air_period_tx       max_count:8
+*MyNodeInfo.air_period_rx       max_count:8
 
 *MyNodeInfo.router       max_count:4
 *MyNodeInfo.router_snr   max_count:4
