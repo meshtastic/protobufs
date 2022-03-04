@@ -10,13 +10,13 @@ message Telemetry {
    * This is usually not sent over the mesh (to save space), but it is sent
    * from the phone so that the local device can set its RTC If it is sent over
    * the mesh (because there are devices on the mesh without GPS), it will only
-   * be sent by devices which has a hardware GPS clock.
+   * be sent by devices which has a hardware GPS clock (IE Mobile Phone).
    * seconds since 1970
    */
    fixed32 time = 1;
 
    /*
-   * 1-100 (0 means not provided)
+   * 1-100 (0 means powered)
    */
    int32 battery_level = 2;
 
@@ -32,10 +32,7 @@ message Telemetry {
 
    /*
    * This is sent by node only if it a router and if hop_limit is set to 0
-   *   and is not being sent as a reliable message.
-   *
-   *   Note to Ben & Garth : When position is refactored, please move this to the same message
-   *                         "time" is moving to.
+   * and is not being sent as a reliable message.
    */
   bool router_heartbeat = 5;
 

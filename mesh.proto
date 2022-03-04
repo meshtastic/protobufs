@@ -980,7 +980,7 @@ message NodeInfo {
    * Returns the Signal-to-noise ratio (SNR) of the last received message,
    * as measured by the receiver. Return SNR of the last received message in dB
    */
-  float snr = 7;
+  float snr = 4;
 
   /*
    * TODO: REMOVE/INTEGRATE 
