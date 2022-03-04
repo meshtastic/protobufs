@@ -1196,6 +1196,21 @@ message MyNodeInfo {
    * Percent of airtime for transmission used within the last hour.
    */
   float air_util_tx = 20;
+  /*
+   * How many routers are we in range of?
+   */
+  repeated uint32 router = 21;
+
+  /*
+   * What is the snr of the last router message?
+   */
+  repeated float router_snr = 22;
+
+  /*
+   * How long has it been since we last heard from the router?
+   */
+  repeated uint32 router_sec = 23;
+
 }
 
 /*

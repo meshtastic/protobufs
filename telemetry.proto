@@ -21,41 +21,51 @@ message Telemetry {
    int32 battery_level = 2;
 
    /*
+   * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
+   */
+  float channel_utilization = 3;
+  
+  /*
+   * Percent of airtime for transmission used within the last hour.
+   */
+  float air_util_tx = 4;
+
+   /*
    * This is sent by node only if it a router and if hop_limit is set to 0
    *   and is not being sent as a reliable message.
    *
    *   Note to Ben & Garth : When position is refactored, please move this to the same message
    *                         "time" is moving to.
    */
-  bool router_heartbeat = 3;
+  bool router_heartbeat = 5;
 
   /*
    * TODO: REPLACE
    */
-  float temperature = 4;
+  float temperature = 6;
 
   /*
    * TODO: REPLACE
    */
-  float relative_humidity = 5;
+  float relative_humidity = 7;
 
   /*
    * TODO: REPLACE
    */
-  float barometric_pressure = 6;
+  float barometric_pressure = 8;
 
   /*
    * TODO: REPLACE
    */
-  float gas_resistance = 7;
+  float gas_resistance = 9;
 
   /*
    * TODO: REPLACE
    */
-  float voltage = 8;
+  float voltage = 10;
 
   /*
    * TODO: REPLACE
    */
-  float current = 9;
+  float current = 11;
 }
