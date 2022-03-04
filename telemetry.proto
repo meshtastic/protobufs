@@ -6,33 +6,56 @@ option go_package = "github.com/meshtastic/gomeshproto";
  */
 message Telemetry {
 
-  /*
-   * TODO: REPLACE
+    /*
+   * This is usually not sent over the mesh (to save space), but it is sent
+   * from the phone so that the local device can set its RTC If it is sent over
+   * the mesh (because there are devices on the mesh without GPS), it will only
+   * be sent by devices which has a hardware GPS clock.
+   * seconds since 1970
    */
-  float temperature = 1;
+   fixed32 time = 1;
+
+   /*
+   * 1-100 (0 means not provided)
+   */
+   int32 battery_level = 2;
+
+   /*
+   * This is sent by node only if it a router and if hop_limit is set to 0
+   *   and is not being sent as a reliable message.
+   *
+   *   Note to Ben & Garth : When position is refactored, please move this to the same message
+   *                         "time" is moving to.
+   */
+  bool router_heartbeat = 3;
 
   /*
    * TODO: REPLACE
    */
-  float relative_humidity = 2;
+  float temperature = 4;
 
   /*
    * TODO: REPLACE
    */
-  float barometric_pressure = 3;
+  float relative_humidity = 5;
 
   /*
    * TODO: REPLACE
    */
-  float gas_resistance = 4;
+  float barometric_pressure = 6;
 
   /*
    * TODO: REPLACE
    */
-  float voltage = 5;
+  float gas_resistance = 7;
 
   /*
    * TODO: REPLACE
    */
-  float current = 6;
+  float voltage = 8;
+
+  /*
+   * TODO: REPLACE
+   */
+  float current = 9;
 }
