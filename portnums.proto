@@ -59,25 +59,25 @@ enum PortNum {
 
   /*
    * The built-in position messaging app.
-   * Payload is a [Position](/developers/protobufs/api.md#position) message
+   * Payload is a [Position](/docs/developers/protobufs/api#position) message
    */
   POSITION_APP = 3;
 
   /*
    * The built-in user info app.
-   * Payload is a [User](/developers/protobufs/api.md#user) message
+   * Payload is a [User](/docs/developers/protobufs/api#user) message
    */
   NODEINFO_APP = 4;
 
   /*
    * Protocol control packets for mesh protocol use.
-   * Payload is a [Routing](/developers/protobufs/api.md#routing) message
+   * Payload is a [Routing](/docs/developers/protobufs/api#routing) message
    */
   ROUTING_APP = 5;
 
   /*
    * Admin control packets.
-   * Payload is a [AdminMessage](/developers/protobufs/api.md#adminmessage) message
+   * Payload is a [AdminMessage](/docs/developers/protobufs/api#adminmessage) message
    */
   ADMIN_APP = 6;
 

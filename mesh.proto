@@ -841,7 +841,7 @@ message MeshPacket {
   uint32 channel = 3;
 
   /*
-   * Internally to the mesh radios we will route SubPackets encrypted per [this](/developers/device/encryption.md).
+   * Internally to the mesh radios we will route SubPackets encrypted per [this](docs/developers/firmware/encryption).
    * However, when a particular node has the correct
    * key to decode a particular packet, it will decode the payload into a SubPacket protobuf structure.
    * Software outside of the device nodes will never encounter a packet where
@@ -870,7 +870,7 @@ message MeshPacket {
    * needs to be unique for a few minutes (long enough to last for the length of
    * any ACK or the completion of a mesh broadcast flood).
    * Note: Our crypto implementation uses this id as well.
-   * See [crypto](/developers/device/encryption.md) for details.
+   * See [crypto](/docs/developers/firmware/encryption) for details.
    * FIXME - really should be fixed32 instead, this encoding only
    * hurts the ble link though.
    */
