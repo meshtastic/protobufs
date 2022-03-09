@@ -818,7 +818,7 @@ message MeshPacket {
   /*
    * The sending node number.
    * Note: Our crypto implementation uses this field as well.
-   * See [crypto](/developers/firmware/encryption) for details.
+   * See [crypto](/docs/developers/firmware/encryption) for details.
    * FIXME - really should be fixed32 instead, this encoding only hurts the ble link though.
    */
   fixed32 from = 1;
