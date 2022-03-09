@@ -681,37 +681,37 @@ message RadioConfig {
      * Preferences for the SerialModule
      * FIXME - Move this out of UserPreferences and into a section for module configuration.
      */
-    bool serialmodule_enabled = 120;
+    bool serial_module_enabled = 120;
 
     /*
      * TODO: REPLACE
      */
-    bool serialmodule_echo = 121;
+    bool serial_module_echo = 121;
 
     /*
      * TODO: REPLACE
      */
-    uint32 serialmodule_rxd = 122;
+    uint32 serial_module_rxd = 122;
 
     /*
      * TODO: REPLACE
      */
-    uint32 serialmodule_txd = 123;
+    uint32 serial_module_txd = 123;
 
     /*
      * TODO: REPLACE
      */
-    uint32 serialmodule_baud = 176;
+    uint32 serial_module_baud = 176;
 
     /*
      * TODO: REPLACE
      */
-    uint32 serialmodule_timeout = 124;
+    uint32 serial_module_timeout = 124;
 
     /*
      * TODO: REPLACE
      */
-    uint32 serialmodule_mode = 125;
+    uint32 serial_module_mode = 125;
 
     /*
      * Preferences for the ExternalNotificationModule

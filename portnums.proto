@@ -97,7 +97,7 @@ enum PortNum {
    * Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic
    * network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network.
    * Maximum packet size of 240 bytes.
-   * Module is disabled by default can be turned on by setting SERIALMODULE_ENABLED = 1 in SerialPlugh.cpp.
+   * Module is disabled by default can be turned on by setting SERIAL_MODULE_ENABLED = 1 in SerialPlugh.cpp.
    */
   SERIAL_APP = 64;
 
