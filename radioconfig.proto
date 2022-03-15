@@ -544,18 +544,9 @@ message RadioConfig {
     ChargeCurrent charge_current = 16;
 
     /*
-     * Sets the current of the battery charger
+     * Sets the role of node
     */
     Role role = 18;
-
-    /*
-     * Are we operating as a router.
-     * Changes behavior in the following ways:
-     * The device will only sleep for critically low battery level (i.e. always tries to stay alive for the mesh)
-     * In the future routing decisions will preferentially route packets through nodes with this attribute (because assumed
-     * good line of sight)
-     */
-    bool is_router = 37;
 
     /*
      * If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in
