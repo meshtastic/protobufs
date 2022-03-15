@@ -1012,7 +1012,7 @@ message NodeInfo {
   /*
    * Set to indicate the last time we received a packet from this node
    */
-  fixed32 last_heard = 4;
+  fixed32 last_heard = 5;
 }
 
 /*
