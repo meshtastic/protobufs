@@ -105,13 +105,10 @@ enum RegionCode {
 /*
  * Defines the device's role on the Mesh network
  *   unset
- *     - If there's no router, don't repeat packets that are below a certain treshold.
+ *     Behave normally.
  *
  *   Router
  *     Functions as a router
- *
- *   Repeater
- *     - Repeats all packets.
  */
 enum Role {
 
@@ -124,11 +121,6 @@ enum Role {
    * Router device role
    */
   Router = 1;
-
-  /*
-   * Repeater device role
-   */
-  Repeater = 2;
 
 }
 
@@ -451,9 +443,8 @@ message RadioConfig {
 
     /*
      * We should send our position this often (but only if it has changed significantly)
-     * Defaults to 15 minutes
      */
-    bool position_broadcast_smart = 17;
+    bool position_broadcast_smart_disabled = 17;
 
     /*
      * Send our owner info at least this often (also we always send once at boot - to rejoin the mesh)
