@@ -64,15 +64,6 @@ message Position {
   int32 battery_level = 4;
 
   /*
-   * This is sent by node only if it a router and if hop_limit is set to 0
-   *   and is not being sent as a reliable message.
-   *
-   *   Note to Ben & Garth : When position is refactored, please move this to the same message
-   *                         "time" is moving to.
-   */
-  bool router_heartbeat = 5;
-
-  /*
    * This is usually not sent over the mesh (to save space), but it is sent
    * from the phone so that the local device can set its RTC If it is sent over
    * the mesh (because there are devices on the mesh without GPS), it will only
@@ -1210,22 +1201,6 @@ message MyNodeInfo {
    * Percent of airtime for transmission used within the last hour.
    */
   float air_util_tx = 20;
-
-  /*
-   * How many routers are we in range of?
-   */
-  repeated uint32 router = 21;
-
-  /*
-   * What is the snr of the last router message?
-   */
-  repeated float router_snr = 22;
-
-  /*
-   * How long has it been since we last heard from the router?
-   */
-  repeated uint32 router_sec = 23;
-
 }
 
 /*
