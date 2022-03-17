@@ -125,10 +125,5 @@ message AdminMessage {
      * Tell the node to shutdown in this many seconds (or <0 to cancel shutdown)
      */
     int32 shutdown_seconds = 51;
-
-    /*
-     * Tell the node to do a factory reset and then reboot in this many seconds (or <0 to cancel reboot)
-     */
-    int32 factory_reset_then_reboot_seconds = 52;
   }
 } // AdminMessage
