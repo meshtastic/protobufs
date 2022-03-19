@@ -1013,6 +1013,10 @@ message NodeInfo {
    * Set to indicate the last time we received a packet from this node
    */
   fixed32 last_heard = 5;
+  /*
+   * The latest telemetry data for the node.
+   */
+  Telemetry telemetry = 6;
 }
 
 /*
