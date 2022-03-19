@@ -37,32 +37,32 @@ message Telemetry {
   bool router_heartbeat = 5;
 
   /*
-   * TODO: REPLACE
+   * Temperature measured
    */
   float temperature = 6;
 
   /*
-   * TODO: REPLACE
+   * Relative humidity percent measured
    */
   float relative_humidity = 7;
 
   /*
-   * TODO: REPLACE
+   * Barometric pressure in hPA measured
    */
   float barometric_pressure = 8;
 
   /*
-   * TODO: REPLACE
+   * Gas resistance in mOhm measured
    */
   float gas_resistance = 9;
 
   /*
-   * TODO: REPLACE
+   * Voltage measured
    */
   float voltage = 10;
 
   /*
-   * TODO: REPLACE
+   * Current measured
    */
   float current = 11;
 }
