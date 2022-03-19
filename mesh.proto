@@ -24,6 +24,7 @@ option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
 import "portnums.proto";
+import "telemetry.proto";
 
 option java_outer_classname = "MeshProtos";
 
