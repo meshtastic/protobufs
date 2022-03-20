@@ -547,7 +547,7 @@ message RadioConfig {
     /*
      * Should we disbale location sharing with other nodes (or the local phone)
      */
-     bool disable_location_share = 32;
+    bool disable_location_share = 32;
 
     /*
      * How the GPS hardware in this unit is operated.
