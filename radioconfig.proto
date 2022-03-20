@@ -217,41 +217,6 @@ enum ChargeCurrent {
 }
 
 /*
- * How the GPS hardware in this unit is operated.
- */
-enum GpsOperation {
-
-  /*
-   * This is treated as GpsOpMobile - it is the default setting
-   */
-  GpsOpUnset = 0;
-
-  /*
-   * Note: This mode was removed, because it is identical go GpsOpMobile with a gps_update_rate of once per day
-   * This node is mostly stationary, we should try to get location only once per day,
-   * Once we have that position we should turn the GPS to sleep mode
-   * This is the recommended configuration for stationary 'router' nodes
-   */
-  GpsOpStationary = 1;
-
-  /*
-   * This node is mobile and we should get GPS position at a rate governed by gps_update_rate
-   */
-  GpsOpMobile = 2;
-
-  /*
-   * We should only use the GPS to get time (no location data should be acquired/stored)
-   * Once we have the time we treat gps_update_interval as MAXINT (i.e. sleep forever)
-   */
-  GpsOpTimeOnly = 3;
-
-  /*
-   * GPS is always turned off - this mode is not recommended - use GpsOpTimeOnly instead
-   */
-  GpsOpDisabled = 4;
-}
-
-/*
  * How the GPS coordinates are displayed on the OLED screen.
  */
 enum GpsCoordinateFormat {
@@ -550,12 +515,12 @@ message RadioConfig {
     bool disable_location_share = 32;
 
     /*
-     * How the GPS hardware in this unit is operated.
+     * Should the GPS be disabled for this node?
      */
-    GpsOperation gps_operation = 33;
+    bool gps_disabled = 33;
 
     /*
-     * How often should we try to get GPS position (in seconds) when we are in GpsOpMobile mode?
+     * How often should we try to get GPS position (in seconds)
      * or zero for the default of once every 30 seconds
      * or a very large value (maxint) to update only once at boot.
      */
