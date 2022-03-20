@@ -755,7 +755,10 @@ message RadioConfig {
      * TODO: REPLACE
      */
     enum TelemetrySensorType {
-
+      /*
+       * No external telemetry sensor
+       */
+      None = 0;
       /*
        * TODO: REPLACE
        */
