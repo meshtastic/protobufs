@@ -218,8 +218,6 @@ enum ChargeCurrent {
 
 /*
  * How the GPS hardware in this unit is operated.
- * Note: This is independent of how our location is shared with other devices.
- * For that see LocationSharing
  */
 enum GpsOperation {
 
@@ -294,27 +292,6 @@ enum GpsCoordinateFormat {
    * N is the northing
    */
   GpsFormatOSGR = 5;
-}
-
-/*
- * How our location is shared with other nodes (or the local phone)
- */
-enum LocationSharing {
-
-  /*
-   * This is the default and treated as LocEnabled.
-   */
-  LocUnset = 0;
-
-  /*
-   * We are sharing our location
-   */
-  LocEnabled = 1;
-
-  /*
-   * We are not sharing our location (if the unit has a GPS it will default to only get time - i.e. GpsOpTimeOnly)
-   */
-  LocDisabled = 2;
 }
 
 /*
@@ -568,14 +545,12 @@ message RadioConfig {
     bool serial_disabled = 40;
 
     /*
-     * How our location is shared with other nodes (or the local phone)
+     * Should we disbale location sharing with other nodes (or the local phone)
      */
-    LocationSharing location_share = 32;
+     bool disable_location_share = 32;
 
     /*
      * How the GPS hardware in this unit is operated.
-     * Note: This is independent of how our location is shared with other devices.
-     * For that see LocationSharing
      */
     GpsOperation gps_operation = 33;
 
