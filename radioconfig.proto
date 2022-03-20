@@ -512,7 +512,7 @@ message RadioConfig {
     /*
      * Should we disbale location sharing with other nodes (or the local phone)
      */
-    bool disable_location_share = 32;
+    bool location_share_disabled = 32;
 
     /*
      * Should the GPS be disabled for this node?
