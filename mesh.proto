@@ -1293,10 +1293,10 @@ message FromRadio {
   reserved 6;
 
   /*
-   * The packet num, used to allow the phone to request missing read packets from the FIFO,
+   * The packet id, used to allow the phone to request missing read packets from the FIFO,
    * see our bluetooth docs
    */
-  uint32 num = 1;
+  uint32 id = 1;
 
   /*
    * Log levels, chosen to match python logging conventions.
