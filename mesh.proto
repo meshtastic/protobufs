@@ -24,6 +24,7 @@ option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
 import "portnums.proto";
+import "telemetry.proto";
 
 option java_outer_classname = "MeshProtos";
 
@@ -57,11 +58,6 @@ message Position {
    * In meters above MSL (but see issue #359)
    */
   int32 altitude = 3;
-
-  /*
-   * 1-100 (0 means not provided)
-   */
-  int32 battery_level = 4;
 
   /*
    * This is usually not sent over the mesh (to save space), but it is sent
@@ -985,7 +981,7 @@ message NodeInfo {
    * Returns the Signal-to-noise ratio (SNR) of the last received message,
    * as measured by the receiver. Return SNR of the last received message in dB
    */
-  float snr = 7;
+  float snr = 4;
 
   /*
    * TODO: REMOVE/INTEGRATE 
@@ -1017,7 +1013,11 @@ message NodeInfo {
   /*
    * Set to indicate the last time we received a packet from this node
    */
-  fixed32 last_heard = 4;
+  fixed32 last_heard = 5;
+  /*
+   * The latest telemetry data for the node.
+   */
+  Telemetry telemetry = 6;
 }
 
 /*

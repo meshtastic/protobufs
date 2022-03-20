@@ -755,51 +755,54 @@ message RadioConfig {
      * TODO: REPLACE
      */
     enum TelemetrySensorType {
+      /*
+       * No external telemetry sensor
+       */
+      None = 0;
+      /*
+       * TODO: REPLACE
+       */
+      DHT11 = 1;
 
       /*
        * TODO: REPLACE
        */
-      DHT11 = 0;
+      DS18B20 = 2;
 
       /*
        * TODO: REPLACE
        */
-      DS18B20 = 1;
+      DHT12 = 3;
 
       /*
        * TODO: REPLACE
        */
-      DHT12 = 2;
+      DHT21 = 4;
 
       /*
        * TODO: REPLACE
        */
-      DHT21 = 3;
+      DHT22 = 5;
 
       /*
        * TODO: REPLACE
        */
-      DHT22 = 4;
+      BME280 = 6;
 
       /*
        * TODO: REPLACE
        */
-      BME280 = 5;
+      BME680 = 7;
 
       /*
        * TODO: REPLACE
        */
-      BME680 = 6;
+      MCP9808 = 8;
 
       /*
        * TODO: REPLACE
        */
-      MCP9808 = 7;
-
-      /*
-       * TODO: REPLACE
-       */
-      SHTC3 = 8;
+      SHTC3 = 9;
     };
 
     /*
