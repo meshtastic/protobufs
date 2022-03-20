@@ -782,9 +782,9 @@ message RadioConfig {
 
     /*
      * We'll always read the sensor in Celsius, but sometimes we might want to
-     * display the results in Farenheit as a "user preference".
+     * display the results in Fahrenheit as a "user preference".
      */
-    bool telemetry_module_display_farenheit = 145;
+    bool telemetry_module_display_fahrenheit = 145;
 
     /*
      * TODO: REPLACE
