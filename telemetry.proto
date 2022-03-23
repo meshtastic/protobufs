@@ -18,7 +18,7 @@ message Telemetry {
   /*
    * 1-100 (0 means powered)
    */
-  int32 battery_level = 2;
+  uint32 battery_level = 2;
 
   /*
    * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
