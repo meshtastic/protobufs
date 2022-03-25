@@ -871,40 +871,45 @@ message RadioConfig {
     bool is_power_saving = 158;
 
     /*
-     * Enable the rotary encoder #1
+     * Enable the rotary encoder #1. This is a 'dumb' encoder sending pulses on both A and B pins while rotating.
      */
     bool rotary1_enabled = 160;
 
     /*
      * GPIO pin for rotary encoder A port.
      */
-    uint32 rotary1_pin_a = 161;
+    uint32 inputbroker_pin_a = 161;
 
     /*
      * GPIO pin for rotary encoder B port.
      */
-    uint32 rotary1_pin_b = 162;
+    uint32 inputbroker_pin_b = 162;
 
     /*
      * GPIO pin for rotary encoder Press port.
      */
-    uint32 rotary1_pin_press = 163;
+    uint32 inputbroker_pin_press = 163;
 
     /*
      * Generate input event on CW of this kind.
      */
-    InputEventChar rotary1_event_cw = 164;
+    InputEventChar inputbroker_event_cw = 164;
 
     /*
      * Generate input event on CCW of this kind.
      */
-    InputEventChar rotary1_event_ccw = 165;
+    InputEventChar inputbroker_event_ccw = 165;
 
     /*
      * Generate input event on Press of this kind.
      */
-    InputEventChar rotary1_event_press = 166;
+    InputEventChar inputbroker_event_press = 166;
 
+    /*
+     * Enable the Up/Down/Select input device. Can be RAK rotary encoder or 3 buttons. Uses the a/b/press definitions from inputbroker.
+     */
+    bool updown1_enabled = 167;
+    
     /*
      * Enable/disable CannedMessageModule.
      */
@@ -912,7 +917,7 @@ message RadioConfig {
 
     /*
      * Input event origin accepted by the canned message module.
-     * Can be e.g. "rotEnc1" or keyword "_any"
+     * Can be e.g. "rotEnc1", "upDownEnc1" or keyword "_any"
      */
     string canned_message_module_allow_input_source = 171;
 
