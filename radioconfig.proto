@@ -973,7 +973,7 @@ message RadioConfig {
      * Interval in seconds of how often we should try to send our
      * environent measurements to the mesh
      */
-     uint32 telemetry_module_environment_update_interval = 176;
+    uint32 telemetry_module_environment_update_interval = 176;
   }
 
   /*
