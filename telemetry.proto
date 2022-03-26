@@ -64,12 +64,12 @@ message EnvironmentMetrics {
   /*
    * Voltage measured
    */
-  float voltage = 10;
+  float voltage = 5;
 
   /*
    * Current measured
    */
-  float current = 11;
+  float current = 6;
 }
 
 /*
