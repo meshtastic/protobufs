@@ -1,30 +1,30 @@
 syntax = "proto3";
+
+option java_package = "com.geeksville.mesh";
+option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
+option java_outer_classname = "TelemetryProtos";
+
 /*
- * TODO: REPLACE
+ * Key native device metrics such as battery level
  */
-message Telemetry {
-
-  /*
-   * This is usually not sent over the mesh (to save space), but it is sent
-   * from the phone so that the local device can set its RTC If it is sent over
-   * the mesh (because there are devices on the mesh without GPS), it will only
-   * be sent by devices which has a hardware GPS clock (IE Mobile Phone).
-   * seconds since 1970
-   */
-  fixed32 time = 1;
-
+message DeviceMetrics {
   /*
    * 1-100 (0 means powered)
    */
-  uint32 battery_level = 2;
+  uint32 battery_level = 1;
+  
+  /*
+   * Voltage measured
+   */
+   float voltage = 2;
 
   /*
    * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
    */
   float channel_utilization = 3;
-  
+   
   /*
    * Percent of airtime for transmission used within the last hour.
    */
@@ -35,34 +35,65 @@ message Telemetry {
    * and is not being sent as a reliable message.
    */
   bool router_heartbeat = 5;
+}
 
+/*
+ * Weather station or other environmental metrics
+ */
+message EnvironmentMetrics {
   /*
    * Temperature measured
    */
-  float temperature = 6;
+  float temperature = 1;
 
   /*
    * Relative humidity percent measured
    */
-  float relative_humidity = 7;
+  float relative_humidity = 2;
 
   /*
    * Barometric pressure in hPA measured
    */
-  float barometric_pressure = 8;
+  float barometric_pressure = 3;
 
   /*
    * Gas resistance in mOhm measured
    */
-  float gas_resistance = 9;
+  float gas_resistance = 4;
 
   /*
    * Voltage measured
    */
-  float voltage = 10;
+   float voltage = 10;
 
   /*
    * Current measured
    */
   float current = 11;
+}
+
+/*
+ * Types of Measurements the telemetry module is equipped to handle
+ */
+message Telemetry {
+  /*
+   * This is usually not sent over the mesh (to save space), but it is sent
+   * from the phone so that the local device can set its RTC If it is sent over
+   * the mesh (because there are devices on the mesh without GPS), it will only
+   * be sent by devices which has a hardware GPS clock (IE Mobile Phone).
+   * seconds since 1970
+   */
+  fixed32 time = 1;
+
+  oneof variant {
+    /*
+     * Key native device metrics such as battery level
+     */
+    DeviceMetrics device_metrics = 2;
+
+    /*
+     * Weather station or other environmental metrics
+     */
+    EnvironmentMetrics environment_metrics = 3;
+  }
 }
