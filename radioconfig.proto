@@ -623,7 +623,25 @@ message RadioConfig {
     /*
      * TODO: REPLACE
      */
-    uint32 serial_module_baud = 176;
+    enum Serial_Baud {
+      BAUD_Default = 0;
+      BAUD_2400 = 1;
+      BAUD_4800 = 2;
+      BAUD_9600 = 3;
+      BAUD_19200 = 4;
+      BAUD_38400 = 5;
+      BAUD_57600 = 6;
+      BAUD_115200 = 7;
+      BAUD_230400 = 8;
+      BAUD_460800 = 9;
+      BAUD_576000 = 10;
+      BAUD_921600 = 11;
+    };
+
+    /*
+     * TODO: REPLACE
+     */
+    Serial_Baud serial_module_baud = 176;
 
     /*
      * TODO: REPLACE
@@ -633,7 +651,16 @@ message RadioConfig {
     /*
      * TODO: REPLACE
      */
-    uint32 serial_module_mode = 125;
+    enum Serial_Mode {
+      MODE_Default = 0;
+      MODE_SIMPLE = 1;
+      MODE_PROTO = 2;
+    };
+
+    /*
+     * TODO: REPLACE
+     */
+    Serial_Mode serial_module_mode = 125;
 
     /*
      * Preferences for the ExternalNotificationModule
