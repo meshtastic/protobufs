@@ -706,7 +706,45 @@ message Data {
    * Defaults to false. If true, then what is in the payload should be treated as an emoji like giving
    * a message a heart or poop emoji.
    */
-  bool is_tapback = 8;
+  fixed32 emoji = 8;
+
+  /*
+   * Location structure
+   */
+  Location location = 9;
+
+}
+
+/*
+ * Location of a waypoint to associate with a message
+ */
+message Location {
+
+  /*
+   * Id of the location
+   */
+  uint32 id = 1;
+
+  /*
+   * latitude_i
+   */
+  sfixed32 latitude_i = 2;
+
+  /*
+   * longitude_i
+   */
+  sfixed32 longitude_i = 3;
+
+  /*
+   * Time the location is to expire (epoch)
+   */
+  uint32 expire = 4;
+
+  /*
+   * If true, only allow the original sender to update the location.
+   */
+  bool locked = 5;
+
 }
 
 /*
