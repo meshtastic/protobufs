@@ -18,7 +18,7 @@ message DeviceMetrics {
   /*
    * Voltage measured
    */
-   float voltage = 2;
+  float voltage = 2;
 
   /*
    * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
@@ -64,7 +64,7 @@ message EnvironmentMetrics {
   /*
    * Voltage measured
    */
-   float voltage = 10;
+  float voltage = 10;
 
   /*
    * Current measured
