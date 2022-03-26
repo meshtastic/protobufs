@@ -770,13 +770,13 @@ message RadioConfig {
      * In this case, we will stop trying to read from the sensor for a while.
      * Wait this long until trying to read from the sensor again
      */
-    uint32 telemetry_module_recovery_interval = 144;
+    uint32 telemetry_module_environment_recovery_interval = 144;
 
     /*
      * We'll always read the sensor in Celsius, but sometimes we might want to
      * display the results in Fahrenheit as a "user preference".
      */
-    bool telemetry_module_display_fahrenheit = 145;
+    bool telemetry_module_environment_display_fahrenheit = 145;
 
     /*
      * TODO: REPLACE
@@ -835,12 +835,12 @@ message RadioConfig {
     /*
      * Specify the sensor type
      */
-    TelemetrySensorType telemetry_module_sensor_type = 146;
+    TelemetrySensorType telemetry_module_environment_sensor_type = 146;
 
     /*
      * Specify the peferred GPIO Pin for sensor readings
      */
-    uint32 telemetry_module_sensor_pin = 147;
+    uint32 telemetry_module_environment_sensor_pin = 147;
 
     /*
      * Bit field of boolean configuration options for POSITION messages
