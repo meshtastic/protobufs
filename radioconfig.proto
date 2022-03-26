@@ -741,29 +741,29 @@ message RadioConfig {
     reserved 136;
 
     /*
-     * Preferences for the Teletry Module
+     * Preferences for the Telemetry Module (Environment)
      * FIXME - Move this out of UserPreferences and into a section for module configuration.
      * Enable/Disable the telemetry measurement module measurement collection
      */
-    bool telemetry_module_measurement_enabled = 140;
+    bool telemetry_module_environment_measurement_enabled = 140;
 
     /*
      * Enable/Disable the telemetry measurement module on-device display
      */
-    bool telemetry_module_screen_enabled = 141;
+    bool telemetry_module_environment_screen_enabled = 141;
 
     /*
      * Sometimes sensor reads can fail.
      * If this happens, we will retry a configurable number of attempts,
      * each attempt will be delayed by the minimum required refresh rate for that sensor
      */
-    uint32 telemetry_module_read_error_count_threshold = 142;
+    uint32 telemetry_module_environment_read_error_count_threshold = 142;
 
     /*
      * Interval in seconds of how often we should try to send our
      * measurements to the mesh
      */
-    uint32 telemetry_module_update_interval = 143;
+    uint32 telemetry_module_device_update_interval = 143;
 
     /*
      * Sometimes we can end up with more than read_error_count_threshold failures.
@@ -968,6 +968,12 @@ message RadioConfig {
      * Overrides the ADC_MULTIPLIER defined in variant for battery voltage calculation.
      */
     float adc_multiplier_override = 175;
+
+    /*
+     * Interval in seconds of how often we should try to send our
+     * environent measurements to the mesh
+     */
+     uint32 telemetry_module_environment_update_interval = 176;
   }
 
   /*
