@@ -1053,7 +1053,7 @@ message NodeInfo {
    */
   fixed32 last_heard = 5;
   /*
-   * The latest telemetry data for the node.
+   * The latest device telemetry data for the node.
    */
   Telemetry telemetry = 6;
 }
