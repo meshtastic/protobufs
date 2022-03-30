@@ -1,23 +1,4 @@
 syntax = "proto3";
-/*
- * Meshtastic protobufs
- *
- * For more information on protobufs (and tools to use them with the language of your choice) see
- * https://developers.google.com/protocol-buffers/docs/proto3
- *
- * We are not placing any of these defs inside a package, because if you do the
- * resulting nanopb version is super verbose package mesh.
- *
- * Protobuf build instructions:
- *
- * To build java classes for reading writing:
- * protoc -I=. --java_out /tmp mesh.proto
- *
- * To generate Nanopb c code:
- * /home/kevinh/packages/nanopb-0.4.0-linux-x86/generator-bin/protoc --nanopb_out=/tmp -I=app/src/main/proto mesh.proto
- *
- * Nanopb binaries available here: https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.0
- */
 
 option java_package = "com.geeksville.mesh";
 option java_outer_classname = "RadioConfigProtos";
@@ -26,10 +7,8 @@ option go_package = "github.com/meshtastic/gomeshproto";
 
 /*
  * The frequency/regulatory region the user has selected.
- *
  * Note: In 1.0 builds (which must still be supported by the android app for a
  * long time) this field will be unpopulated.
- *
  * If firmware is ever upgraded from an old 1.0ish build, the old
  * MyNodeInfo.region string will be used to set UserPreferences.region and the
  * old value will be no longer set.
@@ -106,7 +85,6 @@ enum RegionCode {
  * Defines the device's role on the Mesh network
  *   unset
  *     Behave normally.
- *
  *   Router
  *     Functions as a router
  */
@@ -263,7 +241,6 @@ enum GpsCoordinateFormat {
  * Bit field of boolean configuration options, indicating which optional
  *   fields to include when assembling POSITION messages
  * Longitude and latitude are always included (also time if GPS-synced)
- *
  * NOTE: the more fields are included, the larger the message will be -
  *   leading to longer airtime and a higher risk of packet loss
  */
@@ -396,7 +373,6 @@ message RadioConfig {
     /*
      * If we miss this many owner messages from a node, we declare the node
      * offline (defaults to 3 - to allow for some lost packets) (FIXME not yet used)
-     *
      * uint32 num_missed_to_fail = 3;
      TODO: REMOVE/INTEGRATE
      */
@@ -862,13 +838,11 @@ message RadioConfig {
 
     /*
      * If non-zero, the device will fully power off this many seconds after external power is removed.
-     *
      */
     uint32 on_battery_shutdown_after_secs = 153;
 
     /*
      * Overrides HOPS_RELIABLE and sets the maximum number of hops. This can't be greater than 7.
-     *
      */
     uint32 hop_limit = 154;
 
