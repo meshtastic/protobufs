@@ -1009,9 +1009,9 @@ message NodeInfo {
    */
   fixed32 last_heard = 5;
   /*
-   * The latest device telemetry data for the node.
+   * The latest device metrics for the node.
    */
-  Telemetry telemetry = 6;
+  DeviceMetrics device_metrics = 6;
 }
 
 /*
