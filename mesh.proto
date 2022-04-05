@@ -338,7 +338,7 @@ enum HardwareModel {
    */
   NANO_G1 = 41; 
   
-   /*
+  /*
    * nRF52840 Dongle : https://www.nordicsemi.com/Products/Development-hardware/nrf52840-dongle/
    */
   NRF52840_PCA10059 = 42;
