@@ -628,10 +628,18 @@ message Data {
    */
   PortNum portnum = 1;
 
-  /*
-   * TODO: REPLACE
-   */
-  bytes payload = 2;
+  oneof payloadVariant {
+
+    /*
+    * TODO: REPLACE
+    */
+    bytes payload = 2;
+
+    /*
+    * TODO: REPLACE
+    */
+    bytes payload_compressed = 10;
+  }
 
   /*
    * Not normally used, but for testing a sender can request that recipient
