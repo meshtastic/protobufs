@@ -385,11 +385,6 @@ message RadioConfig {
     bool position_broadcast_smart_disabled = 17;
 
     /*
-     * Send our owner info at least this often (also we always send once at boot - to rejoin the mesh)
-     */
-    uint32 send_owner_interval = 2;
-
-    /*
      * If we miss this many owner messages from a node, we declare the node
      * offline (defaults to 3 - to allow for some lost packets) (FIXME not yet used)
      * uint32 num_missed_to_fail = 3;
@@ -417,13 +412,6 @@ message RadioConfig {
      * IMPORTANT NOTE FOR DEVICE CLIENTS: YOU MUST SEND SOME SORT OF PACKET TO THE PHONE AT LEAST THIS OFTEN OR THE DEVICE WILL DECIDE YOU ARE GONE!
      */
     uint32 phone_timeout_secs = 6;
-
-    /*
-     * Power management state machine option.
-     * See [power management](/docs/software/other/power) for details.
-     * 0 for default of two hours, MAXUINT for disabled
-     */
-    uint32 phone_sds_timeout_sec = 7;
 
     /*
      * Power management state machine option.
@@ -951,7 +939,6 @@ message RadioConfig {
      * Whether to send encrypted or decrypted packets to MQTT.
      * This parameter is only honoured if you also set mqtt_server
      * (the default official mqtt.meshtastic.org server can handle encrypted packets)
-     * 
      * Decrypted packets may be useful for external systems that want to consume meshtastic packets
      */
     bool mqtt_encryption_enabled = 174;

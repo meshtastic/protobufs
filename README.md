@@ -1,6 +1,7 @@
 # Meshtastic-protobufs
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/meshtastic/Meshtastic-protobufs)
 [![CI](https://github.com/meshtastic/Meshtastic-protobufs/actions/workflows/ci.yml/badge.svg)](https://github.com/meshtastic/Meshtastic-protobufs/actions/workflows/ci.yml)
+[![CLA assistant](https://cla-assistant.io/readme/badge/meshtastic/Meshtastic-protobufs)](https://cla-assistant.io/meshtastic/Meshtastic-protobufs)
 
 The protobuf definitions for the Meshtastic project (used by apps and the device code)
 
