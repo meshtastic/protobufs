@@ -81,3 +81,57 @@ message ChannelFile {
    */
   repeated Channel channels = 1;
 }
+
+/*
+ * TODO: REPLACE
+ */
+enum ScreenFonts {
+
+  /*
+   * TODO: REPLACE
+   */
+  FONT_SMALL = 0;
+
+  /*
+   * TODO: REPLACE
+   */
+  FONT_MEDIUM = 1;
+
+  /*
+   * TODO: REPLACE
+   */
+  FONT_LARGE = 2;
+}
+
+/*
+ * This can be used for customizing the firmware distribution. If populated,
+ * show a secondary bootup screen with cuatom logo and text for 2.5 seconds.
+ */
+message OEMStore {
+
+  /*
+   * The Logo width in Px
+   */
+  uint32 oem_icon_width = 1;
+
+  /*
+   * The Logo height in Px
+   */
+  uint32 oem_icon_height = 2;
+
+  /*
+   * The Logo in xbm bytechar format
+   */
+  bytes oem_icon_bits = 3;
+
+  /*
+   * Use this font for the OEM text.
+   */
+  ScreenFonts oem_font = 4;
+
+  /*
+   * Use this font for the OEM text.
+   */
+  string oem_text = 5;
+}
+
