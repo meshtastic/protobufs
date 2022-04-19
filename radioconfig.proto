@@ -619,6 +619,10 @@ message RadioConfig {
       BAUD_460800 = 9;
       BAUD_576000 = 10;
       BAUD_921600 = 11;
+      BAUD_110 = 12;
+      BAUD_300 = 13;
+      BAUD_600 = 14;
+      BAUD_1200 = 15;
     };
 
     /*
