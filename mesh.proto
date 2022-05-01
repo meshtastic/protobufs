@@ -350,88 +350,6 @@ enum HardwareModel {
 }
 
 /*
- * The team colors are based on the names of "friendly teams" in ATAK:
- * https://github.com/deptofdefense/AndroidTacticalAssaultKit-CIV/blob/master/atak/ATAK/app/src/main/assets/filters/team_filters.xml
- */
-enum Team {
-
-  /*
-   * the default (unset) is "achromatic" (unaffiliated)
-   */
-  CLEAR = 0;
-
-  /*
-   * TODO: REPLACE
-   */
-  CYAN = 1;
-
-  /*
-   * TODO: REPLACE
-   */
-  WHITE = 2;
-
-  /*
-   * TODO: REPLACE
-   */
-  YELLOW = 3;
-
-  /*
-   * TODO: REPLACE
-   */
-  ORANGE = 4;
-
-  /*
-   * TODO: REPLACE
-   */
-  MAGENTA = 5;
-
-  /*
-   * TODO: REPLACE
-   */
-  RED = 6;
-
-  /*
-   * TODO: REPLACE
-   */
-  MAROON = 7;
-
-  /*
-   * TODO: REPLACE
-   */
-  PURPLE = 8;
-  
-  /*
-   * TODO: REPLACE
-   */
-  DARK_BLUE = 9;
-
-  /*
-   * TODO: REPLACE
-   */
-  BLUE = 10;
-
-  /*
-   * TODO: REPLACE
-   */
-  TEAL = 11;
-
-  /*
-   * TODO: REPLACE
-   */
-  GREEN = 12;
-
-  /*
-   * TODO: REPLACE
-   */
-  DARK_GREEN = 13;
-
-  /*
-   * TODO: REPLACE
-   */
-  BROWN = 14;
-}
-
-/*
  * Broadcast when a newly powered mesh node wants to find a node num it can use
  * Sent from the phone over bluetooth to set the user id for the owner of this node.
  * Also sent from nodes to each other when a new node signs on (so all clients can have this info)
@@ -494,15 +412,6 @@ message User {
    * Also, "long_name" should be their licence number.
    */
   bool is_licensed = 7;
-
-  /*
-   * Participants in the same network can self-group into different teams.
-   * Short-term this can be used to visually differentiate them on the map;
-   * in the longer term it could also help users to semi-automatically
-   * select or ignore messages according to team affiliation.
-   * In total, 14 teams are defined (encoded in 4 bits)
-   */
-  Team team = 8;
 
   /*
    * Transmit power at antenna connector, in decibel-milliwatt
