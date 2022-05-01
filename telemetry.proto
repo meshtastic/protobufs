@@ -91,3 +91,57 @@ message Telemetry {
     EnvironmentMetrics environment_metrics = 3;
   }
 }
+
+/*
+* TODO: REPLACE
+*/
+enum TelemetrySensorType {
+  /*
+  * No external telemetry sensor
+  */
+  NotSet = 0;
+  /*
+  * TODO: REPLACE
+  */
+  DHT11 = 1;
+
+  /*
+  * TODO: REPLACE
+  */
+  DS18B20 = 2;
+
+  /*
+  * TODO: REPLACE
+  */
+  DHT12 = 3;
+
+  /*
+  * TODO: REPLACE
+  */
+  DHT21 = 4;
+
+  /*
+  * TODO: REPLACE
+  */
+  DHT22 = 5;
+
+  /*
+  * TODO: REPLACE
+  */
+  BME280 = 6;
+
+  /*
+  * TODO: REPLACE
+  */
+  BME680 = 7;
+
+  /*
+  * TODO: REPLACE
+  */
+  MCP9808 = 8;
+
+  /*
+  * TODO: REPLACE
+  */
+  SHTC3 = 9;
+};

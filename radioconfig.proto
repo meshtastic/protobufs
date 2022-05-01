@@ -727,107 +727,6 @@ message RadioConfig {
      */
     reserved 136;
 
-    /*
-     * Preferences for the Telemetry Module (Environment)
-     * FIXME - Move this out of UserPreferences and into a section for module configuration.
-     * Enable/Disable the telemetry measurement module measurement collection
-     */
-    bool telemetry_module_environment_measurement_enabled = 140;
-
-    /*
-     * Enable/Disable the telemetry measurement module on-device display
-     */
-    bool telemetry_module_environment_screen_enabled = 141;
-
-    /*
-     * Sometimes sensor reads can fail.
-     * If this happens, we will retry a configurable number of attempts,
-     * each attempt will be delayed by the minimum required refresh rate for that sensor
-     */
-    uint32 telemetry_module_environment_read_error_count_threshold = 142;
-
-    /*
-     * Interval in seconds of how often we should try to send our
-     * measurements to the mesh
-     */
-    uint32 telemetry_module_device_update_interval = 143;
-
-    /*
-     * Sometimes we can end up with more than read_error_count_threshold failures.
-     * In this case, we will stop trying to read from the sensor for a while.
-     * Wait this long until trying to read from the sensor again
-     */
-    uint32 telemetry_module_environment_recovery_interval = 144;
-
-    /*
-     * We'll always read the sensor in Celsius, but sometimes we might want to
-     * display the results in Fahrenheit as a "user preference".
-     */
-    bool telemetry_module_environment_display_fahrenheit = 145;
-
-    /*
-     * TODO: REPLACE
-     */
-    enum TelemetrySensorType {
-      /*
-       * No external telemetry sensor
-       */
-      None = 0;
-      /*
-       * TODO: REPLACE
-       */
-      DHT11 = 1;
-
-      /*
-       * TODO: REPLACE
-       */
-      DS18B20 = 2;
-
-      /*
-       * TODO: REPLACE
-       */
-      DHT12 = 3;
-
-      /*
-       * TODO: REPLACE
-       */
-      DHT21 = 4;
-
-      /*
-       * TODO: REPLACE
-       */
-      DHT22 = 5;
-
-      /*
-       * TODO: REPLACE
-       */
-      BME280 = 6;
-
-      /*
-       * TODO: REPLACE
-       */
-      BME680 = 7;
-
-      /*
-       * TODO: REPLACE
-       */
-      MCP9808 = 8;
-
-      /*
-       * TODO: REPLACE
-       */
-      SHTC3 = 9;
-    };
-
-    /*
-     * Specify the sensor type
-     */
-    TelemetrySensorType telemetry_module_environment_sensor_type = 146;
-
-    /*
-     * Specify the peferred GPIO Pin for sensor readings
-     */
-    uint32 telemetry_module_environment_sensor_pin = 147;
 
     /*
      * Bit field of boolean configuration options for POSITION messages
@@ -952,12 +851,6 @@ message RadioConfig {
      * Overrides the ADC_MULTIPLIER defined in variant for battery voltage calculation.
      */
     float adc_multiplier_override = 175;
-
-    /*
-     * Interval in seconds of how often we should try to send our
-     * environent measurements to the mesh
-     */
-    uint32 telemetry_module_environment_update_interval = 177;
   }
 
   /*
