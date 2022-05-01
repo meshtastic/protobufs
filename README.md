@@ -21,10 +21,10 @@ Protobuf build instructions:
 * protoc -I=. --java_out /tmp mesh.proto
 
 To generate Nanopb c code:
-* /home/kevinh/packages/nanopb-0.4.4-linux-x86/generator-bin/protoc --nanopb_out=/tmp -I=app/src/main/proto mesh.proto
+* /home/kevinh/packages/nanopb-0.4.5-linux-x86/generator-bin/protoc --nanopb_out=/tmp -I=app/src/main/proto mesh.proto
 
 Nanopb binaries available here:
-* https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.4
+* https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.5
 
 To lint:
 * Install protolint: brew tap yoheimuta/protolint; brew install protolint
