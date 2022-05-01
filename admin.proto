@@ -96,7 +96,7 @@ message AdminMessage {
     /*
      * TODO: REPLACE
      */
-    MODULE_ENVIRONMENTAL_CONFIG = 14;
+    MODULE_TELEMETRY_CONFIG = 14;
 
     /*
      * TODO: REPLACE
