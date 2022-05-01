@@ -160,14 +160,19 @@ message AdminMessage {
     User get_owner_response = 9;
 
     /*
-     * Send the current RadioConfig in the response to this message.
+     * Ask for the following config data to be sent
      */
     ConfigType get_config_request = 10;
 
     /*
-     * Send the current RadioConfig in the response to this message.
+     * Send the current Config in the response to this message.
      */
     Config get_config_response = 11;
+
+    /*
+     * Set the current Config
+     */
+    Config set_config = 12;
 
     /*
      * Setting channels/radio config remotely carries the risk that you might send an invalid config and the radio never talks to your mesh again.
