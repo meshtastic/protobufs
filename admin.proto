@@ -20,6 +20,92 @@ message AdminMessage {
   /*
    * TODO: REPLACE
    */
+  enum RadioConfigType {
+
+    /*
+     * TODO: REPLACE
+     */
+    ALL = 0;
+
+    /*
+     * TODO: REPLACE
+     */
+    CORE_ONLY = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_ONLY = 2;
+
+    /*
+     * TODO: REPLACE
+     */
+    DEVICE_CONFIG = 3;
+
+    /*
+     * TODO: REPLACE
+     */
+    GPS_CONFIG = 4;
+
+    /*
+     * TODO: REPLACE
+     */
+    POWER_CONFIG = 5;
+
+    /*
+     * TODO: REPLACE
+     */
+    WIFI_CONFIG = 6;
+
+    /*
+     * TODO: REPLACE
+     */
+    DISPLAY_CONFIG = 7;
+
+    /*
+     * TODO: REPLACE
+     */
+    LORA_CONFIG = 8;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_MQTT_CONFIG = 9;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_SERIAL_CONFIG = 10;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_EXTNOTIF_CONFIG = 11;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_STOREFORWARD_CONFIG = 12;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_RANGETEST_CONFIG = 13;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_ENVIRONMENTAL_CONFIG = 14;
+
+    /*
+     * TODO: REPLACE
+     */
+    MODULE_CANNEDMSG_CONFIG = 15;
+  }
+
+  /*
+   * TODO: REPLACE
+   */
   oneof variant {
 
     /*
@@ -71,6 +157,11 @@ message AdminMessage {
      * TODO: REPLACE
      */
     User get_owner_response = 9;
+
+    /*
+     * Send the current RadioConfig in the response to this message.
+     */
+    RadioConfigType get_config_request = 10;
 
     /*
      * Setting channels/radio config remotely carries the risk that you might send an invalid config and the radio never talks to your mesh again.
