@@ -175,6 +175,11 @@ message AdminMessage {
     Config set_config = 12;
 
     /*
+     * Sent immediatly after a config change has been sent to ensure comms, if this is not recieved, the config will be reverted after 10 mins
+     */
+    bool confirm_set_config = 13;
+
+    /*
      * Setting channels/radio config remotely carries the risk that you might send an invalid config and the radio never talks to your mesh again.
      * Therefore if setting either of these properties remotely, you must send a confirm_xxx message within 10 minutes.
      * If you fail to do so, the radio will assume loss of comms and revert your changes.
