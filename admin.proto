@@ -7,6 +7,7 @@ option go_package = "github.com/meshtastic/gomeshproto";
 import "channel.proto";
 import "mesh.proto";
 import "radioconfig.proto";
+import "config.proto";
 
 option java_outer_classname = "AdminProtos";
 
@@ -20,7 +21,7 @@ message AdminMessage {
   /*
    * TODO: REPLACE
    */
-  enum RadioConfigType {
+  enum ConfigType {
 
     /*
      * TODO: REPLACE
@@ -161,7 +162,12 @@ message AdminMessage {
     /*
      * Send the current RadioConfig in the response to this message.
      */
-    RadioConfigType get_config_request = 10;
+    ConfigType get_config_request = 10;
+
+    /*
+     * Send the current RadioConfig in the response to this message.
+     */
+    Config get_config_response = 11;
 
     /*
      * Setting channels/radio config remotely carries the risk that you might send an invalid config and the radio never talks to your mesh again.

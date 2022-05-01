@@ -1,0 +1,205 @@
+syntax = "proto3";
+
+option java_package = "com.geeksville.mesh";
+option java_outer_classname = "ConfigProtos";
+option optimize_for = LITE_RUNTIME;
+option go_package = "github.com/meshtastic/gomeshproto";
+
+message Config {
+  /*
+   * TODO: REPLACE
+   */
+  message DeviceConfig {
+
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  message GpsConfig {
+
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  message PowerConfig {
+
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  message WiFiConfig {
+
+    /*
+     * If set, this node will try to join the specified wifi network and
+     * acquire an address via DHCP
+     */
+     string wifi_ssid = 1;
+
+     /*
+      * If set, will be use to authenticate to the named wifi
+      */
+     string wifi_password = 2;
+ 
+     /*
+      * If set, the node will operate as an AP (and DHCP server), otherwise it
+      * will be a station
+      */
+     bool wifi_ap_mode = 3;
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  message DisplayConfig {
+
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  message LoRaConfig {
+
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  message ModuleConfig {
+
+    /*
+     * TODO: REPLACE
+     */
+    message MQTTConfig {
+
+    }
+
+    /*
+     * TODO: REPLACE
+     */
+    message SerialConfig {
+
+    }
+
+    /*
+     * TODO: REPLACE
+     */
+    message ExternalNotificationConfig {
+
+    }
+
+    /*
+     * TODO: REPLACE
+     */
+    message StoreForwardConfig {
+
+    }
+
+    /*
+     * TODO: REPLACE
+     */
+    message RangeTestConfig {
+
+    }
+
+    /*
+     * TODO: REPLACE
+     */
+    message TelemetryConfig {
+
+    }
+
+    /*
+     * TODO: REPLACE
+     */
+    message CannedMessageConfig {
+
+    }
+
+    /*
+     * TODO: REPLACE
+     */
+    oneof payloadVariant {
+
+      /*
+       * TODO: REPLACE
+       */
+      MQTTConfig mqtt_config = 1;
+
+      /*
+       * TODO: REPLACE
+       */
+      SerialConfig serial_config = 2;
+
+      /*
+       * TODO: REPLACE
+       */
+      ExternalNotificationConfig external_notification_config = 3;
+
+      /*
+       * TODO: REPLACE
+       */
+      StoreForwardConfig store_forward_config = 4;
+
+      /*
+       * TODO: REPLACE
+       */
+      RangeTestConfig range_test_config = 5;
+
+      /*
+       * TODO: REPLACE
+       */
+      TelemetryConfig telemetry_config = 6;
+
+      /*
+       * TODO: REPLACE
+       */
+      CannedMessageConfig canned_message_config = 7;
+
+    }
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  oneof payloadVariant {
+
+    /*
+     * TODO: REPLACE
+     */
+    DeviceConfig device_config = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    GpsConfig gps_config = 2;
+ 
+    /*
+     * TODO: REPLACE
+     */
+    PowerConfig power_config = 3;
+
+    /*
+     * TODO: REPLACE
+     */
+    WiFiConfig wifi_config = 4;
+
+    /*
+     * TODO: REPLACE
+     */
+    DisplayConfig display_config = 5;
+    
+    /*
+     * TODO: REPLACE
+     */
+    LoRaConfig lora_config = 6;
+
+    /*
+     * TODO: REPLACE
+     */
+    ModuleConfig module_config = 7;
+
+  }
+}
