@@ -7,6 +7,7 @@ option go_package = "github.com/meshtastic/gomeshproto";
 import "channel.proto";
 import "config.proto";
 import "mesh.proto";
+import "module_config.proto";
 import "radioconfig.proto";
 
 option java_outer_classname = "AdminProtos";
@@ -52,42 +53,48 @@ message AdminMessage {
      * TODO: REPLACE
      */
     LORA_CONFIG = 5;
-
-    /*
-     * TODO: REPLACE
-     */
-    MODULE_MQTT_CONFIG = 6;
-
-    /*
-     * TODO: REPLACE
-     */
-    MODULE_SERIAL_CONFIG = 7;
-
-    /*
-     * TODO: REPLACE
-     */
-    MODULE_EXTNOTIF_CONFIG = 8;
-
-    /*
-     * TODO: REPLACE
-     */
-    MODULE_STOREFORWARD_CONFIG = 9;
-
-    /*
-     * TODO: REPLACE
-     */
-    MODULE_RANGETEST_CONFIG = 10;
-
-    /*
-     * TODO: REPLACE
-     */
-    MODULE_TELEMETRY_CONFIG = 11;
-
-    /*
-     * TODO: REPLACE
-     */
-    MODULE_CANNEDMSG_CONFIG = 12;
   }
+
+  /*
+   * TODO: REPLACE
+   */
+  enum ModuleConfigType {
+
+    /*
+    * TODO: REPLACE
+    */
+    MQTT_CONFIG = 0;
+
+    /*
+    * TODO: REPLACE
+    */
+    SERIAL_CONFIG = 1;
+
+    /*
+    * TODO: REPLACE
+    */
+    EXTNOTIF_CONFIG = 2;
+
+    /*
+    * TODO: REPLACE
+    */
+    STOREFORWARD_CONFIG = 3;
+
+    /*
+    * TODO: REPLACE
+    */
+    RANGETEST_CONFIG = 4;
+
+    /*
+    * TODO: REPLACE
+    */
+    TELEMETRY_CONFIG = 5;
+
+    /*
+    * TODO: REPLACE
+    */
+    CANNEDMSG_CONFIG = 6;
+}
 
   /*
    * TODO: REPLACE
@@ -163,6 +170,26 @@ message AdminMessage {
      * Sent immediatly after a config change has been sent to ensure comms, if this is not recieved, the config will be reverted after 10 mins
      */
     bool confirm_set_config = 13;
+    
+    /*
+     * Ask for the following config data to be sent
+     */
+    ModuleConfigType get_module_config_request = 14;
+
+    /*
+     * Send the current Config in the response to this message.
+     */
+    ModuleConfig get_module_config_response = 15;
+ 
+    /*
+     * Set the current Config
+     */
+    ModuleConfig set_module_config = 16;
+ 
+    /*
+     * Sent immediatly after a config change has been sent to ensure comms, if this is not recieved, the config will be reverted after 10 mins
+     */
+    bool confirm_set_module_config = 17;
 
     /*
      * Setting channels/radio config remotely carries the risk that you might send an invalid config and the radio never talks to your mesh again.

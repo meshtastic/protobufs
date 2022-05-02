@@ -1,0 +1,157 @@
+syntax = "proto3";
+import "telemetry.proto";
+
+option java_package = "com.geeksville.mesh";
+option java_outer_classname = "ModuleConfigProtos";
+option optimize_for = LITE_RUNTIME;
+option go_package = "github.com/meshtastic/gomeshproto";
+
+/*
+ * TODO: REPLACE
+ */
+message ModuleConfig {
+
+  /*
+   * TODO: REPLACE
+   */
+  message MQTTConfig {
+
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  message SerialConfig {
+
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  message ExternalNotificationConfig {
+
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  message StoreForwardConfig {
+
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  message RangeTestConfig {
+
+  }
+
+  /*
+   * Configuration for both device and environment metrics
+   */
+  message TelemetryConfig {
+    
+    /*
+     * Interval in seconds of how often we should try to send our
+     * device measurements to the mesh
+     */
+    uint32 device_update_interval = 1;
+
+    /*
+     * Interval in seconds of how often we should try to send our
+     * environment measurements to the mesh
+     */
+
+    uint32 environment_update_interval = 2;
+
+    /*
+     * Preferences for the Telemetry Module (Environment)
+     * Enable/Disable the telemetry measurement module measurement collection
+     */
+    bool environment_measurement_enabled = 3;
+
+    /*
+     * Enable/Disable the telemetry measurement module on-device display
+     */
+    bool environment_screen_enabled = 4;
+
+    /*
+     * Sometimes sensor reads can fail.
+     * If this happens, we will retry a configurable number of attempts,
+     * each attempt will be delayed by the minimum required refresh rate for that sensor
+     */
+    uint32 environment_read_error_count_threshold = 5;
+
+    /*
+     * Sometimes we can end up with more than read_error_count_threshold failures.
+     * In this case, we will stop trying to read from the sensor for a while.
+     * Wait this long until trying to read from the sensor again
+     */
+    uint32 environment_recovery_interval = 6;
+
+    /*
+     * We'll always read the sensor in Celsius, but sometimes we might want to
+     * display the results in Fahrenheit as a "user preference".
+     */
+    bool environment_display_fahrenheit = 7;
+
+    /*
+     * Specify the sensor type
+     */
+    TelemetrySensorType environment_sensor_type = 8;
+
+    /*
+     * Specify the peferred GPIO Pin for sensor readings
+     */
+    uint32 environment_sensor_pin = 9;
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  message CannedMessageConfig {
+
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  oneof payloadVariant {
+
+    /*
+     * TODO: REPLACE
+     */
+    MQTTConfig mqtt_config = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    SerialConfig serial_config = 2;
+
+    /*
+     * TODO: REPLACE
+     */
+    ExternalNotificationConfig external_notification_config = 3;
+
+    /*
+     * TODO: REPLACE
+     */
+    StoreForwardConfig store_forward_config = 4;
+
+    /*
+     * TODO: REPLACE
+     */
+    RangeTestConfig range_test_config = 5;
+
+    /*
+     * TODO: REPLACE
+     */
+    TelemetryConfig telemetry_config = 6;
+
+    /*
+     * TODO: REPLACE
+     */
+    CannedMessageConfig canned_message_config = 7;
+
+  }
+}
