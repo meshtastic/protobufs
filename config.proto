@@ -37,18 +37,18 @@ message Config {
      * If set, this node will try to join the specified wifi network and
      * acquire an address via DHCP
      */
-     string wifi_ssid = 1;
+    string wifi_ssid = 1;
 
-     /*
-      * If set, will be use to authenticate to the named wifi
-      */
-     string wifi_password = 2;
+    /*
+     * If set, will be use to authenticate to the named wifi
+     */
+    string wifi_password = 2;
  
-     /*
-      * If set, the node will operate as an AP (and DHCP server), otherwise it
-      * will be a station
-      */
-     bool wifi_ap_mode = 3;
+    /*
+     * If set, the node will operate as an AP (and DHCP server), otherwise it
+     * will be a station
+    */
+    bool wifi_ap_mode = 3;
   }
 
   /*
