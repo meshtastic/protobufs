@@ -63,6 +63,85 @@ message Config {
    */
   message LoRaConfig {
 
+    /*
+     * If zero then, use default max legal continuous power (ie. something that won't
+     * burn out the radio hardware)
+     * In most cases you should use zero here.
+     * Units are in dBm.
+    */
+    int32 tx_power = 1;
+
+    /*
+     * Standard predefined channel settings
+     * Note: these mappings must match ModemConfigChoice in the device code.
+     */
+    enum ModemConfig {
+
+      /*
+       * TODO: REPLACE
+       */
+      VLongSlow = 0;
+
+      /*
+       * TODO: REPLACE
+       */
+      LongSlow = 1;
+
+      /*
+       * TODO: REPLACE
+       */
+      LongFast = 2;
+
+      /*
+       * TODO: REPLACE
+       */
+      MidSlow = 3;
+
+      /*
+       * TODO: REPLACE
+       */
+      MidFast = 4;
+
+      /*
+       * TODO: REPLACE
+       */
+      ShortSlow = 5;
+
+      /*
+       * TODO: REPLACE
+       */
+      ShortFast = 6;
+    }
+
+    /*
+     * Note: This is the 'old' mechanism for specifying channel parameters.
+     * Either modem_config or bandwidth/spreading/coding will be specified - NOT BOTH.
+     * As a heuristic: If bandwidth is specified, do not use modem_config.
+     * Because protobufs take ZERO space when the value is zero this works out nicely.
+     * This value is replaced by bandwidth/spread_factor/coding_rate.
+     * If you'd like to experiment with other options add them to MeshRadio.cpp in the device code.
+     */
+    ModemConfig modem_config = 3;
+
+    /*
+     * Bandwidth in MHz
+     * Certain bandwidth numbers are 'special' and will be converted to the
+     * appropriate floating point value: 31 -> 31.25MHz
+     */
+    uint32 bandwidth = 6;
+
+    /*
+     * A number from 7 to 12.
+     * Indicates number of chirps per symbol as 1<<spread_factor.
+     */
+    uint32 spread_factor = 7;
+
+    /*
+     * The denominator of the coding rate.
+     * ie for 4/8, the value is 8. 5/8 the value is 5.
+     */
+    uint32 coding_rate = 8;
+
   }
 
   /*
