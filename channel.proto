@@ -74,7 +74,7 @@ message ChannelSettings {
    * is the special (minimally secure) "Default"channel.
    * In user interfaces it should be rendered as a local language translation of "X".
    * For channel_num hashing empty string will be treated as "X".
-   * Where "X" is selected based on the English words listed above for ModemConfig
+   * Where "X" is selected based on the English words listed above for ModemPreset
    */
   string name = 5;
 

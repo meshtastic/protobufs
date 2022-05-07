@@ -554,7 +554,7 @@ message Config {
 
     /*
      * Standard predefined channel settings
-     * Note: these mappings must match ModemConfigChoice in the device code.
+     * Note: these mappings must match ModemPreset Choice in the device code.
      */
     enum ModemPreset {
 
@@ -610,7 +610,7 @@ message Config {
      * This value is replaced by bandwidth/spread_factor/coding_rate.
      * If you'd like to experiment with other options add them to MeshRadio.cpp in the device code.
      */
-    ModemPreset modem_config = 2;
+    ModemPreset modem_preset = 2;
 
     /*
      * Bandwidth in MHz
