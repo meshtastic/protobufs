@@ -11,13 +11,197 @@ message Config {
    * TODO: REPLACE
    */
   message DeviceConfig {
+    /*
+     * Defines the device's role on the Mesh network
+     *   unset
+     *     Behave normally.
+     *   Router
+     *     Functions as a router
+     */
+    enum Role {
+    
+      /*
+       * Client device role
+       */
+      Client = 0;
+    
+      /*
+       * ClientMute device role
+       *   This is like the client but packets will not hop over this node. Would be
+       *   useful if you want to save power by not contributing to the mesh.
+       */
+      ClientMute = 1;
+    
+      /*
+       * Router device role.
+       *   Uses an agressive algirithem for the flood networking so packets will
+       *   prefer to be routed over this node. Also assume that this will be generally
+       *   unattended and so will turn off the wifi/ble radio as well as the oled screen.
+       */
+      Router = 2;
+    
+      /*
+       * RouterClient device role
+       *   Uses an agressive algirithem for the flood networking so packets will
+       *   prefer to be routed over this node. Similiar power management as a regular
+       *   client, so the RouterClient can be used as both a Router and a Client. Useful
+       *   as a well placed base station that you could also use to send messages.
+       */
+      RouterClient = 3;
+    
+    }
+
+    /*
+     * Sets the role of node
+     */
+    Role role = 1;
+
+    /*
+     * If set, this will disable the SerialConsole by not initilizing the StreamAPI
+     */
+    bool serial_disabled = 2;
+
+    /*
+     * This setting is never saved to disk, but if set, all device settings will be returned to factory defaults.
+     * (Region, serial number etc... will be preserved)
+     */
+    bool factory_reset = 3;
+
+    /*
+     * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
+     * Set this to true to leave the debug log outputting even when API is active.
+     */
+    bool debug_log_enabled = 4;
 
   }
 
   /*
    * TODO: REPLACE
    */
-  message GpsConfig {
+  message PositionConfig {
+    /*
+     * Bit field of boolean configuration options, indicating which optional
+     *   fields to include when assembling POSITION messages
+     * Longitude and latitude are always included (also time if GPS-synced)
+     * NOTE: the more fields are included, the larger the message will be -
+     *   leading to longer airtime and a higher risk of packet loss
+     */
+    enum PositionFlags {
+      /*
+       * Required for compilation
+       */
+      POS_UNDEFINED = 0x0000;
+    
+      /*
+       * Include an altitude value (if available)
+       */
+      POS_ALTITUDE  = 0x0001;
+    
+      /*
+       * Altitude value is MSL
+       */
+      POS_ALT_MSL   = 0x0002;
+    
+      /*
+       * Include geoidal separation
+       */
+      POS_GEO_SEP   = 0x0004;
+    
+      /*
+       * Include the DOP value ; PDOP used by default, see below
+       */
+      POS_DOP       = 0x0008;
+    
+      /*
+       * If POS_DOP set, send separate HDOP / VDOP values instead of PDOP
+       */
+      POS_HVDOP     = 0x0010;
+    
+      /*
+       * Include battery level
+       */
+      POS_BATTERY   = 0x0020;
+    
+      /*
+       * Include number of "satellites in view"
+       */
+      POS_SATINVIEW = 0x0040;
+    
+      /*
+       * Include a sequence number incremented per packet
+       */
+      POS_SEQ_NOS   = 0x0080;
+    
+      /*
+       * Include positional timestamp (from GPS solution)
+       */
+      POS_TIMESTAMP = 0x0100;
+    }
+
+    /*
+     * We should send our position this often (but only if it has changed significantly)
+     * Defaults to 15 minutes
+     */
+    uint32 position_broadcast_secs = 1;
+
+    /*
+     * We should send our position this often (but only if it has changed significantly)
+     */
+    bool position_broadcast_smart_disabled = 2;
+
+    /*
+     * If set, this node is at a fixed position.
+     * We will generate GPS position updates at the regular interval, but use whatever the last lat/lon/alt we have for the node.
+     * The lat/lon/alt can be set by an internal GPS or with the help of the app.
+     */
+    bool fixed_position = 3;
+
+    /*
+     * Should we disbale location sharing with other nodes (or the local phone)
+     */
+    bool location_share_disabled = 4;
+
+    /*
+     * Should the GPS be disabled for this node?
+     */
+    bool gps_disabled = 5;
+
+    /*
+     * How often should we try to get GPS position (in seconds)
+     * or zero for the default of once every 30 seconds
+     * or a very large value (maxint) to update only once at boot.
+     */
+    uint32 gps_update_interval = 6;
+ 
+    /*
+     * How long should we try to get our position during each gps_update_interval attempt?  (in seconds)
+     * Or if zero, use the default of 30 seconds.
+     * If we don't get a new gps fix in that time, the gps will be put into sleep until  the next gps_update_rate
+     * window.
+     */
+    uint32 gps_attempt_time = 7;
+ 
+    /*
+     * Shall we accept 2D GPS fixes? By default, only 3D fixes are accepted
+     * (during a 2D fix, altitude values are unreliable and will be excluded)
+     */
+    bool gps_accept_2d = 8;
+ 
+    /*
+     * GPS maximum DOP accepted (dilution of precision)
+     * Set a rejection threshold for GPS readings based on their precision,
+     * relative to the GPS rated accuracy (which is typically ~3m)
+     * Solutions above this value will be treated as retryable errors!
+     * Useful range is between 1 - 64 (3m - <~200m)
+     * By default (if zero), accept all GPS readings
+     */
+    uint32 gps_max_dop = 9;
+
+    /*
+     * Bit field of boolean configuration options for POSITION messages
+     * (bitwise OR of PositionFlags)
+     */
+    uint32 position_flags = 10;
 
   }
 
@@ -25,6 +209,176 @@ message Config {
    * TODO: REPLACE
    */
   message PowerConfig {
+
+    /*
+     * Sets the charge control current of devices with a battery charger that can be
+     * configured. This is passed into the axp power management chip like on the tbeam.
+     */
+    enum ChargeCurrent {
+    
+      /*
+       * TODO: REPLACE
+       */
+      MAUnset = 0;
+    
+      /*
+       * TODO: REPLACE
+       */
+      MA100 = 1;
+    
+      /*
+       * TODO: REPLACE
+       */
+      MA190 = 2;
+    
+      /*
+       * TODO: REPLACE
+       */
+      MA280 = 3;
+    
+      /*
+       * TODO: REPLACE
+       */
+      MA360 = 4;
+    
+      /*
+       * TODO: REPLACE
+       */
+      MA450 = 5;
+    
+      /*
+       * TODO: REPLACE
+       */
+      MA550 = 6;
+    
+      /*
+       * TODO: REPLACE
+       */
+      MA630 = 7;
+    
+      /*
+       * TODO: REPLACE
+       */
+      MA700 = 8;
+    
+      /*
+       * TODO: REPLACE
+       */
+      MA780 = 9;
+    
+      /*
+       * TODO: REPLACE
+       */
+      MA880 = 10;
+    
+      /*
+       * TODO: REPLACE
+       */
+      MA960 = 11;
+    
+      /*
+       * TODO: REPLACE
+       */
+      MA1000 = 12;
+      
+      /*
+       * TODO: REPLACE
+       */
+      MA1080 = 13;
+    
+      /*
+       * TODO: REPLACE
+       */
+      MA1160 = 14;
+    
+      /*
+       * TODO: REPLACE
+       */
+      MA1240 = 15;
+    
+      /*
+       * TODO: REPLACE
+       */
+      MA1320 = 16;
+    }
+
+    /*
+     * Sets the current of the battery charger
+     */
+    ChargeCurrent charge_current = 1;
+
+    /*
+     * If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in
+     * we should try to minimize power consumption as much as possible.
+     * YOU DO NOT NEED TO SET THIS IF YOU'VE set is_router (it is implied in that case).
+     */
+    bool is_low_power = 2;
+
+    /*
+     * Circumvents the logic block for determining whether the device is powered or not.
+     * Useful for devices with finicky ADC issues on the battery sense pins.
+     */
+    bool is_always_powered = 3;
+
+    
+    /*
+     * If non-zero, the device will fully power off this many seconds after external power is removed.
+     */
+    uint32 on_battery_shutdown_after_secs = 4;
+
+    /*
+     * If set to true, enable power saving features of the esp32
+     */
+    bool is_power_saving = 5;
+
+    /*
+     * Ratio of voltage divider for battery pin eg. 3.20 (R1=100k, R2=220k)
+     * Overrides the ADC_MULTIPLIER defined in variant for battery voltage calculation.
+     */
+    float adc_multiplier_override = 6;
+
+    /*
+     * Power management state machine option.
+     * See [power management](/docs/software/other/power) for details.
+     * 0 for default of 1 minute
+     */
+    uint32 wait_bluetooth_secs = 7;
+
+    /*
+     * Power management state machine option.
+     * See [power management](/docs/software/other/power) for details.
+     * 0 for default of 15 minutes
+     * IMPORTANT NOTE FOR DEVICE CLIENTS: YOU MUST SEND SOME SORT OF PACKET TO THE PHONE AT LEAST THIS OFTEN OR THE DEVICE WILL DECIDE YOU ARE GONE!
+     */
+    uint32 phone_timeout_secs = 8;
+ 
+    /*
+     * Power management state machine option.
+     * See [power management](/docs/software/other/power) for details.
+     * 0 for default of two hours, MAXUINT for disabled
+     */
+    uint32 mesh_sds_timeout_secs = 9;
+ 
+    /*
+     * Power management state machine option.
+     * See [power management](/docs/software/other/power) for details.
+     * 0 for default of one year
+     */
+    uint32 sds_secs = 10;
+ 
+    /*
+     * Power management state machine option.
+     * See [power management](/docs/software/other/power) for details.
+     * 0 for default of 3600
+     */
+    uint32 ls_secs = 11;
+ 
+    /*
+     * Power management state machine option.
+     * See [power management](/docs/software/other/power) for details.
+     * 0 for default of 10 seconds
+     */
+    uint32 min_wake_secs = 12;
 
   }
 
@@ -55,6 +409,66 @@ message Config {
    * TODO: REPLACE
    */
   message DisplayConfig {
+    /*
+     * How the GPS coordinates are displayed on the OLED screen.
+     */
+    enum GpsCoordinateFormat {
+
+      /*
+       * GPS coordinates are displayed in the normal decimal degrees format:
+       * DD.DDDDDD DDD.DDDDDD
+       */
+      GpsFormatDec = 0;
+
+      /*
+       * GPS coordinates are displayed in the degrees minutes seconds format:
+       * DD°MM'SS"C DDD°MM'SS"C, where C is the compass point representing the locations quadrant
+       */
+      GpsFormatDMS = 1;
+
+      /*
+       * GPS coordinates are displayed in Universal Transverse Mercator format:
+       * ZZB EEEEEE NNNNNNN, where Z is zone, B is band, E is easting, N is northing
+       */
+      GpsFormatUTM = 2;
+
+      /*
+       * GPS coordinates are displayed in Military Grid Reference System format:
+       * ZZB CD EEEEE NNNNN, where Z is zone, B is band, C is the east 100k square, D is the north 100k square,
+       * E is easting, N is northing
+       */
+      GpsFormatMGRS = 3;
+
+      /*
+       * GPS coordinates are displayed in Open Location Code (aka Plus Codes).
+       */
+      GpsFormatOLC = 4;
+
+      /*
+       * GPS coordinates are displayed in Ordnance Survey Grid Reference (the National Grid System of the UK).
+       * Format: AB EEEEE NNNNN, where A is the east 100k square, B is the north 100k square, E is the easting,
+       * N is the northing
+       */
+      GpsFormatOSGR = 5;
+    }
+
+    /*
+     * Power management state machine option.
+     * See [power management](/docs/software/other/power) for details.
+     * 0 for default of one minute
+     */
+    uint32 screen_on_secs = 1;
+
+    /*
+     * How the GPS coordinates are displayed on the OLED screen.
+     */
+    GpsCoordinateFormat gps_format = 2;
+
+    /*
+     * Automatically toggles to the next page on the screen like a carousel, based the specified interval in seconds.
+     * Potentially useful for devices without user buttons.
+     */
+    uint32 auto_screen_carousel_secs = 3;
 
   }
 
@@ -62,14 +476,81 @@ message Config {
    * TODO: REPLACE
    */
   message LoRaConfig {
-
     /*
-     * If zero then, use default max legal continuous power (ie. something that won't
-     * burn out the radio hardware)
-     * In most cases you should use zero here.
-     * Units are in dBm.
-    */
-    int32 tx_power = 1;
+     * The frequency/regulatory region the user has selected.
+     * Note: In 1.0 builds (which must still be supported by the android app for a
+     * long time) this field will be unpopulated.
+     * If firmware is ever upgraded from an old 1.0ish build, the old
+     * MyNodeInfo.region string will be used to set UserPreferences.region and the
+     * old value will be no longer set.
+     */
+    enum RegionCode {
+
+      /*
+       * TODO: REPLACE
+       */
+      Unset = 0;
+
+      /*
+       * TODO: REPLACE
+       */
+      US = 1;
+
+      /*
+       * TODO: REPLACE
+       */
+      EU433 = 2;
+
+      /*
+       * TODO: REPLACE
+       */
+      EU868 = 3;
+
+      /*
+       * TODO: REPLACE
+       */
+      CN = 4;
+
+      /*
+       * TODO: REPLACE
+       */
+      JP = 5;
+
+      /*
+       * TODO: REPLACE
+       */
+      ANZ = 6;
+
+      /*
+       * TODO: REPLACE
+       */
+      KR = 7;
+
+      /*
+       * TODO: REPLACE
+       */
+      TW = 8;
+
+      /*
+       * TODO: REPLACE
+       */
+      RU = 9;
+
+      /*
+       * TODO: REPLACE
+       */
+      IN = 10;
+
+      /*
+       * TODO: REPLACE
+       */
+      NZ865 = 11;
+
+      /*
+       * TODO: REPLACE
+       */
+      TH = 12;
+    }
 
     /*
      * Standard predefined channel settings
@@ -114,6 +595,14 @@ message Config {
     }
 
     /*
+     * If zero then, use default max legal continuous power (ie. something that won't
+     * burn out the radio hardware)
+     * In most cases you should use zero here.
+     * Units are in dBm.
+    */
+    int32 tx_power = 1;
+
+    /*
      * Note: This is the 'old' mechanism for specifying channel parameters.
      * Either modem_config or bandwidth/spreading/coding will be specified - NOT BOTH.
      * As a heuristic: If bandwidth is specified, do not use modem_config.
@@ -121,173 +610,57 @@ message Config {
      * This value is replaced by bandwidth/spread_factor/coding_rate.
      * If you'd like to experiment with other options add them to MeshRadio.cpp in the device code.
      */
-    ModemConfig modem_config = 3;
+    ModemConfig modem_config = 2;
 
     /*
      * Bandwidth in MHz
      * Certain bandwidth numbers are 'special' and will be converted to the
      * appropriate floating point value: 31 -> 31.25MHz
      */
-    uint32 bandwidth = 6;
+    uint32 bandwidth = 3;
 
     /*
      * A number from 7 to 12.
      * Indicates number of chirps per symbol as 1<<spread_factor.
      */
-    uint32 spread_factor = 7;
+    uint32 spread_factor = 4;
 
     /*
      * The denominator of the coding rate.
      * ie for 4/8, the value is 8. 5/8 the value is 5.
      */
-    uint32 coding_rate = 8;
-
-  }
-
-  /*
-   * TODO: REPLACE
-   */
-  message ModuleConfig {
+    uint32 coding_rate = 5;
 
     /*
-     * TODO: REPLACE
+     * This parameter is for advanced users with advanced test equipment, we do not recommend most users use it.
+     * A frequency offset that is added to to the calculated band center frequency.
+     * Used to correct for crystal calibration errors.
      */
-    message MQTTConfig {
-
-    }
+    float frequency_offset = 6;
 
     /*
-     * TODO: REPLACE
+     * The region code for my radio (US, CN, EU433, etc...)
      */
-    message SerialConfig {
-
-    }
+    RegionCode region = 7;
 
     /*
-     * TODO: REPLACE
+     * Overrides HOPS_RELIABLE and sets the maximum number of hops. This can't be greater than 7.
      */
-    message ExternalNotificationConfig {
-
-    }
+    uint32 hop_limit = 8;
 
     /*
-     * TODO: REPLACE
+     * Disable TX from the LoRa radio. Useful for hot-swapping antennas and other tests.
+     * Defaults to false
      */
-    message StoreForwardConfig {
-
-    }
+    bool tx_disabled = 9;
 
     /*
-     * TODO: REPLACE
+     * For testing it is useful sometimes to force a node to never listen to
+     * particular other nodes (simulating radio out of range). All nodenums listed
+     * in ignore_incoming will have packets they send droped on receive (by router.cpp)
      */
-    message RangeTestConfig {
+    repeated uint32 ignore_incoming = 103;
 
-    }
-
-    /*
-     * Configuration for both device and environment metrics
-     */
-    message TelemetryConfig {
-      /*
-      * Interval in seconds of how often we should try to send our
-      * device measurements to the mesh
-      */
-      uint32 device_update_interval = 1;
-      /*
-      * Interval in seconds of how often we should try to send our
-      * environment measurements to the mesh
-      */
-      uint32 environment_update_interval = 2;
-      /*
-      * Preferences for the Telemetry Module (Environment)
-      * Enable/Disable the telemetry measurement module measurement collection
-      */
-      bool environment_measurement_enabled = 3;
-
-      /*
-      * Enable/Disable the telemetry measurement module on-device display
-      */
-      bool environment_screen_enabled = 4;
-
-      /*
-      * Sometimes sensor reads can fail.
-      * If this happens, we will retry a configurable number of attempts,
-      * each attempt will be delayed by the minimum required refresh rate for that sensor
-      */
-      uint32 environment_read_error_count_threshold = 5;
-
-      /*
-      * Sometimes we can end up with more than read_error_count_threshold failures.
-      * In this case, we will stop trying to read from the sensor for a while.
-      * Wait this long until trying to read from the sensor again
-      */
-      uint32 environment_recovery_interval = 6;
-
-      /*
-      * We'll always read the sensor in Celsius, but sometimes we might want to
-      * display the results in Fahrenheit as a "user preference".
-      */
-      bool environment_display_fahrenheit = 7;
-
-      /*
-      * Specify the sensor type
-      */
-      TelemetrySensorType environment_sensor_type = 8;
-
-      /*
-      * Specify the peferred GPIO Pin for sensor readings
-      */
-      uint32 environment_sensor_pin = 9;
-    }
-
-    /*
-     * TODO: REPLACE
-     */
-    message CannedMessageConfig {
-
-    }
-
-    /*
-     * TODO: REPLACE
-     */
-    oneof payloadVariant {
-
-      /*
-       * TODO: REPLACE
-       */
-      MQTTConfig mqtt_config = 1;
-
-      /*
-       * TODO: REPLACE
-       */
-      SerialConfig serial_config = 2;
-
-      /*
-       * TODO: REPLACE
-       */
-      ExternalNotificationConfig external_notification_config = 3;
-
-      /*
-       * TODO: REPLACE
-       */
-      StoreForwardConfig store_forward_config = 4;
-
-      /*
-       * TODO: REPLACE
-       */
-      RangeTestConfig range_test_config = 5;
-
-      /*
-       * TODO: REPLACE
-       */
-      TelemetryConfig telemetry_config = 6;
-
-      /*
-       * TODO: REPLACE
-       */
-      CannedMessageConfig canned_message_config = 7;
-
-    }
   }
 
   /*
@@ -303,7 +676,7 @@ message Config {
     /*
      * TODO: REPLACE
      */
-    GpsConfig gps_config = 2;
+    PositionConfig position_config = 2;
  
     /*
      * TODO: REPLACE
@@ -324,11 +697,6 @@ message Config {
      * TODO: REPLACE
      */
     LoRaConfig lora_config = 6;
-
-    /*
-     * TODO: REPLACE
-     */
-    ModuleConfig module_config = 7;
 
   }
 }

@@ -8,7 +8,6 @@ import "channel.proto";
 import "config.proto";
 import "mesh.proto";
 import "module_config.proto";
-import "radioconfig.proto";
 
 option java_outer_classname = "AdminProtos";
 
@@ -32,7 +31,7 @@ message AdminMessage {
     /*
      * TODO: REPLACE
      */
-    GPS_CONFIG = 1;
+    POSITION_CONFIG = 1;
 
     /*
      * TODO: REPLACE
@@ -102,11 +101,6 @@ message AdminMessage {
   oneof variant {
 
     /*
-     * Set the radio provisioning for this node
-     */
-    RadioConfig set_radio = 1;
-
-    /*
      * Set the owner for this node
      */
     User set_owner = 2;
@@ -119,16 +113,6 @@ message AdminMessage {
      * If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically.
      */
     Channel set_channel = 3;
-
-    /*
-     * Send the current RadioConfig in the response to this message.
-     */
-    bool get_radio_request = 4;
-
-    /*
-     * TODO: REPLACE
-     */
-    RadioConfig get_radio_response = 5;
 
     /*
      * Send the specified channel in the response to this message

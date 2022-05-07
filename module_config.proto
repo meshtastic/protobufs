@@ -16,12 +16,113 @@ message ModuleConfig {
    */
   message MQTTConfig {
 
+    /*
+     * If a meshtastic node is able to reach the internet it will normally attempt to gateway any channels that are marked as
+     * is_uplink_enabled or is_downlink_enabled.
+     * But if this flag is set, all MQTT features will be disabled and no servers will be contacted.
+    */
+    bool disabled = 1;
+
+    /*
+     * The server to use for our MQTT global message gateway feature.
+     * If not set, the default server will be used
+     */
+    string address = 2;
+
+    /*
+     * MQTT username to use (most useful for a custom MQTT server).
+     * If using a custom server, this will be honoured even if empty.
+     * If using the default server, this will only be honoured if set, otherwise the device will use the default username
+     */
+    string username = 3;
+
+    /*
+     * MQTT password to use (most useful for a custom MQTT server).
+     * If using a custom server, this will be honoured even if empty.
+     * If using the default server, this will only be honoured if set, otherwise the device will use the default password
+     */
+    string password = 4;
+
+    /*
+     * Whether to send encrypted or decrypted packets to MQTT.
+     * This parameter is only honoured if you also set server
+     * (the default official mqtt.meshtastic.org server can handle encrypted packets)
+     * Decrypted packets may be useful for external systems that want to consume meshtastic packets
+     */
+    bool encryption_enabled = 5;
   }
 
   /*
    * TODO: REPLACE
    */
   message SerialConfig {
+
+    /*
+     * TODO: REPLACE
+     */
+    enum Serial_Baud {
+      BAUD_Default = 0;
+      BAUD_2400 = 1;
+      BAUD_4800 = 2;
+      BAUD_9600 = 3;
+      BAUD_19200 = 4;
+      BAUD_38400 = 5;
+      BAUD_57600 = 6;
+      BAUD_115200 = 7;
+      BAUD_230400 = 8;
+      BAUD_460800 = 9;
+      BAUD_576000 = 10;
+      BAUD_921600 = 11;
+      BAUD_110 = 12;
+      BAUD_300 = 13;
+      BAUD_600 = 14;
+      BAUD_1200 = 15;
+    };
+
+    /*
+     * TODO: REPLACE
+     */
+    enum Serial_Mode {
+      MODE_Default = 0;
+      MODE_SIMPLE = 1;
+      MODE_PROTO = 2;
+    };
+
+    /*
+     * Preferences for the SerialModule
+     * FIXME - Move this out of UserPreferences and into a section for module configuration.
+     */
+    bool enabled = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    bool echo = 2;
+ 
+    /*
+     * TODO: REPLACE
+     */
+    uint32 rxd = 3;
+ 
+    /*
+     * TODO: REPLACE
+     */
+    uint32 txd = 4;
+
+    /*
+     * TODO: REPLACE
+     */
+    Serial_Baud baud = 5;
+
+    /*
+     * TODO: REPLACE
+     */
+    uint32 timeout = 6;
+ 
+    /*
+     * TODO: REPLACE
+     */
+    Serial_Mode mode = 7;
 
   }
 
@@ -30,12 +131,69 @@ message ModuleConfig {
    */
   message ExternalNotificationConfig {
 
+    /*
+     * Preferences for the ExternalNotificationModule
+     * FIXME - Move this out of UserPreferences and into a section for module configuration.
+     */
+    bool enabled = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    uint32 output_ms = 2;
+
+    /*
+     * TODO: REPLACE
+     */
+    uint32 output = 3;
+
+    /*
+     * TODO: REPLACE
+     */
+    bool active = 4;
+
+    /*
+     * TODO: REPLACE
+     */
+    bool alert_message = 5;
+
+    /*
+     * TODO: REPLACE
+     */
+    bool alert_bell = 6;
+ 
+
   }
 
   /*
    * TODO: REPLACE
    */
   message StoreForwardConfig {
+    /*
+     * Preferences for the StoreForwardModule
+     *FIXME - Move this out of UserPreferences and into a section for module configuration. (was 136)
+     */
+    bool enabled = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    bool heartbeat = 2;
+ 
+    /*
+     * TODO: REPLACE
+     */
+    uint32 records = 3;
+ 
+    /*
+     * TODO: REPLACE
+     */
+    uint32 history_return_max = 4;
+ 
+    /*
+     * TODO: REPLACE
+     */
+    uint32 history_return_window = 5;
 
   }
 
@@ -43,7 +201,21 @@ message ModuleConfig {
    * TODO: REPLACE
    */
   message RangeTestConfig {
+    /*
+     * Preferences for the RangeTestModule
+     * FIXME - Move this out of UserPreferences and into a section for module configuration.
+     */
+    bool enabled = 1;
 
+    /*
+     * TODO: REPLACE
+     */
+    uint32 sender = 2;
+
+    /*
+     * TODO: REPLACE
+     */
+    bool save = 3;
   }
 
   /*
@@ -110,7 +282,109 @@ message ModuleConfig {
    * TODO: REPLACE
    */
   message CannedMessageConfig {
+    
+    /*
+     * TODO: REPLACE
+     */
+    enum InputEventChar {
+    
+      /*
+       * TODO: REPLACE
+       */
+      KEY_NONE  = 0;
+    
+      /*
+       * TODO: REPLACE
+       */
+      KEY_UP    = 17;
+    
+      /*
+       * TODO: REPLACE
+       */
+      KEY_DOWN  = 18;
+    
+      /*
+       * TODO: REPLACE
+       */
+      KEY_LEFT  = 19;
+    
+      /*
+       * TODO: REPLACE
+       */
+      KEY_RIGHT =  20;
+    
+      /*
+       * '\n'
+       */
+      KEY_SELECT = 10;
+    
+      /*
+       * TODO: REPLACE
+       */
+      KEY_BACK  = 27;
+    
+      /*
+       * TODO: REPLACE
+       */
+      KEY_CANCEL = 24;
+    }
 
+    /*
+     * Enable the rotary encoder #1. This is a 'dumb' encoder sending pulses on both A and B pins while rotating.
+     */
+    bool rotary1_enabled = 1;
+
+    /*
+     * GPIO pin for rotary encoder A port.
+     */
+    uint32 inputbroker_pin_a = 2;
+ 
+    /*
+     * GPIO pin for rotary encoder B port.
+     */
+    uint32 inputbroker_pin_b = 3;
+ 
+    /*
+     * GPIO pin for rotary encoder Press port.
+     */
+    uint32 inputbroker_pin_press = 4;
+ 
+    /*
+     * Generate input event on CW of this kind.
+     */
+    InputEventChar inputbroker_event_cw = 5;
+ 
+    /*
+     * Generate input event on CCW of this kind.
+     */
+    InputEventChar inputbroker_event_ccw = 6;
+ 
+    /*
+     * Generate input event on Press of this kind.
+     */
+    InputEventChar inputbroker_event_press = 7;
+ 
+    /*
+     * Enable the Up/Down/Select input device. Can be RAK rotary encoder or 3 buttons. Uses the a/b/press definitions from inputbroker.
+     */
+    bool updown1_enabled = 8;
+    
+    /*
+     * Enable/disable CannedMessageModule.
+     */
+    bool enabled = 9;
+ 
+    /*
+     * Input event origin accepted by the canned message module.
+     * Can be e.g. "rotEnc1", "upDownEnc1" or keyword "_any"
+     */
+    string allow_input_source = 10;
+ 
+    /*
+     * CannedMessageModule also sends a bell character with the messages.
+     * ExternalNotificationModule can benefit from this feature.
+     */
+    bool send_bell = 11;
   }
 
   /*
