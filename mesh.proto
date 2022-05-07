@@ -327,7 +327,7 @@ enum HardwareModel {
    * Custom DIY device based on @NanoVHF schematics: https://github.com/NanoVHF/Meshtastic-DIY/tree/main/Schematics
    */
   DIY_V1 = 39;
-  
+
   /*
    * RAK WisBlock ESP32 core: https://docs.rakwireless.com/Product-Categories/WisBlock/RAK11200/Overview/
    */
@@ -344,7 +344,7 @@ enum HardwareModel {
   NRF52840_PCA10059 = 42;
 
   /*
-   * Custom Disaster Radio esp32 v3 device
+   * Custom Disaster Radio esp32 v3 device https://github.com/sudomesh/disaster-radio/tree/master/hardware/board_esp32_v3
    */
   DR_DEV = 43;
   
