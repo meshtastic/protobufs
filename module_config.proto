@@ -395,37 +395,37 @@ message ModuleConfig {
     /*
      * TODO: REPLACE
      */
-    MQTTConfig mqtt_config = 1;
+    MQTTConfig mqtt = 1;
 
     /*
      * TODO: REPLACE
      */
-    SerialConfig serial_config = 2;
+    SerialConfig serial = 2;
 
     /*
      * TODO: REPLACE
      */
-    ExternalNotificationConfig external_notification_config = 3;
+    ExternalNotificationConfig external_notification = 3;
 
     /*
      * TODO: REPLACE
      */
-    StoreForwardConfig store_forward_config = 4;
+    StoreForwardConfig store_forward = 4;
 
     /*
      * TODO: REPLACE
      */
-    RangeTestConfig range_test_config = 5;
+    RangeTestConfig range_test = 5;
 
     /*
      * TODO: REPLACE
      */
-    TelemetryConfig telemetry_config = 6;
+    TelemetryConfig telemetry = 6;
 
     /*
      * TODO: REPLACE
      */
-    CannedMessageConfig canned_message_config = 7;
+    CannedMessageConfig canned_message = 7;
 
   }
 }

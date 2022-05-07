@@ -391,18 +391,18 @@ message Config {
      * If set, this node will try to join the specified wifi network and
      * acquire an address via DHCP
      */
-    string wifi_ssid = 1;
+    string ssid = 1;
 
     /*
      * If set, will be use to authenticate to the named wifi
      */
-    string wifi_password = 2;
+    string psk = 2;
  
     /*
      * If set, the node will operate as an AP (and DHCP server), otherwise it
      * will be a station
     */
-    bool wifi_ap_mode = 3;
+    bool ap_mode = 3;
   }
 
   /*
@@ -556,7 +556,7 @@ message Config {
      * Standard predefined channel settings
      * Note: these mappings must match ModemConfigChoice in the device code.
      */
-    enum ModemConfig {
+    enum ModemPreset {
 
       /*
        * TODO: REPLACE
@@ -610,7 +610,7 @@ message Config {
      * This value is replaced by bandwidth/spread_factor/coding_rate.
      * If you'd like to experiment with other options add them to MeshRadio.cpp in the device code.
      */
-    ModemConfig modem_config = 2;
+    ModemPreset modem_config = 2;
 
     /*
      * Bandwidth in MHz
@@ -671,32 +671,32 @@ message Config {
     /*
      * TODO: REPLACE
      */
-    DeviceConfig device_config = 1;
+    DeviceConfig device = 1;
 
     /*
      * TODO: REPLACE
      */
-    PositionConfig position_config = 2;
+    PositionConfig position = 2;
  
     /*
      * TODO: REPLACE
      */
-    PowerConfig power_config = 3;
+    PowerConfig power = 3;
 
     /*
      * TODO: REPLACE
      */
-    WiFiConfig wifi_config = 4;
+    WiFiConfig wifi = 4;
 
     /*
      * TODO: REPLACE
      */
-    DisplayConfig display_config = 5;
+    DisplayConfig display = 5;
     
     /*
      * TODO: REPLACE
      */
-    LoRaConfig lora_config = 6;
+    LoRaConfig lora = 6;
 
   }
 }

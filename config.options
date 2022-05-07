@@ -1,5 +1,5 @@
-*WiFiConfig.wifi_ssid max_size:33
-*WiFiConfig.wifi_password max_size:64
+*WiFiConfig.ssid max_size:33
+*WiFiConfig.psk max_size:64
 
 # Max of three ignored nodes for our testing
 *LoRaConfig.ignore_incoming max_count:3
