@@ -252,6 +252,11 @@ enum HardwareModel {
   NANO_G1 = 41;
 
   /*
+   * Custom Disaster Radio esp32 v3 device https://github.com/sudomesh/disaster-radio/tree/master/hardware/board_esp32_v3
+   */
+  DR_DEV = 43;
+
+  /*
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    */
   PRIVATE_HW = 255;
