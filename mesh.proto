@@ -1337,3 +1337,19 @@ message ToRadio {
     bool disconnect = 104;
   }
 }
+
+/*
+ * Compressed message payload
+ */
+message Compressed {
+
+  /*
+   * PortNum to determine the how to handle the compressed payload.
+   */
+  PortNum portnum = 1;
+
+  /*
+   * Compressed data.
+   */
+  bytes data = 2;
+}

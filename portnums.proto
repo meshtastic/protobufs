@@ -32,7 +32,6 @@ enum PortNum {
    * A simple UTF-8 text message, which even the little micros in the mesh
    * can understand and show on their screen eventually in some circumstances
    * even signal might send messages in this form (see below)
-   * Formerly called CLEAR_TEXT
    */
   TEXT_MESSAGE_APP = 1;
 
@@ -119,6 +118,11 @@ enum PortNum {
    * Project files at https://github.com/a-f-G-U-C/Meshtastic-ZPS
    */
   ZPS_APP = 68;
+
+  /*
+   * Compressed payloads.
+   */
+  COMPRESSION_APP = 69;
 
   /*
    * Private applications should use portnums >= 256.
