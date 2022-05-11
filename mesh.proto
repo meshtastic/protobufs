@@ -1046,17 +1046,6 @@ message MyNodeInfo {
   uint32 max_channels = 15;
 
   /*
-   * Deprecated! ONLY USED IN DEVICE CODE (for upgrading old 1.0 firmwares) DO NOT READ ELSEWHERE.
-   * The region code for my radio (US, CN, etc...)
-   * Note: This string is deprecated.
-   * The 1.0 builds populate it based on the flashed firmware name.
-   * But for newer builds this string will be unpopulated (missing/null).
-   * For those builds you should instead look at the new read/write region enum in UserSettings
-   * The format of this string was 1.0-US or 1.0-CN etc.. Or empty string if unset.
-   */
-  string region = 4 [deprecated = true];
-
-  /*
    * 0.0.5 etc...
    */
   string firmware_version = 6;
