@@ -73,6 +73,11 @@ message Config {
      */
     bool debug_log_enabled = 4;
 
+    /*
+     * NTP server to use if WiFi is conneced, defaults to `0.pool.ntp.org`
+     */
+    string ntp_server = 5;
+
   }
 
   /*
