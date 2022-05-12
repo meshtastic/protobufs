@@ -1,33 +1,20 @@
 # Meshtastic-protobufs
-[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/meshtastic/Meshtastic-protobufs)
-[![CI](https://github.com/meshtastic/Meshtastic-protobufs/actions/workflows/ci.yml/badge.svg)](https://github.com/meshtastic/Meshtastic-protobufs/actions/workflows/ci.yml)
+
+[![CI](https://img.shields.io/github/workflow/status/meshtastic/Meshtastic-protobufs/CI?label=actions&logo=github&color=yellow)](https://github.com/meshtastic/Meshtastic-protobufs/actions/workflows/ci.yml)
 [![CLA assistant](https://cla-assistant.io/readme/badge/meshtastic/Meshtastic-protobufs)](https://cla-assistant.io/meshtastic/Meshtastic-protobufs)
+[![Fiscal Contributors](https://opencollective.com/meshtastic/tiers/badge.svg?label=Fiscal%20Contributors&color=deeppink)](https://opencollective.com/meshtastic/)
+[![Vercel](https://img.shields.io/static/v1?label=Powered%20by&message=Vercel&style=flat&logo=vercel&color=000000)](https://vercel.com?utm_source=meshtastic&utm_campaign=oss)
 
-The protobuf definitions for the Meshtastic project (used by apps and the device code)
+## Overview
 
-For questions on using these protobufs please post in our [forum](meshtastic.discourse.group). We are friendly and we love people building/extending this work.
+The [Protobuf](https://developers.google.com/protocol-buffers) message definitions for the Meshtastic project (used by apps and the device firmware)
 
-For documentation please visit:
-* [Meshtastic Docs](https://meshtastic.org/docs/developers/protobufs/api).
+**[Documentation/API Reference](https://meshtastic.org/docs/developers/protobufs/api)**
 
-For more information on protobufs (and tools to use them with the language of your choice) see
-* https://developers.google.com/protocol-buffers/docs/proto3
+## Stats
 
-We are not placing any of these defs inside a package, because if you do the
-resulting nanopb version is super verbose package mesh.
+![Alt](https://repobeats.axiom.co/api/embed/22ac2d1a4668b8a5fc7832e8800c0e528a45d78a.svg "Repobeats analytics image")
 
-Protobuf build instructions:
-* To build java classes for reading writing:
-* protoc -I=. --java_out /tmp mesh.proto
-
-To generate Nanopb c code:
-* /home/kevinh/packages/nanopb-0.4.5-linux-x86/generator-bin/protoc --nanopb_out=/tmp -I=app/src/main/proto mesh.proto
-
-Nanopb binaries available here:
-* https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.5
-
-To lint:
-* Install protolint: brew tap yoheimuta/protolint; brew install protolint
-* Run it from the main directory: *protolint* lint .
-* (optional) Have it fix the mundane warnings: *protolint* lint -fix .
-* See https://github.com/yoheimuta/protolint for more info
+## Linter Setup
+Linting is performed by [protolint](https://github.com/yoheimuta/protolint)
+Once installed, the Visual Studio Code extension [Proto Lint](https://marketplace.visualstudio.com/items?itemName=Plex.vscode-protolint) will perform linting automatically on save.
