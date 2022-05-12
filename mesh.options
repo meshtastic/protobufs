@@ -41,3 +41,7 @@
 
 # MyMessage.name         max_size:40 
 # or fixed_length or fixed_count, or max_count
+
+
+#This value may want to be a few bytes smaller to compensate for the parent fields.
+*Compressed.data max_size:237
