@@ -123,24 +123,19 @@ message Config {
       POS_HVDOP     = 0x0010;
     
       /*
-       * Include battery level
-       */
-      POS_BATTERY   = 0x0020;
-    
-      /*
        * Include number of "satellites in view"
        */
-      POS_SATINVIEW = 0x0040;
+      POS_SATINVIEW = 0x0020;
     
       /*
        * Include a sequence number incremented per packet
        */
-      POS_SEQ_NOS   = 0x0080;
+      POS_SEQ_NOS   = 0x0040;
     
       /*
        * Include positional timestamp (from GPS solution)
        */
-      POS_TIMESTAMP = 0x0100;
+      POS_TIMESTAMP = 0x0080;
     }
 
     /*
