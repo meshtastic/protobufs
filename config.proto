@@ -1,5 +1,4 @@
 syntax = "proto3";
-import "telemetry.proto";
 
 option java_package = "com.geeksville.mesh";
 option java_outer_classname = "ConfigProtos";
