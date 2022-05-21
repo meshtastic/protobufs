@@ -144,7 +144,7 @@ message Config {
     uint32 position_broadcast_secs = 1;
 
     /*
-     * We should send our position this often (but only if it has changed significantly)
+     * Disable adaptive position braoadcast, which is now the default.
      */
     bool position_broadcast_smart_disabled = 2;
 
@@ -154,11 +154,6 @@ message Config {
      * The lat/lon/alt can be set by an internal GPS or with the help of the app.
      */
     bool fixed_position = 3;
-
-    /*
-     * Should we disbale location sharing with other nodes (or the local phone)
-     */
-    bool location_share_disabled = 4;
 
     /*
      * Should the GPS be disabled for this node?
