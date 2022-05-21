@@ -5,6 +5,7 @@ option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
 import "channel.proto";
+import "config.proto";
 import "mesh.proto";
 
 option java_outer_classname = "DeviceOnly";
@@ -135,3 +136,34 @@ message OEMStore {
   string oem_text = 5;
 }
 
+message LocalConfig {
+  /*
+   * TODO: REPLACE
+   */
+  Config.DeviceConfig device = 1;
+
+  /*
+   * TODO: REPLACE
+   */
+  Config.PositionConfig position = 2;
+
+  /*
+   * TODO: REPLACE
+   */
+  Config.PowerConfig power = 3;
+
+  /*
+   * TODO: REPLACE
+   */
+  Config.WiFiConfig wifi = 4;
+
+  /*
+   * TODO: REPLACE
+   */
+  Config.DisplayConfig display = 5;
+
+  /*
+   * TODO: REPLACE
+   */
+  Config.LoRaConfig lora = 6;
+}
