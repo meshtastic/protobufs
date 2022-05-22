@@ -397,6 +397,11 @@ message Config {
      * will be a station
     */
     bool ap_mode = 3;
+
+    /*
+     * If set, the node AP will broadcast as a hidden SSID
+    */
+    bool ap_hidden = 4;
   }
 
   /*
