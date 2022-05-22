@@ -7,6 +7,7 @@ option go_package = "github.com/meshtastic/gomeshproto";
 import "channel.proto";
 import "config.proto";
 import "mesh.proto";
+import "module_config.proto";
 
 option java_outer_classname = "DeviceOnly";
 
@@ -166,4 +167,41 @@ message LocalConfig {
    * TODO: REPLACE
    */
   Config.LoRaConfig lora = 6;
+}
+
+message LocalModuleConfig {
+  /*
+   * TODO: REPLACE
+   */
+  ModuleConfig.MQTTConfig mqtt = 1;
+
+  /*
+   * TODO: REPLACE
+   */
+  ModuleConfig.SerialConfig serial = 2;
+
+  /*
+   * TODO: REPLACE
+   */
+  ModuleConfig.ExternalNotificationConfig external_notification = 3;
+
+  /*
+   * TODO: REPLACE
+   */
+  ModuleConfig.StoreForwardConfig store_forward = 4;
+
+  /*
+   * TODO: REPLACE
+   */
+  ModuleConfig.RangeTestConfig range_test = 5;
+
+  /*
+   * TODO: REPLACE
+   */
+  ModuleConfig.TelemetryConfig telemetry = 6;
+
+  /*
+   * TODO: REPLACE
+   */
+  ModuleConfig.CannedMessageConfig canned_message = 7;
 }
