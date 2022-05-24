@@ -62,21 +62,21 @@ message ModuleConfig {
      */
     enum Serial_Baud {
       BAUD_Default = 0;
-      BAUD_2400 = 1;
-      BAUD_4800 = 2;
-      BAUD_9600 = 3;
-      BAUD_19200 = 4;
-      BAUD_38400 = 5;
-      BAUD_57600 = 6;
-      BAUD_115200 = 7;
-      BAUD_230400 = 8;
-      BAUD_460800 = 9;
-      BAUD_576000 = 10;
-      BAUD_921600 = 11;
-      BAUD_110 = 12;
-      BAUD_300 = 13;
-      BAUD_600 = 14;
-      BAUD_1200 = 15;
+      BAUD_110 = 1;
+      BAUD_300 = 2;
+      BAUD_600 = 3;
+      BAUD_1200 = 4;
+      BAUD_2400 = 5;
+      BAUD_4800 = 6;
+      BAUD_9600 = 7;
+      BAUD_19200 = 8;
+      BAUD_38400 = 9;
+      BAUD_57600 = 10;
+      BAUD_115200 = 11;
+      BAUD_230400 = 12;
+      BAUD_460800 = 13;
+      BAUD_576000 = 14;
+      BAUD_921600 = 15;
     };
 
     /*
