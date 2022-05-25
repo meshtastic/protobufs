@@ -77,6 +77,12 @@ message Config {
      */
     string ntp_server = 5;
 
+    /*
+     * By default we use the MAC address to generate the BLE name. Set "shortname_ble" to true to use the
+     * shortname instead.
+     */
+    bool shortname_ble = 6;
+
   }
 
   /*
