@@ -4,6 +4,7 @@ option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
+import "config.proto";
 import "channel.proto";
 
 option java_outer_classname = "AppOnlyProtos";
@@ -18,7 +19,12 @@ option java_outer_classname = "AppOnlyProtos";
 message ChannelSet {
 
   /*
-   * TODO: REPLACE
+   * Channel list with settings
    */
   repeated ChannelSettings settings = 1;
+
+  /*
+   * LoRa config
+   */
+  Config.LoRaConfig lora_config = 2;
 }
