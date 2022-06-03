@@ -560,7 +560,7 @@ message Config {
       /*
        * TODO: REPLACE
        */
-      VLongSlow = 0;
+      LongFast = 0;
 
       /*
        * TODO: REPLACE
@@ -570,7 +570,7 @@ message Config {
       /*
        * TODO: REPLACE
        */
-      LongFast = 2;
+      VLongSlow = 2;
 
       /*
        * TODO: REPLACE
