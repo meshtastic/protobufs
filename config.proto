@@ -174,16 +174,6 @@ message Config {
      * window.
      */
     uint32 gps_attempt_time = 7;
- 
-    /*
-     * GPS maximum DOP accepted (dilution of precision)
-     * Set a rejection threshold for GPS readings based on their precision,
-     * relative to the GPS rated accuracy (which is typically ~3m)
-     * Solutions above this value will be treated as retryable errors!
-     * Useful range is between 1 - 64 (3m - <~200m)
-     * By default (if zero), accept all GPS readings
-     */
-    uint32 gps_max_dop = 9;
 
     /*
      * Bit field of boolean configuration options for POSITION messages
