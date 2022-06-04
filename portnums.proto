@@ -82,6 +82,11 @@ enum PortNum {
   TEXT_MESSAGE_COMPRESSED_APP = 7;
 
   /*
+   * Waypoint payloads.
+   */
+  WAYPOINT_APP = 8;
+
+  /*
    * Provides a 'ping' service that replies to any packet it receives.
    * Also serves as a small example module.
    */
