@@ -176,12 +176,6 @@ message Config {
     uint32 gps_attempt_time = 7;
  
     /*
-     * Shall we accept 2D GPS fixes? By default, only 3D fixes are accepted
-     * (during a 2D fix, altitude values are unreliable and will be excluded)
-     */
-    bool gps_accept_2d = 8;
- 
-    /*
      * GPS maximum DOP accepted (dilution of precision)
      * Set a rejection threshold for GPS readings based on their precision,
      * relative to the GPS rated accuracy (which is typically ~3m)
