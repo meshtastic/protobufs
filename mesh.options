@@ -14,12 +14,16 @@
 # note: this payload length is ONLY the bytes that are sent inside of the Data protobuf (excluding protobuf overhead). The 16 byte header is
 # outside of this envelope
 *Data.payload max_size:237
+*Data.payload_compressed max_size:237
+*Data.payloadVariant anonymous_oneof:true
 
 # Big enough for 1.2.28.568032c-d
 *MyNodeInfo.firmware_version max_size:18
 
-*MyNodeInfo.hw_model_deprecated max_size:16
 *MyNodeInfo.region max_size:12
+
+*MyNodeInfo.air_period_tx       max_count:8
+*MyNodeInfo.air_period_rx       max_count:8
 
 # Note: the actual limit (because of header bytes) on the size of encrypted payloads is 251 bytes, but I use 256
 # here because we might need to fill with zeros for padding to encryption block size (16 bytes per block)
@@ -40,6 +44,6 @@
 # MyMessage.name         max_size:40 
 # or fixed_length or fixed_count, or max_count
 
-*MyNodeInfo.air_period_tx       max_count:24
-*MyNodeInfo.air_period_rx       max_count:24
-# *MyNodeInfo.air_period_rx_all   max_count:12
+
+#This value may want to be a few bytes smaller to compensate for the parent fields.
+*Compressed.data max_size:237

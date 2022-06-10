@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+option java_package = "com.geeksville.mesh";
+option optimize_for = LITE_RUNTIME;
+option go_package = "github.com/meshtastic/gomeshproto";
+
+import "config.proto";
+import "module_config.proto";
+
+option java_outer_classname = "LocalOnlyProtos";
+
+/*
+ * Protobuf structures common to apponly.proto and deviceonly.proto
+ * This is never sent over the wire, only for local use
+ */
+
+message LocalConfig {
+  /*
+   * TODO: REPLACE
+   */
+  Config.DeviceConfig device = 1;
+
+  /*
+   * TODO: REPLACE
+   */
+  Config.PositionConfig position = 2;
+
+  /*
+   * TODO: REPLACE
+   */
+  Config.PowerConfig power = 3;
+
+  /*
+   * TODO: REPLACE
+   */
+  Config.WiFiConfig wifi = 4;
+
+  /*
+   * TODO: REPLACE
+   */
+  Config.DisplayConfig display = 5;
+
+  /*
+   * TODO: REPLACE
+   */
+  Config.LoRaConfig lora = 6;
+}
+
+message LocalModuleConfig {
+  /*
+   * TODO: REPLACE
+   */
+  ModuleConfig.MQTTConfig mqtt = 1;
+
+  /*
+   * TODO: REPLACE
+   */
+  ModuleConfig.SerialConfig serial = 2;
+
+  /*
+   * TODO: REPLACE
+   */
+  ModuleConfig.ExternalNotificationConfig external_notification = 3;
+
+  /*
+   * TODO: REPLACE
+   */
+  ModuleConfig.StoreForwardConfig store_forward = 4;
+
+  /*
+   * TODO: REPLACE
+   */
+  ModuleConfig.RangeTestConfig range_test = 5;
+
+  /*
+   * TODO: REPLACE
+   */
+  ModuleConfig.TelemetryConfig telemetry = 6;
+
+  /*
+   * TODO: REPLACE
+   */
+  ModuleConfig.CannedMessageConfig canned_message = 7;
+}

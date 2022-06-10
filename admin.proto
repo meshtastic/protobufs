@@ -5,24 +5,100 @@ option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
 import "channel.proto";
-import "radioconfig.proto";
+import "config.proto";
 import "mesh.proto";
+import "module_config.proto";
 
 option java_outer_classname = "AdminProtos";
 
 /*
- * This message is handled by the Admin plugin and is responsible for all settings/channel read/write operations.
+ * This message is handled by the Admin module and is responsible for all settings/channel read/write operations.
  * This message is used to do settings operations to both remote AND local nodes.
  * (Prior to 1.2 these operations were done via special ToRadio operations)
  */
 message AdminMessage {
 
-  oneof variant {
+  /*
+   * TODO: REPLACE
+   */
+  enum ConfigType {
 
     /*
-     * Set the radio provisioning for this node
+     * TODO: REPLACE
      */
-    RadioConfig set_radio = 1;
+    DEVICE_CONFIG = 0;
+
+    /*
+     * TODO: REPLACE
+     */
+    POSITION_CONFIG = 1;
+
+    /*
+     * TODO: REPLACE
+     */
+    POWER_CONFIG = 2;
+
+    /*
+     * TODO: REPLACE
+     */
+    WIFI_CONFIG = 3;
+
+    /*
+     * TODO: REPLACE
+     */
+    DISPLAY_CONFIG = 4;
+
+    /*
+     * TODO: REPLACE
+     */
+    LORA_CONFIG = 5;
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  enum ModuleConfigType {
+
+    /*
+    * TODO: REPLACE
+    */
+    MQTT_CONFIG = 0;
+
+    /*
+    * TODO: REPLACE
+    */
+    SERIAL_CONFIG = 1;
+
+    /*
+    * TODO: REPLACE
+    */
+    EXTNOTIF_CONFIG = 2;
+
+    /*
+    * TODO: REPLACE
+    */
+    STOREFORWARD_CONFIG = 3;
+
+    /*
+    * TODO: REPLACE
+    */
+    RANGETEST_CONFIG = 4;
+
+    /*
+    * TODO: REPLACE
+    */
+    TELEMETRY_CONFIG = 5;
+
+    /*
+    * TODO: REPLACE
+    */
+    CANNEDMSG_CONFIG = 6;
+  }
+
+  /*
+   * TODO: REPLACE
+   */
+  oneof variant {
 
     /*
      * Set the owner for this node
@@ -39,23 +115,65 @@ message AdminMessage {
     Channel set_channel = 3;
 
     /*
-     * Send the current RadioConfig in the response to this message.
-     */
-    bool get_radio_request = 4;
-    RadioConfig get_radio_response = 5;
-
-    /*
      * Send the specified channel in the response to this message
      * NOTE: This field is sent with the channel index + 1 (to ensure we never try to send 'zero' - which protobufs treats as not present)
      */
     uint32 get_channel_request = 6;
+
+    /*
+     * TODO: REPLACE
+     */
     Channel get_channel_response = 7;
 
     /*
      * Send the current owner data in the response to this message.
      */
-     bool get_owner_request = 8;
-     User get_owner_response = 9;
+    bool get_owner_request = 8;
+
+    /*
+     * TODO: REPLACE
+     */
+    User get_owner_response = 9;
+
+    /*
+     * Ask for the following config data to be sent
+     */
+    ConfigType get_config_request = 10;
+
+    /*
+     * Send the current Config in the response to this message.
+     */
+    Config get_config_response = 11;
+
+    /*
+     * Set the current Config
+     */
+    Config set_config = 12;
+
+    /*
+     * Sent immediatly after a config change has been sent to ensure comms, if this is not recieved, the config will be reverted after 10 mins
+     */
+    bool confirm_set_config = 13;
+    
+    /*
+     * Ask for the following config data to be sent
+     */
+    ModuleConfigType get_module_config_request = 14;
+
+    /*
+     * Send the current Config in the response to this message.
+     */
+    ModuleConfig get_module_config_response = 15;
+ 
+    /*
+     * Set the current Config
+     */
+    ModuleConfig set_module_config = 16;
+ 
+    /*
+     * Sent immediatly after a config change has been sent to ensure comms, if this is not recieved, the config will be reverted after 10 mins
+     */
+    bool confirm_set_module_config = 17;
 
     /*
      * Setting channels/radio config remotely carries the risk that you might send an invalid config and the radio never talks to your mesh again.
@@ -64,6 +182,10 @@ message AdminMessage {
      * These messages are optional when changing the local node.
      */
     bool confirm_set_channel = 32;
+
+    /*
+     * TODO: REPLACE
+     */
     bool confirm_set_radio = 33;
 
     /*
@@ -76,5 +198,70 @@ message AdminMessage {
      * Tell the node to reboot in this many seconds (or <0 to cancel reboot)
      */
     int32 reboot_seconds = 35;
+
+    /*
+     * Get the Canned Message Module message part1 in the response to this message.
+     */
+    bool get_canned_message_module_part1_request = 36;
+
+    /*
+     * TODO: REPLACE
+     */
+    string get_canned_message_module_part1_response = 37;
+
+    /*
+     * Get the Canned Message Module message part2 in the response to this message.
+     */
+    bool get_canned_message_module_part2_request = 38;
+
+    /*
+     * TODO: REPLACE
+     */
+    string get_canned_message_module_part2_response = 39;
+
+    /*
+     * Get the Canned Message Module message part3 in the response to this message.
+     */
+    bool get_canned_message_module_part3_request = 40;
+
+    /*
+     * TODO: REPLACE
+     */
+    string get_canned_message_module_part3_response = 41;
+
+    /*
+     * Get the Canned Message Module message part4 in the response to this message.
+     */
+    bool get_canned_message_module_part4_request = 42;
+
+    /*
+     * TODO: REPLACE
+     */
+    string get_canned_message_module_part4_response = 43;
+
+    /*
+     * Set the canned message module part 1 text.
+     */
+    string set_canned_message_module_part1 = 44;
+
+    /*
+     * Set the canned message module part 2 text.
+     */
+    string set_canned_message_module_part2 = 45;
+
+    /*
+     * Set the canned message module part 3 text.
+     */
+    string set_canned_message_module_part3 = 46;
+
+    /*
+     * Set the canned message module part 4 text.
+     */
+    string set_canned_message_module_part4 = 47;
+
+    /*
+     * Tell the node to shutdown in this many seconds (or <0 to cancel shutdown)
+     */
+    int32 shutdown_seconds = 51;
   }
 }

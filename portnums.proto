@@ -8,19 +8,14 @@ option go_package = "github.com/meshtastic/gomeshproto";
 /*
  * For any new 'apps' that run on the device or via sister apps on phones/PCs they should pick and use a
  * unique 'portnum' for their application.
- *
  * If you are making a new app using meshtastic, please send in a pull request to add your 'portnum' to this
  * master table.
  * PortNums should be assigned in the following range:
- *
  * 0-63   Core Meshtastic use, do not use for third party apps
  * 64-127 Registered 3rd party apps, send in a pull request that adds a new entry to portnums.proto to  register your application
  * 256-511 Use one of these portnums for your private applications that you don't want to register publically
- *
  * All other values are reserved.
- *
  * Note: This was formerly a Type enum named 'typ' with the same id #
- *
  * We have change to this 'portnum' based scheme for specifying app handlers for particular payloads.
  * This change is backwards compatible by treating the legacy OPAQUE/CLEAR_TEXT values identically.
  */
@@ -37,7 +32,6 @@ enum PortNum {
    * A simple UTF-8 text message, which even the little micros in the mesh
    * can understand and show on their screen eventually in some circumstances
    * even signal might send messages in this form (see below)
-   * Formerly called CLEAR_TEXT
    */
   TEXT_MESSAGE_APP = 1;
 
@@ -48,6 +42,7 @@ enum PortNum {
    * Once READACK is implemented, use the new packet type/port number stuff?
    * @exclude
    * CLEAR_READACK = 2;
+   * TODO: REMOVE/INTEGRATE
    */
 
   /*
@@ -58,31 +53,42 @@ enum PortNum {
 
   /*
    * The built-in position messaging app.
-   * Payload is a [Position](/developers/protobufs/api.md#position) message
+   * Payload is a [Position](/docs/developers/protobufs/api#position) message
    */
   POSITION_APP = 3;
 
   /*
    * The built-in user info app.
-   * Payload is a [User](/developers/protobufs/api.md#user) message
+   * Payload is a [User](/docs/developers/protobufs/api#user) message
    */
   NODEINFO_APP = 4;
 
   /*
    * Protocol control packets for mesh protocol use.
-   * Payload is a [Routing](/developers/protobufs/api.md#routing) message
+   * Payload is a [Routing](/docs/developers/protobufs/api#routing) message
    */
   ROUTING_APP = 5;
 
   /*
    * Admin control packets.
-   * Payload is a [AdminMessage](/developers/protobufs/api.md#adminmessage) message
+   * Payload is a [AdminMessage](/docs/developers/protobufs/api#adminmessage) message
    */
   ADMIN_APP = 6;
 
+
+  /*
+   * Compressed TEXT_MESSAGE payloads.
+   */
+  TEXT_MESSAGE_COMPRESSED_APP = 7;
+
+  /*
+   * Waypoint payloads.
+   */
+  WAYPOINT_APP = 8;
+
   /*
    * Provides a 'ping' service that replies to any packet it receives.
-   * Also serves as a small example plugin.
+   * Also serves as a small example module.
    */
   REPLY_APP = 32;
 
@@ -96,8 +102,7 @@ enum PortNum {
    * Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic
    * network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network.
    * Maximum packet size of 240 bytes.
-   * Plugin is disabled by default can be turned on by setting SERIALPLUGIN_ENABLED = 1 in SerialPlugh.cpp.
-   * Maintained by Jm Casler (MC Hamster) : jm@casler.org
+   * Module is disabled by default can be turned on by setting SERIAL_MODULE_ENABLED = 1 in SerialPlugh.cpp.
    */
   SERIAL_APP = 64;
 
@@ -108,16 +113,15 @@ enum PortNum {
   STORE_FORWARD_APP = 65;
 
   /*
-   * STORE_FORWARD_APP (Work in Progress)
-   * Maintained by Jm Casler (MC Hamster) : jm@casler.org
+   * Optional port for messages for the range test module.
    */
   RANGE_TEST_APP = 66;
 
   /*
-   * Provides a format to send and receive environmental data from the Meshtastic network.
+   * Provides a format to send and receive telemetry data from the Meshtastic network.
    * Maintained by Charles Crossan (crossan007) : crossan007@gmail.com
    */
-  ENVIRONMENTAL_MEASUREMENT_APP = 67;
+  TELEMETRY_APP = 67;
 
   /*
    * Experimental tools for estimating node position without a GPS
@@ -134,7 +138,7 @@ enum PortNum {
   PRIVATE_APP = 256;
 
   /*
-   * ATAK Forwarder Plugin https://github.com/paulmandal/atak-forwarder
+   * ATAK Forwarder Module https://github.com/paulmandal/atak-forwarder
    */
   ATAK_FORWARDER = 257;
 

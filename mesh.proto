@@ -1,29 +1,11 @@
 syntax = "proto3";
-/*
- * Meshtastic protobufs
- *
- * For more information on protobufs (and tools to use them with the language of your choice) see
- * https://developers.google.com/protocol-buffers/docs/proto3
- *
- * We are not placing any of these defs inside a package, because if you do the
- * resulting nanopb version is super verbose package mesh.
- *
- * Protobuf build instructions:
- *
- * To build java classes for reading writing:
- * protoc -I=. --java_out /tmp mesh.proto
- *
- * To generate Nanopb c code:
- * /home/kevinh/packages/nanopb-0.4.0-linux-x86/generator-bin/protoc --nanopb_out=/tmp -I=app/src/main/proto mesh.proto
- *
- * Nanopb binaries available here: https://jpa.kapsi.fi/nanopb/download/ use nanopb 0.4.0
- */
 
 option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
 import "portnums.proto";
+import "telemetry.proto";
 
 option java_outer_classname = "MeshProtos";
 
@@ -32,38 +14,20 @@ option java_outer_classname = "MeshProtos";
  */
 message Position {
   /*
-   * The old (pre 1.2) position encoding sent lat/lon as sint32s in field 7,8.
-   * Do not use to prevent confusing old apps
-   */
-  reserved 7, 8;
-
-  /*
    * The new preferred location encoding, divide by 1e-7 to get degrees
    * in floating point
    */
   sfixed32 latitude_i = 1;
 
-  sfixed32 longitude_i = 2;
-
   /*
-   * This is a special 'small' position update for lat/lon.
-   * It encodes a signed 16 bit latitude in the upper 2 bytes, and a signed longitude in the lower 16 bits.
-   * It is not currently implemented, but can be added in an automatically backwards compatible way later.
-   * Note: ONLY microlatlon OR latitude_i, longitude_i are populated in any particular position.
-   * A microdelta is always relative to the last received full position.
-   *
-   * fixed32 microlatlon = 3;
+   * TODO: REPLACE
    */
+  sfixed32 longitude_i = 2;
 
   /*
    * In meters above MSL (but see issue #359)
    */
   int32 altitude = 3;
-
-  /*
-   * 1-100 (0 means not provided)
-   */
-  int32 battery_level = 4;
 
   /*
    * This is usually not sent over the mesh (to save space), but it is sent
@@ -77,22 +41,43 @@ message Position {
   /*
    * Precision positioning elements - optional and usually not included
    * ------------------------------------------------------------------
+   * TODO: REMOVE/INTEGRATE
    */
 
   /*
    * How the location was acquired: manual, onboard GPS, external (EUD) GPS
    */
   enum LocSource {
+
+    /*
+     * TODO: REPLACE
+     */
     LOCSRC_UNSPECIFIED = 0;
+
+    /*
+     * TODO: REPLACE
+     */
     LOCSRC_MANUAL_ENTRY = 1;
+
+    /*
+     * TODO: REPLACE
+     */
     LOCSRC_GPS_INTERNAL = 2;
+
+    /*
+     * TODO: REPLACE
+     */
     LOCSRC_GPS_EXTERNAL = 3;
     /*
      * More location sources can be added here when available:
      *   GSM, radio beacons (BLE etc), location fingerprinting etc
+     * TODO: REMOVE/INTEGRATE
      */
   }
 
+  /*
+   * TODO: REPLACE
+   */
   LocSource location_source = 10;
 
   /*
@@ -100,13 +85,36 @@ message Position {
    * Default: same as location_source if present
    */
   enum AltSource {
+
+    /*
+     * TODO: REPLACE
+     */
     ALTSRC_UNSPECIFIED = 0;
+
+    /*
+     * TODO: REPLACE
+     */
     ALTSRC_MANUAL_ENTRY = 1;
+
+    /*
+     * TODO: REPLACE
+     */
     ALTSRC_GPS_INTERNAL = 2;
+
+    /*
+     * TODO: REPLACE
+     */
     ALTSRC_GPS_EXTERNAL = 3;
+
+    /*
+     * TODO: REPLACE
+     */
     ALTSRC_BAROMETRIC = 4;
   }
 
+  /*
+   * TODO: REPLACE
+   */
   AltSource altitude_source = 11;
 
   /*
@@ -134,9 +142,18 @@ message Position {
    * - PDOP is sufficient for most cases
    * - for higher precision scenarios, HDOP and VDOP can be used instead,
    *   in which case PDOP becomes redundant (PDOP=sqrt(HDOP^2 + VDOP^2))
+   * TODO: REMOVE/INTEGRATE
    */
   uint32 PDOP = 16;
+
+  /*
+   * TODO: REPLACE
+   */
   uint32 HDOP = 17;
+
+  /*
+   * TODO: REPLACE
+   */
   uint32 VDOP = 18;
 
   /*
@@ -148,13 +165,17 @@ message Position {
 
   /*
    * Ground speed in m/s and True North TRACK in 1/100 degrees
-   *
    * Clarification of terms:
    * - "track" is the direction of motion (measured in horizontal plane)
    * - "heading" is where the fuselage points (measured in horizontal plane)
    * - "yaw" indicates a relative rotation about the vertical axis
+   * TODO: REMOVE/INTEGRATE
    */
   uint32 ground_speed = 20;
+
+  /*
+   * TODO: REPLACE
+   */
   uint32 ground_track = 21;
 
   /*
@@ -193,6 +214,7 @@ message Position {
 
   /*
    * END precision positioning elements
+   * TODO: REMOVE/INTEGRATE
    */
 }
 
@@ -203,31 +225,97 @@ message Position {
   * To match the old style filenames, _ is converted to -, p is converted to .
   */
 enum HardwareModel {
+
+  /*
+   * TODO: REPLACE
+   */
   UNSET = 0;
+
+  /*
+   * TODO: REPLACE
+   */
   TLORA_V2 = 1;
+
+  /*
+   * TODO: REPLACE
+   */
   TLORA_V1 = 2;
+
+  /*
+   * TODO: REPLACE
+   */
   TLORA_V2_1_1p6 = 3;
+
+  /*
+   * TODO: REPLACE
+   */
   TBEAM = 4;
 
-  // The original heltec WiFi_Lora_32_V2, which had battery voltage sensing hooked to GPIO 13 (see HELTEC_V2 for the new version).
+  /*
+   * The original heltec WiFi_Lora_32_V2, which had battery voltage sensing hooked to GPIO 13
+   * (see HELTEC_V2 for the new version).
+   */
   HELTEC_V2_0 = 5;
 
+  /*
+   * TODO: REPLACE
+   */
   TBEAM0p7 = 6;
+
+  /*
+   * TODO: REPLACE
+   */
   T_ECHO = 7;
+
+  /*
+   * TODO: REPLACE
+   */
   TLORA_V1_1p3 = 8;
+
+  /*
+   * TODO: REPLACE
+   */
   RAK4631 = 9;
 
-  // The new version of the heltec WiFi_Lora_32_V2 board that has battery sensing hooked to GPIO 37.  Sadly they did not update anything on the silkscreen to identify this board
+  /*
+   * The new version of the heltec WiFi_Lora_32_V2 board that has battery sensing hooked to GPIO 37.
+   * Sadly they did not update anything on the silkscreen to identify this board
+   */
   HELTEC_V2_1 = 10;
-
+  
+  /*
+   * Ancient heltec WiFi_Lora_32 board
+   */
+  HELTEC_V1 = 11;
+  
   /*
    * Less common/prototype boards listed here (needs one more byte over the air)
    */
   LORA_RELAY_V1 = 32;
+
+  /*
+   * TODO: REPLACE
+   */
   NRF52840DK = 33;
+
+  /*
+   * TODO: REPLACE
+   */
   PPR = 34;
+
+  /*
+   * TODO: REPLACE
+   */
   GENIEBLOCKS = 35;
+
+  /*
+   * TODO: REPLACE
+   */
   NRF52_UNKNOWN = 36;
+
+  /*
+   * TODO: REPLACE
+   */
   PORTDUINO = 37;
 
   /*
@@ -239,52 +327,56 @@ enum HardwareModel {
    * Custom DIY device based on @NanoVHF schematics: https://github.com/NanoVHF/Meshtastic-DIY/tree/main/Schematics
    */
   DIY_V1 = 39;
-}
 
-/*
- * The team colors are based on the names of "friendly teams" in ATAK:
- * https://github.com/deptofdefense/AndroidTacticalAssaultKit-CIV/blob/master/atak/ATAK/app/src/main/assets/filters/team_filters.xml
- */
-enum Team {
-  CLEAR = 0;  /* the default (unset) is "achromatic" (unaffiliated) */
-  CYAN = 1;
-  WHITE = 2;
-  YELLOW = 3;
-  ORANGE = 4;
-  MAGENTA = 5;
-  RED = 6;
-  MAROON = 7;
-  PURPLE = 8;
-  DARK_BLUE = 9;
-  BLUE = 10;
-  TEAL = 11;
-  GREEN = 12;
-  DARK_GREEN = 13;
-  BROWN = 14;
+  /*
+   * RAK WisBlock ESP32 core: https://docs.rakwireless.com/Product-Categories/WisBlock/RAK11200/Overview/
+   */
+  RAK11200 = 40;
+
+  /*
+   * B&Q Consulting Nano Edition G1: https://uniteng.com/wiki/doku.php?id=meshtastic:nano
+   */
+  NANO_G1 = 41; 
+  
+  /*
+   * nRF52840 Dongle : https://www.nordicsemi.com/Products/Development-hardware/nrf52840-dongle/
+   */
+  NRF52840_PCA10059 = 42;
+
+  /*
+   * Custom Disaster Radio esp32 v3 device https://github.com/sudomesh/disaster-radio/tree/master/hardware/board_esp32_v3
+   */
+  DR_DEV = 43;
+  
+  /*
+   * M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, Paper) https://m5stack.com/
+   */
+  M5STACK = 44;
+  
+  /*
+   * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
+   */
+  PRIVATE_HW = 255;
 }
 
 /*
  * Broadcast when a newly powered mesh node wants to find a node num it can use
  * Sent from the phone over bluetooth to set the user id for the owner of this node.
  * Also sent from nodes to each other when a new node signs on (so all clients can have this info)
- *
  * The algorithm is as follows:
  * when a node starts up, it broadcasts their user and the normal flow is for all
  * other nodes to reply with their User as well (so the new node can build its nodedb)
  * If a node ever receives a User (not just the first broadcast) message where
  * the sender node number equals our node number, that indicates a collision has
  * occurred and the following steps should happen:
- *
  * If the receiving node (that was already in the mesh)'s macaddr is LOWER than the
  * new User who just tried to sign in: it gets to keep its nodenum.
  * We send a broadcast message of OUR User (we use a broadcast so that the other node can
  * receive our message, considering we have the same id - it also serves to let
  * observers correct their nodedb) - this case is rare so it should be okay.
- *
  * If any node receives a User where the macaddr is GTE than their local macaddr,
  * they have been vetoed and should pick a new random nodenum (filtering against
  * whatever it knows about the nodedb) and rebroadcast their User.
- *
  * A few nodenums are reserved and will never be requested:
  * 0xff - broadcast
  * 0 through 3 - for future use
@@ -325,20 +417,11 @@ message User {
   HardwareModel hw_model = 6;
 
   /*
-   * In some regions HAM radio operators have different bandwidth limitations than others.
+   * In some regions Ham radio operators have different bandwidth limitations than others.
    * If this user is a licensed operator, set this flag.
    * Also, "long_name" should be their licence number.
    */
   bool is_licensed = 7;
-
-  /*
-   * Participants in the same network can self-group into different teams.
-   * Short-term this can be used to visually differentiate them on the map;
-   * in the longer term it could also help users to semi-automatically
-   * select or ignore messages according to team affiliation.
-   * In total, 14 teams are defined (encoded in 4 bits)
-   */
-  Team team = 8;
 
   /*
    * Transmit power at antenna connector, in decibel-milliwatt
@@ -379,7 +462,7 @@ message RouteDiscovery {
 }
 
 /*
- * A Routing control Data packet handled by the routing plugin
+ * A Routing control Data packet handled by the routing module
  */
 message Routing {
 
@@ -404,6 +487,9 @@ message Routing {
      */
     GOT_NAK = 2;
 
+    /*
+     * TODO: REPLACE
+     */
     TIMEOUT = 3;
 
     /*
@@ -438,13 +524,14 @@ message Routing {
     BAD_REQUEST = 32;
 
     /*
-     * The application layer service on the remote node received your request, but considered your request not authorized (i.e you did not
-     * send the request on the required bound channel)
+     * The application layer service on the remote node received your request, but considered your request not authorized
+     * (i.e you did not send the request on the required bound channel)
      */
     NOT_AUTHORIZED = 33;
   }
 
   oneof variant {
+
     /*
      * A route request going from the requester
      */
@@ -461,24 +548,6 @@ message Routing {
      */
     Error error_reason = 3;
 
-    /*
-     * Deprecated - this has been replced with error_reason == NONE && request_id != 0
-     * This is an ack.
-     * This packet is a requested acknoledgement indicating that we have received
-     * the specified message ID.
-     * This packet type can be used both for immediate (0 hops) messages or can be routed through multiple hops if dest is set.
-     * Note: As an optimization, recipients can _also_ populate a field in payload
-     * if they think the recipient would appreciate that extra state.
-     *
-     * fixed32 success_id = 4;
-     */
-
-     /*
-      * Deprecated - this has been replced with error_reason !== NONE && request_id != 0
-      * This is a nak, we failed to deliver this message.
-      *
-      * fixed32 fail_id = 5;
-      */
   }
 }
 
@@ -495,8 +564,8 @@ message Data {
   PortNum portnum = 1;
 
   /*
-   * Required
-   */
+  * TODO: REPLACE
+  */
   bytes payload = 2;
 
   /*
@@ -527,6 +596,55 @@ message Data {
    * Indicates the original message ID that this message is reporting failure on. (formerly called original_id)
    */
   fixed32 request_id = 6;
+
+  /*
+   * If set, this message is intened to be a reply to a previously sent message with the defined id.
+   */
+  fixed32 reply_id = 7;
+
+  /*
+   * Defaults to false. If true, then what is in the payload should be treated as an emoji like giving
+   * a message a heart or poop emoji.
+   */
+  fixed32 emoji = 8;
+
+  /*
+   * Location structure
+   */
+  Location location = 9;
+
+}
+
+/*
+ * Location of a waypoint to associate with a message
+ */
+message Location {
+
+  /*
+   * Id of the location
+   */
+  uint32 id = 1;
+
+  /*
+   * latitude_i
+   */
+  sfixed32 latitude_i = 2;
+
+  /*
+   * longitude_i
+   */
+  sfixed32 longitude_i = 3;
+
+  /*
+   * Time the location is to expire (epoch)
+   */
+  uint32 expire = 4;
+
+  /*
+   * If true, only allow the original sender to update the location.
+   */
+  bool locked = 5;
+
 }
 
 /*
@@ -542,11 +660,8 @@ message MeshPacket {
    * This field is never sent over the air, it is only used internally inside of a local device node.
    * API clients (either on the local node or connected directly to the node)
    * can set this parameter if necessary.
-   *
    * (values must be <= 127 to keep protobuf field to one byte in size.
-   *
    * Detailed background on this field:
-   *
    * I noticed a funny side effect of lora being so slow: Usually when making
    * a protocol there isn’t much need to use message priority to change the order
    * of transmission (because interfaces are fairly fast).
@@ -555,17 +670,20 @@ message MeshPacket {
    * In the case of meshtastic that means we want to send protocol acks as soon as possible
    * (to prevent unneeded retransmissions), we want routing messages to be sent next,
    * then messages marked as reliable and finally ‘background’ packets like periodic position updates.
-   *
    * So I bit the bullet and implemented a new (internal - not sent over the air)
    * field in MeshPacket called ‘priority’.
    * And the transmission queue in the router object is now a priority queue.
    */
   enum Priority {
+
     /*
      * Treated as Priority.DEFAULT
      */
     UNSET = 0;
 
+    /*
+     * TODO: REPLACE
+     */
     MIN = 1;
 
     /*
@@ -591,6 +709,9 @@ message MeshPacket {
      */
     ACK = 120;
 
+    /*
+     * TODO: REPLACE
+     */
     MAX = 127;
   }
 
@@ -598,6 +719,7 @@ message MeshPacket {
    * Identify if this is a delayed packet
    */
   enum Delayed {
+
     /*
      * If unset, the message is being sent in real time.
      */
@@ -617,7 +739,7 @@ message MeshPacket {
   /*
    * The sending node number.
    * Note: Our crypto implementation uses this field as well.
-   * See [crypto](/developers/device/encryption.md) for details.
+   * See [crypto](/docs/developers/firmware/encryption) for details.
    * FIXME - really should be fixed32 instead, this encoding only hurts the ble link though.
    */
   fixed32 from = 1;
@@ -640,7 +762,7 @@ message MeshPacket {
   uint32 channel = 3;
 
   /*
-   * Internally to the mesh radios we will route SubPackets encrypted per [this](/developers/device/encryption.md).
+   * Internally to the mesh radios we will route SubPackets encrypted per [this](docs/developers/firmware/encryption).
    * However, when a particular node has the correct
    * key to decode a particular packet, it will decode the payload into a SubPacket protobuf structure.
    * Software outside of the device nodes will never encounter a packet where
@@ -649,7 +771,15 @@ message MeshPacket {
    */
 
   oneof payloadVariant {
+
+    /*
+     * TODO: REPLACE
+     */
     Data decoded = 4;
+
+    /*
+     * TODO: REPLACE
+     */
     bytes encrypted = 5;
   }
 
@@ -661,7 +791,7 @@ message MeshPacket {
    * needs to be unique for a few minutes (long enough to last for the length of
    * any ACK or the completion of a mesh broadcast flood).
    * Note: Our crypto implementation uses this id as well.
-   * See [crypto](/developers/device/encryption.md) for details.
+   * See [crypto](/docs/developers/firmware/encryption) for details.
    * FIXME - really should be fixed32 instead, this encoding only
    * hurts the ble link though.
    */
@@ -717,7 +847,8 @@ message MeshPacket {
   /*
    * Describe if this message is delayed
    */
-   Delayed delayed = 15;
+  Delayed delayed = 15;
+
 }
 
 /*
@@ -741,16 +872,12 @@ enum Constants {
 
 /*
  * The bluetooth to device link:
- *
  * Old BTLE protocol docs from TODO, merge in above and make real docs...
- *
  * use protocol buffers, and NanoPB
- *
  * messages from device to phone:
  * POSITION_UPDATE (..., time)
  * TEXT_RECEIVED(from, text, time)
  * OPAQUE_RECEIVED(from, payload, time) (for signal messages or other applications)
- *
  * messages from phone to device:
  * SET_MYID(id, human readable long, human readable short) (send down the unique ID
  * string used for this node, a human readable string shown for that id, and a very
@@ -759,7 +886,6 @@ enum Constants {
  * nodes() (returns list of nodes, with full info, last time seen, loc, battery
  * level etc) SET_CONFIG (switches device to a new set of radio params and
  * preshared key, drops all existing nodes, force our node to rejoin this new group)
- *
  * Full information about a node on the mesh
  */
 message NodeInfo {
@@ -784,9 +910,10 @@ message NodeInfo {
    * Returns the Signal-to-noise ratio (SNR) of the last received message,
    * as measured by the receiver. Return SNR of the last received message in dB
    */
-  float snr = 7;
+  float snr = 4;
 
   /*
+   * TODO: REMOVE/INTEGRATE 
    * Returns the last measured frequency error.
    * The LoRa receiver estimates the frequency offset between the receiver
    * center frequency and that of the received LoRa signal. This function
@@ -806,6 +933,7 @@ message NodeInfo {
    */
 
   /*
+   * TODO: REMOVE/INTEGRATE
    * Not currently used (till full DSR deployment?) Our current preferred node node for routing - might be the same as num if
    * we are adjacent Or zero if we don't yet know a route to this node.
    * fixed32 next_hop = 5;
@@ -814,17 +942,24 @@ message NodeInfo {
   /*
    * Set to indicate the last time we received a packet from this node
    */
-  fixed32 last_heard = 4;
+  fixed32 last_heard = 5;
+  /*
+   * The latest device metrics for the node.
+   */
+  DeviceMetrics device_metrics = 6;
 }
 
 /*
  * Error codes for critical errors
- *
  * The device might report these fault codes on the screen.
  * If you encounter a fault code, please post on the meshtastic.discourse.group
  * and we'll try to help.
  */
 enum CriticalErrorCode {
+
+  /*
+   * TODO: REPLACE
+   */
   None = 0;
 
   /*
@@ -877,8 +1012,10 @@ enum CriticalErrorCode {
   /* Selftest of SX1262 radio chip failed */
   SX1262Failure = 10;
 
-  /* A (likely software but possibly hardware) failure was detected while trying to send packets. If this occurs on your board, please
-  post in the forum so that we can ask you to collect some information to allow fixing this bug */
+  /*
+   * A (likely software but possibly hardware) failure was detected while trying to send packets.
+   * If this occurs on your board, please post in the forum so that we can ask you to collect some information to allow fixing this bug
+   */
   RadioSpiBug = 11;
 }
 
@@ -902,35 +1039,9 @@ message MyNodeInfo {
   bool has_gps = 2;
 
   /*
-   * # of frequencies that can be used (set at build time in the device flash image).
-   * Note: this is different from max_channels, this field is telling the # of frequency bands this node can use.
-   * (old name was num_channels)
-   */
-  uint32 num_bands = 3;
-
-  /*
    * The maximum number of 'software' channels that can be set on this node.
    */
   uint32 max_channels = 15;
-
-  /*
-   * Deprecated! ONLY USED IN DEVICE CODE (for upgrading old 1.0 firmwares) DO NOT READ ELSEWHERE.
-   * The region code for my radio (US, CN, etc...)
-   * Note: This string is deprecated.
-   * The 1.0 builds populate it based on the flashed firmware name.
-   * But for newer builds this string will be unpopulated (missing/null).
-   * For those builds you should instead look at the new read/write region enum in UserSettings
-   * The format of this string was 1.0-US or 1.0-CN etc.. Or empty string if unset.
-   */
-  string region = 4 [deprecated = true];
-
-  /*
-   * TBEAM, HELTEC, etc...
-   * Starting in 1.2.11 moved to hw_model enum in the NodeInfo object.
-   * Apps will still need the string here for older builds
-   * (so OTA update can find the right image), but if the enum is available it will be used instead.
-   */
-  string hw_model_deprecated = 5 [deprecated = true];
 
   /*
    * 0.0.5 etc...
@@ -984,36 +1095,35 @@ message MyNodeInfo {
   uint32 min_app_version = 14;
 
   /*
-   * 48 time windows of 1hr each with the airtime transmitted out of the device per hour.
+   * 24 time windows of 1hr each with the airtime transmitted out of the device per hour.
    */
   repeated uint32 air_period_tx = 16;
 
   /*
-   * 48 time windows of 1hr each with the airtime of valid packets for your mesh.
+   * 24 time windows of 1hr each with the airtime of valid packets for your mesh.
    */
   repeated uint32 air_period_rx = 17;
 
   /*
    * Is the device wifi capable?
    */
-   bool has_wifi = 18;
-
-   /*
-    * The private key for this device.
-    * This is used to generate a shared key via Diffie-Hellman key exchange.
-    */
-   bytes private_key = 20;
-
-   bool bluetooth_paired = 21;
+  bool has_wifi = 18;
 
   /*
-   * FIXME - add more useful debugging state (queue depths etc)
+   * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
    */
+  float channel_utilization = 19;
+  
+  /*
+   * Percent of airtime for transmission used within the last hour.
+   */
+  float air_util_tx = 20;
+
+  bytes private_key = 21;
 }
 
 /*
  * Debug output from the device.
- *
  * To minimize the size of records inside the device code, if a time/source/level is not set
  * on the message it is assumed to be a continuation of the previously sent message.
  * This allows the device code to use fixed maxlen 64 byte strings for messages,
@@ -1025,15 +1135,45 @@ message LogRecord {
    * Log levels, chosen to match python logging conventions.
    */
   enum Level {
+    /*
+     * Log levels, chosen to match python logging conventions.
+     */
     UNSET = 0;
+
+    /*
+     * Log levels, chosen to match python logging conventions.
+     */
     CRITICAL = 50;
+
+    /*
+     * Log levels, chosen to match python logging conventions.
+     */
     ERROR = 40;
+
+    /*
+     * Log levels, chosen to match python logging conventions.
+     */
     WARNING = 30;
+
+    /*
+     * Log levels, chosen to match python logging conventions.
+     */
     INFO = 20;
+
+    /*
+     * Log levels, chosen to match python logging conventions.
+     */
     DEBUG = 10;
+
+    /*
+     * Log levels, chosen to match python logging conventions.
+     */
     TRACE = 5;
   }
 
+  /*
+   * Log levels, chosen to match python logging conventions.
+   */
   string message = 1;
 
   /*
@@ -1071,13 +1211,19 @@ message FromRadio {
   reserved 6;
 
   /*
-   * The packet num, used to allow the phone to request missing read packets from the FIFO,
+   * The packet id, used to allow the phone to request missing read packets from the FIFO,
    * see our bluetooth docs
    */
-  uint32 num = 1;
+  uint32 id = 1;
 
+  /*
+   * Log levels, chosen to match python logging conventions.
+   */
   oneof payloadVariant {
 
+    /*
+     * Log levels, chosen to match python logging conventions.
+     */
     MeshPacket packet = 11;
 
     /*
@@ -1112,6 +1258,7 @@ message FromRadio {
      * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
      */
     bool rebooted = 9;
+
   }
 }
 
@@ -1126,6 +1273,7 @@ message ToRadio {
    * Instead of sending want_config_id as a uint32, newer clients send this structure with information about the client.
    */
   message PeerInfo {
+
     /*
      * The numeric version code for the client application, which in some cases are used to control device behavior (so the device can
      * make assumptions about who is using the API.
@@ -1147,6 +1295,9 @@ message ToRadio {
    */
   reserved 1, 101, 102, 103;
 
+  /*
+   * Log levels, chosen to match python logging conventions.
+   */
   oneof payloadVariant {
 
     /*
@@ -1179,4 +1330,20 @@ message ToRadio {
      */
     bool disconnect = 104;
   }
+}
+
+/*
+ * Compressed message payload
+ */
+message Compressed {
+
+  /*
+   * PortNum to determine the how to handle the compressed payload.
+   */
+  PortNum portnum = 1;
+
+  /*
+   * Compressed data.
+   */
+  bytes data = 2;
 }
