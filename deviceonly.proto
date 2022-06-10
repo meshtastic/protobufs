@@ -6,26 +6,8 @@ option go_package = "github.com/meshtastic/gomeshproto";
 
 import "channel.proto";
 import "mesh.proto";
-import "radioconfig.proto";
 
 option java_outer_classname = "DeviceOnly";
-
-/*
- * This is a stub version of the old 1.1 representation of RadioConfig.
- * But only keeping the region info.
- * The device firmware uses this stub while migrating old nodes to the new preferences system.
- */
-message LegacyRadioConfig {
-  message LegacyPreferences {
-
-    /*
-     * The region code for my radio (US, CN, EU433, etc...)
-     */
-    RegionCode region = 15;
-  }
-
-  LegacyPreferences preferences = 1;
-}
 
 /*
  * This message is never sent over the wire, but it is used for serializing DB
@@ -42,11 +24,6 @@ message DeviceState {
   reserved 12;
 
   /*
-   * Moved to its own file, but we keep this here so we can automatically migrate old radio.region settings
-   */
-  LegacyRadioConfig legacyRadio = 1;
-
-  /*
    * Read only settings/info about this node
    */
   MyNodeInfo my_node = 2;
@@ -56,6 +33,9 @@ message DeviceState {
    */
   User owner = 3;
 
+  /*
+   * TODO: REPLACE
+   */
   repeated NodeInfo node_db = 4;
 
   /*
@@ -87,14 +67,69 @@ message DeviceState {
    * Some GPSes seem to have bogus settings from the factory, so we always do one factory reset.
    */
   bool did_gps_reset = 11;
+
 }
 
 /*
  * The on-disk saved channels
  */
 message ChannelFile {
+
   /*
    * The channels our node knows about
    */
   repeated Channel channels = 1;
+}
+
+/*
+ * TODO: REPLACE
+ */
+enum ScreenFonts {
+
+  /*
+   * TODO: REPLACE
+   */
+  FONT_SMALL = 0;
+
+  /*
+   * TODO: REPLACE
+   */
+  FONT_MEDIUM = 1;
+
+  /*
+   * TODO: REPLACE
+   */
+  FONT_LARGE = 2;
+}
+
+/*
+ * This can be used for customizing the firmware distribution. If populated,
+ * show a secondary bootup screen with cuatom logo and text for 2.5 seconds.
+ */
+message OEMStore {
+
+  /*
+   * The Logo width in Px
+   */
+  uint32 oem_icon_width = 1;
+
+  /*
+   * The Logo height in Px
+   */
+  uint32 oem_icon_height = 2;
+
+  /*
+   * The Logo in xbm bytechar format
+   */
+  bytes oem_icon_bits = 3;
+
+  /*
+   * Use this font for the OEM text.
+   */
+  ScreenFonts oem_font = 4;
+
+  /*
+   * Use this font for the OEM text.
+   */
+  string oem_text = 5;
 }

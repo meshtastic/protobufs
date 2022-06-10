@@ -28,7 +28,6 @@ message ManufacturingData {
   /*
    * This code is written during manfacturing time and allows users to confirm that
    * the initial manufacturing tests succeeded.
-   *
    * 0 means no test performed.
    * 1 means all tests passed
    * negative numbers indicate particular error codes

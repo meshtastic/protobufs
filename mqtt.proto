@@ -12,6 +12,7 @@ option java_outer_classname = "MQTTProtos";
  * This message wraps a MeshPacket with extra metadata about the sender and how it arrived.
  */
 message ServiceEnvelope {
+
   /*
    * The (probably encrypted) packet
    */

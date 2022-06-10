@@ -1,8 +1,0 @@
-*UserPreferences.wifi_ssid max_size:33
-*UserPreferences.wifi_password max_size:64
-*UserPreferences.region max_size:6
-
-# Max of three ignored nodes for our testing
-*UserPreferences.ignore_incoming max_count:3
-
-*UserPreferences.mqtt_server max_size:32

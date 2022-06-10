@@ -5,6 +5,7 @@ option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
 import "channel.proto";
+import "config.proto";
 
 option java_outer_classname = "AppOnlyProtos";
 
@@ -16,5 +17,14 @@ option java_outer_classname = "AppOnlyProtos";
  * This abstraction is used only on the the 'app side' of the world (ie python, javascript and android etc) to show a group of Channels as a (long) URL
  */
 message ChannelSet {
+
+  /*
+   * Channel list with settings
+   */
   repeated ChannelSettings settings = 1;
+
+  /*
+   * LoRa config
+   */
+  Config.LoRaConfig lora_config = 2;
 }
