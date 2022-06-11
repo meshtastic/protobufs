@@ -97,51 +97,61 @@ message Telemetry {
 */
 enum TelemetrySensorType {
   /*
-  * No external telemetry sensor
+  * No external telemetry sensor explicitly set
   */
   NotSet = 0;
   /*
-  * TODO: REPLACE
+  * Moderate accuracy temperature
   */
   DHT11 = 1;
 
   /*
-  * TODO: REPLACE
+  * High accuracy temperature
   */
   DS18B20 = 2;
 
   /*
-  * TODO: REPLACE
+  * Moderate accuracy temperature and humidity
   */
   DHT12 = 3;
 
   /*
-  * TODO: REPLACE
+  * Moderate accuracy temperature and humidity
   */
   DHT21 = 4;
 
   /*
-  * TODO: REPLACE
+  * Moderate accuracy temperature and humidity
   */
   DHT22 = 5;
 
   /*
-  * TODO: REPLACE
+  * High accuracy temperature, pressure, humidity
   */
   BME280 = 6;
 
   /*
-  * TODO: REPLACE
+  * High accuracy temperature, pressure, humidity, and air resistance
   */
   BME680 = 7;
 
   /*
-  * TODO: REPLACE
+  * Very high accuracy temperature
   */
   MCP9808 = 8;
 
   /*
-  * TODO: REPLACE
+  * Moderate accuracy temperature and humidity
   */
   SHTC3 = 9;
+
+  /*
+  * Moderate accuracy current and voltage
+  */
+  INA260 = 10;
+
+  /*
+  * Moderate accuracy current and voltage
+  */
+  INA219 = 11;
 };
