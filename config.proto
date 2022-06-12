@@ -290,7 +290,7 @@ message Config {
      * we should try to minimize power consumption as much as possible.
      * YOU DO NOT NEED TO SET THIS IF YOU'VE set is_router (it is implied in that case).
      */
-    bool is_low_power = 2;
+    bool is_power_saving = 2;
 
     /*
      * Circumvents the logic block for determining whether the device is powered or not.
@@ -303,11 +303,6 @@ message Config {
      * If non-zero, the device will fully power off this many seconds after external power is removed.
      */
     uint32 on_battery_shutdown_after_secs = 4;
-
-    /*
-     * If set to true, enable power saving features of the esp32
-     */
-    bool is_power_saving = 5;
 
     /*
      * Ratio of voltage divider for battery pin eg. 3.20 (R1=100k, R2=220k)
