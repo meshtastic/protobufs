@@ -445,7 +445,7 @@ message User {
 
   /*
    * The public key of the user's device.
-   * This is used for direct message payload encryption.
+   * This is sent out to other nodes on the mesh to allow them to compute a shared secret key.
    */
   bytes public_key = 13;
 }
@@ -1119,6 +1119,10 @@ message MyNodeInfo {
    */
   float air_util_tx = 20;
 
+  /*
+   * The private key of the device.
+   * This is used to create a shared key with a remote device.
+   */
   bytes private_key = 21;
 }
 
