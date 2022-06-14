@@ -7,7 +7,7 @@ option go_package = "github.com/meshtastic/gomeshproto";
 
 message Config {
   /*
-   * TODO: REPLACE
+   * Configuration
    */
   message DeviceConfig {
     /*
