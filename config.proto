@@ -189,7 +189,7 @@ message Config {
 
     /*
      * Sets the charge control current of devices with a battery charger that can be configured\
-     * TBEAM 1.1 Only
+     * **TBEAM 1.1 Only**
      */
     enum ChargeCurrent {
     
