@@ -7,12 +7,12 @@ option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
 /*
- * TODO: REPLACE
+ * Module Config
  */
 message ModuleConfig {
 
   /*
-   * TODO: REPLACE
+   * MQTT Client Config
    */
   message MQTTConfig {
 
@@ -53,7 +53,7 @@ message ModuleConfig {
   }
 
   /*
-   * TODO: REPLACE
+   * Serial Config
    */
   message SerialConfig {
 
@@ -127,7 +127,7 @@ message ModuleConfig {
   }
 
   /*
-   * TODO: REPLACE
+   * External Notifications Config
    */
   message ExternalNotificationConfig {
 
@@ -166,12 +166,11 @@ message ModuleConfig {
   }
 
   /*
-   * TODO: REPLACE
+   * Store and Forward Module Config
    */
   message StoreForwardConfig {
     /*
-     * Preferences for the StoreForwardModule
-     *FIXME - Move this out of UserPreferences and into a section for module configuration. (was 136)
+     * Enable the Store and Forward Module
      */
     bool enabled = 1;
 
@@ -198,22 +197,22 @@ message ModuleConfig {
   }
 
   /*
-   * TODO: REPLACE
+   * Preferences for the RangeTestModule
    */
   message RangeTestConfig {
     /*
-     * Preferences for the RangeTestModule
-     * FIXME - Move this out of UserPreferences and into a section for module configuration.
+     * Enable the Range Test Module
      */
     bool enabled = 1;
 
     /*
-     * TODO: REPLACE
+     * Send out range test messages from this node
      */
     uint32 sender = 2;
 
     /*
-     * TODO: REPLACE
+     * Bool value indicating that this node should save a RangeTest.csv file. 
+     * ESP32 Only
      */
     bool save = 3;
   }
@@ -225,7 +224,7 @@ message ModuleConfig {
     
     /*
      * Interval in seconds of how often we should try to send our
-     * device measurements to the mesh
+     * device metrics to the mesh
      */
     uint32 device_update_interval = 1;
 
