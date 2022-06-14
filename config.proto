@@ -311,22 +311,22 @@ message Config {
     float adc_multiplier_override = 6;
 
     /*
-     * Wait Bluetooth Seconds\
+     * Wait Bluetooth Seconds
      * The number of seconds for to wait before turning of BLE in No Bluetooth states\
      * 0 for default of 1 minute
      */
     uint32 wait_bluetooth_secs = 7;
 
     /*
-     * Mesh Super Deep Sleep Timeout Seconds\
+     * Mesh Super Deep Sleep Timeout Seconds
      * While in Light Sleep if this value is exceeded we will lower into super deep sleep 
-     * for sds_secs (default 1 year) or a button press\
+     * for sds_secs (default 1 year) or a button press
      * 0 for default of two hours, MAXUINT for disabled
      */
     uint32 mesh_sds_timeout_secs = 9;
  
     /*
-     * Super Deep Sleep Seconds\
+     * Super Deep Sleep Seconds
      * While in Light Sleep if mesh_sds_timeout_secs is exceeded we will lower into super deep sleep
      * for this value (default 1 year) or a button press
      * 0 for default of one year
@@ -334,7 +334,7 @@ message Config {
     uint32 sds_secs = 10;
  
     /*
-     * Light Sleep Seconds\
+     * Light Sleep Seconds
      * In light sleep the CPU is suspended, LoRa radio is on, BLE is off an GPS is on
      * ESP32 Only
      * 0 for default of 3600
@@ -342,7 +342,7 @@ message Config {
     uint32 ls_secs = 11;
  
     /*
-     * Minimum Wake Seconds\
+     * Minimum Wake Seconds
      * While in light sleep when we receive packets on the LoRa radio we will wake and handle them and stay awake in no BLE mode for this value
      * 0 for default of 10 seconds
      */
