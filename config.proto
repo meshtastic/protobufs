@@ -13,7 +13,6 @@ message Config {
     /*
      * Defines the device's role on the Mesh network
      *   unset - 0
-     *     Client Device role.
      */
     enum Role {
     
