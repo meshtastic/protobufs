@@ -313,7 +313,7 @@ message Config {
 
     /*
      * Wait Bluetooth Seconds\
-     * Wait number of seconds for Bluetooth\
+     * The number of seconds for to wait before turning of BLE in No Bluetooth states\
      * 0 for default of 1 minute
      */
     uint32 wait_bluetooth_secs = 7;
