@@ -16,69 +16,83 @@ option java_outer_classname = "LocalOnlyProtos";
 
 message LocalConfig {
   /*
-   * TODO: REPLACE
+   * The part of the config that is specific to the Device
    */
   Config.DeviceConfig device = 1;
 
   /*
-   * TODO: REPLACE
+   * The part of the config that is specific to the GPS Position
    */
   Config.PositionConfig position = 2;
 
   /*
-   * TODO: REPLACE
+   * The part of the config that is specific to the Power settings
    */
   Config.PowerConfig power = 3;
 
   /*
-   * TODO: REPLACE
+   * The part of the config that is specific to the Wifi Settings
    */
   Config.WiFiConfig wifi = 4;
 
   /*
-   * TODO: REPLACE
+   * The part of the config that is specific to the Display
    */
   Config.DisplayConfig display = 5;
 
   /*
-   * TODO: REPLACE
+   * The part of the config that is specific to the Lora Radio
    */
   Config.LoRaConfig lora = 6;
+
+  /*
+   * A version integer used to invalidate old save files when we make
+   * incompatible changes This integer is set at build time and is private to
+   * NodeDB.cpp in the device code.
+   */
+   uint32 version = 7;
 }
 
 message LocalModuleConfig {
   /*
-   * TODO: REPLACE
+   * The part of the config that is specific to the MQTT module
    */
   ModuleConfig.MQTTConfig mqtt = 1;
 
   /*
-   * TODO: REPLACE
+   * The part of the config that is specific to the Serial module
    */
   ModuleConfig.SerialConfig serial = 2;
 
   /*
-   * TODO: REPLACE
+   * The part of the config that is specific to the ExternalNotification module
    */
   ModuleConfig.ExternalNotificationConfig external_notification = 3;
 
   /*
-   * TODO: REPLACE
+   * The part of the config that is specific to the Store & Forward module
    */
   ModuleConfig.StoreForwardConfig store_forward = 4;
 
   /*
-   * TODO: REPLACE
+   * The part of the config that is specific to the RangeTest module
    */
   ModuleConfig.RangeTestConfig range_test = 5;
 
   /*
-   * TODO: REPLACE
+   * The part of the config that is specific to the Telemetry module
    */
   ModuleConfig.TelemetryConfig telemetry = 6;
 
   /*
-   * TODO: REPLACE
+   * The part of the config that is specific to the Canned Message module
    */
   ModuleConfig.CannedMessageConfig canned_message = 7;
+
+  /*
+   * A version integer used to invalidate old save files when we make
+   * incompatible changes This integer is set at build time and is private to
+   * NodeDB.cpp in the device code.
+   */
+  uint32 version = 8;
 }
