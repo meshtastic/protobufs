@@ -4,6 +4,7 @@ option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
+import "localonly.proto";
 import "portnums.proto";
 import "telemetry.proto";
 
@@ -1198,11 +1199,6 @@ message FromRadio {
   reserved 2;
 
   /*
-   * In the <1.2 versions nodeinfo had ID 4, to prevent confusing old apps with our new packets, we've changed
-   */
-  reserved 6;
-
-  /*
    * The packet id, used to allow the phone to request missing read packets from the FIFO,
    * see our bluetooth docs
    */
@@ -1229,6 +1225,11 @@ message FromRadio {
      * starts over with the first node in our DB
      */
     NodeInfo node_info = 4;
+
+    /*
+     * Include the entire config (was: RadioConfig radio)
+     */
+    LocalConfig config = 6;
 
     /*
      * Set to send debug console output over our protobuf stream
