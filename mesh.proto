@@ -4,7 +4,7 @@ option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
-import "localonly.proto";
+import "config.proto";
 import "portnums.proto";
 import "telemetry.proto";
 
@@ -1227,9 +1227,9 @@ message FromRadio {
     NodeInfo node_info = 4;
 
     /*
-     * Include the entire config (was: RadioConfig radio)
+     * Include a part of the config (was: RadioConfig radio)
      */
-    LocalConfig config = 6;
+    Config config = 6;
 
     /*
      * Set to send debug console output over our protobuf stream
