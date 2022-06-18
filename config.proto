@@ -134,12 +134,16 @@ message Config {
       POS_TIMESTAMP = 0x0080;
       
       /*
-       * Include positional heading (from GPS solution)
+       * Include positional heading
+       * Indended for use with vehicle not walking speeds
+       * walking speeds are likely to be error prone like the compass
        */
       POS_HEADING   = 0x0100;
       
       /*
-       * Include positional speed (from GPS solution)
+       * Include positional speed
+       * Indended for use with vehicle not walking speeds
+       * walking speeds are likely to be error prone like the compass
        */
       POS_SPEED     = 0x0200;
     }
@@ -340,7 +344,7 @@ message Config {
      * Light Sleep Seconds
      * In light sleep the CPU is suspended, LoRa radio is on, BLE is off an GPS is on
      * ESP32 Only
-     * 0 for default of 3600
+     * 0 for default of 300
      */
     uint32 ls_secs = 11;
  
