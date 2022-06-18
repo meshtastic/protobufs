@@ -135,7 +135,7 @@ message Config {
       /*
        * Include positional heading (from GPS solution)
        */
-      POS_HEADING = )0x0160;
+      POS_HEADING = 0x0160;
       /*
        * Include positional speed (from GPS solution)
        */
