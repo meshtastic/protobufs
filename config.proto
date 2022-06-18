@@ -131,10 +131,12 @@ message Config {
       /*
        * Include positional timestamp (from GPS solution)
        */
+       
       POS_TIMESTAMP = 0x0080;
       /*
        * Include positional heading (from GPS solution)
        */
+       
       POS_HEADING = 0x0160;
       /*
        * Include positional speed (from GPS solution)
