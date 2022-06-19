@@ -135,14 +135,14 @@ message Config {
       
       /*
        * Include positional heading
-       * Indended for use with vehicle not walking speeds
+       * Intended for use with vehicle not walking speeds
        * walking speeds are likely to be error prone like the compass
        */
       POS_HEADING   = 0x0100;
       
       /*
        * Include positional speed
-       * Indended for use with vehicle not walking speeds
+       * Intended for use with vehicle not walking speeds
        * walking speeds are likely to be error prone like the compass
        */
       POS_SPEED     = 0x0200;
