@@ -459,37 +459,37 @@ message Config {
     enum ModemPreset {
 
       /*
-       * TODO: REPLACE
+       * Long Range - Fast
        */
       LongFast = 0;
 
       /*
-       * TODO: REPLACE
+       * Long Range - Slow
        */
       LongSlow = 1;
 
       /*
-       * TODO: REPLACE
+       * Very Long Range - Slow
        */
       VLongSlow = 2;
 
       /*
-       * TODO: REPLACE
+       * Medium Range - Slow
        */
       MidSlow = 3;
 
       /*
-       * TODO: REPLACE
+       * Medium Range - Fast
        */
       MidFast = 4;
 
       /*
-       * TODO: REPLACE
+       * Short Range - Slow
        */
       ShortSlow = 5;
 
       /*
-       * TODO: REPLACE
+       * Short Range - Fast
        */
       ShortFast = 6;
     }
@@ -503,7 +503,6 @@ message Config {
     int32 tx_power = 1;
 
     /*
-     * Note: This is the 'old' mechanism for specifying channel parameters.
      * Either modem_config or bandwidth/spreading/coding will be specified - NOT BOTH.
      * As a heuristic: If bandwidth is specified, do not use modem_config.
      * Because protobufs take ZERO space when the value is zero this works out nicely.
@@ -539,12 +538,13 @@ message Config {
     float frequency_offset = 6;
 
     /*
-     * The region code for my radio (US, CN, EU433, etc...)
+     * The region code for the radio (US, CN, EU433, etc...)
      */
     RegionCode region = 7;
 
     /*
      * Overrides HOPS_RELIABLE and sets the maximum number of hops. This can't be greater than 7.
+     * 0 for default of 3
      */
     uint32 hop_limit = 8;
 
@@ -564,38 +564,15 @@ message Config {
   }
 
   /*
-   * TODO: REPLACE
+   * Payload Variant
    */
   oneof payloadVariant {
 
-    /*
-     * TODO: REPLACE
-     */
     DeviceConfig device = 1;
-
-    /*
-     * TODO: REPLACE
-     */
     PositionConfig position = 2;
- 
-    /*
-     * TODO: REPLACE
-     */
     PowerConfig power = 3;
-
-    /*
-     * TODO: REPLACE
-     */
     WiFiConfig wifi = 4;
-
-    /*
-     * TODO: REPLACE
-     */
     DisplayConfig display = 5;
-    
-    /*
-     * TODO: REPLACE
-     */
     LoRaConfig lora = 6;
 
   }
