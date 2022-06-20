@@ -286,7 +286,7 @@ message Config {
   }
 
   /*
-   * WifFi Config
+   * WiFi Config
    */
   message WiFiConfig {
 
