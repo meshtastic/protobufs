@@ -12,7 +12,6 @@ message Config {
   message DeviceConfig {
     /*
      * Defines the device's role on the Mesh network
-     *   unset - 0
      */
     enum Role {
     
@@ -22,26 +21,21 @@ message Config {
       Client = 0;
     
       /*
-       * ClientMute device role
-       *   This is like the client but packets will not hop over this node. Would be
-       *   useful if you want to save power by not contributing to the mesh.
+       * Client Mute device role
+       *   Same as a client except packets will not hop over this node, does not contribute to routing packets for mesh.
        */
       ClientMute = 1;
     
       /*
        * Router device role.
-       *   Uses an agressive algirithem for the flood networking so packets will
-       *   prefer to be routed over this node. Also assume that this will be
-       *   unattended and so will turn off the wifi/ble radio as well as the oled screen.
+       *   Mesh packets will prefer to be routed over this node. This node will not be used by client apps. 
+       *   The wifi/ble radios and the oled screen will be put to sleep.
        */
       Router = 2;
     
       /*
-       * RouterClient device role
-       *   Uses an agressive algirithem for the flood networking so packets will
-       *   prefer to be routed over this node. Similiar power management as a regular
-       *   client, so the RouterClient can be used as both a Router and a Client. Useful
-       *   as a well placed base station that you could also use to send messages.
+       * Router Client device role
+       *   Mesh packets will prefer to be routed over this node. The Router Client can be used as both a Router and an app connected Client.
        */
       RouterClient = 3;
     
@@ -59,7 +53,6 @@ message Config {
 
     /*
      * This setting is never saved to disk, but if set, all device settings will be returned to factory defaults.
-     * (Region, serial number etc... will be preserved)
      */
     bool factory_reset = 3;
 
@@ -132,6 +125,20 @@ message Config {
        * Include positional timestamp (from GPS solution)
        */
       POS_TIMESTAMP = 0x0080;
+      
+      /*
+       * Include positional heading
+       * Intended for use with vehicle not walking speeds
+       * walking speeds are likely to be error prone like the compass
+       */
+      POS_HEADING   = 0x0100;
+      
+      /*
+       * Include positional speed
+       * Intended for use with vehicle not walking speeds
+       * walking speeds are likely to be error prone like the compass
+       */
+      POS_SPEED     = 0x0200;
     }
 
     /*
@@ -192,89 +199,22 @@ message Config {
      */
     enum ChargeCurrent {
     
-      /*
-       * TODO: REPLACE
-       */
       MAUnset = 0;
-    
-      /*
-       * TODO: REPLACE
-       */
       MA100 = 1;
-    
-      /*
-       * TODO: REPLACE
-       */
       MA190 = 2;
-    
-      /*
-       * TODO: REPLACE
-       */
       MA280 = 3;
-    
-      /*
-       * TODO: REPLACE
-       */
       MA360 = 4;
-    
-      /*
-       * TODO: REPLACE
-       */
       MA450 = 5;
-    
-      /*
-       * TODO: REPLACE
-       */
       MA550 = 6;
-    
-      /*
-       * TODO: REPLACE
-       */
       MA630 = 7;
-    
-      /*
-       * TODO: REPLACE
-       */
       MA700 = 8;
-    
-      /*
-       * TODO: REPLACE
-       */
       MA780 = 9;
-    
-      /*
-       * TODO: REPLACE
-       */
       MA880 = 10;
-    
-      /*
-       * TODO: REPLACE
-       */
       MA960 = 11;
-    
-      /*
-       * TODO: REPLACE
-       */
       MA1000 = 12;
-      
-      /*
-       * TODO: REPLACE
-       */
       MA1080 = 13;
-    
-      /*
-       * TODO: REPLACE
-       */
       MA1160 = 14;
-    
-      /*
-       * TODO: REPLACE
-       */
       MA1240 = 15;
-    
-      /*
-       * TODO: REPLACE
-       */
       MA1320 = 16;
     }
 
@@ -288,7 +228,7 @@ message Config {
      * If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in
      * we should try to minimize power consumption as much as possible.
      * YOU DO NOT NEED TO SET THIS IF YOU'VE set is_router (it is implied in that case).
-     * CLI Only Option
+     * Advanced Option
      */
     bool is_power_saving = 2;
 
@@ -300,12 +240,14 @@ message Config {
     /*
      * Ratio of voltage divider for battery pin eg. 3.20 (R1=100k, R2=220k)
      * Overrides the ADC_MULTIPLIER defined in variant for battery voltage calculation.
+     * Should be set to floating point value between 2 and 4
+     * Fixes issues on Heltec v2
      */
     float adc_multiplier_override = 6;
 
     /*
      * Wait Bluetooth Seconds
-     * The number of seconds for to wait before turning of BLE in No Bluetooth states\
+     * The number of seconds for to wait before turning off BLE in No Bluetooth states
      * 0 for default of 1 minute
      */
     uint32 wait_bluetooth_secs = 7;
@@ -330,7 +272,7 @@ message Config {
      * Light Sleep Seconds
      * In light sleep the CPU is suspended, LoRa radio is on, BLE is off an GPS is on
      * ESP32 Only
-     * 0 for default of 3600
+     * 0 for default of 300
      */
     uint32 ls_secs = 11;
  
@@ -344,7 +286,7 @@ message Config {
   }
 
   /*
-   * TODO: REPLACE
+   * WiFi Config
    */
   message WiFiConfig {
 
@@ -393,40 +335,39 @@ message Config {
       GpsFormatDMS = 1;
 
       /*
-       * GPS coordinates are displayed in Universal Transverse Mercator format:
+       * Universal Transverse Mercator format:
        * ZZB EEEEEE NNNNNNN, where Z is zone, B is band, E is easting, N is northing
        */
       GpsFormatUTM = 2;
 
       /*
-       * GPS coordinates are displayed in Military Grid Reference System format:
+       * Military Grid Reference System format:
        * ZZB CD EEEEE NNNNN, where Z is zone, B is band, C is the east 100k square, D is the north 100k square,
        * E is easting, N is northing
        */
       GpsFormatMGRS = 3;
 
       /*
-       * GPS coordinates are displayed in Open Location Code (aka Plus Codes).
+       * Open Location Code (aka Plus Codes).
        */
       GpsFormatOLC = 4;
 
       /*
-       * GPS coordinates are displayed in Ordnance Survey Grid Reference (the National Grid System of the UK).
-       * Format: AB EEEEE NNNNN, where A is the east 100k square, B is the north 100k square, E is the easting,
-       * N is the northing
+       * Ordnance Survey Grid Reference (the National Grid System of the UK).
+       * Format: AB EEEEE NNNNN, where A is the east 100k square, B is the north 100k square,
+       * E is the easting, N is the northing
        */
       GpsFormatOSGR = 5;
     }
 
     /*
-     * Power management state machine option.
-     * See [power management](/docs/software/other/power) for details.
-     * 0 for default of one minute
+     * Number of seconds the screen stays on after pressing the user button or receiving a message
+     * 0 for default of one minute MAXUINT for always on
      */
     uint32 screen_on_secs = 1;
 
     /*
-     * How the GPS coordinates are displayed on the OLED screen.
+     * How the GPS coordinates are formatted on the OLED screen.
      */
     GpsCoordinateFormat gps_format = 2;
 
@@ -439,81 +380,74 @@ message Config {
   }
 
   /*
-   * TODO: REPLACE
+   * Lora Config
    */
   message LoRaConfig {
-    /*
-     * The frequency/regulatory region the user has selected.
-     * Note: In 1.0 builds (which must still be supported by the android app for a
-     * long time) this field will be unpopulated.
-     * If firmware is ever upgraded from an old 1.0ish build, the old
-     * MyNodeInfo.region string will be used to set UserPreferences.region and the
-     * old value will be no longer set.
-     */
+
     enum RegionCode {
 
       /*
-       * TODO: REPLACE
+       * Region is not set
        */
       Unset = 0;
 
       /*
-       * TODO: REPLACE
+       * United States
        */
       US = 1;
 
       /*
-       * TODO: REPLACE
+       * European Union 433mhz
        */
       EU433 = 2;
 
       /*
-       * TODO: REPLACE
+       * European Union 433mhz
        */
       EU868 = 3;
 
       /*
-       * TODO: REPLACE
+       * China
        */
       CN = 4;
 
       /*
-       * TODO: REPLACE
+       * Japan
        */
       JP = 5;
 
       /*
-       * TODO: REPLACE
+       * Australia / New Zealand
        */
       ANZ = 6;
 
       /*
-       * TODO: REPLACE
+       * Korea
        */
       KR = 7;
 
       /*
-       * TODO: REPLACE
+       * Taiwan
        */
       TW = 8;
 
       /*
-       * TODO: REPLACE
+       * Russia
        */
       RU = 9;
 
       /*
-       * TODO: REPLACE
+       * India
        */
       IN = 10;
 
       /*
-       * TODO: REPLACE
+       * New Zealand 865mhz
        */
       NZ865 = 11;
 
       /*
-       * TODO: REPLACE
+       * Thailand
        */
       TH = 12;
     }
@@ -525,37 +459,37 @@ message Config {
     enum ModemPreset {
 
       /*
-       * TODO: REPLACE
+       * Long Range - Fast
        */
       LongFast = 0;
 
       /*
-       * TODO: REPLACE
+       * Long Range - Slow
        */
       LongSlow = 1;
 
       /*
-       * TODO: REPLACE
+       * Very Long Range - Slow
        */
       VLongSlow = 2;
 
       /*
-       * TODO: REPLACE
+       * Medium Range - Slow
        */
       MidSlow = 3;
 
       /*
-       * TODO: REPLACE
+       * Medium Range - Fast
        */
       MidFast = 4;
 
       /*
-       * TODO: REPLACE
+       * Short Range - Slow
        */
       ShortSlow = 5;
 
       /*
-       * TODO: REPLACE
+       * Short Range - Fast
        */
       ShortFast = 6;
     }
@@ -569,7 +503,6 @@ message Config {
     int32 tx_power = 1;
 
     /*
-     * Note: This is the 'old' mechanism for specifying channel parameters.
      * Either modem_config or bandwidth/spreading/coding will be specified - NOT BOTH.
      * As a heuristic: If bandwidth is specified, do not use modem_config.
      * Because protobufs take ZERO space when the value is zero this works out nicely.
@@ -605,12 +538,13 @@ message Config {
     float frequency_offset = 6;
 
     /*
-     * The region code for my radio (US, CN, EU433, etc...)
+     * The region code for the radio (US, CN, EU433, etc...)
      */
     RegionCode region = 7;
 
     /*
      * Overrides HOPS_RELIABLE and sets the maximum number of hops. This can't be greater than 7.
+     * 0 for default of 3
      */
     uint32 hop_limit = 8;
 
@@ -630,38 +564,15 @@ message Config {
   }
 
   /*
-   * TODO: REPLACE
+   * Payload Variant
    */
   oneof payloadVariant {
 
-    /*
-     * TODO: REPLACE
-     */
     DeviceConfig device = 1;
-
-    /*
-     * TODO: REPLACE
-     */
     PositionConfig position = 2;
- 
-    /*
-     * TODO: REPLACE
-     */
     PowerConfig power = 3;
-
-    /*
-     * TODO: REPLACE
-     */
     WiFiConfig wifi = 4;
-
-    /*
-     * TODO: REPLACE
-     */
     DisplayConfig display = 5;
-    
-    /*
-     * TODO: REPLACE
-     */
     LoRaConfig lora = 6;
 
   }
