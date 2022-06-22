@@ -476,12 +476,12 @@ message Config {
       /*
        * Medium Range - Slow
        */
-      MidSlow = 3;
+      MedSlow = 3;
 
       /*
        * Medium Range - Fast
        */
-      MidFast = 4;
+      MedFast = 4;
 
       /*
        * Short Range - Slow
