@@ -122,7 +122,6 @@ message ModuleConfig {
      * Serial Mode
      */
     Serial_Mode mode = 7;
-
   }
 
   /*
@@ -160,45 +159,44 @@ message ModuleConfig {
      * Alert when receiving a bell character
      */
     bool alert_bell = 6;
- 
-
   }
 
   /*
    * Store and Forward Module Config
    */
   message StoreForwardConfig {
+  
     /*
      * Enable the Store and Forward Module
      */
     bool enabled = 1;
 
     /*
-     * TODO: REPLACE
+     * Heartbeat
      */
     bool heartbeat = 2;
  
     /*
-     * TODO: REPLACE
+     * Number of records to store
      */
     uint32 records = 3;
  
     /*
-     * TODO: REPLACE
+     * Maximum number of items to return from the history
      */
     uint32 history_return_max = 4;
  
     /*
-     * TODO: REPLACE
+     * History return window
      */
     uint32 history_return_window = 5;
-
   }
 
   /*
    * Preferences for the RangeTestModule
    */
   message RangeTestConfig {
+  
     /*
      * Enable the Range Test Module
      */
@@ -277,37 +275,37 @@ message ModuleConfig {
   }
 
   /*
-   * TODO: REPLACE
+   * Canned Message Config
    */
   message CannedMessageConfig {
     
     /*
-     * TODO: REPLACE
+     * Character that triggers the input event
      */
     enum InputEventChar {
     
       /*
-       * TODO: REPLACE
+       * Default Value
        */
       KEY_NONE  = 0;
     
       /*
-       * TODO: REPLACE
+       * Up Arrow
        */
       KEY_UP    = 17;
     
       /*
-       * TODO: REPLACE
+       * Down Arrow
        */
       KEY_DOWN  = 18;
     
       /*
-       * TODO: REPLACE
+       * Left Arrow
        */
       KEY_LEFT  = 19;
     
       /*
-       * TODO: REPLACE
+       * Right Arrow
        */
       KEY_RIGHT =  20;
     
@@ -317,12 +315,12 @@ message ModuleConfig {
       KEY_SELECT = 10;
     
       /*
-       * TODO: REPLACE
+       * Back
        */
       KEY_BACK  = 27;
     
       /*
-       * TODO: REPLACE
+       *  Cancel
        */
       KEY_CANCEL = 24;
     }
@@ -386,42 +384,42 @@ message ModuleConfig {
   }
 
   /*
-   * TODO: REPLACE
+   * Config Payload Variants
    */
   oneof payloadVariant {
 
     /*
-     * TODO: REPLACE
+     * MQTT Module Config
      */
     MQTTConfig mqtt = 1;
 
     /*
-     * TODO: REPLACE
+     * Serial Module Config
      */
     SerialConfig serial = 2;
 
     /*
-     * TODO: REPLACE
+     * External Notification Module Config
      */
     ExternalNotificationConfig external_notification = 3;
 
     /*
-     * TODO: REPLACE
+     * Store and Forward Module
      */
     StoreForwardConfig store_forward = 4;
 
     /*
-     * TODO: REPLACE
+     * Range Test Module Config
      */
     RangeTestConfig range_test = 5;
 
     /*
-     * TODO: REPLACE
+     * Telemetry Module Config
      */
     TelemetryConfig telemetry = 6;
 
     /*
-     * TODO: REPLACE
+     * Canned Message Module Config
      */
     CannedMessageConfig canned_message = 7;
 
