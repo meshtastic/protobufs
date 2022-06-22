@@ -314,7 +314,7 @@ message Config {
   }
 
   /*
-   * TODO: REPLACE
+   * Display Config
    */
   message DisplayConfig {
     /*
