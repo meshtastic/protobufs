@@ -25,7 +25,7 @@ message ModuleConfig {
 
     /*
      * The server to use for our MQTT global message gateway feature.
-     * If not set, the default public server will be used
+     * If not set, the default server will be used
      */
     string address = 2;
 
@@ -58,7 +58,7 @@ message ModuleConfig {
   message SerialConfig {
 
     /*
-     * Serial BAUD Rate
+     * TODO: REPLACE
      */
     enum Serial_Baud {
       BAUD_Default = 0;
@@ -80,7 +80,7 @@ message ModuleConfig {
     };
 
     /*
-     * Serial Mode
+     * TODO: REPLACE
      */
     enum Serial_Mode {
       MODE_Default = 0;
@@ -89,114 +89,117 @@ message ModuleConfig {
     };
 
     /*
-     * Enable the serial module
+     * Preferences for the SerialModule
+     * FIXME - Move this out of UserPreferences and into a section for module configuration.
      */
     bool enabled = 1;
 
     /*
-     * Echo Echo
+     * TODO: REPLACE
      */
     bool echo = 2;
  
     /*
-     * Receive Data
+     * TODO: REPLACE
      */
     uint32 rxd = 3;
  
     /*
-     * Transmit Data
+     * TODO: REPLACE
      */
     uint32 txd = 4;
 
     /*
-     * Serial Buad Rate
+     * TODO: REPLACE
      */
     Serial_Baud baud = 5;
 
     /*
-     * Connection timeout in seconds
+     * TODO: REPLACE
      */
     uint32 timeout = 6;
  
     /*
-     * Serial Mode
+     * TODO: REPLACE
      */
     Serial_Mode mode = 7;
+
   }
 
   /*
-   * External Notification Module Config
+   * External Notifications Config
    */
   message ExternalNotificationConfig {
 
     /*
-     * Enable the external notification module
+     * Preferences for the ExternalNotificationModule
+     * FIXME - Move this out of UserPreferences and into a section for module configuration.
      */
     bool enabled = 1;
 
     /*
-     * Output milleseconds
+     * TODO: REPLACE
      */
     uint32 output_ms = 2;
 
     /*
-     * GPIO pin to monitor
-     * Specifies the GPIO that your external circuit is attached to on the device.
+     * TODO: REPLACE
      */
     uint32 output = 3;
 
     /*
-     * Specifies whether the external circuit is triggered when the device's GPIO is low or high.
+     * TODO: REPLACE
      */
     bool active = 4;
 
     /*
-     * Alert when receiving a message
+     * TODO: REPLACE
      */
     bool alert_message = 5;
 
     /*
-     * Alert when receiving a bell character
+     * TODO: REPLACE
      */
     bool alert_bell = 6;
+ 
+
   }
 
   /*
    * Store and Forward Module Config
    */
   message StoreForwardConfig {
-  
     /*
      * Enable the Store and Forward Module
      */
     bool enabled = 1;
 
     /*
-     * Heartbeat
+     * TODO: REPLACE
      */
     bool heartbeat = 2;
  
     /*
-     * Number of records to store
+     * TODO: REPLACE
      */
     uint32 records = 3;
  
     /*
-     * Maximum number of items to return from the history
+     * TODO: REPLACE
      */
     uint32 history_return_max = 4;
  
     /*
-     * History return window
+     * TODO: REPLACE
      */
     uint32 history_return_window = 5;
+
   }
 
   /*
    * Preferences for the RangeTestModule
    */
   message RangeTestConfig {
-  
     /*
      * Enable the Range Test Module
      */
@@ -275,37 +278,37 @@ message ModuleConfig {
   }
 
   /*
-   * Canned Message Config
+   * TODO: REPLACE
    */
   message CannedMessageConfig {
     
     /*
-     * Character that triggers the input event
+     * TODO: REPLACE
      */
     enum InputEventChar {
     
       /*
-       * Default Value
+       * TODO: REPLACE
        */
       KEY_NONE  = 0;
     
       /*
-       * Up Arrow
+       * TODO: REPLACE
        */
       KEY_UP    = 17;
     
       /*
-       * Down Arrow
+       * TODO: REPLACE
        */
       KEY_DOWN  = 18;
     
       /*
-       * Left Arrow
+       * TODO: REPLACE
        */
       KEY_LEFT  = 19;
     
       /*
-       * Right Arrow
+       * TODO: REPLACE
        */
       KEY_RIGHT =  20;
     
@@ -315,12 +318,12 @@ message ModuleConfig {
       KEY_SELECT = 10;
     
       /*
-       * Back
+       * TODO: REPLACE
        */
       KEY_BACK  = 27;
     
       /*
-       *  Cancel
+       * TODO: REPLACE
        */
       KEY_CANCEL = 24;
     }
@@ -384,42 +387,42 @@ message ModuleConfig {
   }
 
   /*
-   * Config Payload Variants
+   * TODO: REPLACE
    */
   oneof payloadVariant {
 
     /*
-     * MQTT Module Config
+     * TODO: REPLACE
      */
     MQTTConfig mqtt = 1;
 
     /*
-     * Serial Module Config
+     * TODO: REPLACE
      */
     SerialConfig serial = 2;
 
     /*
-     * External Notification Module Config
+     * TODO: REPLACE
      */
     ExternalNotificationConfig external_notification = 3;
 
     /*
-     * Store and Forward Module
+     * TODO: REPLACE
      */
     StoreForwardConfig store_forward = 4;
 
     /*
-     * Range Test Module Config
+     * TODO: REPLACE
      */
     RangeTestConfig range_test = 5;
 
     /*
-     * Telemetry Module Config
+     * TODO: REPLACE
      */
     TelemetryConfig telemetry = 6;
 
     /*
-     * Canned Message Module Config
+     * TODO: REPLACE
      */
     CannedMessageConfig canned_message = 7;
 
