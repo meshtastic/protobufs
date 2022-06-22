@@ -25,7 +25,7 @@ message ModuleConfig {
 
     /*
      * The server to use for our MQTT global message gateway feature.
-     * If not set, the default server will be used
+     * If not set, the default public server will be used
      */
     string address = 2;
 
@@ -58,7 +58,7 @@ message ModuleConfig {
   message SerialConfig {
 
     /*
-     * TODO: REPLACE
+     * Serial BAUD Rate
      */
     enum Serial_Baud {
       BAUD_Default = 0;
@@ -80,7 +80,7 @@ message ModuleConfig {
     };
 
     /*
-     * TODO: REPLACE
+     * Serial Mode
      */
     enum Serial_Mode {
       MODE_Default = 0;
@@ -89,76 +89,75 @@ message ModuleConfig {
     };
 
     /*
-     * Preferences for the SerialModule
-     * FIXME - Move this out of UserPreferences and into a section for module configuration.
+     * Enable the serial module
      */
     bool enabled = 1;
 
     /*
-     * TODO: REPLACE
+     * Echo Echo
      */
     bool echo = 2;
  
     /*
-     * TODO: REPLACE
+     * Receive Data
      */
     uint32 rxd = 3;
  
     /*
-     * TODO: REPLACE
+     * Transmit Data
      */
     uint32 txd = 4;
 
     /*
-     * TODO: REPLACE
+     * Serial Buad Rate
      */
     Serial_Baud baud = 5;
 
     /*
-     * TODO: REPLACE
+     * Connection timeout in seconds
      */
     uint32 timeout = 6;
  
     /*
-     * TODO: REPLACE
+     * Serial Mode
      */
     Serial_Mode mode = 7;
 
   }
 
   /*
-   * External Notifications Config
+   * External Notification Module Config
    */
   message ExternalNotificationConfig {
 
     /*
-     * Preferences for the ExternalNotificationModule
-     * FIXME - Move this out of UserPreferences and into a section for module configuration.
+     * Enable the external notification module
      */
     bool enabled = 1;
 
     /*
-     * TODO: REPLACE
+     * Output milleseconds
      */
     uint32 output_ms = 2;
 
     /*
-     * TODO: REPLACE
+     * GPIO pin to monitor
+     * Specifies the GPIO that your external circuit is attached to on the device.
      */
     uint32 output = 3;
 
     /*
-     * TODO: REPLACE
+     * Specifies whether the external circuit is triggered when the device's GPIO is low or high.
      */
     bool active = 4;
 
     /*
-     * TODO: REPLACE
+     * Alert when receiving a message
      */
     bool alert_message = 5;
 
     /*
-     * TODO: REPLACE
+     * Alert when receiving a bell character
      */
     bool alert_bell = 6;
  
