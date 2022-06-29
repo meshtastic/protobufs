@@ -7,6 +7,7 @@ option go_package = "github.com/meshtastic/gomeshproto";
 import "config.proto";
 import "portnums.proto";
 import "telemetry.proto";
+import "module_config.proto";
 
 option java_outer_classname = "MeshProtos";
 
@@ -1252,6 +1253,11 @@ message FromRadio {
      */
     bool rebooted = 9;
 
+
+    /*
+     * Include module config
+     */
+    ModuleConfig moduleConfig = 10;
   }
 }
 
