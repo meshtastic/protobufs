@@ -247,34 +247,10 @@ message ModuleConfig {
     bool environment_screen_enabled = 4;
 
     /*
-     * Sometimes sensor reads can fail.
-     * If this happens, we will retry a configurable number of attempts,
-     * each attempt will be delayed by the minimum required refresh rate for that sensor
-     */
-    uint32 environment_read_error_count_threshold = 5;
-
-    /*
-     * Sometimes we can end up with more than read_error_count_threshold failures.
-     * In this case, we will stop trying to read from the sensor for a while.
-     * Wait this long until trying to read from the sensor again
-     */
-    uint32 environment_recovery_interval = 6;
-
-    /*
      * We'll always read the sensor in Celsius, but sometimes we might want to
      * display the results in Fahrenheit as a "user preference".
      */
     bool environment_display_fahrenheit = 7;
-
-    /*
-     * Specify the sensor type
-     */
-    TelemetrySensorType environment_sensor_type = 8;
-
-    /*
-     * Specify the peferred GPIO Pin for sensor readings
-     */
-    uint32 environment_sensor_pin = 9;
   }
 
   /*
