@@ -125,4 +125,9 @@ enum TelemetrySensorType {
   * Moderate accuracy current and voltage
   */
   INA219 = 5;
+
+  /*
+  * High accuracy temperature and pressure
+  */
+  BMP280 = 6;
 };
