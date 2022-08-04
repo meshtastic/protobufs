@@ -304,13 +304,18 @@ message Config {
     /*
      * If set, the node will operate as an AP (and DHCP server), otherwise it
      * will be a station
-    */
+     */
     bool ap_mode = 3;
 
     /*
      * If set, the node AP will broadcast as a hidden SSID
-    */
+     */
     bool ap_hidden = 4;
+    
+    /*
+     * If set, wifi is enabled. Previously done through setting ssid and psk
+     */
+    bool enabled = 5;
   }
 
   /*
