@@ -160,12 +160,6 @@ message Config {
     bool fixed_position = 3;
 
     /*
-     * If this is set, the displayed compass will always point north. if unset, the old behaviour 
-     * (top of display is heading direction) is used.
-     */
-    bool north_top = 4;
-
-    /*
      * Should the GPS be disabled for this node?
      */
     bool gps_disabled = 5;
@@ -382,7 +376,12 @@ message Config {
      * Potentially useful for devices without user buttons.
      */
     uint32 auto_screen_carousel_secs = 3;
-
+    
+    /*
+     * If this is set, the displayed compass will always point north. if unset, the old behaviour 
+     * (top of display is heading direction) is used.
+     */
+    bool compass_north_top = 4;
   }
 
   /*
