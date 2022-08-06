@@ -178,7 +178,7 @@ message Config {
      * window.
      */
     uint32 gps_attempt_time = 7;
-
+ 
     /*
      * Bit field of boolean configuration options for POSITION messages
      * (bitwise OR of PositionFlags)
@@ -381,7 +381,12 @@ message Config {
      * Potentially useful for devices without user buttons.
      */
     uint32 auto_screen_carousel_secs = 3;
-
+    
+    /*
+     * If this is set, the displayed compass will always point north. if unset, the old behaviour 
+     * (top of display is heading direction) is used.
+     */
+    bool compass_north_top = 4;
   }
 
   /*
