@@ -290,32 +290,45 @@ message Config {
    */
   message WiFiConfig {
 
+    enum WiFiMode {
+
+      /*
+       * Disables WiFi (re-enables Bluetooth)
+       */
+      Off = 0;
+
+      /*
+       * This mode is used to connect to an external WiFi network
+       */
+      Client = 1;
+
+      /*
+       * In this mode the node will operate as an AP (and DHCP server)
+       */
+      AccessPoint = 2;
+
+      /*
+       * If set, the node AP will broadcast as a hidden SSID
+       */
+      AccessPointHidden = 3;
+    }
+
     /*
      * If set, this node will try to join the specified wifi network and
      * acquire an address via DHCP
      */
-    string ssid = 1;
+    WiFiMode mode = 1;
+
+    /*
+     * If set, this node will try to join the specified wifi network and
+     * acquire an address via DHCP
+     */
+    string ssid = 2;
 
     /*
      * If set, will be use to authenticate to the named wifi
      */
-    string psk = 2;
- 
-    /*
-     * If set, the node will operate as an AP (and DHCP server), otherwise it
-     * will be a station
-     */
-    bool ap_mode = 3;
-
-    /*
-     * If set, the node AP will broadcast as a hidden SSID
-     */
-    bool ap_hidden = 4;
-    
-    /*
-     * If set, wifi is enabled. Previously done through setting ssid and psk
-     */
-    bool enabled = 5;
+    string psk = 3;
   }
 
   /*
