@@ -295,7 +295,7 @@ message Config {
       /*
        * Disables WiFi (re-enables Bluetooth)
        */
-      Off = 0;
+      Disabled = 0;
 
       /*
        * This mode is used to connect to an external WiFi network
