@@ -310,7 +310,7 @@ message Config {
     /*
      * Enable WiFi (disables Bluetooth)
      */
-    boolean enabled = 1;
+    bool enabled = 1;
 
     /*
      * If set, this node will try to join the specified wifi network and
