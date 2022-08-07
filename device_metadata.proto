@@ -1,3 +1,11 @@
+syntax = "proto3";
+
+option java_package = "com.geeksville.mesh";
+option optimize_for = LITE_RUNTIME;
+option go_package = "github.com/meshtastic/gomeshproto";
+
+option java_outer_classname = "DeviceMetadataProtos";
+
 /*
  * Device metadata response 
  */
