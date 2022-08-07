@@ -8,7 +8,6 @@ import "channel.proto";
 import "config.proto";
 import "mesh.proto";
 import "module_config.proto";
-import "device_metadata.proto";
 
 option java_outer_classname = "AdminProtos";
 
