@@ -176,6 +176,11 @@ message AdminMessage {
     bool confirm_set_module_config = 17;
 
     /*
+     * Send all channels in the response to this message
+     */
+    bool get_all_channel_request = 18;
+
+    /*
      * Setting channels/radio config remotely carries the risk that you might send an invalid config and the radio never talks to your mesh again.
      * Therefore if setting either of these properties remotely, you must send a confirm_xxx message within 10 minutes.
      * If you fail to do so, the radio will assume loss of comms and revert your changes.
