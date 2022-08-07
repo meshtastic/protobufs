@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option java_package = "com.geeksville.mesh";
+option optimize_for = LITE_RUNTIME;
+option go_package = "github.com/meshtastic/gomeshproto";
+
+option java_outer_classname = "DeviceMetadataProtos";
+
+/*
+ * Device metadata response 
+ */
+message DeviceMetadata {
+  /*
+   * Device firmware version string
+   */
+  string firmware_version = 1;
+
+  /*
+   * Device state version
+   */
+  uint32 device_state_version = 2;
+}

@@ -268,5 +268,10 @@ message AdminMessage {
      * Tell the node to shutdown in this many seconds (or <0 to cancel shutdown)
      */
     int32 shutdown_seconds = 51;
+
+    /*
+     * Request the node to send device metadata (firmware, protobuf version, etc)
+     */
+    uint32 get_device_metadata_request = 52;
   }
 }
