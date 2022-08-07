@@ -8,6 +8,7 @@ import "channel.proto";
 import "config.proto";
 import "mesh.proto";
 import "module_config.proto";
+import "device_metadata.proto";
 
 option java_outer_classname = "AdminProtos";
 
@@ -263,5 +264,15 @@ message AdminMessage {
      * Tell the node to shutdown in this many seconds (or <0 to cancel shutdown)
      */
     int32 shutdown_seconds = 51;
+
+    /*
+     * Request the node to send device metadata (firmware, protobuf version, etc)
+     */
+    uint32 get_device_metadata_request = 52;
+
+    /*
+     * Device metadata response 
+     */
+    DeviceMetadata get_device_metadata_response = 53;
   }
 }

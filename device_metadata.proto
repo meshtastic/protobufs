@@ -1,0 +1,14 @@
+/*
+ * Device metadata response 
+ */
+ message DeviceMetadata {
+  /*
+   * Device firmware version string
+   */
+  string firmware_version = 0;
+
+  /*
+   * Device state version
+   */
+  uint32 device_state_version = 1;
+}
