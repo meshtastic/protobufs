@@ -6,7 +6,7 @@ option go_package = "github.com/meshtastic/gomeshproto";
 
 import "channel.proto";
 import "config.proto";
-import "device_metadat.proto";
+import "device_metadata.proto";
 import "mesh.proto";
 import "module_config.proto";
 
