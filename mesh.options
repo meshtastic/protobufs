@@ -45,3 +45,6 @@
 
 #This value may want to be a few bytes smaller to compensate for the parent fields.
 *Compressed.data max_size:237
+
+*Location.name         max_size:40
+*Location.description  max_size:160
