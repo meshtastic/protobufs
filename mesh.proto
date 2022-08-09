@@ -647,12 +647,12 @@ message Location {
   bool locked = 5;
 
   /*
-   * Name of the location - max 40 chars
+   * Name of the location - max 30 chars
    */
   string name = 6;
 
   /**
-   * Description of the location - max 160 chars
+   * Description of the location - max 100 chars
    */
   string description = 7;
 
