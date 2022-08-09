@@ -189,7 +189,7 @@ message Config {
 
   /*
    * Power Config\
-   * See [power management](docs/settings/config/power) for additional power config details.
+   * See [Power Config](/docs/settings/config/power) for additional power config details.
    */
   message PowerConfig {
 
