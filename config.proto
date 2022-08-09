@@ -189,7 +189,7 @@ message Config {
 
   /*
    * Power Config\
-   * See [power management](/docs/software/other/power) for additional power management state machine option details.
+   * See [Power Config](/docs/settings/config/power) for additional power config details.
    */
   message PowerConfig {
 
@@ -331,7 +331,7 @@ message Config {
   }
 
   /*
-   * TODO: REPLACE
+   * Display Config
    */
   message DisplayConfig {
     /*
