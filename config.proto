@@ -585,6 +585,42 @@ message Config {
 
   }
 
+  message BluetoothConfig {
+
+    enum PairingMode {
+      /*
+       * Device generates a random pin that will be shown on the screen of the device for pairing
+       */
+      RandomPin = 0;
+
+      /*
+       * Device requires a specified fixed pin for pairing
+       */
+      FixedPin = 1;
+
+      /*
+       * Device requires no pin for pairing
+       */
+      NoPin = 2;
+    }
+
+    /*
+     * Enable Bluetooth on the device
+     */
+    bool enabled = 1;
+
+    /*
+     * Determines the pairing strategy for the device
+     */
+    PairingMode mode = 2;
+
+    /*
+     * Specified pin for PairingMode.FixedPin
+     */
+    uint32 fixed_pin = 3;
+    
+  }
+
   /*
    * Payload Variant
    */
@@ -596,6 +632,7 @@ message Config {
     WiFiConfig wifi = 4;
     DisplayConfig display = 5;
     LoRaConfig lora = 6;
+    BluetoothConfig bluetooth = 7;
 
   }
 }
