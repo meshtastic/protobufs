@@ -1,10 +1,4 @@
 *AdminMessage.variant anonymous_oneof:true
 
-*AdminMessage.set_canned_message_module_part1 max_size:201
-*AdminMessage.set_canned_message_module_part2 max_size:201
-*AdminMessage.set_canned_message_module_part3 max_size:201
-*AdminMessage.set_canned_message_module_part4 max_size:201
-*AdminMessage.get_canned_message_module_part1_response max_size:201
-*AdminMessage.get_canned_message_module_part2_response max_size:201
-*AdminMessage.get_canned_message_module_part3_response max_size:201
-*AdminMessage.get_canned_message_module_part4_response max_size:201
+*AdminMessage.set_canned_message_module_messages_response max_size:201
+*AdminMessage.get_canned_message_module_messages_response max_size:201
