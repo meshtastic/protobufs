@@ -13,20 +13,5 @@ message CannedMessageModuleConfig {
   /*
    * Predefined messages for canned message module separated by '|' characters.
    */
-  string messagesPart1 = 11;
-
-  /*
-   * TODO: REPLACE
-   */
-  string messagesPart2 = 12;
-
-  /*
-   * TODO: REPLACE
-   */
-  string messagesPart3 = 13;
-
-  /*
-   * TODO: REPLACE
-   */
-  string messagesPart4 = 14;
+  string messagesPart = 1;
 }
