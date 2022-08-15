@@ -53,6 +53,11 @@ message AdminMessage {
      * TODO: REPLACE
      */
     LORA_CONFIG = 5;
+
+    /*
+     * TODO: REPLACE
+     */
+    BLUETOOTH_CONFIG = 6;
   }
 
   /*
