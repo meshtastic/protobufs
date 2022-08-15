@@ -13,5 +13,5 @@ message CannedMessageModuleConfig {
   /*
    * Predefined messages for canned message module separated by '|' characters.
    */
-  string messagesPart = 1;
+  string messages = 1;
 }
