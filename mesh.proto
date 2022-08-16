@@ -429,6 +429,7 @@ message User {
    * Also, "long_name" should be their licence number.
    */
   bool is_licensed = 7;
+}
 
 /*
  * A message used in our Dynamic Source Routing protocol (RFC 4728 based)
