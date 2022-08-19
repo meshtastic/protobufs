@@ -21,7 +21,7 @@ message ModuleConfig {
      * is_uplink_enabled or is_downlink_enabled.
      * But if this flag is set, all MQTT features will be disabled and no servers will be contacted.
     */
-    bool disabled = 1;
+    bool enabled = 1;
 
     /*
      * The server to use for our MQTT global message gateway feature.
