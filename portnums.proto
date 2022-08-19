@@ -83,6 +83,7 @@ enum PortNum {
 
   /*
    * Waypoint payloads.
+   * Payload is a [Waypoint](/docs/developers/protobufs/api#waypoint) message
    */
   WAYPOINT_APP = 8;
 

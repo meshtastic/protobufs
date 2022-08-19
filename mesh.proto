@@ -589,20 +589,15 @@ message Data {
    */
   fixed32 emoji = 8;
 
-  /*
-   * Location structure
-   */
-  Location location = 9;
-
 }
 
 /*
- * Location of a waypoint to associate with a message
+ * Waypoint message, used to share arbitrary locations across the mesh
  */
-message Location {
+message Waypoint {
 
   /*
-   * Id of the location
+   * Id of the waypoint
    */
   uint32 id = 1;
 
@@ -617,22 +612,22 @@ message Location {
   sfixed32 longitude_i = 3;
 
   /*
-   * Time the location is to expire (epoch)
+   * Time the waypoint is to expire (epoch)
    */
   uint32 expire = 4;
 
   /*
-   * If true, only allow the original sender to update the location.
+   * If true, only allow the original sender to update the waypoint.
    */
   bool locked = 5;
 
   /*
-   * Name of the location - max 30 chars
+   * Name of the waypoint - max 30 chars
    */
   string name = 6;
 
   /**
-   * Description of the location - max 100 chars
+   * Description of the waypoint - max 100 chars
    */
   string description = 7;
 
