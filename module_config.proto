@@ -49,6 +49,11 @@ message ModuleConfig {
      * Decrypted packets may be useful for external systems that want to consume meshtastic packets
      */
     bool encryption_enabled = 5;
+
+    /*
+     * Whether to send / consume json packets on MQTT
+     */
+    bool json_enabled = 6;
   }
 
   /*
