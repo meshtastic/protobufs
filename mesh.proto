@@ -54,27 +54,22 @@ message Position {
     /*
      * TODO: REPLACE
      */
-    LOCSRC_UNSPECIFIED = 0;
+    UNSET = 0;
 
     /*
      * TODO: REPLACE
      */
-    LOCSRC_MANUAL_ENTRY = 1;
+    MANUAL = 1;
 
     /*
      * TODO: REPLACE
      */
-    LOCSRC_GPS_INTERNAL = 2;
+    GPS_INTERNAL = 2;
 
     /*
      * TODO: REPLACE
      */
-    LOCSRC_GPS_EXTERNAL = 3;
-    /*
-     * More location sources can be added here when available:
-     *   GSM, radio beacons (BLE etc), location fingerprinting etc
-     * TODO: REMOVE/INTEGRATE
-     */
+    GPS_EXTERNAL = 3;
   }
 
   /*
@@ -91,27 +86,27 @@ message Position {
     /*
      * TODO: REPLACE
      */
-    ALTSRC_UNSPECIFIED = 0;
+    UNSET = 0;
 
     /*
      * TODO: REPLACE
      */
-    ALTSRC_MANUAL_ENTRY = 1;
+    MANUAL = 1;
 
     /*
      * TODO: REPLACE
      */
-    ALTSRC_GPS_INTERNAL = 2;
+    GPS_INTERNAL = 2;
 
     /*
      * TODO: REPLACE
      */
-    ALTSRC_GPS_EXTERNAL = 3;
+    GPS_EXTERNAL = 3;
 
     /*
      * TODO: REPLACE
      */
-    ALTSRC_BAROMETRIC = 4;
+    BAROMETRIC = 4;
   }
 
   /*
@@ -213,11 +208,6 @@ message Position {
    *   detect lost updates if needed
    */
   uint32 pos_seq_number = 41;
-
-  /*
-   * END precision positioning elements
-   * TODO: REMOVE/INTEGRATE
-   */
 }
 
 /*
@@ -246,7 +236,7 @@ enum HardwareModel {
   /*
    * TODO: REPLACE
    */
-  TLORA_V2_1_1p6 = 3;
+  TLORA_V2_1_1P6 = 3;
 
   /*
    * TODO: REPLACE
@@ -262,7 +252,7 @@ enum HardwareModel {
   /*
    * TODO: REPLACE
    */
-  TBEAM0p7 = 6;
+  TBEAM_V0P7 = 6;
 
   /*
    * TODO: REPLACE
@@ -272,7 +262,7 @@ enum HardwareModel {
   /*
    * TODO: REPLACE
    */
-  TLORA_V1_1p3 = 8;
+  TLORA_V1_1P3 = 8;
 
   /*
    * TODO: REPLACE
@@ -635,7 +625,7 @@ message Waypoint {
 
 /*
  * A packet envelope sent/received over the mesh
- * only payloadVariant is sent in the payload portion of the LORA packet.
+ * only payload_variant is sent in the payload portion of the LORA packet.
  * The other fields are either not sent at all, or sent in the special 16 byte LORA header.
  */
 message MeshPacket {
@@ -743,7 +733,7 @@ message MeshPacket {
    * Therefore channel_index is inherently a local concept and meaningless to send between nodes.
    * Very briefly, while sending and receiving deep inside the device Router code, this field instead
    * contains the 'channel hash' instead of the index.
-   * This 'trick' is only used while the payloadVariant is an 'encrypted'.
+   * This 'trick' is only used while the payload_variant is an 'encrypted'.
    */
   uint32 channel = 3;
 
@@ -756,7 +746,7 @@ message MeshPacket {
    * The numeric IDs for these fields were selected to keep backwards compatibility with old applications.
    */
 
-  oneof payloadVariant {
+  oneof payload_variant {
 
     /*
      * TODO: REPLACE
@@ -846,7 +836,7 @@ enum Constants {
    * First enum must be zero, and we are just using this enum to
    * pass int constants between two very different environments
    */
-  Unused = 0;
+  UNSET = 0;
 
   /*
    * From mesh.options
@@ -946,63 +936,63 @@ enum CriticalErrorCode {
   /*
    * TODO: REPLACE
    */
-  None = 0;
+  NONE = 0;
 
   /*
    * A software bug was detected while trying to send lora
    */
-  TxWatchdog = 1;
+  TX_WATCHDOG = 1;
 
   /*
    * A software bug was detected on entry to sleep
    */
-  SleepEnterWait = 2;
+  SLEEP_ENTER_WAIT = 2;
 
   /*
    * No Lora radio hardware could be found
    */
-  NoRadio = 3;
+  NO_RADIO = 3;
 
   /*
    * Not normally used
    */
-  Unspecified = 4;
+  UNSPECIFIED = 4;
 
   /*
    * We failed while configuring a UBlox GPS
    */
-  UBloxInitFailed = 5;
+  UBLOX_UNIT_FAILED = 5;
 
   /*
    * This board was expected to have a power management chip and it is missing or broken
    */
-  NoAXP192 = 6;
+  NO_AXP192 = 6;
 
   /*
    * The channel tried to set a radio setting which is not supported by this chipset,
    * radio comms settings are now undefined.
    */
-  InvalidRadioSetting = 7;
+  INVALID_RADIO_SETTING = 7;
 
   /*
    * Radio transmit hardware failure. We sent data to the radio chip, but it didn't
    * reply with an interrupt.
    */
-  TransmitFailed = 8;
+  TRANSMIT_FAILED = 8;
 
   /*
    * We detected that the main CPU voltage dropped below the minumum acceptable value
    */
-  Brownout = 9;
+  BROWNOUT = 9;
 
   /* Selftest of SX1262 radio chip failed */
-  SX1262Failure = 10;
+  SX1262_FAILURE = 10;
 
   /*
    * A (likely software but possibly hardware) failure was detected while trying to send packets.
    * If this occurs on your board, please post in the forum so that we can ask you to collect some information to allow fixing this bug
    */
-  RadioSpiBug = 11;
+  RADIO_SPI_BUG = 11;
 }
 
 /*
@@ -1198,7 +1188,7 @@ message FromRadio {
   /*
    * Log levels, chosen to match python logging conventions.
    */
-  oneof payloadVariant {
+  oneof payload_variant {
 
     /*
      * Log levels, chosen to match python logging conventions.
@@ -1287,7 +1277,7 @@ message ToRadio {
   /*
    * Log levels, chosen to match python logging conventions.
    */
-  oneof payloadVariant {
+  oneof payload_variant {
 
     /*
      * Send this packet on the mesh

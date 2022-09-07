@@ -104,7 +104,7 @@ message AdminMessage {
   /*
    * TODO: REPLACE
    */
-  oneof variant {
+  oneof payload_variant {
 
     /*
      * Set the owner for this node
