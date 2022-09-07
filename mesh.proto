@@ -38,13 +38,7 @@ message Position {
    * be sent by devices which has a hardware GPS clock.
    * seconds since 1970
    */
-  fixed32 time = 9;
-
-  /*
-   * Precision positioning elements - optional and usually not included
-   * ------------------------------------------------------------------
-   * TODO: REMOVE/INTEGRATE
-   */
+  fixed32 time = 4;
 
   /*
    * How the location was acquired: manual, onboard GPS, external (EUD) GPS
@@ -75,7 +69,7 @@ message Position {
   /*
    * TODO: REPLACE
    */
-  LocSource location_source = 10;
+  LocSource location_source = 5;
 
   /*
    * How the altitude was acquired: manual, GPS int/ext, etc
@@ -112,27 +106,27 @@ message Position {
   /*
    * TODO: REPLACE
    */
-  AltSource altitude_source = 11;
+  AltSource altitude_source = 6;
 
   /*
    * Positional timestamp (actual timestamp of GPS solution) in integer epoch seconds
    */
-  fixed32 pos_timestamp = 12;
+  fixed32 timestamp = 7;
 
   /*
    * Pos. timestamp milliseconds adjustment (rarely available or required)
    */
-  int32 pos_time_millis = 13;
+  int32 timestamp_millis_adjust = 8;
 
   /*
    * HAE altitude in meters - can be used instead of MSL altitude
    */
-  sint32 altitude_hae = 14;
+  sint32 altitude_hae = 9;
 
   /*
    * Geoidal separation in meters
    */
-  sint32 alt_geoid_sep = 15;
+  sint32 altitude_geoidal_seperation = 10;
 
   /*
    * Horizontal, Vertical and Position Dilution of Precision, in 1/100 units
@@ -141,24 +135,24 @@ message Position {
    *   in which case PDOP becomes redundant (PDOP=sqrt(HDOP^2 + VDOP^2))
    * TODO: REMOVE/INTEGRATE
    */
-  uint32 PDOP = 16;
+  uint32 PDOP = 11;
 
   /*
    * TODO: REPLACE
    */
-  uint32 HDOP = 17;
+  uint32 HDOP = 12;
 
   /*
    * TODO: REPLACE
    */
-  uint32 VDOP = 18;
+  uint32 VDOP = 13;
 
   /*
    * GPS accuracy (a hardware specific constant) in mm
    *   multiplied with DOP to calculate positional accuracy
    * Default: "'bout three meters-ish" :)
    */
-  uint32 gps_accuracy = 19;
+  uint32 gps_accuracy = 14;
 
   /*
    * Ground speed in m/s and True North TRACK in 1/100 degrees
@@ -168,32 +162,32 @@ message Position {
    * - "yaw" indicates a relative rotation about the vertical axis
    * TODO: REMOVE/INTEGRATE
    */
-  uint32 ground_speed = 20;
+  uint32 ground_speed = 15;
 
   /*
    * TODO: REPLACE
    */
-  uint32 ground_track = 21;
+  uint32 ground_track = 16;
 
   /*
    * GPS fix quality (from NMEA GxGGA statement or similar)
    */
-  uint32 fix_quality = 22;
+  uint32 fix_quality = 17;
 
   /*
    * GPS fix type 2D/3D (from NMEA GxGSA statement)
    */
-  uint32 fix_type = 23;
+  uint32 fix_type = 18;
 
   /*
    * GPS "Satellites in View" number
    */
-  uint32 sats_in_view = 24;
+  uint32 sats_in_view = 19;
 
   /*
    * Sensor ID - in case multiple positioning sensors are being used
    */
-  uint32 sensor_id = 25;
+  uint32 sensor_id = 20;
 
   /*
    * Estimated/expected time (in seconds) until next update:
@@ -201,13 +195,13 @@ message Position {
    * - if we update at dynamic intervals (based on relative movement etc),
    *   but "AT LEAST every Y seconds", use Y
    */
-  uint32 pos_next_update = 40;
+  uint32 next_update = 21;
 
   /*
    * A sequence number, incremented with each Position message to help
    *   detect lost updates if needed
    */
-  uint32 pos_seq_number = 41;
+  uint32 seq_number = 22;
 }
 
 /*
@@ -283,72 +277,72 @@ enum HardwareModel {
   /*
    * Less common/prototype boards listed here (needs one more byte over the air)
    */
-  LORA_RELAY_V1 = 32;
+  LORA_RELAY_V1 = 12;
 
   /*
    * TODO: REPLACE
    */
-  NRF52840DK = 33;
+  NRF52840DK = 13;
 
   /*
    * TODO: REPLACE
    */
-  PPR = 34;
+  PPR = 14;
 
   /*
    * TODO: REPLACE
    */
-  GENIEBLOCKS = 35;
+  GENIEBLOCKS = 15;
 
   /*
    * TODO: REPLACE
    */
-  NRF52_UNKNOWN = 36;
+  NRF52_UNKNOWN = 16;
 
   /*
    * TODO: REPLACE
    */
-  PORTDUINO = 37;
+  PORTDUINO = 17;
 
   /*
    * The simulator built into the android app
    */
-  ANDROID_SIM = 38;
+  ANDROID_SIM = 18;
 
   /*
    * Custom DIY device based on @NanoVHF schematics: https://github.com/NanoVHF/Meshtastic-DIY/tree/main/Schematics
    */
-  DIY_V1 = 39;
+  DIY_V1 = 19;
 
   /*
    * RAK WisBlock ESP32 core: https://docs.rakwireless.com/Product-Categories/WisBlock/RAK11200/Overview/
    */
-  RAK11200 = 40;
+  RAK11200 = 20;
 
   /*
    * B&Q Consulting Nano Edition G1: https://uniteng.com/wiki/doku.php?id=meshtastic:nano
    */
-  NANO_G1 = 41; 
+  NANO_G1 = 21; 
   
   /*
    * nRF52840 Dongle : https://www.nordicsemi.com/Products/Development-hardware/nrf52840-dongle/
    */
-  NRF52840_PCA10059 = 42;
+  NRF52840_PCA10059 = 22;
 
   /*
    * Custom Disaster Radio esp32 v3 device https://github.com/sudomesh/disaster-radio/tree/master/hardware/board_esp32_v3
    */
-  DR_DEV = 43;
+  DR_DEV = 23;
   
   /*
    * M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, Paper) https://m5stack.com/
    */
-  M5STACK = 44;
+  M5STACK = 24;
   
   /*
    * B&Q Consulting Station Edition G1: https://uniteng.com/wiki/doku.php?id=meshtastic:station
    */
-  STATION_G1 = 45; 
+  STATION_G1 = 25; 
 
   /*
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
@@ -411,14 +405,14 @@ message User {
    * Apps will still need the string here for older builds
    * (so OTA update can find the right image), but if the enum is available it will be used instead.
    */
-  HardwareModel hw_model = 6;
+  HardwareModel hw_model = 5;
 
   /*
    * In some regions Ham radio operators have different bandwidth limitations than others.
    * If this user is a licensed operator, set this flag.
    * Also, "long_name" should be their licence number.
    */
-  bool is_licensed = 7;
+  bool is_licensed = 6;
 }
 
 /*
@@ -429,7 +423,7 @@ message RouteDiscovery {
   /*
    * The list of nodenums this packet has visited so far
    */
-  repeated fixed32 route = 2;
+  repeated fixed32 route = 1;
 }
 
 /*
@@ -794,7 +788,7 @@ message MeshPacket {
    * For our usecase real world topologies probably have a max of about 3.
    * This field is normally placed into a few of bits in the header.
    */
-  uint32 hop_limit = 10;
+  uint32 hop_limit = 9;
 
   /*
    * This packet is being sent as a reliable message, we would prefer it to arrive at the destination.
@@ -807,23 +801,23 @@ message MeshPacket {
    * If after some time we don't hear anyone rebroadcast our packet, we will timeout and retransmit, using the regular resend logic.
    * Note: This flag is normally sent in a flag bit in the header when sent over the wire
    */
-  bool want_ack = 11;
+  bool want_ack = 10;
 
   /*
    * The priority of this message for sending.
    * See MeshPacket.Priority description for more details.
    */
-  Priority priority = 12;
+  Priority priority = 11;
 
   /*
    * rssi of received packet. Only sent to phone for dispay purposes.
    */
-  int32 rx_rssi = 13;
+  int32 rx_rssi = 12;
 
   /*
    * Describe if this message is delayed
    */
-  Delayed delayed = 15;
+  Delayed delayed = 13;
 
 }
 
@@ -1017,12 +1011,12 @@ message MyNodeInfo {
   /*
    * The maximum number of 'software' channels that can be set on this node.
    */
-  uint32 max_channels = 15;
+  uint32 max_channels = 3;
 
   /*
    * 0.0.5 etc...
    */
-  string firmware_version = 6;
+  string firmware_version = 4;
 
   /*
    * An error message we'd like to report back to the mothership through analytics.
@@ -1032,29 +1026,29 @@ message MyNodeInfo {
    * (i.e. it will only be reported once)
    * a numeric error code to go with error message, zero means no error
    */
-  CriticalErrorCode error_code = 7;
+  CriticalErrorCode error_code = 5;
 
   /*
    * A numeric error address (nonzero if available)
    */
-  uint32 error_address = 8;
+  uint32 error_address = 6;
 
   /*
    * The total number of errors this node has ever encountered
    * (well - since the last time we discarded preferences)
    */
-  uint32 error_count = 9;
+  uint32 error_count = 7;
 
   /*
    * The total number of reboots this node has ever encountered
    * (well - since the last time we discarded preferences)
    */
-  uint32 reboot_count = 10;
+  uint32 reboot_count = 8;
 
   /*
    * Calculated bitrate of the current channel (in Bytes Per Second)
    */
-  float bitrate = 11;
+  float bitrate = 9;
 
   /*
    * How long before we consider a message abandoned and we can clear our
@@ -1062,38 +1056,38 @@ message MyNodeInfo {
    * message delivery time, 5 minutes.
    * Formerly called FLOOD_EXPIRE_TIME in the device code
    */
-  uint32 message_timeout_msec = 13;
+  uint32 message_timeout_msec = 10;
 
   /*
    * The minimum app version that can talk to this device.
    * Phone/PC apps should compare this to their build number and if too low tell the user they must update their app
    */
-  uint32 min_app_version = 14;
+  uint32 min_app_version = 11;
 
   /*
    * 24 time windows of 1hr each with the airtime transmitted out of the device per hour.
    */
-  repeated uint32 air_period_tx = 16;
+  repeated uint32 air_period_tx = 12;
 
   /*
    * 24 time windows of 1hr each with the airtime of valid packets for your mesh.
    */
-  repeated uint32 air_period_rx = 17;
+  repeated uint32 air_period_rx = 13;
 
   /*
    * Is the device wifi capable?
    */
-  bool has_wifi = 18;
+  bool has_wifi = 14;
 
   /*
    * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
    */
-  float channel_utilization = 19;
+  float channel_utilization = 15;
   
   /*
    * Percent of airtime for transmission used within the last hour.
    */
-  float air_util_tx = 20;
+  float air_util_tx = 16;
 }
 
 /*
@@ -1175,11 +1169,6 @@ message LogRecord {
 message FromRadio {
 
   /*
-   * In the <1.2 versions packet had ID 2, to prevent confusing old apps with our new packets, we've changed
-   */
-  reserved 2;
-
-  /*
    * The packet id, used to allow the phone to request missing read packets from the FIFO,
    * see our bluetooth docs
    */
@@ -1193,7 +1182,7 @@ message FromRadio {
     /*
      * Log levels, chosen to match python logging conventions.
      */
-    MeshPacket packet = 11;
+    MeshPacket packet = 2;
 
     /*
      * Tells the phone what our node number is, can be -1 if we've not yet joined a mesh.
@@ -1210,12 +1199,12 @@ message FromRadio {
     /*
      * Include a part of the config (was: RadioConfig radio)
      */
-    Config config = 6;
+    Config config = 5;
 
     /*
      * Set to send debug console output over our protobuf stream
      */
-    LogRecord log_record = 7;
+    LogRecord log_record = 6;
 
     /*
      * Sent as true once the device has finished sending all of the responses to want_config
@@ -1223,7 +1212,7 @@ message FromRadio {
      * not, it means your config responses haven't started yet.
      * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
      */
-    uint32 config_complete_id = 8;
+    uint32 config_complete_id = 7;
 
     /*
      * Sent to tell clients the radio has just rebooted.
@@ -1231,13 +1220,13 @@ message FromRadio {
      * Not used on all transports, currently just used for the serial console.
      * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
      */
-    bool rebooted = 9;
+    bool rebooted = 8;
 
 
     /*
      * Include module config
      */
-    ModuleConfig moduleConfig = 10;
+    ModuleConfig moduleConfig = 9;
   }
 }
 
@@ -1269,12 +1258,6 @@ message ToRadio {
   }
 
   /*
-   * In the <1.2 versions packet had ID 2, to prevent confusing old apps with our new packets, we've changed.
-   * 101-103 were used for set_radio, set_owner, set_channel
-   */
-  reserved 1, 101, 102, 103;
-
-  /*
    * Log levels, chosen to match python logging conventions.
    */
   oneof payload_variant {
@@ -1282,13 +1265,13 @@ message ToRadio {
     /*
      * Send this packet on the mesh
      */
-    MeshPacket packet = 2;
+    MeshPacket packet = 1;
 
     /*
      * Information about the peer, sent after the phone sneds want_config_id.
      * Old clients do not send this, which is fine.
      */
-    PeerInfo peer_info = 3;
+    PeerInfo peer_info = 2;
 
     /*
      * Phone wants radio to send full node db to the phone, This is
@@ -1300,14 +1283,14 @@ message ToRadio {
      * config_complete_id response this allows clients to never be confused by
      * a stale old partially sent config.
      */
-    uint32 want_config_id = 100;
+    uint32 want_config_id = 3;
 
     /*
      * Tell API server we are disconnecting now.
      * This is useful for serial links where there is no hardware/protocol based notification that the client has dropped the link.
      * (Sending this message is optional for clients)
      */
-    bool disconnect = 104;
+    bool disconnect = 4;
   }
 }
 
