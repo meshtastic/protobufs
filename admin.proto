@@ -107,84 +107,109 @@ message AdminMessage {
   oneof payload_variant {
 
     /*
-     * Set the owner for this node
-     */
-    User set_owner = 2;
-
-    /*
-     * Set channels (using the new API).
-     * A special channel is the "primary channel".
-     * The other records are secondary channels.
-     * Note: only one channel can be marked as primary.
-     * If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically.
-     */
-    Channel set_channel = 3;
-
-    /*
      * Send the specified channel in the response to this message
      * NOTE: This field is sent with the channel index + 1 (to ensure we never try to send 'zero' - which protobufs treats as not present)
      */
-    uint32 get_channel_request = 6;
+    uint32 get_channel_request = 1;
 
     /*
-     * TODO: REPLACE
-     */
-    Channel get_channel_response = 7;
-
+      * TODO: REPLACE
+      */
+    Channel get_channel_response = 2;
+ 
     /*
-     * Send the current owner data in the response to this message.
-     */
-    bool get_owner_request = 8;
-
+      * Send the current owner data in the response to this message.
+      */
+    bool get_owner_request = 3;
+ 
     /*
-     * TODO: REPLACE
-     */
-    User get_owner_response = 9;
+      * TODO: REPLACE
+      */
+    User get_owner_response = 4;
+ 
+    /*
+      * Ask for the following config data to be sent
+      */
+    ConfigType get_config_request = 5;
+ 
+    /*
+      * Send the current Config in the response to this message.
+      */
+    Config get_config_response = 6;
 
     /*
      * Ask for the following config data to be sent
      */
-    ConfigType get_config_request = 10;
+    ModuleConfigType get_module_config_request = 7;
 
     /*
      * Send the current Config in the response to this message.
      */
-    Config get_config_response = 11;
-
-    /*
-     * Set the current Config
-     */
-    Config set_config = 12;
-
-    /*
-     * Sent immediatly after a config change has been sent to ensure comms, if this is not recieved, the config will be reverted after 10 mins
-     */
-    bool confirm_set_config = 13;
-    
-    /*
-     * Ask for the following config data to be sent
-     */
-    ModuleConfigType get_module_config_request = 14;
-
-    /*
-     * Send the current Config in the response to this message.
-     */
-    ModuleConfig get_module_config_response = 15;
- 
-    /*
-     * Set the current Config
-     */
-    ModuleConfig set_module_config = 16;
- 
-    /*
-     * Sent immediatly after a config change has been sent to ensure comms, if this is not recieved, the config will be reverted after 10 mins
-     */
-    bool confirm_set_module_config = 17;
+    ModuleConfig get_module_config_response = 8;
 
     /*
      * Send all channels in the response to this message
      */
-    bool get_all_channel_request = 18;
+    bool get_all_channel_request = 9;
+
+    /*
+     * Get the Canned Message Module messages in the response to this message.
+     */
+    bool get_canned_message_module_messages_request = 10;
+
+    /*
+     * Get the Canned Message Module messages in the response to this message.
+     */
+    string get_canned_message_module_messages_response = 11;
+
+    /*
+     * Request the node to send device metadata (firmware, protobuf version, etc)
+     */
+    uint32 get_device_metadata_request = 12;
+
+    /*
+      * Device metadata response
+      */
+    DeviceMetadata get_device_metadata_response = 13;
+
+    /*
+     * Set the owner for this node
+     */
+    User set_owner = 32;
+
+    /*
+      * Set channels (using the new API).
+      * A special channel is the "primary channel".
+      * The other records are secondary channels.
+      * Note: only one channel can be marked as primary.
+      * If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically.
+      */
+    Channel set_channel = 33;
+
+    /*
+     * Set the current Config
+     */
+    Config set_config = 34;
+
+    /*
+     * Set the current Config
+     */
+    ModuleConfig set_module_config = 35;
+
+    /*
+     * Set the Canned Message Module messages text.
+     */
+    string set_canned_message_module_messages = 36;
+    
+    /*
+     * Sent immediatly after a config change has been sent to ensure comms, if this is not recieved, the config will be reverted after 10 mins
+     */
+    bool confirm_set_config = 64;
+ 
+    /*
+     * Sent immediatly after a config change has been sent to ensure comms, if this is not recieved, the config will be reverted after 10 mins
+     */
+    bool confirm_set_module_config = 65;
 
     /*
      * Setting channels/radio config remotely carries the risk that you might send an invalid config and the radio never talks to your mesh again.
@@ -192,52 +217,32 @@ message AdminMessage {
      * If you fail to do so, the radio will assume loss of comms and revert your changes.
      * These messages are optional when changing the local node.
      */
-    bool confirm_set_channel = 32;
+    bool confirm_set_channel = 66;
 
     /*
      * TODO: REPLACE
      */
-    bool confirm_set_radio = 33;
+    bool confirm_set_radio = 67;
 
     /*
      * This message is only supported for the simulator porduino build.
      * If received the simulator will exit successfully.
      */
-    bool exit_simulator = 34;
+    bool exit_simulator = 96;
 
     /*
      * Tell the node to reboot in this many seconds (or <0 to cancel reboot)
      */
-    int32 reboot_seconds = 35;
-
-    /*
-     * Get the Canned Message Module messages in the response to this message.
-     */
-    bool get_canned_message_module_messages_request = 36;
-
-    /*
-     * Get the Canned Message Module messages in the response to this message.
-     */
-    string get_canned_message_module_messages_response = 37;
-
-    /*
-     * Set the Canned Message Module messages text.
-     */
-    string set_canned_message_module_messages = 44;
+    int32 reboot_seconds = 97;
 
     /*
      * Tell the node to shutdown in this many seconds (or <0 to cancel shutdown)
      */
-    int32 shutdown_seconds = 51;
+    int32 shutdown_seconds = 98;
 
     /*
-     * Request the node to send device metadata (firmware, protobuf version, etc)
+     * Tell the node to factory reset, all device settings will be returned to factory defaults.
      */
-    uint32 get_device_metadata_request = 52;
-
-    /*
-     * Device metadata response
-     */
-    DeviceMetadata get_device_metadata_response = 53;
+    int32 factory_reset = 99;
   }
 }

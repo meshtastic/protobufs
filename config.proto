@@ -52,20 +52,10 @@ message Config {
     bool serial_disabled = 2;
 
     /*
-     * This setting is never saved to disk, but if set, all device settings will be returned to factory defaults.
-     */
-    bool factory_reset = 3;
-
-    /*
      * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
      * Set this to true to leave the debug log outputting even when API is active.
      */
-    bool debug_log_enabled = 4;
-
-    /*
-     * NTP server to use if WiFi is conneced, defaults to `0.pool.ntp.org`
-     */
-    string ntp_server = 5;
+    bool debug_log_enabled = 3;
 
   }
 
@@ -162,14 +152,14 @@ message Config {
     /*
      * Should the GPS be disabled for this node?
      */
-    bool gps_disabled = 5;
+    bool gps_disabled = 4;
 
     /*
      * How often should we try to get GPS position (in seconds)
      * or zero for the default of once every 30 seconds
      * or a very large value (maxint) to update only once at boot.
      */
-    uint32 gps_update_interval = 6;
+    uint32 gps_update_interval = 5;
  
     /*
      * How long should we try to get our position during each gps_update_interval attempt?  (in seconds)
@@ -177,13 +167,13 @@ message Config {
      * If we don't get a new gps fix in that time, the gps will be put into sleep until  the next gps_update_rate
      * window.
      */
-    uint32 gps_attempt_time = 7;
+    uint32 gps_attempt_time = 6;
  
     /*
      * Bit field of boolean configuration options for POSITION messages
      * (bitwise OR of PositionFlags)
      */
-    uint32 position_flags = 10;
+    uint32 position_flags = 7;
 
   }
 
@@ -199,12 +189,12 @@ message Config {
      * YOU DO NOT NEED TO SET THIS IF YOU'VE set is_router (it is implied in that case).
      * Advanced Option
      */
-    bool is_power_saving = 2;
+    bool is_power_saving = 1;
 
     /*
      * If non-zero, the device will fully power off this many seconds after external power is removed.
      */
-    uint32 on_battery_shutdown_after_secs = 4;
+    uint32 on_battery_shutdown_after_secs = 2;
 
     /*
      * Ratio of voltage divider for battery pin eg. 3.20 (R1=100k, R2=220k)
@@ -212,14 +202,14 @@ message Config {
      * Should be set to floating point value between 2 and 4
      * Fixes issues on Heltec v2
      */
-    float adc_multiplier_override = 6;
+    float adc_multiplier_override = 3;
 
     /*
      * Wait Bluetooth Seconds
      * The number of seconds for to wait before turning off BLE in No Bluetooth states
      * 0 for default of 1 minute
      */
-    uint32 wait_bluetooth_secs = 7;
+    uint32 wait_bluetooth_secs = 4;
 
     /*
      * Mesh Super Deep Sleep Timeout Seconds
@@ -227,7 +217,7 @@ message Config {
      * for sds_secs (default 1 year) or a button press
      * 0 for default of two hours, MAXUINT for disabled
      */
-    uint32 mesh_sds_timeout_secs = 9;
+    uint32 mesh_sds_timeout_secs = 5;
  
     /*
      * Super Deep Sleep Seconds
@@ -235,7 +225,7 @@ message Config {
      * for this value (default 1 year) or a button press
      * 0 for default of one year
      */
-    uint32 sds_secs = 10;
+    uint32 sds_secs = 6;
  
     /*
      * Light Sleep Seconds
@@ -243,14 +233,14 @@ message Config {
      * ESP32 Only
      * 0 for default of 300
      */
-    uint32 ls_secs = 11;
+    uint32 ls_secs = 7;
  
     /*
      * Minimum Wake Seconds
      * While in light sleep when we receive packets on the LoRa radio we will wake and handle them and stay awake in no BLE mode for this value
      * 0 for default of 10 seconds
      */
-    uint32 min_wake_secs = 12;
+    uint32 min_wake_secs = 8;
 
   }
 
@@ -297,6 +287,11 @@ message Config {
      * If set, will be use to authenticate to the named wifi
      */
     string wifi_psk = 4;
+
+    /*
+     * NTP server to use if WiFi is conneced, defaults to `0.pool.ntp.org`
+     */
+    string ntp_server = 5;
   }
 
   /*
@@ -598,7 +593,7 @@ message Config {
     DeviceConfig device = 1;
     PositionConfig position = 2;
     PowerConfig power = 3;
-    WiFiConfig wifi = 4;
+    NetworkConfig network = 4;
     DisplayConfig display = 5;
     LoRaConfig lora = 6;
     BluetoothConfig bluetooth = 7;

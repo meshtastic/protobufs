@@ -50,7 +50,7 @@ message ChannelSettings {
    *   return hash;
    * }
    */
-  uint32 channel_num = 9;
+  uint32 channel_num = 1;
 
   /*
    * A simple pre-shared key for now for crypto.
@@ -64,7 +64,7 @@ message ChannelSettings {
    * `2` through 10 = The default channel key, except with 1 through 9 added to the last byte.
    * Shown to user as simple1 through 10
    */
-  bytes psk = 4;
+  bytes psk = 2;
 
   /*
    * A SHORT name that will be packed into the URL.
@@ -76,7 +76,7 @@ message ChannelSettings {
    * For channel_num hashing empty string will be treated as "X".
    * Where "X" is selected based on the English words listed above for ModemPreset
    */
-  string name = 5;
+  string name = 3;
 
   /*
    * Used to construct a globally unique channel ID.
@@ -91,17 +91,17 @@ message ChannelSettings {
    * a table of well known IDs.
    * (see Well Known Channels FIXME)
    */
-  fixed32 id = 10;
+  fixed32 id = 4;
 
   /*
    * If true, messages on the mesh will be sent to the *public* internet by any gateway ndoe
    */
-  bool uplink_enabled = 16;
+  bool uplink_enabled = 5;
 
   /*
    * If true, messages seen on the internet will be forwarded to the local mesh.
    */
-  bool downlink_enabled = 17;
+  bool downlink_enabled = 6;
 }
 
 /*
