@@ -291,6 +291,11 @@ enum HardwareModel {
   HELTEC_V1 = 11;
   
   /*
+   * New T-BEAM with ESP32-S3 CPU
+   */
+  LILYGO_TBEAM_S3_CORE = 12;
+  
+  /*
    * Less common/prototype boards listed here (needs one more byte over the air)
    */
   LORA_RELAY_V1 = 32;
