@@ -42,7 +42,7 @@ message AdminMessage {
     /*
      * TODO: REPLACE
      */
-    WIFI_CONFIG = 3;
+    NETWORK_CONFIG = 3;
 
     /*
      * TODO: REPLACE
