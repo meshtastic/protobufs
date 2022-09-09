@@ -99,7 +99,7 @@ enum TelemetrySensorType {
   /*
   * No external telemetry sensor explicitly set
   */
-  UNSET = 0;
+  SENSOR_UNSET = 0;
 
   /*
   * High accuracy temperature, pressure, humidity

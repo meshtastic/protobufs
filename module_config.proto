@@ -65,7 +65,7 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     enum Serial_Baud {
-      DEFAULT = 0;
+      BAUD_DEFAULT = 0;
       BAUD_110 = 1;
       BAUD_300 = 2;
       BAUD_600 = 3;
