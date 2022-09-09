@@ -48,22 +48,22 @@ message Position {
     /*
      * TODO: REPLACE
      */
-    UNSET = 0;
+    LOC_UNSET = 0;
 
     /*
      * TODO: REPLACE
      */
-    MANUAL = 1;
+    LOC_MANUAL = 1;
 
     /*
      * TODO: REPLACE
      */
-    GPS_INTERNAL = 2;
+    LOC_INTERNAL = 2;
 
     /*
      * TODO: REPLACE
      */
-    GPS_EXTERNAL = 3;
+    LOC_EXTERNAL = 3;
   }
 
   /*
@@ -80,27 +80,27 @@ message Position {
     /*
      * TODO: REPLACE
      */
-    UNSET = 0;
+    ALT_UNSET = 0;
 
     /*
      * TODO: REPLACE
      */
-    MANUAL = 1;
+    ALT_MANUAL = 1;
 
     /*
      * TODO: REPLACE
      */
-    GPS_INTERNAL = 2;
+    ALT_INTERNAL = 2;
 
     /*
      * TODO: REPLACE
      */
-    GPS_EXTERNAL = 3;
+    ALT_EXTERNAL = 3;
 
     /*
      * TODO: REPLACE
      */
-    BAROMETRIC = 4;
+    ALT_BAROMETRIC = 4;
   }
 
   /*
@@ -278,77 +278,77 @@ enum HardwareModel {
    * New T-BEAM with ESP32-S3 CPU
    */
   LILYGO_TBEAM_S3_CORE = 12;
-  
-  /*
-   * Less common/prototype boards listed here (needs one more byte over the air)
-   */
-  LORA_RELAY_V1 = 12;
-
-  /*
-   * TODO: REPLACE
-   */
-  NRF52840DK = 13;
-
-  /*
-   * TODO: REPLACE
-   */
-  PPR = 14;
-
-  /*
-   * TODO: REPLACE
-   */
-  GENIEBLOCKS = 15;
-
-  /*
-   * TODO: REPLACE
-   */
-  NRF52_UNKNOWN = 16;
-
-  /*
-   * TODO: REPLACE
-   */
-  PORTDUINO = 17;
-
-  /*
-   * The simulator built into the android app
-   */
-  ANDROID_SIM = 18;
-
-  /*
-   * Custom DIY device based on @NanoVHF schematics: https://github.com/NanoVHF/Meshtastic-DIY/tree/main/Schematics
-   */
-  DIY_V1 = 19;
 
   /*
    * RAK WisBlock ESP32 core: https://docs.rakwireless.com/Product-Categories/WisBlock/RAK11200/Overview/
    */
-  RAK11200 = 20;
+  RAK11200 = 13;
 
   /*
    * B&Q Consulting Nano Edition G1: https://uniteng.com/wiki/doku.php?id=meshtastic:nano
    */
-  NANO_G1 = 21; 
-  
-  /*
-   * nRF52840 Dongle : https://www.nordicsemi.com/Products/Development-hardware/nrf52840-dongle/
-   */
-  NRF52840_PCA10059 = 22;
+  NANO_G1 = 14; 
 
-  /*
-   * Custom Disaster Radio esp32 v3 device https://github.com/sudomesh/disaster-radio/tree/master/hardware/board_esp32_v3
-   */
-  DR_DEV = 23;
-  
-  /*
-   * M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, Paper) https://m5stack.com/
-   */
-  M5STACK = 24;
-  
   /*
    * B&Q Consulting Station Edition G1: https://uniteng.com/wiki/doku.php?id=meshtastic:station
    */
   STATION_G1 = 25; 
+  
+  /*
+   * Less common/prototype boards listed here (needs one more byte over the air)
+   */
+  LORA_RELAY_V1 = 32;
 
+  /*
+   * TODO: REPLACE
+   */
+  NRF52840DK = 33;
+
+  /*
+   * TODO: REPLACE
+   */
+  PPR = 34;
+
+  /*
+   * TODO: REPLACE
+   */
+  GENIEBLOCKS = 35;
+
+  /*
+   * TODO: REPLACE
+   */
+  NRF52_UNKNOWN = 36;
+
+  /*
+   * TODO: REPLACE
+   */
+  PORTDUINO = 37;
+
+  /*
+   * The simulator built into the android app
+   */
+  ANDROID_SIM = 38;
+
+  /*
+   * Custom DIY device based on @NanoVHF schematics: https://github.com/NanoVHF/Meshtastic-DIY/tree/main/Schematics
+   */
+  DIY_V1 = 39;
+
+  /*
+   * nRF52840 Dongle : https://www.nordicsemi.com/Products/Development-hardware/nrf52840-dongle/
+   */
+  NRF52840_PCA10059 = 40;
+
+  /*
+   * Custom Disaster Radio esp32 v3 device https://github.com/sudomesh/disaster-radio/tree/master/hardware/board_esp32_v3
+   */
+  DR_DEV = 41;
+  
+  /*
+   * M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, Paper) https://m5stack.com/
+   */
+  M5STACK = 42;
+  
   /*
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    */
@@ -835,7 +835,7 @@ enum Constants {
    * First enum must be zero, and we are just using this enum to
    * pass int constants between two very different environments
    */
-  UNSET = 0;
+  ZERO = 0;
 
   /*
    * From mesh.options
