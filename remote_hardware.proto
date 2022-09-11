@@ -59,7 +59,7 @@ message HardwareMessage {
   /*
    * What type of HardwareMessage is this?
    */
-  Type typ = 1;
+  Type type = 1;
 
   /*
    * What gpios are we changing. Not used for all MessageTypes, see MessageType for details

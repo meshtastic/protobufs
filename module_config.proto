@@ -18,7 +18,6 @@ message ModuleConfig {
     /*
      * If a meshtastic node is able to reach the internet it will normally attempt to gateway any channels that are marked as
      * is_uplink_enabled or is_downlink_enabled.
-     * But if this flag is set, all MQTT features will be disabled and no servers will be contacted.
     */
     bool enabled = 1;
 
@@ -49,6 +48,11 @@ message ModuleConfig {
      * Decrypted packets may be useful for external systems that want to consume meshtastic packets
      */
     bool encryption_enabled = 5;
+
+    /*
+     * Whether to send / consume json packets on MQTT
+     */
+    bool json_enabled = 6;
   }
 
   /*
@@ -60,7 +64,7 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     enum Serial_Baud {
-      BAUD_Default = 0;
+      BAUD_DEFAULT = 0;
       BAUD_110 = 1;
       BAUD_300 = 2;
       BAUD_600 = 3;
@@ -82,9 +86,9 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     enum Serial_Mode {
-      MODE_Default = 0;
-      MODE_SIMPLE = 1;
-      MODE_PROTO = 2;
+      DEFAULT = 0;
+      SIMPLE = 1;
+      PROTO = 2;
     };
 
     /*
@@ -249,7 +253,7 @@ message ModuleConfig {
      * We'll always read the sensor in Celsius, but sometimes we might want to
      * display the results in Fahrenheit as a "user preference".
      */
-    bool environment_display_fahrenheit = 7;
+    bool environment_display_fahrenheit = 5;
   }
 
   /*
@@ -265,42 +269,42 @@ message ModuleConfig {
       /*
        * TODO: REPLACE
        */
-      KEY_NONE  = 0;
+      NONE  = 0;
     
       /*
        * TODO: REPLACE
        */
-      KEY_UP    = 17;
+      UP    = 17;
     
       /*
        * TODO: REPLACE
        */
-      KEY_DOWN  = 18;
+      DOWN  = 18;
     
       /*
        * TODO: REPLACE
        */
-      KEY_LEFT  = 19;
+      LEFT  = 19;
     
       /*
        * TODO: REPLACE
        */
-      KEY_RIGHT =  20;
+      RIGHT =  20;
     
       /*
        * '\n'
        */
-      KEY_SELECT = 10;
+      SELECT = 10;
     
       /*
        * TODO: REPLACE
        */
-      KEY_BACK  = 27;
+      BACK  = 27;
     
       /*
        * TODO: REPLACE
        */
-      KEY_CANCEL = 24;
+      CANCEL = 24;
     }
 
     /*
@@ -364,7 +368,7 @@ message ModuleConfig {
   /*
    * TODO: REPLACE
    */
-  oneof payloadVariant {
+  oneof payload_variant {
 
     /*
      * TODO: REPLACE

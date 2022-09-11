@@ -18,26 +18,26 @@ message Config {
       /*
        * Client device role
        */
-      Client = 0;
+      CLIENT = 0;
     
       /*
        * Client Mute device role
        *   Same as a client except packets will not hop over this node, does not contribute to routing packets for mesh.
        */
-      ClientMute = 1;
+      CLIENT_MUTE = 1;
     
       /*
        * Router device role.
        *   Mesh packets will prefer to be routed over this node. This node will not be used by client apps. 
        *   The wifi/ble radios and the oled screen will be put to sleep.
        */
-      Router = 2;
+      ROUTER = 2;
     
       /*
        * Router Client device role
        *   Mesh packets will prefer to be routed over this node. The Router Client can be used as both a Router and an app connected Client.
        */
-      RouterClient = 3;
+      ROUTER_CLIENT = 3;
     
     }
 
@@ -47,25 +47,15 @@ message Config {
     Role role = 1;
 
     /*
-     * If set, this will disable the SerialConsole by not initilizing the StreamAPI
+     * Disabling this will disable the SerialConsole by not initilizing the StreamAPI
      */
-    bool serial_disabled = 2;
-
-    /*
-     * This setting is never saved to disk, but if set, all device settings will be returned to factory defaults.
-     */
-    bool factory_reset = 3;
+    bool serial_enabled = 2;
 
     /*
      * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
      * Set this to true to leave the debug log outputting even when API is active.
      */
-    bool debug_log_enabled = 4;
-
-    /*
-     * NTP server to use if WiFi is conneced, defaults to `0.pool.ntp.org`
-     */
-    string ntp_server = 5;
+    bool debug_log_enabled = 3;
 
   }
 
@@ -84,61 +74,61 @@ message Config {
       /*
        * Required for compilation
        */
-      POS_UNDEFINED = 0x0000;
+      UNSET = 0x0000;
     
       /*
        * Include an altitude value (if available)
        */
-      POS_ALTITUDE  = 0x0001;
+      ALTITUDE  = 0x0001;
     
       /*
        * Altitude value is MSL
        */
-      POS_ALT_MSL   = 0x0002;
+      ALTITUDE_MSL   = 0x0002;
     
       /*
        * Include geoidal separation
        */
-      POS_GEO_SEP   = 0x0004;
+      GEOIDAL_SEPERATION   = 0x0004;
     
       /*
        * Include the DOP value ; PDOP used by default, see below
        */
-      POS_DOP       = 0x0008;
+      DOP       = 0x0008;
     
       /*
        * If POS_DOP set, send separate HDOP / VDOP values instead of PDOP
        */
-      POS_HVDOP     = 0x0010;
+      HVDOP     = 0x0010;
     
       /*
        * Include number of "satellites in view"
        */
-      POS_SATINVIEW = 0x0020;
+      SATINVIEW = 0x0020;
     
       /*
        * Include a sequence number incremented per packet
        */
-      POS_SEQ_NOS   = 0x0040;
+      SEQ_NO   = 0x0040;
     
       /*
        * Include positional timestamp (from GPS solution)
        */
-      POS_TIMESTAMP = 0x0080;
+      TIMESTAMP = 0x0080;
       
       /*
        * Include positional heading
        * Intended for use with vehicle not walking speeds
        * walking speeds are likely to be error prone like the compass
        */
-      POS_HEADING   = 0x0100;
+      HEADING   = 0x0100;
       
       /*
        * Include positional speed
        * Intended for use with vehicle not walking speeds
        * walking speeds are likely to be error prone like the compass
        */
-      POS_SPEED     = 0x0200;
+      SPEED     = 0x0200;
     }
 
     /*
@@ -148,9 +138,9 @@ message Config {
     uint32 position_broadcast_secs = 1;
 
     /*
-     * Disable adaptive position braoadcast, which is now the default.
+     * Adaptive position braoadcast, which is now the default.
      */
-    bool position_broadcast_smart_disabled = 2;
+    bool position_broadcast_smart_enabled = 2;
 
     /*
      * If set, this node is at a fixed position.
@@ -160,16 +150,16 @@ message Config {
     bool fixed_position = 3;
 
     /*
-     * Should the GPS be disabled for this node?
+     * Is GPS enabled for this node?
      */
-    bool gps_disabled = 5;
+    bool gps_enabled = 4;
 
     /*
      * How often should we try to get GPS position (in seconds)
      * or zero for the default of once every 30 seconds
      * or a very large value (maxint) to update only once at boot.
      */
-    uint32 gps_update_interval = 6;
+    uint32 gps_update_interval = 5;
  
     /*
      * How long should we try to get our position during each gps_update_interval attempt?  (in seconds)
@@ -177,13 +167,13 @@ message Config {
      * If we don't get a new gps fix in that time, the gps will be put into sleep until  the next gps_update_rate
      * window.
      */
-    uint32 gps_attempt_time = 7;
+    uint32 gps_attempt_time = 6;
  
     /*
      * Bit field of boolean configuration options for POSITION messages
      * (bitwise OR of PositionFlags)
      */
-    uint32 position_flags = 10;
+    uint32 position_flags = 7;
 
   }
 
@@ -194,48 +184,17 @@ message Config {
   message PowerConfig {
 
     /*
-     * Sets the charge control current of devices with a battery charger that can be configured
-     * **TBEAM 1.1 Only**
-     */
-    enum ChargeCurrent {
-    
-      MAUnset = 0;
-      MA100 = 1;
-      MA190 = 2;
-      MA280 = 3;
-      MA360 = 4;
-      MA450 = 5;
-      MA550 = 6;
-      MA630 = 7;
-      MA700 = 8;
-      MA780 = 9;
-      MA880 = 10;
-      MA960 = 11;
-      MA1000 = 12;
-      MA1080 = 13;
-      MA1160 = 14;
-      MA1240 = 15;
-      MA1320 = 16;
-    }
-
-    /*
-     * Sets the current of the battery charger
-     * TBEAM 1.1 Only
-     */
-    ChargeCurrent charge_current = 1;
-
-    /*
      * If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in
      * we should try to minimize power consumption as much as possible.
      * YOU DO NOT NEED TO SET THIS IF YOU'VE set is_router (it is implied in that case).
      * Advanced Option
      */
-    bool is_power_saving = 2;
+    bool is_power_saving = 1;
 
     /*
      * If non-zero, the device will fully power off this many seconds after external power is removed.
      */
-    uint32 on_battery_shutdown_after_secs = 4;
+    uint32 on_battery_shutdown_after_secs = 2;
 
     /*
      * Ratio of voltage divider for battery pin eg. 3.20 (R1=100k, R2=220k)
@@ -243,14 +202,14 @@ message Config {
      * Should be set to floating point value between 2 and 4
      * Fixes issues on Heltec v2
      */
-    float adc_multiplier_override = 6;
+    float adc_multiplier_override = 3;
 
     /*
      * Wait Bluetooth Seconds
      * The number of seconds for to wait before turning off BLE in No Bluetooth states
      * 0 for default of 1 minute
      */
-    uint32 wait_bluetooth_secs = 7;
+    uint32 wait_bluetooth_secs = 4;
 
     /*
      * Mesh Super Deep Sleep Timeout Seconds
@@ -258,7 +217,7 @@ message Config {
      * for sds_secs (default 1 year) or a button press
      * 0 for default of two hours, MAXUINT for disabled
      */
-    uint32 mesh_sds_timeout_secs = 9;
+    uint32 mesh_sds_timeout_secs = 5;
  
     /*
      * Super Deep Sleep Seconds
@@ -266,7 +225,7 @@ message Config {
      * for this value (default 1 year) or a button press
      * 0 for default of one year
      */
-    uint32 sds_secs = 10;
+    uint32 sds_secs = 6;
  
     /*
      * Light Sleep Seconds
@@ -274,60 +233,65 @@ message Config {
      * ESP32 Only
      * 0 for default of 300
      */
-    uint32 ls_secs = 11;
+    uint32 ls_secs = 7;
  
     /*
      * Minimum Wake Seconds
      * While in light sleep when we receive packets on the LoRa radio we will wake and handle them and stay awake in no BLE mode for this value
      * 0 for default of 10 seconds
      */
-    uint32 min_wake_secs = 12;
+    uint32 min_wake_secs = 8;
 
   }
 
   /*
-   * WiFi Config
+   * Network Config
    */
-  message WiFiConfig {
+  message NetworkConfig {
 
     enum WiFiMode {
       /*
        * This mode is used to connect to an external WiFi network
        */
-      Client = 0;
+      CLIENT = 0;
 
       /*
        * In this mode the node will operate as an AP (and DHCP server)
        */
-      AccessPoint = 1;
+      ACCESS_POINT = 1;
 
       /*
        * If set, the node AP will broadcast as a hidden SSID
        */
-      AccessPointHidden = 2;
+      ACCESS_POINT_HIDDEN = 2;
     }
 
     /*
      * Enable WiFi (disables Bluetooth)
      */
-    bool enabled = 1;
+    bool wifi_enabled = 1;
 
     /*
      * If set, this node will try to join the specified wifi network and
      * acquire an address via DHCP
      */
-    WiFiMode mode = 2;
+    WiFiMode wifi_mode = 2;
 
     /*
      * If set, this node will try to join the specified wifi network and
      * acquire an address via DHCP
      */
-    string ssid = 3;
+    string wifi_ssid = 3;
 
     /*
      * If set, will be use to authenticate to the named wifi
      */
-    string psk = 4;
+    string wifi_psk = 4;
+
+    /*
+     * NTP server to use if WiFi is conneced, defaults to `0.pool.ntp.org`
+     */
+    string ntp_server = 5;
   }
 
   /*
@@ -343,38 +307,54 @@ message Config {
        * GPS coordinates are displayed in the normal decimal degrees format:
        * DD.DDDDDD DDD.DDDDDD
        */
-      GpsFormatDec = 0;
+      DEC = 0;
 
       /*
        * GPS coordinates are displayed in the degrees minutes seconds format:
        * DD°MM'SS"C DDD°MM'SS"C, where C is the compass point representing the locations quadrant
        */
-      GpsFormatDMS = 1;
+      DMS = 1;
 
       /*
        * Universal Transverse Mercator format:
        * ZZB EEEEEE NNNNNNN, where Z is zone, B is band, E is easting, N is northing
        */
-      GpsFormatUTM = 2;
+      UTM = 2;
 
       /*
        * Military Grid Reference System format:
        * ZZB CD EEEEE NNNNN, where Z is zone, B is band, C is the east 100k square, D is the north 100k square,
        * E is easting, N is northing
        */
-      GpsFormatMGRS = 3;
+      MGRS = 3;
 
       /*
        * Open Location Code (aka Plus Codes).
        */
-      GpsFormatOLC = 4;
+      OLC = 4;
 
       /*
        * Ordnance Survey Grid Reference (the National Grid System of the UK).
        * Format: AB EEEEE NNNNN, where A is the east 100k square, B is the north 100k square,
        * E is the easting, N is the northing
        */
-      GpsFormatOSGR = 5;
+      OSGR = 5;
+    }
+
+    /*
+     * Unit display preference
+     */
+    enum DisplayUnits {
+
+      /*
+       * Metric (Default)
+       */
+      METRIC = 0;
+
+      /*
+       * Imperial
+       */
+      IMPERIAL = 1;
     }
 
     /*
@@ -399,6 +379,16 @@ message Config {
      * (top of display is heading direction) is used.
      */
     bool compass_north_top = 4;
+
+    /*
+     * Flip screen vertically, for cases that mount the screen upside down
+     */
+    bool flip_screen = 5;
+
+    /*
+     * Perferred display units
+     */
+    DisplayUnits units = 6;
   }
 
   /*
@@ -411,7 +401,7 @@ message Config {
       /*
        * Region is not set
        */
-      Unset = 0;
+      UNSET = 0;
 
       /*
        * United States
@@ -421,12 +411,12 @@ message Config {
       /*
        * European Union 433mhz
        */
-      EU433 = 2;
+      EU_433 = 2;
 
       /*
        * European Union 433mhz
        */
-      EU868 = 3;
+      EU_868 = 3;
 
       /*
        * China
@@ -466,7 +456,7 @@ message Config {
       /*
        * New Zealand 865mhz
        */
-      NZ865 = 11;
+      NZ_865 = 11;
 
       /*
        * Thailand
@@ -483,46 +473,44 @@ message Config {
       /*
        * Long Range - Fast
        */
-      LongFast = 0;
+      LONG_FAST = 0;
 
       /*
        * Long Range - Slow
        */
-      LongSlow = 1;
+      LONG_SLOW = 1;
 
       /*
        * Very Long Range - Slow
        */
-      VLongSlow = 2;
+      VERY_LONG_SLOW = 2;
 
       /*
        * Medium Range - Slow
        */
-      MedSlow = 3;
+      MEDIUM_SLOW = 3;
 
       /*
        * Medium Range - Fast
        */
-      MedFast = 4;
+      MEDIUM_FAST = 4;
 
       /*
        * Short Range - Slow
        */
-      ShortSlow = 5;
+      SHORT_SLOW = 5;
 
       /*
        * Short Range - Fast
        */
-      ShortFast = 6;
+      SHORT_FAST = 6;
     }
 
     /*
-     * If zero then, use default max legal continuous power (ie. something that won't
-     * burn out the radio hardware)
-     * In most cases you should use zero here.
-     * Units are in dBm.
-    */
-    int32 tx_power = 1;
+     * When enabled, the `modem_preset` fields will be adheared to, else the `bandwidth`/`spread_factor`/`coding_rate`
+     * will be taked from their respective manually defined fields
+     */
+    bool use_preset = 1;
 
     /*
      * Either modem_config or bandwidth/spreading/coding will be specified - NOT BOTH.
@@ -565,8 +553,8 @@ message Config {
     RegionCode region = 7;
 
     /*
-     * Overrides HOPS_RELIABLE and sets the maximum number of hops. This can't be greater than 7.
-     * 0 for default of 3
+     * Maximum number of hops. This can't be greater than 7.
+     * Default of 3
      */
     uint32 hop_limit = 8;
 
@@ -574,7 +562,15 @@ message Config {
      * Disable TX from the LoRa radio. Useful for hot-swapping antennas and other tests.
      * Defaults to false
      */
-    bool tx_disabled = 9;
+    bool tx_enabled = 9;
+
+    /*
+     * If zero then, use default max legal continuous power (ie. something that won't
+     * burn out the radio hardware)
+     * In most cases you should use zero here.
+     * Units are in dBm.
+    */
+    int32 tx_power = 10;
 
     /*
      * For testing it is useful sometimes to force a node to never listen to
@@ -591,17 +587,17 @@ message Config {
       /*
        * Device generates a random pin that will be shown on the screen of the device for pairing
        */
-      RandomPin = 0;
+      RANDOM_PIN = 0;
 
       /*
        * Device requires a specified fixed pin for pairing
        */
-      FixedPin = 1;
+      FIXED_PIN = 1;
 
       /*
        * Device requires no pin for pairing
        */
-      NoPin = 2;
+      NO_PIN = 2;
     }
 
     /*
@@ -624,12 +620,12 @@ message Config {
   /*
    * Payload Variant
    */
-  oneof payloadVariant {
+  oneof payload_variant {
 
     DeviceConfig device = 1;
     PositionConfig position = 2;
     PowerConfig power = 3;
-    WiFiConfig wifi = 4;
+    NetworkConfig network = 4;
     DisplayConfig display = 5;
     LoRaConfig lora = 6;
     BluetoothConfig bluetooth = 7;

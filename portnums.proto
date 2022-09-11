@@ -36,16 +36,6 @@ enum PortNum {
   TEXT_MESSAGE_APP = 1;
 
   /*
-   * A message receive acknowledgment, sent in cleartext - allows radio to
-   * show user that a message has been read by the recipient, optional
-   * Note: this concept has been removed for now.
-   * Once READACK is implemented, use the new packet type/port number stuff?
-   * @exclude
-   * CLEAR_READACK = 2;
-   * TODO: REMOVE/INTEGRATE
-   */
-
-  /*
    * Reserved for built-in GPIO/example app.
    * See remote_hardware.proto/HardwareMessage for details on the message sent/received to this port number
    */
@@ -74,7 +64,6 @@ enum PortNum {
    * Payload is a [AdminMessage](/docs/developers/protobufs/api#adminmessage) message
    */
   ADMIN_APP = 6;
-
 
   /*
    * Compressed TEXT_MESSAGE payloads.

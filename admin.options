@@ -1,4 +1,4 @@
-*AdminMessage.variant anonymous_oneof:true
+*AdminMessage.payload_variant anonymous_oneof:true
 
 *AdminMessage.set_canned_message_module_messages max_size:201
 *AdminMessage.get_canned_message_module_messages_response max_size:201

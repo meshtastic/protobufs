@@ -19,11 +19,6 @@ option java_outer_classname = "DeviceOnly";
 message DeviceState {
 
   /*
-   * Was secondary_channels before 1.2
-   */
-  reserved 12;
-
-  /*
    * Read only settings/info about this node
    */
   MyNodeInfo my_node = 2;
