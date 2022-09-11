@@ -126,7 +126,7 @@ message Position {
   /*
    * Geoidal separation in meters
    */
-  sint32 altitude_geoidal_seperation = 10;
+  sint32 altitude_geoidal_separation = 10;
 
   /*
    * Horizontal, Vertical and Position Dilution of Precision, in 1/100 units
