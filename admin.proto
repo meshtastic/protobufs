@@ -244,5 +244,10 @@ message AdminMessage {
      * Tell the node to factory reset, all device settings will be returned to factory defaults.
      */
     int32 factory_reset = 99;
+
+    /*
+     * Tell the node to reset the nodedb.
+     */
+    int32 nodedb_reset = 100;
   }
 }

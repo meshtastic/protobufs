@@ -342,6 +342,22 @@ message Config {
     }
 
     /*
+     * Unit display preference
+     */
+    enum DisplayUnits {
+
+      /*
+       * Metric (Default)
+       */
+      METRIC = 0;
+
+      /*
+       * Imperial
+       */
+      IMPERIAL = 1;
+    }
+
+    /*
      * Number of seconds the screen stays on after pressing the user button or receiving a message
      * 0 for default of one minute MAXUINT for always on
      */
@@ -363,6 +379,16 @@ message Config {
      * (top of display is heading direction) is used.
      */
     bool compass_north_top = 4;
+
+    /*
+     * Flip screen vertically, for cases that mount the screen upside down
+     */
+    bool flip_screen = 5;
+
+    /*
+     * Perferred display units
+     */
+    DisplayUnits units = 6;
   }
 
   /*
