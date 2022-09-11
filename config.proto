@@ -89,7 +89,7 @@ message Config {
       /*
        * Include geoidal separation
        */
-      GEOIDAL_SEPERATION   = 0x0004;
+      GEOIDAL_SEPARATION   = 0x0004;
     
       /*
        * Include the DOP value ; PDOP used by default, see below
