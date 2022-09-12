@@ -89,6 +89,7 @@ message ModuleConfig {
       DEFAULT = 0;
       SIMPLE = 1;
       PROTO = 2;
+      TEXTMSG = 3;
     };
 
     /*
