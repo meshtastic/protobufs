@@ -130,4 +130,14 @@ enum TelemetrySensorType {
   * High accuracy temperature and pressure
   */
   BMP280 = 6;
+
+  /*
+  * High accuracy temperature and humidity
+  */
+  SHTC3 = 7;
+  
+  /*
+  * High accuracy pressure
+  */
+  LPS22 = 8;
 };

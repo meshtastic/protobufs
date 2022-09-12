@@ -47,9 +47,9 @@ message Config {
     Role role = 1;
 
     /*
-     * If set, this will disable the SerialConsole by not initilizing the StreamAPI
+     * Disabling this will disable the SerialConsole by not initilizing the StreamAPI
      */
-    bool serial_disabled = 2;
+    bool serial_enabled = 2;
 
     /*
      * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
@@ -89,7 +89,7 @@ message Config {
       /*
        * Include geoidal separation
        */
-      GEOIDAL_SEPERATION   = 0x0004;
+      GEOIDAL_SEPARATION   = 0x0004;
     
       /*
        * Include the DOP value ; PDOP used by default, see below
@@ -138,9 +138,9 @@ message Config {
     uint32 position_broadcast_secs = 1;
 
     /*
-     * Disable adaptive position braoadcast, which is now the default.
+     * Adaptive position braoadcast, which is now the default.
      */
-    bool position_broadcast_smart_disabled = 2;
+    bool position_broadcast_smart_enabled = 2;
 
     /*
      * If set, this node is at a fixed position.
@@ -150,9 +150,9 @@ message Config {
     bool fixed_position = 3;
 
     /*
-     * Should the GPS be disabled for this node?
+     * Is GPS enabled for this node?
      */
-    bool gps_disabled = 4;
+    bool gps_enabled = 4;
 
     /*
      * How often should we try to get GPS position (in seconds)
@@ -342,6 +342,22 @@ message Config {
     }
 
     /*
+     * Unit display preference
+     */
+    enum DisplayUnits {
+
+      /*
+       * Metric (Default)
+       */
+      METRIC = 0;
+
+      /*
+       * Imperial
+       */
+      IMPERIAL = 1;
+    }
+
+    /*
      * Number of seconds the screen stays on after pressing the user button or receiving a message
      * 0 for default of one minute MAXUINT for always on
      */
@@ -363,6 +379,16 @@ message Config {
      * (top of display is heading direction) is used.
      */
     bool compass_north_top = 4;
+
+    /*
+     * Flip screen vertically, for cases that mount the screen upside down
+     */
+    bool flip_screen = 5;
+
+    /*
+     * Perferred display units
+     */
+    DisplayUnits units = 6;
   }
 
   /*
@@ -481,12 +507,10 @@ message Config {
     }
 
     /*
-     * If zero then, use default max legal continuous power (ie. something that won't
-     * burn out the radio hardware)
-     * In most cases you should use zero here.
-     * Units are in dBm.
-    */
-    int32 tx_power = 1;
+     * When enabled, the `modem_preset` fields will be adheared to, else the `bandwidth`/`spread_factor`/`coding_rate`
+     * will be taked from their respective manually defined fields
+     */
+    bool use_preset = 1;
 
     /*
      * Either modem_config or bandwidth/spreading/coding will be specified - NOT BOTH.
@@ -538,7 +562,15 @@ message Config {
      * Disable TX from the LoRa radio. Useful for hot-swapping antennas and other tests.
      * Defaults to false
      */
-    bool tx_disabled = 9;
+    bool tx_enabled = 9;
+
+    /*
+     * If zero then, use default max legal continuous power (ie. something that won't
+     * burn out the radio hardware)
+     * In most cases you should use zero here.
+     * Units are in dBm.
+    */
+    int32 tx_power = 10;
 
     /*
      * For testing it is useful sometimes to force a node to never listen to
