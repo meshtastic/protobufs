@@ -573,6 +573,17 @@ message Config {
     int32 tx_power = 10;
 
     /*
+     * This is controlling the actual hardware frequency the radio is transmitting on.
+     * Most users should never need to be exposed to this field/concept.
+     * A channel number between 1 and NUM_CHANNELS (whatever the max is in the current region).
+     * If ZERO then the rule is "use the old channel name hash based
+     * algorithm to derive the channel number")
+     * If using the hash algorithm the channel number will be: hash(channel_name) %
+     * NUM_CHANNELS (Where num channels depends on the regulatory region).
+     */
+    uint32 channel_num = 11;
+
+    /*
      * For testing it is useful sometimes to force a node to never listen to
      * particular other nodes (simulating radio out of range). All nodenums listed
      * in ignore_incoming will have packets they send droped on receive (by router.cpp)
