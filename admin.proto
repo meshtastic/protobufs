@@ -225,6 +225,12 @@ message AdminMessage {
     bool confirm_set_radio = 67;
 
     /*
+     * Tell the node to reboot into the OTA Firmware in this many seconds (or <0 to cancel reboot)
+     * Only Implemented for ESP32 Devices. This needs to be issued to send a new main firmware via bluetooth.
+     */
+    int32 reboot_ota_seconds = 95;
+
+    /*
      * This message is only supported for the simulator porduino build.
      * If received the simulator will exit successfully.
      */
