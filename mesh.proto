@@ -1166,6 +1166,20 @@ message LogRecord {
   Level level = 4;
 }
 
+message QueueStatus {
+  /* Last attempt to queue status, ErrorCode */
+  int32 res = 1;
+
+  /* Free entries in the outgoing queue */
+  uint32 free = 2;
+
+  /* Maximum entries in the outgoing queue */
+  uint32 maxlen = 3;
+
+  /* What was mesh packet id that generated this response? */
+  uint32 mesh_packet_id = 4;
+}
+
 /*
  * Packets from the radio to the phone will appear on the fromRadio characteristic.
  * It will support READ and NOTIFY. When a new packet arrives the device will BLE notify?
@@ -1237,6 +1251,9 @@ message FromRadio {
      * One packet is sent for each channel
      */
     Channel channel = 10;
+
+    /* Queue status info */
+    QueueStatus queueStatus = 11;
   }
 }
 

@@ -30,6 +30,10 @@
 *MeshPacket.hop_limit int_size:8
 *MeshPacket.channel int_size:8
 
+*QueueStatus.res int_size:8
+*QueueStatus.free int_size:8
+*QueueStatus.maxlen int_size:8
+
 *ToRadio.payload_variant anonymous_oneof:true
 
 *FromRadio.payload_variant anonymous_oneof:true
