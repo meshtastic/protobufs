@@ -4,11 +4,11 @@ option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
+import "channel.proto";
 import "config.proto";
 import "module_config.proto";
 import "portnums.proto";
 import "telemetry.proto";
-import "channel.proto";
 
 option java_outer_classname = "MeshProtos";
 
