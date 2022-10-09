@@ -148,11 +148,6 @@ message AdminMessage {
     ModuleConfig get_module_config_response = 8;
 
     /*
-     * Send all channels in the response to this message
-     */
-    bool get_all_channel_request = 9;
-
-    /*
      * Get the Canned Message Module messages in the response to this message.
      */
     bool get_canned_message_module_messages_request = 10;
