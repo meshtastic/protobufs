@@ -8,6 +8,7 @@ import "config.proto";
 import "module_config.proto";
 import "portnums.proto";
 import "telemetry.proto";
+import "channel.proto";
 
 option java_outer_classname = "MeshProtos";
 
@@ -1227,11 +1228,15 @@ message FromRadio {
      */
     bool rebooted = 8;
 
-
     /*
      * Include module config
      */
     ModuleConfig moduleConfig = 9;
+
+    /*
+     * One packet is sent for each channel
+     */
+    Channel channel = 10;
   }
 }
 
