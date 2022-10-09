@@ -165,7 +165,7 @@ message AdminMessage {
     /*
      * Request the node to send device metadata (firmware, protobuf version, etc)
      */
-    uint32 get_device_metadata_request = 12;
+    bool get_device_metadata_request = 12;
 
     /*
       * Device metadata response
