@@ -140,4 +140,15 @@ enum TelemetrySensorType {
   * High accuracy pressure
   */
   LPS22 = 8;
+
+  /*
+  * 3-Axis magnetic sensor
+  */
+  QMC6310 = 9;
+
+  /*
+  * 6-Axis inertial measurement sensor
+  */
+  QMI8658 = 10;
+
 };

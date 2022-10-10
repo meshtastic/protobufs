@@ -4,6 +4,7 @@ option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/gomeshproto";
 
+import "channel.proto";
 import "config.proto";
 import "module_config.proto";
 import "portnums.proto";
@@ -1227,11 +1228,15 @@ message FromRadio {
      */
     bool rebooted = 8;
 
-
     /*
      * Include module config
      */
     ModuleConfig moduleConfig = 9;
+
+    /*
+     * One packet is sent for each channel
+     */
+    Channel channel = 10;
   }
 }
 
