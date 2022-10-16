@@ -90,6 +90,7 @@ message ModuleConfig {
       SIMPLE = 1;
       PROTO = 2;
       TEXTMSG = 3;
+      NMEA = 4;
     };
 
     /*
