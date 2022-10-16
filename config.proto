@@ -462,6 +462,11 @@ message Config {
        * Thailand
        */
       TH = 12;
+
+      /*
+       * WLAN Band
+       */
+      LORA_24 = 13;
     }
 
     /*
