@@ -8,4 +8,4 @@
 *LoRaConfig.tx_power int_size:8
 *LoRaConfig.bandwidth int_size:16
 *LoRaConfig.coding_rate int_size:8
-*LoRaConfig.channel_num int_size:8
+*LoRaConfig.channel_num int_size:16
