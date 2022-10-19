@@ -134,4 +134,9 @@ message OEMStore {
    * Use this font for the OEM text.
    */
   string oem_text = 5;
+
+  /*
+   * The default device encryption key, 16 or 32 byte
+   */
+  bytes oem_aes_key = 6;
 }

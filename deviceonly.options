@@ -10,5 +10,5 @@
 *ChannelFile.channels max_count:8
 
 *OEMStore.oem_text max_size:40
-
 *OEMStore.oem_icon_bits max_size:2048
+*OEMStore.oem_aes_key max_size:32
