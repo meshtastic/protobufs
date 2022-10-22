@@ -266,7 +266,7 @@ message Config {
       ACCESS_POINT_HIDDEN = 2;
     }
 
-    enum ethMode {
+    enum EthMode {
       /*
        * obtain ip address via DHCP
        */
@@ -335,7 +335,7 @@ message Config {
     /*
      * acquire an address via DHCP or assign static
      */
-    ethMode eth_mode = 7;
+    EthMode eth_mode = 7;
 
     /*
      * struct to keep static address
