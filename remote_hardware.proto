@@ -3,7 +3,7 @@ syntax = "proto3";
 option java_package = "com.geeksville.mesh";
 option java_outer_classname = "RemoteHardware";
 option optimize_for = LITE_RUNTIME;
-option go_package = "github.com/meshtastic/gomeshproto";
+option go_package = "github.com/meshtastic/go/generated";
 
 /*
  * An example app to show off the module system. This message is used for
