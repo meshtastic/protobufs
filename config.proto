@@ -249,33 +249,10 @@ message Config {
    */
   message NetworkConfig {
 
-    enum WiFiMode {
-      /*
-       * This mode is used to connect to an external WiFi network
-       */
-      CLIENT = 0;
-
-      /*
-       * In this mode the node will operate as an AP (and DHCP server)
-       */
-      ACCESS_POINT = 1;
-
-      /*
-       * If set, the node AP will broadcast as a hidden SSID
-       */
-      ACCESS_POINT_HIDDEN = 2;
-    }
-
     /*
      * Enable WiFi (disables Bluetooth)
      */
     bool wifi_enabled = 1;
-
-    /*
-     * If set, this node will try to join the specified wifi network and
-     * acquire an address via DHCP
-     */
-    WiFiMode wifi_mode = 2;
 
     /*
      * If set, this node will try to join the specified wifi network and
