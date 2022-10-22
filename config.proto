@@ -266,6 +266,40 @@ message Config {
       ACCESS_POINT_HIDDEN = 2;
     }
 
+    enum EthMode {
+      /*
+       * obtain ip address via DHCP
+       */
+      DHCP = 0;
+
+      /*
+       * use static ip address
+       */
+      STATIC = 1;
+    }
+
+    message EthConfig {
+      /*
+       * Static IP address
+       */
+      fixed32 ip = 1;
+
+      /*
+       * Static gateway address
+       */
+      fixed32 gateway = 2;
+
+      /*
+       * Static subnet mask
+       */
+      fixed32 subnet = 3;
+
+      /*
+       * Static DNS server address
+       */
+      fixed32 dns = 4;
+    }
+
     /*
      * Enable WiFi (disables Bluetooth)
      */
@@ -292,6 +326,21 @@ message Config {
      * NTP server to use if WiFi is conneced, defaults to `0.pool.ntp.org`
      */
     string ntp_server = 5;
+
+    /*
+     * Enable Ethernet
+     */
+    bool eth_enabled = 6;
+
+    /*
+     * acquire an address via DHCP or assign static
+     */
+    EthMode eth_mode = 7;
+
+    /*
+     * struct to keep static address
+     */
+    EthConfig eth_config = 8;
   }
 
   /*
