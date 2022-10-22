@@ -278,7 +278,7 @@ message Config {
       STATIC = 1;
     }
 
-    message ethConfig {
+    message EthConfig {
       /*
        * Static IP address
        */
@@ -340,7 +340,7 @@ message Config {
     /*
      * struct to keep static address
      */
-    ethConfig eth_config = 8;
+    EthConfig eth_config = 8;
   }
 
   /*
