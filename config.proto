@@ -309,12 +309,6 @@ message Config {
      * If set, this node will try to join the specified wifi network and
      * acquire an address via DHCP
      */
-    WiFiMode wifi_mode = 2;
-
-    /*
-     * If set, this node will try to join the specified wifi network and
-     * acquire an address via DHCP
-     */
     string wifi_ssid = 3;
 
     /*
