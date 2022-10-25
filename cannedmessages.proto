@@ -14,4 +14,9 @@ message CannedMessageModuleConfig {
    * Predefined messages for canned message module separated by '|' characters.
    */
   string messages = 1;
+
+  /*
+   * Predefined destinations for canned message module separated by '|' characters.
+   */
+  string destinations = 2;
 }

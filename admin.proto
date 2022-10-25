@@ -168,6 +168,16 @@ message AdminMessage {
     DeviceMetadata get_device_metadata_response = 13;
 
     /*
+     * Get the Canned Message Destinations Module messages in the response to this message.
+     */
+    bool get_canned_message_module_messages_dests_request = 14;
+
+    /*
+     * Get the Canned Message Destinations Module messages in the response to this message.
+     */
+    string get_canned_message_module_messages_dests_response = 15;
+
+    /*
      * Set the owner for this node
      */
     User set_owner = 32;
@@ -196,6 +206,11 @@ message AdminMessage {
      */
     string set_canned_message_module_messages = 36;
     
+    /*
+     * Set the Canned Message Destinations Module messages text.
+     */
+    string set_canned_message_module_messages_dests = 37;
+
     /*
      * Sent immediatly after a config change has been sent to ensure comms, if this is not recieved, the config will be reverted after 10 mins
      */
