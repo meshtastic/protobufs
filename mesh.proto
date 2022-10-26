@@ -1258,12 +1258,6 @@ message ToRadio {
     MeshPacket packet = 1;
 
     /*
-     * Information about the peer, sent after the phone sneds want_config_id.
-     * Old clients do not send this, which is fine.
-     */
-    PeerInfo peer_info = 2;
-
-    /*
      * Phone wants radio to send full node db to the phone, This is
      * typically the first packet sent to the radio when the phone gets a
      * bluetooth connection. The radio will respond by sending back a
