@@ -278,7 +278,7 @@ message Config {
       STATIC = 1;
     }
 
-    message NetworkConfig {
+    message TcpConfig {
       /*
        * Static IP address
        */
