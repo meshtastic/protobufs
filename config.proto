@@ -334,7 +334,7 @@ message Config {
     /*
      * struct to keep static address
      */
-    NetworkConfig eth_config = 8;
+    IpV4Config ipv4_config = 8;
   }
 
   /*
