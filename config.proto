@@ -278,7 +278,7 @@ message Config {
       STATIC = 1;
     }
 
-    message TcpConfig {
+    message IpV4Config {
       /*
        * Static IP address
        */
