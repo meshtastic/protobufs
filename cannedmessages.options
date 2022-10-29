@@ -1,2 +1,5 @@
-*CannedMessageModuleConfig.messages max_size:201
-*CannedMessageModuleConfig.destinations max_size:201
+# 150 characters + nullcharacter
+*CannedMessageModuleConfig.messages max_size:151
+# 8 addresses 8 chars each + 7 delimiters + nullcharacter
+*CannedMessageModuleConfig.destinations max_size:72
+# total = 223 < 228 (max)
