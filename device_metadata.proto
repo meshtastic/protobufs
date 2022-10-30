@@ -38,5 +38,5 @@ message DeviceMetadata {
   /*
    * Indicates that the device has an ethernet peripheral
    */
-   bool hasEthernet = 6;
+  bool hasEthernet = 6;
 }
