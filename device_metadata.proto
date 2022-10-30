@@ -26,7 +26,17 @@ message DeviceMetadata {
   bool canShutdown = 3;
 
   /*
-   * Indicates that the device has native wifi capabilities
+   * Indicates that the device has native wifi capability
    */
   bool hasWifi = 4;
+
+  /*
+   * Indicates that the device has native bluetooth capability
+   */
+  bool hasBluetooth = 5;
+
+  /*
+   * Indicates that the device has an ethernet peripheral
+   */
+   bool hasEthernet = 5;
 }
