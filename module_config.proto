@@ -167,7 +167,10 @@ message ModuleConfig {
      */
     bool alert_bell = 6;
  
-
+    /*
+     * TODO: REPLACE
+     */
+    string bound_channel = 7;
   }
 
   /*

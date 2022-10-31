@@ -4,3 +4,5 @@
 *MQTTConfig.address max_size:32
 *MQTTConfig.username max_size:32
 *MQTTConfig.password max_size:32
+
+*ModuleConfig.ExternalNotificationConfig.bound_channel max_size:200
