@@ -131,7 +131,7 @@ enum PortNum {
   /*
    * Private applications should use portnums >= 256.
    * To simplify initial development and testing you can use "PRIVATE_APP"
-   * in your code without needing to rebuild protobuf files (via [regen-protos.sh](https://github.com/meshtastic/Meshtastic-device/blob/master/bin/regen-protos.sh))
+   * in your code without needing to rebuild protobuf files (via [regen-protos.sh](https://github.com/meshtastic/firmware/blob/master/bin/regen-protos.sh))
    */
   PRIVATE_APP = 256;
 
