@@ -56,6 +56,52 @@ message ModuleConfig {
   }
 
   /*
+   * Audio Config for codec2 voice
+   */
+  message AudioConfig {
+
+    /*
+     * Baudrate for codec2 voice
+     */
+    enum Audio_Baud {
+      CODEC2_DEFAULT = 0;
+      CODEC2_3200 = 1; 
+      CODEC2_2400 = 2; 
+      CODEC2_1600 = 3; 
+      CODEC2_1400 = 4; 
+      CODEC2_1300 = 5; 
+      CODEC2_1200 = 6; 
+      CODEC2_700 = 7;
+      CODEC2_700B = 8; 
+    };
+
+    /*
+     * Whether Audio is enabled
+     */
+    bool codec2_enabled = 1;
+
+    /*
+     * ADC where Microphone is connected
+     */
+    uint32 mic_chan = 2;
+
+    /*
+     * DAC where Speaker is connected
+     */
+    uint32 amp_pin = 3;
+
+    /*
+     * PTT Pin
+     */
+    uint32 ptt_pin = 4;
+
+    /*
+     * The audio sample rate to use for codec2
+     */
+    Audio_Baud bitrate = 5;
+  }
+
+  /*
    * Serial Config
    */
   message SerialConfig {
@@ -406,6 +452,11 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     CannedMessageConfig canned_message = 7;
+
+    /*
+     * TODO: REPLACE
+     */
+    AudioConfig audio = 8;
 
   }
 }

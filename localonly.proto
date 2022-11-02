@@ -95,6 +95,11 @@ message LocalModuleConfig {
   ModuleConfig.CannedMessageConfig canned_message = 7;
 
   /*
+   * The part of the config that is specific to the Audio module
+   */
+  ModuleConfig.AudioConfig audio = 9;
+
+  /*
    * A version integer used to invalidate old save files when we make
    * incompatible changes This integer is set at build time and is private to
    * NodeDB.cpp in the device code.
