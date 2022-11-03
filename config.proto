@@ -399,6 +399,27 @@ message Config {
        */
       IMPERIAL = 1;
     }
+    
+    /*
+     * Override OLED outo detect with this if it fails.
+     */
+    enum OledType {
+    
+      /*
+       * Default / Auto
+       */
+      OLED_AUTO = 0;
+      
+      /*
+       * Default / Auto
+       */
+      OLED_SSD1306 = 1;
+      
+      /*
+       * Default / Auto
+       */
+      OLED_SH1106 = 2;
+    }
 
     /*
      * Number of seconds the screen stays on after pressing the user button or receiving a message
@@ -432,6 +453,11 @@ message Config {
      * Perferred display units
      */
     DisplayUnits units = 6;
+    
+    /*
+     * Override auto-detect in screen
+     */
+    OledType oled = 7;
   }
 
   /*
