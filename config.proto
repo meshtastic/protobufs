@@ -288,10 +288,6 @@ message Config {
      */
     bool wifi_enabled = 1;
     
-    /*
-     * acquire an address via DHCP or assign static
-     */
-    EthMode eth_mode = 2;
 
     /*
      * If set, this node will try to join the specified wifi network and
