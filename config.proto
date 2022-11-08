@@ -291,7 +291,7 @@ message Config {
     /*
      * acquire an address via DHCP or assign static
      */
-    EthMode wifi_mode = 2;
+    EthMode eth_mode = 2;
 
     /*
      * If set, this node will try to join the specified wifi network and
