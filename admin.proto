@@ -99,6 +99,11 @@ message AdminMessage {
     * TODO: REPLACE
     */
     CANNEDMSG_CONFIG = 6;
+
+    /*
+     * TODO: REPLACE
+     */
+    AUDIO_CONFIG = 7;
   }
 
   /*
