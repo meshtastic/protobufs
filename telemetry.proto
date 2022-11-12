@@ -150,5 +150,10 @@ enum TelemetrySensorType {
   * 6-Axis inertial measurement sensor
   */
   QMI8658 = 10;
+  
+  /*
+  * 3-Axis magnetic sensor
+  */
+  QMC5883L = 11;
 
 };
