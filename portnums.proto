@@ -76,6 +76,11 @@ enum PortNum {
    */
   WAYPOINT_APP = 8;
 
+  /* Audio Payloads.
+   * Encapsulated codec2 packets. On 2.4 GHZ Bandwidths only for now
+   */
+  AUDIO_APP = 9;
+
   /*
    * Provides a 'ping' service that replies to any packet it receives.
    * Also serves as a small example module.
