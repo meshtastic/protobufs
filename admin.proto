@@ -205,12 +205,12 @@ message AdminMessage {
      * Begins an edit transaction for config, module config, owner, and channel settings changes
      * This will delay the standard *implicit* save to the file system and subsequent reboot behavior until committed (commit_edit_settings)
      */
-    bool begin_edit_settings = 65;
+    bool begin_edit_settings = 64;
     
     /*
      * Commits an open transaction for any edits made to config, module config, owner, and channel settings
      */
-    bool commit_edit_settings = 64;
+    bool commit_edit_settings = 65;
 
     /*
      * Setting channels/radio config remotely carries the risk that you might send an invalid config and the radio never talks to your mesh again.
