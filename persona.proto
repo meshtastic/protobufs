@@ -19,6 +19,8 @@ message Persona {
     message all_peers {
         repeated Peer peer = 1;
     }
+
+    bool peer = 6;
 }
 
 message secret_book{
