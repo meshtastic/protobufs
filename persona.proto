@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+// This protobuf is for adding public/private key pairs to the messaging.
 message persona {
     /*
     *   Unique Local Name
