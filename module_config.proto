@@ -184,7 +184,6 @@ message ModuleConfig {
 
     /*
      * Preferences for the ExternalNotificationModule
-     * FIXME - Move this out of UserPreferences and into a section for module configuration.
      */
     bool enabled = 1;
 
@@ -212,6 +211,11 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     bool alert_bell = 6;
+
+    /*
+     * TODO: REPLACE
+     */
+    bool use_pwm = 7;
  
 
   }
