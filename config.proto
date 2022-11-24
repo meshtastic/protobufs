@@ -63,7 +63,7 @@ message Config {
      */
     uint32 button_gpio = 4;
 
-        /*
+    /*
      * For boards without a PWM buzzer, this is the pin number that will be used
      * Defaults to PIN_BUZZER if defined.
      */
