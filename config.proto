@@ -57,6 +57,18 @@ message Config {
      */
     bool debug_log_enabled = 3;
 
+    /*
+     * For boards without a hard wired button, this is the pin number that will be used
+     * Boards that have more than one button can swap the function with this one. defaults to BUTTON_PIN if defined.
+     */
+    uint32 button_gpio = 4;
+
+    /*
+     * For boards without a PWM buzzer, this is the pin number that will be used
+     * Defaults to PIN_BUZZER if defined.
+     */
+    uint32 buzzer_gpio = 5;
+
   }
 
   /*
@@ -174,6 +186,17 @@ message Config {
      * (bitwise OR of PositionFlags)
      */
     uint32 position_flags = 7;
+
+    /*
+     * (Re)define GPS_RX_PIN for your board.
+     */
+    uint32 rx_gpio = 8;
+ 
+    /*
+     * (Re)define GPS_TX_PIN for your board.
+     */
+    uint32 tx_gpio = 9;
+ 
 
   }
 
