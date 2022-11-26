@@ -665,6 +665,13 @@ message Config {
     uint32 channel_num = 11;
 
     /*
+     * If true, duty cycle limits will be exceeded and thus you're possibly not following 
+     * the local regulations if you're not a HAM.
+     * Has no effect if the duty cycle of the used region is 100%. 
+    */
+    bool override_duty_cycle = 12; 
+
+    /*
      * For testing it is useful sometimes to force a node to never listen to
      * particular other nodes (simulating radio out of range). All nodenums listed
      * in ignore_incoming will have packets they send droped on receive (by router.cpp)
