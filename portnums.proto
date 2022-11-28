@@ -134,6 +134,12 @@ enum PortNum {
    * in your code without needing to rebuild protobuf files (via [regen-protos.sh](https://github.com/meshtastic/firmware/blob/master/bin/regen-protos.sh))
    */
   PRIVATE_APP = 256;
+  
+  /*
+   * Black Lager encryption  port
+   */
+   
+   BLACK_LAGER = 333;
 
   /*
    * ATAK Forwarder Module https://github.com/paulmandal/atak-forwarder
