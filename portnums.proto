@@ -136,7 +136,9 @@ enum PortNum {
   PRIVATE_APP = 256;
   
   /*
-   * Black Lager encryption  port
+   * Black Lager encryption port. This port is used for sending encrypted messages 
+   * from the meshwatch python cli to the LORA radio. This is part of the Black_Lager encryption
+   * module.
    */
    
    BLACK_LAGER = 333;
