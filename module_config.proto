@@ -99,6 +99,26 @@ message ModuleConfig {
      * The audio sample rate to use for codec2
      */
     Audio_Baud bitrate = 5;
+
+    /*
+     * I2S Word Select
+     */
+    uint32 i2s_ws = 6;
+
+    /*
+     * I2S Data IN
+     */
+    uint32 i2s_sd = 7;
+
+    /*
+     * I2S Data OUT
+     */
+    uint32 i2s_din = 8;
+
+    /*
+     * I2S Clock
+     */
+    uint32 i2s_sck = 9;
   }
 
   /*
