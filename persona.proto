@@ -1,9 +1,13 @@
 syntax = "proto3";
 
-// This protobuf is for adding public/private key pairs to the messaging.
+/*
+ * Stores information about an identity.
+ * This identity can be the user themself or a peer node.
+ * Used for digital signatures in the Black Lager messaging application.
+ */
 message Persona {
   /*
-  * Unique Local Name
+  * Unique local Persona name
   */
   string local_name = 1;
 
@@ -37,10 +41,10 @@ message Persona {
    */
   bytes mask = 7;
 
-  message all_peers {
-    repeated Peer peer = 1;
-  }
-
+  /*
+   * True if the user owns this persona
+   * False if this is a peer persona
+   */
   bool owned = 8;
 }
 
