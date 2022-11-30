@@ -6,24 +6,35 @@ message Persona {
   * Unique Local Name
   */
   string local_name = 1;
+
+  /*
+   * Device MAC address
+   */
   string mac_address = 2;
+
+  /*
+   * Device node number
+   */
   int32 node_num = 3;
 
   /*
-  * Self's public and private key
+  * Used for local owned Persona and peer Personas
   */
   bytes public_key = 4;
 
+  /*
+   * Only used if this is a local owned Persona
+   */
   bytes private_key = 5;
 
   /*
-  * Unique byte string representing the Persona
-  */
+   * Unique byte string representing the Persona
+   */
   bytes uid = 6;
 
   /*
-  * Used to optionally mutate the uid
-  */
+   * Used to optionally mutate the uid
+   */
   bytes mask = 7;
 
   message all_peers {
