@@ -41,9 +41,13 @@ message Persona {
     repeated Peer peer = 1;
   }
 
-  bool peer = 6;
+  bool owned = 8;
 }
 
-message secret_book{
-  repeated persona person = 1;
+/*
+ * Used to store all user owned personas and known peer personas
+ */
+message Wallet {
+  repeated Persona my_personas = 1;
+  repeated Persona peer_personas = 2;
 }
