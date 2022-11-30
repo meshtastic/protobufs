@@ -16,6 +16,16 @@ message Persona {
 
   bytes private_key = 5;
 
+  /*
+  * Unique byte string representing the Persona
+  */
+  bytes uid = 6;
+
+  /*
+  * Used to optionally mutate the uid
+  */
+  bytes mask = 7;
+
   message all_peers {
     repeated Peer peer = 1;
   }
