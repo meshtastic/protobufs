@@ -5,8 +5,6 @@
 *MQTTConfig.username max_size:64
 *MQTTConfig.password max_size:64
 
-*AudioConfig.mic_chan int_size:8
-*AudioConfig.amp_pin int_size:8
 *AudioConfig.ptt_pin int_size:8
 *AudioConfig.i2s_ws int_size:8
 *AudioConfig.i2s_sd int_size:8
