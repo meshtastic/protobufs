@@ -3,6 +3,7 @@ syntax = "proto3";
 option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/go/generated";
+option csharp_namespace = "Meshtastic.Protobufs";
 
 import "channel.proto";
 import "config.proto";

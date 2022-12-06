@@ -11,6 +11,7 @@ import "portnums.proto";
 import "telemetry.proto";
 
 option java_outer_classname = "MeshProtos";
+option csharp_namespace = "Meshtastic.Protobufs";
 
 /*
  * a gps position
