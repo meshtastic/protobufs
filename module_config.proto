@@ -4,6 +4,7 @@ option java_package = "com.geeksville.mesh";
 option java_outer_classname = "ModuleConfigProtos";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/go/generated";
+option csharp_namespace = "Meshtastic.Protobufs";
 
 /*
  * Module Config
@@ -53,6 +54,62 @@ message ModuleConfig {
      * Whether to send / consume json packets on MQTT
      */
     bool json_enabled = 6;
+  }
+
+  /*
+   * Audio Config for codec2 voice
+   */
+  message AudioConfig {
+
+    /*
+     * Baudrate for codec2 voice
+     */
+    enum Audio_Baud {
+      CODEC2_DEFAULT = 0;
+      CODEC2_3200 = 1; 
+      CODEC2_2400 = 2; 
+      CODEC2_1600 = 3; 
+      CODEC2_1400 = 4; 
+      CODEC2_1300 = 5; 
+      CODEC2_1200 = 6; 
+      CODEC2_700 = 7;
+      CODEC2_700B = 8; 
+    };
+
+    /*
+     * Whether Audio is enabled
+     */
+    bool codec2_enabled = 1;
+
+    /*
+     * PTT Pin
+     */
+    uint32 ptt_pin = 2;
+
+    /*
+     * The audio sample rate to use for codec2
+     */
+    Audio_Baud bitrate = 3;
+
+    /*
+     * I2S Word Select
+     */
+    uint32 i2s_ws = 4;
+
+    /*
+     * I2S Data IN
+     */
+    uint32 i2s_sd = 5;
+
+    /*
+     * I2S Data OUT
+     */
+    uint32 i2s_din = 6;
+
+    /*
+     * I2S Clock
+     */
+    uint32 i2s_sck = 7;
   }
 
   /*
@@ -138,7 +195,6 @@ message ModuleConfig {
 
     /*
      * Preferences for the ExternalNotificationModule
-     * FIXME - Move this out of UserPreferences and into a section for module configuration.
      */
     bool enabled = 1;
 
@@ -166,6 +222,11 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     bool alert_bell = 6;
+
+    /*
+     * TODO: REPLACE
+     */
+    bool use_pwm = 7;
  
 
   }
@@ -406,6 +467,11 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     CannedMessageConfig canned_message = 7;
+
+    /*
+     * TODO: REPLACE
+     */
+    AudioConfig audio = 8;
 
   }
 }

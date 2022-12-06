@@ -4,6 +4,7 @@ option java_package = "com.geeksville.mesh";
 option java_outer_classname = "ConfigProtos";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/go/generated";
+option csharp_namespace = "Meshtastic.Protobufs";
 
 message Config {
   /*
@@ -56,6 +57,18 @@ message Config {
      * Set this to true to leave the debug log outputting even when API is active.
      */
     bool debug_log_enabled = 3;
+
+    /*
+     * For boards without a hard wired button, this is the pin number that will be used
+     * Boards that have more than one button can swap the function with this one. defaults to BUTTON_PIN if defined.
+     */
+    uint32 button_gpio = 4;
+
+    /*
+     * For boards without a PWM buzzer, this is the pin number that will be used
+     * Defaults to PIN_BUZZER if defined.
+     */
+    uint32 buzzer_gpio = 5;
 
   }
 
@@ -175,6 +188,17 @@ message Config {
      */
     uint32 position_flags = 7;
 
+    /*
+     * (Re)define GPS_RX_PIN for your board.
+     */
+    uint32 rx_gpio = 8;
+ 
+    /*
+     * (Re)define GPS_TX_PIN for your board.
+     */
+    uint32 tx_gpio = 9;
+ 
+
   }
 
   /*
@@ -249,23 +273,6 @@ message Config {
    */
   message NetworkConfig {
 
-    enum WiFiMode {
-      /*
-       * This mode is used to connect to an external WiFi network
-       */
-      CLIENT = 0;
-
-      /*
-       * In this mode the node will operate as an AP (and DHCP server)
-       */
-      ACCESS_POINT = 1;
-
-      /*
-       * If set, the node AP will broadcast as a hidden SSID
-       */
-      ACCESS_POINT_HIDDEN = 2;
-    }
-
     enum EthMode {
       /*
        * obtain ip address via DHCP
@@ -304,6 +311,7 @@ message Config {
      * Enable WiFi (disables Bluetooth)
      */
     bool wifi_enabled = 1;
+    
 
     /*
      * If set, this node will try to join the specified wifi network and
@@ -656,6 +664,13 @@ message Config {
      * NUM_CHANNELS (Where num channels depends on the regulatory region).
      */
     uint32 channel_num = 11;
+
+    /*
+     * If true, duty cycle limits will be exceeded and thus you're possibly not following 
+     * the local regulations if you're not a HAM.
+     * Has no effect if the duty cycle of the used region is 100%. 
+    */
+    bool override_duty_cycle = 12; 
 
     /*
      * For testing it is useful sometimes to force a node to never listen to

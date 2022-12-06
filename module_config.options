@@ -2,5 +2,11 @@
 *CannedMessageConfig.messages max_size:200
 
 *MQTTConfig.address max_size:32
-*MQTTConfig.username max_size:32
-*MQTTConfig.password max_size:32
+*MQTTConfig.username max_size:64
+*MQTTConfig.password max_size:64
+
+*AudioConfig.ptt_pin int_size:8
+*AudioConfig.i2s_ws int_size:8
+*AudioConfig.i2s_sd int_size:8
+*AudioConfig.i2s_din int_size:8
+*AudioConfig.i2s_sck int_size:8

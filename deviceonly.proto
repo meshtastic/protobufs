@@ -8,6 +8,7 @@ import "channel.proto";
 import "mesh.proto";
 
 option java_outer_classname = "DeviceOnly";
+option csharp_namespace = "Meshtastic.Protobufs";
 
 /*
  * This message is never sent over the wire, but it is used for serializing DB

@@ -6,6 +6,7 @@ option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/go/generated";
 
 option java_outer_classname = "ChannelProtos";
+option csharp_namespace = "Meshtastic.Protobufs";
 
 /*
  * Full settings (center freq, spread factor, pre-shared secret key etc...)

@@ -3,6 +3,7 @@ syntax = "proto3";
 option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/go/generated";
+option csharp_namespace = "Meshtastic.Protobufs";
 
 import "channel.proto";
 import "config.proto";
@@ -99,6 +100,11 @@ message AdminMessage {
     * TODO: REPLACE
     */
     CANNEDMSG_CONFIG = 6;
+
+    /*
+     * TODO: REPLACE
+     */
+    AUDIO_CONFIG = 7;
   }
 
   /*
@@ -195,16 +201,17 @@ message AdminMessage {
      * Set the Canned Message Module messages text.
      */
     string set_canned_message_module_messages = 36;
+
+    /*
+     * Begins an edit transaction for config, module config, owner, and channel settings changes
+     * This will delay the standard *implicit* save to the file system and subsequent reboot behavior until committed (commit_edit_settings)
+     */
+    bool begin_edit_settings = 64;
     
     /*
-     * Sent immediatly after a config change has been sent to ensure comms, if this is not recieved, the config will be reverted after 10 mins
+     * Commits an open transaction for any edits made to config, module config, owner, and channel settings
      */
-    bool confirm_set_config = 64;
- 
-    /*
-     * Sent immediatly after a config change has been sent to ensure comms, if this is not recieved, the config will be reverted after 10 mins
-     */
-    bool confirm_set_module_config = 65;
+    bool commit_edit_settings = 65;
 
     /*
      * Setting channels/radio config remotely carries the risk that you might send an invalid config and the radio never talks to your mesh again.

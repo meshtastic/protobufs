@@ -5,6 +5,7 @@ option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/go/generated";
 
 option java_outer_classname = "TelemetryProtos";
+option csharp_namespace = "Meshtastic.Protobufs";
 
 /*
  * Key native device metrics such as battery level
@@ -150,5 +151,10 @@ enum TelemetrySensorType {
   * 6-Axis inertial measurement sensor
   */
   QMI8658 = 10;
+  
+  /*
+  * 3-Axis magnetic sensor
+  */
+  QMC5883L = 11;
 
 };

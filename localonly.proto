@@ -8,6 +8,7 @@ import "config.proto";
 import "module_config.proto";
 
 option java_outer_classname = "LocalOnlyProtos";
+option csharp_namespace = "Meshtastic.Protobufs";
 
 /*
  * Protobuf structures common to apponly.proto and deviceonly.proto
@@ -93,6 +94,11 @@ message LocalModuleConfig {
    * The part of the config that is specific to the Canned Message module
    */
   ModuleConfig.CannedMessageConfig canned_message = 7;
+
+  /*
+   * The part of the config that is specific to the Audio module
+   */
+  ModuleConfig.AudioConfig audio = 9;
 
   /*
    * A version integer used to invalidate old save files when we make

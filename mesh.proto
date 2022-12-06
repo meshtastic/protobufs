@@ -11,6 +11,7 @@ import "portnums.proto";
 import "telemetry.proto";
 
 option java_outer_classname = "MeshProtos";
+option csharp_namespace = "Meshtastic.Protobufs";
 
 /*
  * a gps position
@@ -354,6 +355,16 @@ enum HardwareModel {
    * M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, Paper) https://m5stack.com/
    */
   M5STACK = 42;
+
+  /*
+   * New Heltec LoRA32 with ESP32-S3 CPU
+   */
+  HELTEC_V3 = 43;
+
+  /*
+   * New Heltec Wireless Stick Lite with ESP32-S3 CPU
+   */
+  HELTEC_WSL_V3 = 44;
   
   /*
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
@@ -493,6 +504,11 @@ message Routing {
      * (possibly due to bad channel permissions)
      */
     NO_RESPONSE = 8;
+
+    /*
+     * Cannot send currently because duty cycle regulations will be violated.
+     */
+    DUTY_CYCLE_LIMIT = 9; 
 
     /*
      * The application layer service on the remote node received your request, but considered your request somehow invalid
@@ -720,7 +736,7 @@ message MeshPacket {
   /*
    * The sending node number.
    * Note: Our crypto implementation uses this field as well.
-   * See [crypto](/docs/developers/firmware/encryption) for details.
+   * See [crypto](/docs/overview/encryption) for details.
    * FIXME - really should be fixed32 instead, this encoding only hurts the ble link though.
    */
   fixed32 from = 1;
@@ -772,7 +788,7 @@ message MeshPacket {
    * needs to be unique for a few minutes (long enough to last for the length of
    * any ACK or the completion of a mesh broadcast flood).
    * Note: Our crypto implementation uses this id as well.
-   * See [crypto](/docs/developers/firmware/encryption) for details.
+   * See [crypto](/docs/overview/encryption) for details.
    * FIXME - really should be fixed32 instead, this encoding only
    * hurts the ble link though.
    */
