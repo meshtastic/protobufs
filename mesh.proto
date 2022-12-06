@@ -505,6 +505,11 @@ message Routing {
     NO_RESPONSE = 8;
 
     /*
+     * Cannot send currently because duty cycle regulations will be violated.
+     */
+    DUTY_CYCLE_LIMIT = 9; 
+
+    /*
      * The application layer service on the remote node received your request, but considered your request somehow invalid
      */
     BAD_REQUEST = 32;
