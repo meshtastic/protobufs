@@ -8,6 +8,7 @@ import "config.proto";
 import "module_config.proto";
 
 option java_outer_classname = "LocalOnlyProtos";
+option csharp_namespace = "Meshtastic.Protobufs";
 
 /*
  * Protobuf structures common to apponly.proto and deviceonly.proto
