@@ -4,6 +4,7 @@ option java_package = "com.geeksville.mesh";
 option java_outer_classname = "Portnums";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/go/generated";
+option csharp_namespace = "Meshtastic.Protobufs";
 
 /*
  * For any new 'apps' that run on the device or via sister apps on phones/PCs they should pick and use a
@@ -76,6 +77,11 @@ enum PortNum {
    */
   WAYPOINT_APP = 8;
 
+  /* Audio Payloads.
+   * Encapsulated codec2 packets. On 2.4 GHZ Bandwidths only for now
+   */
+  AUDIO_APP = 9;
+
   /*
    * Provides a 'ping' service that replies to any packet it receives.
    * Also serves as a small example module.
@@ -127,6 +133,12 @@ enum PortNum {
    * Project files at https://github.com/GUVWAF/Meshtasticator 
    */
   SIMULATOR_APP = 69;
+
+  /*
+   * Provides a traceroute functionality to show the route a packet towards
+   * a certain destination would take on the mesh.
+   */
+  TRACEROUTE_APP = 70;
 
   /*
    * Private applications should use portnums >= 256.
