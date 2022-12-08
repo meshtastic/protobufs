@@ -4,6 +4,7 @@ option java_package = "com.geeksville.mesh";
 option java_outer_classname = "StoreAndForwardProtos";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/go/generated";
+option csharp_namespace = "Meshtastic.Protobufs";
 
 /*
  * TODO: REPLACE
