@@ -265,6 +265,13 @@ message ModuleConfig {
      * device.buzzer_gpio instead.
      */
     bool use_pwm = 7;
+
+    /*
+     * The notification will toggle with 'output_ms' for this time of seconds.
+     * Default is 0 which means don't repeat at all. 60 would mean blink
+     * and/or beep for 60 seconds
+     */
+    uint32 nag_timeout = 14;
   }
 
   /*

@@ -9,3 +9,7 @@
 *AudioConfig.i2s_sd int_size:8
 *AudioConfig.i2s_din int_size:8
 *AudioConfig.i2s_sck int_size:8
+
+*ExternalNotificationConfig.output_vibra int_size 8
+*ExternalNotificationConfig.output_buzzer int_size 8
+*ExternalNotificationConfig.nag_timeout int_size 16
