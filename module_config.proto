@@ -194,41 +194,77 @@ message ModuleConfig {
   message ExternalNotificationConfig {
 
     /*
-     * Preferences for the ExternalNotificationModule
+     * Enable the ExternalNotificationModule
      */
     bool enabled = 1;
 
     /*
-     * TODO: REPLACE
+     * When using in On/Off mode, keep the output on for this many
+     * milliseconds. Default 1000ms (1 second).
      */
     uint32 output_ms = 2;
 
     /*
-     * TODO: REPLACE
+     * Define the output pin GPIO setting Defaults to
+     * EXT_NOTIFY_OUT if set for the board.
+     * In standalone devices this pin should drive the LED to match the UI.
      */
     uint32 output = 3;
 
     /*
-     * TODO: REPLACE
+     * Optional: Define a secondary output pin for a vibra motor
+     * This is used in standalone devices to match the UI.
+     */
+    uint32 output_vibra = 8;
+
+    /*
+     * Optional: Define a tertiary output pin for an active buzzer
+     * This is used in standalone devices to to match the UI.
+     */
+    uint32 output_buzzer = 9;
+
+    /*
+     * IF this is true, the 'output' Pin will be pulled active high, false
+     * means active low.
      */
     bool active = 4;
 
     /*
-     * TODO: REPLACE
+     * True: Alert when a text message arrives (output)
      */
     bool alert_message = 5;
 
     /*
-     * TODO: REPLACE
+     * True: Alert when a text message arrives (output_vibra)
+     */
+    bool alert_message_vibra = 10;
+
+    /*
+     * True: Alert when a text message arrives (output_buzzer)
+     */
+    bool alert_message_buzzer = 11;
+
+    /*
+     * True: Alert when the bell character is received (output)
      */
     bool alert_bell = 6;
 
     /*
-     * TODO: REPLACE
+     * True: Alert when the bell character is received (output_vibra)
+     */
+    bool alert_bell_vibra = 12;
+
+    /*
+     * True: Alert when the bell character is received (output_buzzer)
+     */
+    bool alert_bell_buzzer = 13;
+
+    /*
+     * use a PWM output instead of a simple on/off output. This will ignore
+     * the 'output', 'output_ms' and 'active' settings and use the
+     * device.buzzer_gpio instead.
      */
     bool use_pwm = 7;
- 
-
   }
 
   /*
