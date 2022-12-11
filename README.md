@@ -1,21 +1,39 @@
-# Meshtastic Protobuf Definitions
+# Black-Lager Protobuf Definition
 
-[![CI](https://img.shields.io/github/workflow/status/meshtastic/protobufs/CI?label=actions&logo=github&color=yellow)](https://github.com/meshtastic/protobufs/actions/workflows/ci.yml)
-[![CLA assistant](https://cla-assistant.io/readme/badge/meshtastic/protobufs)](https://cla-assistant.io/meshtastic/protobufs)
-[![Fiscal Contributors](https://opencollective.com/meshtastic/tiers/badge.svg?label=Fiscal%20Contributors&color=deeppink)](https://opencollective.com/meshtastic/)
-[![Vercel](https://img.shields.io/static/v1?label=Powered%20by&message=Vercel&style=flat&logo=vercel&color=000000)](https://vercel.com?utm_source=meshtastic&utm_campaign=oss)
+This repository contains all protobuf definition for black-lager
 
-## Overview
+## What is protobuf
 
-The [Protobuf](https://developers.google.com/protocol-buffers) message definitions for the Meshtastic project (used by apps and the device firmware).
+Protocol buffers are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data – think XML, but smaller, faster, and simpler. You define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to and from a variety of data streams and using a variety of languages. Currently supported languages are C++, C#, Dart, Python, Java, Kotlin and Go.
 
-**[Documentation/API Reference](https://meshtastic.org/docs/developers/protobufs/api)**
 
-## Stats
+## Usage
 
-![Alt](https://repobeats.axiom.co/api/embed/47e9ee1d81d9c0fdd2b4b5b4c673adb1756f6db5.svg "Repobeats analytics image")
+### Download protocol buffer
 
-## Linter Setup
+To create a class, we need to generate the class based on ```.proto``` files with the help of protocol buffers which can be downloaded [here](https://github.com/protocolbuffers/protobuf/releases/tag/v21.11). 
 
-Linting is performed by [protolint](https://github.com/yoheimuta/protolint)
-Once installed, the Visual Studio Code extension [Proto Lint](https://marketplace.visualstudio.com/items?itemName=Plex.vscode-protolint) will perform linting automatically on save.
+### Compile protobuf class
+Next step is to run the compiler, specifying the source directory (where your application's source code lives – the current directory is used if you don't provide a value), the destination directory (where you want the generated code to go; often the same as $SRC_DIR), and the path to your .proto.
+
+```bash
+protoc -I=$SRC_DIR --python_out=$DST_DIR $SRC_DIR/FILENAME.proto
+```
+
+### Example of protobuf class in code
+The programmer generated an addressbook_pb2 class using his addressbook_pb2.proto definition. To use the generated class, simply import the file as a module, after that you can access the protobuf definition accordingly.
+
+```python
+import addressbook_pb2
+person = addressbook_pb2.Person()
+person.id = 1234
+person.name = "John Doe"
+person.email = "jdoe@example.com"
+phone = person.phones.add()
+phone.number = "555-4321"
+phone.type = addressbook_pb2.Person.HOME
+```
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
