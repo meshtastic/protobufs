@@ -1,11 +1,6 @@
 syntax = "proto3";
 
 /*
- * https://grpc.io/docs/protoc-installation/
- * Useful protc installation guide for reference
- */
-
-/*
  * Can contain signed message or Persona protobuf
  */
 message BlackLagerMessage{
@@ -13,7 +8,7 @@ message BlackLagerMessage{
   /*
   * Used to differentiate text or persona
   */
-  int32 type = 1;
+  boolean isMessage = 1;
 
   optional BlackLagerText text = 2;
 
@@ -36,10 +31,6 @@ message BlackLagerMessage{
 message BlackLagerText{
 
   bytes signedMessage = 1;
-
-  int32 senderNodeNum = 2;
-  
-  int32 receiverNodeNum = 3;
 }
 
 /*
