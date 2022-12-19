@@ -92,13 +92,22 @@ enum WaypointType {
   /*
    * Reserved for later use, feel free to find a meaningfull addition
    */
-  RESERVED = 13;
+  RESERVED_0 = 13;
 
   /*
    * Reserved for later use, feel free to find a meaningfull addition
    */
-  RESERVED_2 = 14;
+  RESERVED_1 = 14;
 
+  /*
+   * Reserved for later use, feel free to find a meaningfull addition
+   */
+  RESERVED_2 = 15;
+
+  /*
+   * Reserved for later use, feel free to find a meaningfull addition
+   */
+  RESERVED_3 = 16;
 
 
   /* ----- VEHICLES ----- */
@@ -106,37 +115,32 @@ enum WaypointType {
   /*
    * Bike human or motor powered
    */
-  BIKE = 15;
+  BIKE = 17;
 
   /*
    * Car, Pickup, Bus, Truck ...
    */
-  CAR = 16;
+  CAR = 18;
 
   /*
    * Sailboat, Motorboat, Kanu, vehicles in water
    */
-  SHIP = 17;
+  SHIP = 19;
 
   /*
    * Train, handcar, vehicles on rails
    */
-  TRAIN = 18;
+  TRAIN = 20;
 
   /*
    * Fixed wing aircrafts
    */
-  PLANE = 19;
+  PLANE = 21;
 
   /*
    * Rotary wing aircrafts
    */
-  HELICOPTER = 20;
-
-  /*
-   * Military vehicles with armour
-   */
-  TANK = 21;
+  HELICOPTER = 22;
 
 
 
@@ -145,50 +149,45 @@ enum WaypointType {
   /*
    * A thing for something else
    */
-  GENERIC_RESSOURCE = 22;
+  GENERIC_RESSOURCE = 23;
 
   /*
    * Somebody
    */
-  PERSON = 23;
+  PERSON = 24;
 
   /*
    * Something to drink or eat
    */
-  DRINK_AND_FOOD = 24;
+  DRINK_AND_FOOD = 25;
 
   /*
    * Electricity, battery, ...
    */
-  ELECTRICITY = 25;
+  ELECTRICITY = 26;
 
   /*
    * Something to burn
    */
-  FUEL = 26;
+  FUEL = 27;
 
   /*
    * Clothes
    */
-  CLOTHES = 27;
+  CLOTHES = 28;
 
   /*
    * Handy, Radio, pen & paper, ...
    */
-  COMMUNICATION_EQUIPMENT = 28;
+  COMMUNICATION_EQUIPMENT = 29;
 
   /*
    * Medical supply
    */
-  MEDICIN = 29;
+  MEDICINE = 30;
 
   /*
-   * Something to sleep in
+   * Something or somewhere to sleep in
    */
-  BED = 30;
-
-  /*
-   * Weapons and ammunition
-   */
-  WEAPONS = 31;
+  BED = 31;
 }
