@@ -1,0 +1,367 @@
+syntax = "proto3";
+
+option java_package = "com.geeksville.mesh";
+option java_outer_classname = "WaypointType";
+option optimize_for = LITE_RUNTIME;
+option go_package = "github.com/meshtastic/go/generated";
+
+/*
+ * Goal of this type is to provide general categories for Waypoints.
+ * This way an external interface can show them as a special icons.
+ * Therefore maps with waypoints will be a lot easier to understand.
+ * Focus for categories is on navigation, organisation of equipment and special places to know about.
+ *
+ * Categories with 128 entries each:
+ * (The first value in each category is always generic.)
+ *
+ * UNKNOWN:        0
+ * GENERAL-POINTS: 1    - 127
+ * LAND-MARKS:     128  - 255
+ * BUILDINGS:      256  - 383
+ * PLACES:         384  - 511
+ * VEHICLES:       512  - 639
+ * RESSOURCES:     640  - 767
+ */
+enum WaypointType {
+
+  /*
+   * A point that does not fit in other categories
+   */
+  UNKNOWN_WAYPOINT_TYPE = 0;
+
+  /* ----- GENERAL-POINTS ----- */
+
+  /*
+   * Generic waypoint
+   */
+  GENERIC_WAYPOINT = 1;
+
+  /*
+   * Start point
+   */
+  START_POINT = 2;
+
+  /*
+   * Destination
+   */
+  DESTINATION = 3;
+
+  /*
+   * Place to rally / meet
+   */
+  RALLY_POINT = 4;
+
+  /*
+   * Point with great view or to look at
+   */
+  VIEW_POINT = 5;
+
+  /*
+   * Point with dangers
+   */
+  DANGER = 6;
+
+
+
+  /* ----- LAND-MARKS ----- */
+
+  /*
+   * High point, mountain, hill, ...
+   */
+  GENERIC_LAND_MARK = 128;
+
+  /*
+   * High point, mountain, hill, ...
+   */
+  MOUNTAIN = 129;
+
+  /*
+   * River, stream, ...
+   */
+  RIVER = 130;
+
+  /*
+   * Lake, sea, pond,  ...
+   */
+  LAKE = 131;
+
+  /*
+   * Lots of trees
+   */
+  FOREST = 132;
+
+  /*
+   * Rails for trains
+   */
+  RAILS = 133;
+
+  /*
+   * High way, street, ...
+   */
+  STREET = 134;
+
+  /*
+   * Foot path
+   */
+  FOOT_PATH = 135;
+
+  /*
+   * Field
+   */
+  FIELD = 136;
+
+  /*
+   * Valley, Canyon
+   */
+  VALLEY = 137;
+
+  /*
+   * Beach, dessert, ...
+   */
+  SAND = 138;
+
+  /*
+   * Cave
+   */
+  CAVE = 139;
+
+  /*
+   * Vulcan
+   */
+  VULCAN = 140;
+
+  /*
+   * Island
+   */
+  ISLAND = 141;
+
+  /*
+   * Snow and ice
+   */
+  SNOW = 142;
+
+
+
+  /* ----- BUILDINGS ----- */
+
+  /*
+   * General Building
+   */
+  GENERIC_BUILDING = 256;
+
+  /*
+   * Fammily house, Appartment, ...
+   */
+  LIVING_HOUSE = 257;
+
+  /*
+   * Hotel, hostel, ...
+   */
+  HOTEL = 258;
+
+  /*
+   * Doktor, hospital, ...
+   */
+  HOSPITAL = 259;
+
+  /*
+   * First grade, highschool, university, ...
+   */
+  SCHOOL = 260;
+
+  /*
+   * Parlament, town hall, ...
+   */
+  GOVERNMENT_BUILDING = 261;
+
+  /*
+   * Theater, kino, bowling, ...
+   */
+  ACTIVITY_BUILDING = 262;
+
+  /*
+   * Shop, Shopping-Mall, supermarket, ...
+   */
+  SHOP = 263;
+
+  /*
+   * Restaurant, imbiss, fast food, ...
+   */
+  RESTAURANT = 264;
+
+  /*
+   * Gas station
+   */
+  FUEL_STATION = 265;
+
+  /*
+   * Tower for communications
+   */
+  RADIO_TOWER = 266;
+
+  /*
+   * Powerline
+   */
+  POWER_LINE = 267;
+
+  /*
+   * Pipeline for gas, fuel, water, ...
+   */
+  PIPELINE = 268;
+
+  /*
+   * Crossing over water
+   */
+  BRIDGE = 269;
+
+  /*
+   * Post office
+   */
+  POST_OFFICE = 270;
+
+  /*
+   * Train station, bus station, taxi station, airport, ship yard ...
+   */
+  STATION = 271;
+
+  /*
+   * Fence, barbed wire, ...
+   */
+  FENCE = 272;
+
+
+  /* ----- PLACES ----- */
+
+  /*
+   * General place
+   */
+  GENERIC_PLACE = 384;
+
+  /*
+   * Park in town
+   */
+  PARK = 385;
+
+  /*
+   * Open field for public market
+   */
+  MARKET_PLACE = 386;
+
+  /*
+   * Famous building
+   */
+  SIGHT_SEEING = 387;
+
+
+
+  /* ----- VEHICLES ----- */
+
+  /*
+   * General vehicle
+   */
+  GENERIC_VEHICLE = 512;
+
+  /*
+   * Human powered bike
+   */
+  BIKE = 513;
+
+  /*
+   * Motor bike
+   */
+  MOTOR_BIKE = 514;
+
+  /*
+   * Car, Pickup, ...
+   */
+  CAR = 515;
+
+  /*
+   * Bus
+   */
+  BUS = 516;
+
+  /*
+   * Truck
+   */
+  TRUCK = 517;
+
+  /*
+   * Sailboat, Motorboat, Kanu, vehicles in water
+   */
+  SHIP = 518;
+
+  /*
+   * Train, handcar, vehicles on rails
+   */
+  TRAIN = 519;
+
+  /*
+   * Fixed wing aircrafts
+   */
+  PLANE = 520;
+
+  /*
+   * Rotary wing aircrafts
+   */
+  HELICOPTER = 521;
+
+  /*
+   * Military vehicles with armour
+   */
+  TANK = 522;
+
+
+
+  /* ----- RESSOURCES ----- */
+
+  /*
+   * A thing for something else
+   */
+  GENERIC_RESSOURCE = 640;
+
+  /*
+   * Something to drink
+   */
+  WATER = 641;
+
+  /*
+   * Something to eat
+   */
+  FOOD = 642;
+
+  /*
+   * Electricity, battery, ...
+   */
+  ELECTRICITY = 643;
+
+  /*
+   * Something to burn
+   */
+  FUEL = 644;
+
+  /*
+   * Clothes
+   */
+  CLOTHES = 645;
+
+  /*
+   * Handy, Radio, pen & paper, ...
+   */
+  COMMUNICATION_EQUIPMENT = 646;
+
+  /*
+   * Medical supply
+   */
+  MEDICIN = 647;
+
+  /*
+   * Something to sleep in
+   */
+  BED = 648;
+
+  /*
+   * Weapons and ammunition
+   */
+  WEAPONS = 649;
+}

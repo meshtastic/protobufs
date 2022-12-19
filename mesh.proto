@@ -9,6 +9,7 @@ import "config.proto";
 import "module_config.proto";
 import "portnums.proto";
 import "telemetry.proto";
+import "waypoints.proto";
 
 option java_outer_classname = "MeshProtos";
 option csharp_namespace = "Meshtastic.Protobufs";
@@ -637,10 +638,15 @@ message Waypoint {
    */
   string name = 6;
 
-  /**
+  /*
    * Description of the waypoint - max 100 chars
    */
   string description = 7;
+
+  /*
+   * Type of the waypoint
+   */
+  WaypointType type = 8;
 
 }
 
