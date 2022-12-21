@@ -54,6 +54,11 @@ message StoreAndForward {
     ROUTER_HISTORY = 6;
 
     /*
+     * Router is responding to a request for stats.
+     */
+    ROUTER_STATS = 7;
+
+    /*
      * Client is an in error state.
      */
     CLIENT_ERROR = 64;
