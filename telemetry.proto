@@ -157,4 +157,9 @@ enum TelemetrySensorType {
   */
   QMC5883L = 11;
 
+  /*
+  * High accuracy temperature and humidity
+  */
+  SHT31 = 12;
+  
 };
