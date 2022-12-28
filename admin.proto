@@ -109,7 +109,7 @@ message AdminMessage {
     /*
      * TODO: REPLACE
      */
-    REMOTEHARDWARE_CONFIG = 7;
+    REMOTEHARDWARE_CONFIG = 8;
   }
 
   /*
