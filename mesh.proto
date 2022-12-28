@@ -297,6 +297,11 @@ enum HardwareModel {
   TLORA_V2_1_1P8 = 15;
 
   /*
+   * TODO: REPLACE
+   */
+  TLORA_T3_S3 = 16;
+
+  /*
    * B&Q Consulting Station Edition G1: https://uniteng.com/wiki/doku.php?id=meshtastic:station
    */
   STATION_G1 = 25; 
