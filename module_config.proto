@@ -57,6 +57,17 @@ message ModuleConfig {
   }
 
   /*
+   * RemoteHardwareModule Config
+   */
+  message RemoteHardwareConfig {
+
+    /*
+     * Whether the Module is enabled
+     */
+    bool enabled = 1;
+  }
+
+  /*
    * Audio Config for codec2 voice
    */
   message AudioConfig {
@@ -515,6 +526,11 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     AudioConfig audio = 8;
+
+    /*
+     * TODO: REPLACE
+     */
+    RemoteHardwareConfig remote_hardware = 9;
 
   }
 }

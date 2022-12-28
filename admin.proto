@@ -105,6 +105,11 @@ message AdminMessage {
      * TODO: REPLACE
      */
     AUDIO_CONFIG = 7;
+
+    /*
+     * TODO: REPLACE
+     */
+    REMOTEHARDWARE_CONFIG = 7;
   }
 
   /*
