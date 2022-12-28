@@ -466,6 +466,37 @@ message Config {
      * Override auto-detect in screen
      */
     OledType oled = 7;
+
+    enum DisplayMode {
+      /*
+       * Default. The old style for the 128x64 OLED screen
+       */
+      DEFAULT = 0;
+      
+      /*
+       * Rearrange display elements to cater for bicolor OLED displays
+       */
+      TWOCOLOR = 1;
+      
+      /*
+       * Same as TwoColor, but with inverted top bar. Not so good for Epaper displays
+       */
+      INVERTED = 2;
+
+      /*
+       * TFT Full Color Displays (not implemented yet)
+       */
+      COLOR = 3;
+    }
+    /*
+     * Display Mode
+     */
+    DisplayMode displaymode = 8;
+
+    /*
+     * Print first line in pseudo-bold? FALSE is original style, TRUE is bold
+     */
+    bool heading_bold = 9;
   }
 
   /*
