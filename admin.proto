@@ -179,6 +179,16 @@ message AdminMessage {
     DeviceMetadata get_device_metadata_response = 13;
 
     /*
+     * Get the Ringtone in the response to this message.
+     */
+    bool get_ringtone_request = 14;
+
+    /*
+     * Get the Ringtone in the response to this message.
+     */
+    string get_ringtone_response = 15;
+
+    /*
      * Set the owner for this node
      */
     User set_owner = 32;
@@ -206,6 +216,11 @@ message AdminMessage {
      * Set the Canned Message Module messages text.
      */
     string set_canned_message_module_messages = 36;
+
+    /*
+     * Set the ringtone for ExternalNotification.
+     */
+    string set_ringtone_message = 37;
 
     /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes
