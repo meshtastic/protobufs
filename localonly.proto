@@ -101,7 +101,7 @@ message LocalModuleConfig {
   ModuleConfig.AudioConfig audio = 9;
 
   /*
-   * The part of the config that is specific to the GPS module
+   * The part of the config that is specific to the Remote Hardware module
    */
   ModuleConfig.RemoteHardwareConfig remote_hardware = 10;
 
