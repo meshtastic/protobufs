@@ -273,7 +273,7 @@ message Config {
    */
   message NetworkConfig {
 
-    enum EthMode {
+    enum AddressMode {
       /*
        * obtain ip address via DHCP
        */
@@ -312,7 +312,6 @@ message Config {
      */
     bool wifi_enabled = 1;
     
-
     /*
      * If set, this node will try to join the specified wifi network and
      * acquire an address via DHCP
@@ -337,7 +336,7 @@ message Config {
     /*
      * acquire an address via DHCP or assign static
      */
-    EthMode eth_mode = 7;
+    AddressMode address_mode = 7;
 
     /*
      * struct to keep static address
