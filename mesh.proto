@@ -371,10 +371,10 @@ enum HardwareModel {
    */
   HELTEC_WSL_V3 = 44;
   
-    /*
+  /*
    * New BETAFPV ELRS Micro TX Module 2.4G with ESP32 CPU
    */
- BETAFPV_2400_TX = 45;
+  BETAFPV_2400_TX = 45;
   
   /*
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
