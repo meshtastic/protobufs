@@ -372,11 +372,6 @@ enum HardwareModel {
    */
   HELTEC_WSL_V3 = 44;
   
-    /*
-   * New BETAFPV ELRS Micro TX Module 2.4G with ESP32 CPU
-   */
- BETAFPV_2400_TX = 45;
-  
   /*
    * New BETAFPV ELRS Micro TX Module 2.4G with ESP32 CPU
    */
