@@ -648,11 +648,15 @@ message Waypoint {
    */
   string name = 6;
 
-  /**
+  /*
    * Description of the waypoint - max 100 chars
    */
   string description = 7;
 
+  /*
+   * Designator icon for the waypoint in the form of a unicode emoji
+   */
+  fixed32 emoji = 8;
 }
 
 /*
