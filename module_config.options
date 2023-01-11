@@ -1,6 +1,6 @@
 *CannedMessageConfig.allow_input_source max_size:16
 
-*MQTTConfig.address max_size:32
+*MQTTConfig.address max_size:64
 *MQTTConfig.username max_size:64
 *MQTTConfig.password max_size:64
 
