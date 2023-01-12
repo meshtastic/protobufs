@@ -655,7 +655,7 @@ message Waypoint {
   /*
    * Designator icon for the waypoint in the form of a unicode emoji
    */
-  fixed32 emoji = 8;
+  fixed32 icon = 8;
 }
 
 /*
