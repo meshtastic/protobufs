@@ -9,7 +9,7 @@
 
 The [Protobuf](https://developers.google.com/protocol-buffers) message definitions for the Meshtastic project (used by apps and the device firmware).
 
-**[Documentation/API Reference](https://meshtastic.org/docs/developers/protobufs/api)**
+**[Documentation/API Reference](https://buf.build/meshtastic/protobufs)**
 
 ## Stats
 
