@@ -1,3 +1,6 @@
 {
-  "recommendations": ["zxh404.vscode-proto3", "plex.vscode-protolint"]
+  "recommendations": [
+    "plex.vscode-protolint",
+    "trunk.io"
+  ]
 }

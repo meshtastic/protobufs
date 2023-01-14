@@ -1,28 +1,8 @@
-name: "CI"
+name: "release"
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
   workflow_dispatch:
   
 jobs:
-
-  lint:
-    if: ${{ github.event_name != 'workflow_dispatch' }}
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: checkout source
-      uses: actions/checkout@v3
-
-    - name: run protolint
-      uses: plexsystems/protolint-action@v0.2.0
-      with:
-        configDirectory: .
-  
   release:
     if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest

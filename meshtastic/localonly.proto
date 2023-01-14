@@ -1,11 +1,13 @@
 syntax = "proto3";
 
+package meshtastic;
+
 option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/go/generated";
 
-import "config.proto";
-import "module_config.proto";
+import "meshtastic/config.proto";
+import "meshtastic/module_config.proto";
 
 option java_outer_classname = "LocalOnlyProtos";
 option csharp_namespace = "Meshtastic.Protobufs";

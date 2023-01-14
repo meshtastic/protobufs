@@ -1,10 +1,12 @@
 syntax = "proto3";
 
+package meshtastic;
+
 option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/go/generated";
 
-import "mesh.proto";
+import "meshtastic/mesh.proto";
 
 option java_outer_classname = "MQTTProtos";
 option csharp_namespace = "Meshtastic.Protobufs";
