@@ -638,9 +638,10 @@ message Waypoint {
   uint32 expire = 4;
 
   /*
-   * If true, only allow the original sender to update the waypoint.
+   * If greater than zero, treat the value as a nodenum only allowing them to update the waypoint.
+   * If zero, the waypoint is open to be edited by any member of the mesh.
    */
-  bool locked = 5;
+  fixed32 locked_to = 5;
 
   /*
    * Name of the waypoint - max 30 chars
