@@ -9,6 +9,7 @@ import "config.proto";
 import "module_config.proto";
 import "portnums.proto";
 import "telemetry.proto";
+import "xmodem.proto";
 
 option java_outer_classname = "MeshProtos";
 option csharp_namespace = "Meshtastic.Protobufs";
@@ -1288,8 +1289,15 @@ message FromRadio {
      */
     Channel channel = 10;
 
-    /* Queue status info */
+    /*
+     * Queue status info
+     */
     QueueStatus queueStatus = 11;
+
+    /*
+     * File Transfer Chunk
+     */
+    XModem xmodemPacket = 12;
   }
 }
 
@@ -1328,6 +1336,12 @@ message ToRadio {
      * (Sending this message is optional for clients)
      */
     bool disconnect = 4;
+
+    /*
+     * File Transfer Chunk
+     */
+
+    XModem xmodemPacket = 5;
   }
 }
 
