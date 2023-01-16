@@ -574,6 +574,16 @@ message Config {
        * WLAN Band
        */
       LORA_24 = 13;
+
+      /*
+       * Ukraine 433mhz
+       */
+      UA_433 = 14;
+
+      /*
+       * Ukraine 868mhz
+       */
+      UA_868 = 15;
     }
 
     /*
