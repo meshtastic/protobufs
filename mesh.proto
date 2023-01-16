@@ -642,7 +642,7 @@ message Waypoint {
    * If greater than zero, treat the value as a nodenum only allowing them to update the waypoint.
    * If zero, the waypoint is open to be edited by any member of the mesh.
    */
-  fixed32 locked_to = 5;
+  uint32 locked_to = 5;
 
   /*
    * Name of the waypoint - max 30 chars
