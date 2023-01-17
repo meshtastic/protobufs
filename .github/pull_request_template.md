@@ -10,4 +10,3 @@
 
 - [ ] All top level messages commented
 - [ ] All enum members have unique descriptions
-- [ ] Formatting is consistant with the defined protolint rules
