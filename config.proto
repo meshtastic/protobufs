@@ -713,6 +713,12 @@ message Config {
     bool override_duty_cycle = 12; 
 
     /*
+     * If true, SX126x Rx boosted gain mode will be enabled on compatible hardware.
+     * Defaults to false (SX126x Rx power saving gain mode).
+    */
+    bool sx126x_rx_boosted_gain = 13;
+
+    /*
      * For testing it is useful sometimes to force a node to never listen to
      * particular other nodes (simulating radio out of range). All nodenums listed
      * in ignore_incoming will have packets they send droped on receive (by router.cpp)
