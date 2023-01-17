@@ -1,6 +1,6 @@
 <!-- Describe what you are intending to change -->
 
-## What does this PR do?
+# What does this PR do?
 
 <!-- Please remove or replace the issue url -->
 
@@ -10,4 +10,4 @@
 
 - [ ] All top level messages commented
 - [ ] All enum members have unique descriptions
-- [ ] Formatting is consistant with the defined protolint rules
+- [ ] Code has been formatted with Trunk
