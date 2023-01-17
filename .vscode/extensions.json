@@ -1,6 +1,3 @@
 {
-  "recommendations": [
-    "plex.vscode-protolint",
-    "trunk.io"
-  ]
+  "recommendations": ["plex.vscode-protolint", "trunk.io"]
 }
