@@ -17,10 +17,11 @@ jobs:
       - name: checkout source
         uses: actions/checkout@v3
 
-      - name: run protolint
-        uses: plexsystems/protolint-action@v0.2.0
+      - uses: bufbuild/buf-setup-action@v1
+      - uses: bufbuild/buf-lint-action@v1
+      - uses: bufbuild/buf-breaking-action@v1
         with:
-          configDirectory: .
+          against: "https://github.com/${GITHUB_REPOSITORY}.git#branch=master"
 
   release:
     if: ${{ github.event_name == 'workflow_dispatch' }}
