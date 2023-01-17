@@ -1,14 +1,15 @@
 syntax = "proto3";
 
+package meshtastic;
+
 option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/go/generated";
-
-import "channel.proto";
-import "mesh.proto";
-
 option java_outer_classname = "DeviceOnly";
 option csharp_namespace = "Meshtastic.Protobufs";
+
+import "meshtastic/channel.proto";
+import "meshtastic/mesh.proto";
 
 /*
  * This message is never sent over the wire, but it is used for serializing DB

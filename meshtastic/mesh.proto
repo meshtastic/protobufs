@@ -1,17 +1,18 @@
 syntax = "proto3";
 
+package meshtastic;
+
 option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/go/generated";
-
-import "channel.proto";
-import "config.proto";
-import "module_config.proto";
-import "portnums.proto";
-import "telemetry.proto";
-
 option java_outer_classname = "MeshProtos";
 option csharp_namespace = "Meshtastic.Protobufs";
+
+import "meshtastic/channel.proto";
+import "meshtastic/config.proto";
+import "meshtastic/module_config.proto";
+import "meshtastic/portnums.proto";
+import "meshtastic/telemetry.proto";
 
 /*
  * a gps position

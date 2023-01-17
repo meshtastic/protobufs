@@ -1,0 +1,11 @@
+version: v1
+name: "buf.build/meshtastic/protobufs"
+deps: []
+build:
+  excludes: []
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - MINIMAL
