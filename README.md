@@ -14,8 +14,3 @@ The [Protobuf](https://developers.google.com/protocol-buffers) message definitio
 ## Stats
 
 ![Alt](https://repobeats.axiom.co/api/embed/47e9ee1d81d9c0fdd2b4b5b4c673adb1756f6db5.svg "Repobeats analytics image")
-
-## Linter Setup
-
-Linting is performed by [protolint](https://github.com/yoheimuta/protolint)
-Once installed, the Visual Studio Code extension [Proto Lint](https://marketplace.visualstudio.com/items?itemName=Plex.vscode-protolint) will perform linting automatically on save.
