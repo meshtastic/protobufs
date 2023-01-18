@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-package meshtastic;
 
 option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
@@ -8,11 +7,11 @@ option go_package = "github.com/meshtastic/go/generated";
 option csharp_namespace = "Meshtastic.Protobufs";
 option java_outer_classname = "AdminProtos";
 
-import "meshtastic/channel.proto";
-import "meshtastic/config.proto";
-import "meshtastic/device_metadata.proto";
-import "meshtastic/mesh.proto";
-import "meshtastic/module_config.proto";
+import "channel.proto";
+import "config.proto";
+import "device_metadata.proto";
+import "mesh.proto";
+import "module_config.proto";
 
 /*
  * This message is handled by the Admin module and is responsible for all settings/channel read/write operations.

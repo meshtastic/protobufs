@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-package meshtastic;
 
 option java_package = "com.geeksville.mesh";
 option java_outer_classname = "RemoteHardware";

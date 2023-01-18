@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-package meshtastic;
 
 option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
@@ -8,7 +7,7 @@ option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "MQTTProtos";
 option csharp_namespace = "Meshtastic.Protobufs";
 
-import "meshtastic/mesh.proto";
+import "mesh.proto";
 
 /*
  * This message wraps a MeshPacket with extra metadata about the sender and how it arrived.

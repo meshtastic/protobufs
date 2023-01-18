@@ -1,8 +1,7 @@
 syntax = "proto3";
 
-package meshtastic;
 
-import "meshtastic/config.proto";
+import "config.proto";
 
 option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;

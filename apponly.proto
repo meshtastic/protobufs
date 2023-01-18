@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-package meshtastic;
 
 option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
@@ -8,8 +7,8 @@ option go_package = "github.com/meshtastic/go/generated";
 option csharp_namespace = "Meshtastic.Protobufs";
 option java_outer_classname = "AppOnlyProtos";
 
-import "meshtastic/channel.proto";
-import "meshtastic/config.proto";
+import "channel.proto";
+import "config.proto";
 
 /*
  * This is the most compact possible representation for a set of channels.
