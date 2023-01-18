@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "meshtastic/config.proto";
+
 option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/go/generated";
@@ -41,4 +43,14 @@ message DeviceMetadata {
    * Indicates that the device has an ethernet peripheral
    */
   bool hasEthernet = 6;
+
+  /*
+   * Indicates that the device's role in the mesh
+   */
+  Config.DeviceConfig.Role role = 7;
+
+  /*
+   * Indicates the device's current enabled position flags
+   */
+  Config.PositionConfig.PositionFlags position_flags = 8;
 }
