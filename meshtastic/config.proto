@@ -344,6 +344,11 @@ message Config {
      * struct to keep static address
      */
     IpV4Config ipv4_config = 8;
+
+    /*
+     * rsyslog Server and Port
+     */
+    string rsyslog_server = 9;
   }
 
   /*
