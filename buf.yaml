@@ -1,5 +1,5 @@
 version: v1
-name: "buf.build/protobufs"
+name: "buf.build/protobufs/meshtastic"
 deps: []
 build:
   excludes: []
