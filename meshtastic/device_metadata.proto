@@ -52,5 +52,5 @@ message DeviceMetadata {
   /*
    * Indicates the device's current enabled position flags
    */
-  Config.PositionConfig.PositionFlags position_flags = 8;
+  uint32 position_flags = 8;
 }
