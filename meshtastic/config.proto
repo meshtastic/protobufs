@@ -433,6 +433,11 @@ message Config {
        * Default / Auto
        */
       OLED_SH1106 = 2;
+
+      /*
+       * Can not be auto detected but set by proto. Used for 128x128 screens
+       */
+      OLED_SH1107 = 3;
     }
 
     /*
