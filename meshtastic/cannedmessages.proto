@@ -2,11 +2,12 @@ syntax = "proto3";
 
 package meshtastic;
 
+option optimize_for = LITE_RUNTIME;
 option java_package = "com.geeksville.mesh";
 option java_outer_classname = "CannedMessageConfigProtos";
-option optimize_for = LITE_RUNTIME;
 option go_package = "github.com/meshtastic/go/generated";
 option csharp_namespace = "Meshtastic.Protobufs";
+option swift_prefix = "";
 
 /*
  * Canned message module configuration.
