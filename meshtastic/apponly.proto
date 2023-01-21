@@ -2,11 +2,13 @@ syntax = "proto3";
 
 package meshtastic;
 
-option java_package = "com.geeksville.mesh";
 option optimize_for = LITE_RUNTIME;
+option java_package = "com.geeksville.mesh";
+option java_outer_classname = "AppOnlyProtos";
 option go_package = "github.com/meshtastic/go/generated";
 option csharp_namespace = "Meshtastic.Protobufs";
-option java_outer_classname = "AppOnlyProtos";
+option swift_prefix = "";
+
 
 import "meshtastic/channel.proto";
 import "meshtastic/config.proto";
