@@ -6,7 +6,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
       - uses: bufbuild/buf-lint-action@v1
       - uses: bufbuild/buf-breaking-action@v1
         with:
           against: "https://github.com/${GITHUB_REPOSITORY}.git#branch=master"
+      - uses: bufbuild/buf-push-action@v1
+        with:
+          buf_token: ${{ secrets.BUF_TOKEN }}
+          draft: ${{ github.ref_name != 'master'}}
