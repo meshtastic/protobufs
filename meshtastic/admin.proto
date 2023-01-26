@@ -236,19 +236,6 @@ message AdminMessage {
     bool commit_edit_settings = 65;
 
     /*
-     * Setting channels/radio config remotely carries the risk that you might send an invalid config and the radio never talks to your mesh again.
-     * Therefore if setting either of these properties remotely, you must send a confirm_xxx message within 10 minutes.
-     * If you fail to do so, the radio will assume loss of comms and revert your changes.
-     * These messages are optional when changing the local node.
-     */
-    bool confirm_set_channel = 66;
-
-    /*
-     * TODO: REPLACE
-     */
-    bool confirm_set_radio = 67;
-
-    /*
      * Tell the node to reboot into the OTA Firmware in this many seconds (or <0 to cancel reboot)
      * Only Implemented for ESP32 Devices. This needs to be issued to send a new main firmware via bluetooth.
      */
