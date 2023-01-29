@@ -1,6 +1,9 @@
 name: Push commit to schema registry
 
-on: push
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   push_to_registry:
