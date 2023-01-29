@@ -1,4 +1,4 @@
-name: Increment version and create tag
+name: Create tag
 
 on:
   workflow_dispatch:
@@ -22,7 +22,7 @@ jobs:
 
       - name: Get current version
         run: |
-          VERSION=$(cat version | grep version: | awk '{print $2}')
+          VERSION=$(git describe --abbrev=0 --tags)
 
       - name: Increment version
         run: |
@@ -45,15 +45,8 @@ jobs:
 
           # Update the version
           NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
-          sed -i "s/version: $VERSION/version: $NEW_VERSION/" version
-
-      - name: Commit and push changes
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: "Release $NEW_VERSION"
-          push: true
 
       - name: Create tag
         run: |
           git tag $NEW_VERSION
-          git push origin $NEW_VERSION
+          git push --tags
