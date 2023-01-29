@@ -70,7 +70,7 @@ message Config {
 
       /*
        * Same as behavior as ALL but skips packet decoding and simply rebroadcasts them.
-       * Only available in Repeater role.
+       * Only available in Repeater role. Setting this on any other roles will result in ALL behavior.
        */
       ALL_SKIP_DECODING = 1;
 
