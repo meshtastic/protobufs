@@ -652,6 +652,11 @@ message Config {
        * Short Range - Fast
        */
       SHORT_FAST = 6;
+
+      /*
+       * Long Range - Moderately Fast
+       */
+      LONG_MODERATE = 7;
     }
 
     /*
