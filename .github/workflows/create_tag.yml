@@ -22,7 +22,7 @@ jobs:
 
       - name: Get current version
         run: |
-          VERSION=$(cat buf.yaml | grep version: | awk '{print $2}')
+          VERSION=$(cat version | grep version: | awk '{print $2}')
 
       - name: Increment version
         run: |
@@ -43,9 +43,9 @@ jobs:
             PATCH=0
           fi
 
-          # Update the version in buf.yaml
+          # Update the version
           NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
-          sed -i "s/version: $VERSION/version: $NEW_VERSION/" buf.yaml
+          sed -i "s/version: $VERSION/version: $NEW_VERSION/" version
 
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v4
