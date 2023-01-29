@@ -59,6 +59,29 @@ message Config {
     }
 
     /*
+     * Defines the device's behavior for how messages are rebroadcast
+     */
+    enum RebroadcastMode {
+      /*
+       * Default behavior.
+       * Rebroadcast any observed message, if it was on our private channel or from another mesh with the same lora params.
+       */
+      ALL = 0;
+
+      /*
+       * Same as behavior as ALL but skips packet decoding and simply rebroadcasts them.
+       * Only available in Repeater role. Setting this on any other roles will result in ALL behavior.
+       */
+      ALL_SKIP_DECODING = 1;
+
+      /*
+       * Ignores observed messages from foreign meshes that are open or those which it cannot decrypt.
+       * Only rebroadcasts message on the nodes local primary / secondary channels.
+       */
+      LOCAL_ONLY = 2;
+    }
+
+    /*
      * Sets the role of node
      */
     Role role = 1;
@@ -86,6 +109,10 @@ message Config {
      */
     uint32 buzzer_gpio = 5;
 
+    /*
+     * Sets the role of node
+     */
+    RebroadcastMode rebroadcast_mode = 6;
   }
 
   /*
