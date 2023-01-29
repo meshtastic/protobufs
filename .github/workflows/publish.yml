@@ -1,9 +1,9 @@
-name: Push commit to schema registry
+name: Push new version to schema registry
 
 on:
   push:
-    branches:
-      - master
+    tags:
+      - "v*"
 
 jobs:
   push_to_registry:
@@ -24,4 +24,4 @@ jobs:
         #   buf_token: ${{ secrets.BUF_TOKEN }}
         run: |
           export BUF_TOKEN=${{ secrets.BUF_TOKEN }}
-          buf push --tag latest --tag ${{ github.sha }}
+          buf push --tag ${{ github.ref_name }}
