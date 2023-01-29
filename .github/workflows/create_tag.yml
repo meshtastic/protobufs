@@ -1,0 +1,59 @@
+name: Increment version and create tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      increment_type:
+        type: choice
+        description: "Select the type of version increment"
+        required: true
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  increment_version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get current version
+        run: |
+          VERSION=$(cat buf.yaml | grep version: | awk '{print $2}')
+
+      - name: Increment version
+        run: |
+          # Split version into major, minor, and patch
+          MAJOR=$(echo $VERSION | awk -F '.' '{print $1}' | cut -c 2-)
+          MINOR=$(echo $VERSION | awk -F '.' '{print $2}')
+          PATCH=$(echo $VERSION | awk -F '.' '{print $3}')
+
+          # Increment the appropriate part of the version
+          if [[ ${{ inputs.increment_type }} == "patch" ]]; then
+            PATCH=$((PATCH + 1))
+          elif [[ ${{ inputs.increment_type }} == "minor" ]]; then
+            MINOR=$((MINOR + 1))
+            PATCH=0
+          elif [[ ${{ inputs.increment_type }} == "major" ]]; then
+            MAJOR=$((MAJOR + 1))
+            MINOR=0
+            PATCH=0
+          fi
+
+          # Update the version in buf.yaml
+          NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
+          sed -i "s/version: $VERSION/version: $NEW_VERSION/" buf.yaml
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Release $NEW_VERSION"
+          push: true
+
+      - name: Create tag
+        run: |
+          git tag $NEW_VERSION
+          git push origin $NEW_VERSION

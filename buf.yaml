@@ -1,4 +1,4 @@
-version: v1
+version: v2.0.15
 name: "buf.build/meshtastic/protobufs"
 deps: []
 build:
