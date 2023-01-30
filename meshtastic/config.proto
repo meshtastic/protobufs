@@ -776,6 +776,15 @@ message Config {
     bool sx126x_rx_boosted_gain = 13;
 
     /*
+     * This parameter is for advanced users and licensed HAM radio operators.
+     * Ignore Channel Calculation and use this frequency instead. The frequency_offset
+     * will still be applied. This will allow you to use out-of-band frequencies.
+     * Please respect your local laws and regulations. If you are a HAM, make sure you
+     * enable HAM mode and turn off encryption.
+     */
+    float override_frequency = 14;
+
+    /*
      * For testing it is useful sometimes to force a node to never listen to
      * particular other nodes (simulating radio out of range). All nodenums listed
      * in ignore_incoming will have packets they send droped on receive (by router.cpp)
