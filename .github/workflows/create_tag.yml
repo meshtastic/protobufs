@@ -55,7 +55,7 @@ jobs:
         id: create_release
         with:
           release_name: Meshtastic Protobufs ${{ steps.version.outputs.NEW_VERSION }}
-          tag_name: $NEW_VERSION
+          tag_name: ${{ steps.version.outputs.NEW_VERSION }}
           body: Protobufs for version ${{ steps.version.outputs.NEW_VERSION }} release of Meshtastic firmware
         env:
           GITHUB_TOKEN: ${{ github.token }}
