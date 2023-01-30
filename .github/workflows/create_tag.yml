@@ -19,9 +19,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - name: Pull master with tags
-        run: git pull --tags origin master
+      - name: Checkout master
+        run: git checkout origin/master
 
       - name: Get current version
         run: |
