@@ -32,6 +32,7 @@ jobs:
 
       - name: Increment version
         run: |
+          echo $VERSION
           # Split version into major, minor, and patch
           MAJOR=$(echo $VERSION | awk -F '.' '{print $1}' | cut -c 2-)
           MINOR=$(echo $VERSION | awk -F '.' '{print $2}')
