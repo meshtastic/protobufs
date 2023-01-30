@@ -48,7 +48,7 @@ jobs:
           fi
 
           # Update the version
-          echo "NEW_VERSION='v$MAJOR.$MINOR.$PATCH'" >> $GITHUB_OUTPUT
+          echo "NEW_VERSION=v$MAJOR.$MINOR.$PATCH" >> $GITHUB_OUTPUT
 
       - name: Create release
         uses: actions/create-release@v1
