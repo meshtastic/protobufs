@@ -25,14 +25,11 @@ jobs:
       - name: Checkout master
         run: git switch master
 
-      - name: Get current version
+      - id: version
+        name: Get current version
         run: |
           VERSION=$(git describe --abbrev=0 --tags)
-          echo $VERSION
 
-      - name: Increment version
-        run: |
-          echo $VERSION
           # Split version into major, minor, and patch
           MAJOR=$(echo $VERSION | awk -F '.' '{print $1}' | cut -c 2-)
           MINOR=$(echo $VERSION | awk -F '.' '{print $2}')
@@ -58,8 +55,8 @@ jobs:
       #   uses: actions/create-release@v1
       #   id: create_release
       #   with:
-      #     release_name: Meshtastic Protobufs $NEW_VERSION
+      #     release_name: Meshtastic Protobufs ${{ steps.version.outputs.NEW_VERSION }}
       #     tag_name: $NEW_VERSION
-      #     body: Protobufs for version $NEW_VERSION release of Meshtastic firmware
+      #     body: Protobufs for version ${{ steps.version.outputs.NEW_VERSION }} release of Meshtastic firmware
       #   env:
       #     GITHUB_TOKEN: ${{ github.token }}
