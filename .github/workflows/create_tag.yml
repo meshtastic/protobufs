@@ -20,8 +20,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Fetch tags
-        run: git fetch --tags --force
+      - name: Pull master with tags
+        run: git pull --tags origin master
 
       - name: Get current version
         run: |
