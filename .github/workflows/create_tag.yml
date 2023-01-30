@@ -28,6 +28,7 @@ jobs:
       - name: Get current version
         run: |
           VERSION=$(git describe --abbrev=0 --tags)
+          echo $VERSION
 
       - name: Increment version
         run: |
