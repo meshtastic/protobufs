@@ -23,7 +23,7 @@ jobs:
           fetch-depth: 0
 
       - name: Checkout master
-        run: git checkout origin/master
+        run: git switch master
 
       - name: Get current version
         run: |
