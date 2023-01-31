@@ -10,6 +10,7 @@ option csharp_namespace = "Meshtastic.Protobufs";
 option swift_prefix = "";
 
 import "meshtastic/channel.proto";
+import "meshtastic/localonly.proto";
 import "meshtastic/mesh.proto";
 
 /*
@@ -142,4 +143,14 @@ message OEMStore {
    * The default device encryption key, 16 or 32 byte
    */
   bytes oem_aes_key = 6;
+
+  /*
+   * A Preset LocalConfig to apply during factory reset
+   */
+  LocalConfig oem_local_config = 7;
+
+  /*
+   * A Preset LocalModuleConfig to apply during factory reset
+   */
+  LocalModuleConfig oem_local_module_config = 8;
 }
