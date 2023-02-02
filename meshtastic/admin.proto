@@ -14,6 +14,7 @@ import "meshtastic/config.proto";
 import "meshtastic/device_metadata.proto";
 import "meshtastic/mesh.proto";
 import "meshtastic/module_config.proto";
+import "meshtastic/connection_status.proto";
 
 /*
  * This message is handled by the Admin module and is responsible for all settings/channel read/write operations.
@@ -189,6 +190,16 @@ message AdminMessage {
      * Get the Ringtone in the response to this message.
      */
     string get_ringtone_response = 15;
+
+    /*
+     * Request the node to send it's connection status
+     */
+    bool get_device_connection_status_request = 16;
+
+    /*
+     * Device connection status response
+     */
+    DeviceConnectionStatus get_device_connection_status_response = 17;
 
     /*
      * Set the owner for this node
