@@ -13,7 +13,7 @@ message DeviceConnectionStatus {
   /*
    * WiFi Status
    */
-  optional TcpConnectionStatus wifi = 1;
+  optional WifiConnectionStatus wifi = 1;
   /*
    * WiFi Status
    */
@@ -37,7 +37,7 @@ message WifiConnectionStatus {
   /*
    * Connection status
    */
-  TcpConnectionStatus status = 1;
+  EthernetConnectionStatus status = 1;
 
   /*
    * WiFi access point ssid 
@@ -57,13 +57,13 @@ message EthernetConnectionStatus {
   /*
    * Connection status
    */
-  TcpConnectionStatus status = 1;
+   NetworkConnectionStatus status = 1;
 }
 
 /*
  * Ethernet or WiFi connection status
  */
-message TcpConnectionStatus {
+message NetworkConnectionStatus {
   /*
    * IP address of device
    */
@@ -73,6 +73,16 @@ message TcpConnectionStatus {
    * Whether the device has an active connection or not
    */
   bool is_connected = 2;
+
+  /*
+   * Whether the device has an active connection to an MQTT broker or not
+   */
+  bool is_mqtt_connected = 3;
+
+  /*
+   * Whether the device is actively remote syslogging or not
+   */
+  bool is_syslog_connected = 4;
 }
 
 /*
