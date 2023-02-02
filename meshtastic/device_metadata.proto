@@ -10,6 +10,7 @@ option csharp_namespace = "Meshtastic.Protobufs";
 option swift_prefix = "";
 
 import "meshtastic/config.proto";
+import "meshtastic/mesh.proto";
 
 /*
  * Device metadata response 
@@ -54,4 +55,9 @@ message DeviceMetadata {
    * Indicates the device's current enabled position flags
    */
   uint32 position_flags = 8;
+
+  /*
+   * Device hardware model
+   */
+  HardwareModel hw_model = 9;
 }
