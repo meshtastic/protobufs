@@ -9,8 +9,6 @@ option go_package = "github.com/meshtastic/go/generated";
 option csharp_namespace = "Meshtastic.Protobufs";
 option swift_prefix = "";
 
-import "meshtastic/module_config.proto";
-
 message DeviceConnectionStatus {
   /*
    * WiFi Status
@@ -102,9 +100,9 @@ message BluetoothConnectionStatus {
  */
  message SerialConnectionStatus {
   /*
-   * The pairing pin for bluetooth
+   * The serial baud rate
    */
-  Serial_Baud baud = 1;
+  uint32 baud = 1;
 
   /*
    * Whether the device has an active connection or not
