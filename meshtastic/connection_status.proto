@@ -87,7 +87,7 @@ message BluetoothConnectionStatus {
   /*
    * Rssi of bluetooth connection
    */
-   int32 rssi = 2;
+  int32 rssi = 2;
 
   /*
    * Whether the device has an active connection or not
