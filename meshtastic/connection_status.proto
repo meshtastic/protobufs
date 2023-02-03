@@ -37,7 +37,7 @@ message WifiConnectionStatus {
   /*
    * Connection status
    */
-  EthernetConnectionStatus status = 1;
+  NetworkConnectionStatus status = 1;
 
   /*
    * WiFi access point ssid 
