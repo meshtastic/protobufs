@@ -302,6 +302,7 @@ message HamParameters {
   /*
    * The selected frequency of LoRA operation
    * Please respect your local laws, regulations, and band plans.
+   * Ensure your radio is capable of operating of the selected frequency before setting this.
    */
   float frequency = 3;
 }
