@@ -202,6 +202,11 @@ message AdminMessage {
     DeviceConnectionStatus get_device_connection_status_response = 17;
 
     /*
+     * Setup a node for licensed amateur (ham) radio operation
+     */
+    HamParameters set_ham_mode = 18;
+
+    /*
      * Set the owner for this node
      */
     User set_owner = 32;
@@ -278,4 +283,25 @@ message AdminMessage {
      */
     int32 nodedb_reset = 100;
   }
+}
+
+/*
+ * Parameters for setting up Meshtastic for ameteur radio usage
+ */
+message HamParameters {
+  /*
+   * Amateur radio call sign, eg. KD2ABC
+   */
+  string call_sign = 1;
+
+  /*
+   * Transmit power in dBm at the LoRA transceiver, not including any amplification
+   */
+  int32 tx_power = 2;
+
+  /*
+   * The selected frequency of LoRA operation
+   * Please respect your local laws, regulations, and band plans.
+   */
+  float frequency = 3;
 }

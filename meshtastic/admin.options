@@ -5,3 +5,6 @@
 
 *AdminMessage.set_ringtone_message max_size:231
 *AdminMessage.get_ringtone_response max_size:231
+
+
+*HamParameters.call_sign max_size:6
