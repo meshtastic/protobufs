@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package meshtastic;
 
-option optimize_for = LITE_RUNTIME;
 option java_package = "com.geeksville.mesh";
 option java_outer_classname = "LocalOnlyProtos";
 option go_package = "github.com/meshtastic/go/generated";
