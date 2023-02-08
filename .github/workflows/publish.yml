@@ -3,7 +3,7 @@ name: Push new version to schema registry
 on:
   push:
     tags:
-      - "v*"
+      - "**"
 
 jobs:
   push_to_registry:
