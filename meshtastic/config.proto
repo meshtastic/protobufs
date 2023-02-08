@@ -112,6 +112,12 @@ message Config {
      * Sets the role of node
      */
     RebroadcastMode rebroadcast_mode = 6;
+
+    /*
+     * Send our nodeinfo this often
+     * Defaults to 15 minutes
+     */
+    uint32 node_info_broadcast_secs = 1;
   }
 
   /*
