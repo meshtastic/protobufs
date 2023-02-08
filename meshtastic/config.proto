@@ -115,7 +115,7 @@ message Config {
 
     /*
      * Send our nodeinfo this often
-     * Defaults to 15 minutes
+     * Defaults to 900 Seconds (15 minutes)
      */
     uint32 node_info_broadcast_secs = 7;
   }
