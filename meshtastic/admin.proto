@@ -304,4 +304,9 @@ message HamParameters {
    * Ensure your radio is capable of operating of the selected frequency before setting this.
    */
   float frequency = 3;
+
+  /*
+   * Optional short name of user
+   */
+  string short_name = 4;
 }

@@ -8,3 +8,4 @@
 
 
 *HamParameters.call_sign max_size:8
+*HamParameters.short_name max_size:6
