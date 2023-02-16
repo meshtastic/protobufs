@@ -14,6 +14,7 @@ import "meshtastic/module_config.proto";
 import "meshtastic/portnums.proto";
 import "meshtastic/telemetry.proto";
 import "meshtastic/xmodem.proto";
+import "meshtastic/device_metadata.proto";
 
 /*
  * a gps position
@@ -1304,6 +1305,11 @@ message FromRadio {
      * File Transfer Chunk
      */
     XModem xmodemPacket = 12;
+
+    /*
+     * Device metadata message
+     */
+    DeviceMetadata metadata = 13;
   }
 }
 
