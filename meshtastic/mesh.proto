@@ -14,9 +14,6 @@ import "meshtastic/module_config.proto";
 import "meshtastic/portnums.proto";
 import "meshtastic/telemetry.proto";
 import "meshtastic/xmodem.proto";
-import "meshtastic/device_metadata.proto";
-import "meshtastic/role.proto";
-
 
 /*
  * a gps position
