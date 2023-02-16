@@ -384,6 +384,11 @@ enum HardwareModel {
    BETAFPV_900_NANO_TX = 46;
   
   /*
+   * B&Q Consulting Nano G1 Explorer: https://wiki.uniteng.com/en/meshtastic/nano-g1-explorer
+   */
+  NANO_G1 = 47;
+
+  /*
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    */
   PRIVATE_HW = 255;
