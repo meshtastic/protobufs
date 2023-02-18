@@ -19,12 +19,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Checkout master
-        run: git switch master
-
       - id: version
         name: Get current version
         run: |
@@ -69,4 +63,4 @@ jobs:
         #   buf_token: ${{ secrets.BUF_TOKEN }}
         run: |
           export BUF_TOKEN=${{ secrets.BUF_TOKEN }}
-          buf push --tag ${{ github.ref_name }}
+          buf push --tag ${{ steps.version.outputs.NEW_VERSION }}
