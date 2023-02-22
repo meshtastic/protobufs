@@ -373,6 +373,17 @@ message ModuleConfig {
      * display the results in Fahrenheit as a "user preference".
      */
     bool environment_display_fahrenheit = 5;
+
+    /*
+     * Enable/Disable the air quality enabled
+     */
+    bool air_quality_enabled = 6;
+
+    /*
+     * Interval in seconds of how often we should try to send our
+     * air quality metrics to the mesh
+     */
+    uint32 air_quality_interval = 7;
   }
 
   /*
