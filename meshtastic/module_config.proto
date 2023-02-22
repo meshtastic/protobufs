@@ -375,7 +375,7 @@ message ModuleConfig {
     bool environment_display_fahrenheit = 5;
 
     /*
-     * Enable/Disable the air quality enabled
+     * Enable/Disable the air quality metrics
      */
     bool air_quality_enabled = 6;
 
