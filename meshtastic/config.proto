@@ -55,6 +55,12 @@ message Config {
        *   Position Mesh packets will be prioritized higher and sent more frequently by default.
        */
       TRACKER = 5;
+
+      /*
+       * Sensor device role
+       *   Telemetry Mesh packets will be prioritized higher and sent more frequently by default.
+       */
+      SENSOR = 6;
     }
 
     /*
