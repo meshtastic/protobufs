@@ -62,7 +62,7 @@ message DeviceState {
   bool no_save = 9;
 
   /*
-   * Some GPSes seem to have bogus settings from the factory, so we always do one factory reset.
+   * Some GPS receivers seem to have bogus settings from the factory, so we always do one factory reset.
    */
   bool did_gps_reset = 11;
 
@@ -109,7 +109,7 @@ enum ScreenFonts {
 
 /*
  * This can be used for customizing the firmware distribution. If populated,
- * show a secondary bootup screen with cuatom logo and text for 2.5 seconds.
+ * show a secondary bootup screen with custom logo and text for 2.5 seconds.
  */
 message OEMStore {
 
@@ -124,7 +124,7 @@ message OEMStore {
   uint32 oem_icon_height = 2;
 
   /*
-   * The Logo in xbm bytechar format
+   * The Logo in XBM bytechar format
    */
   bytes oem_icon_bits = 3;
 
