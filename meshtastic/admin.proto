@@ -256,7 +256,7 @@ message AdminMessage {
     int32 reboot_ota_seconds = 95;
 
     /*
-     * This message is only supported for the simulator porduino build.
+     * This message is only supported for the simulator Portduino build.
      * If received the simulator will exit successfully.
      */
     bool exit_simulator = 96;
