@@ -766,7 +766,7 @@ message Config {
     /*
      * This controls the actual hardware frequency the radio transmits on.
      * Most users should never need to be exposed to this field/concept.
-     * A channel number is between 1 and NUM_CHANNELS (whatever the max is in the current region).
+     * A channel number between 1 and NUM_CHANNELS (whatever the max is in the current region).
      * If ZERO then the rule is "use the old channel name hash based
      * algorithm to derive the channel number")
      * If using the hash algorithm the channel number will be: hash(channel_name) %
@@ -834,7 +834,7 @@ message Config {
     PairingMode mode = 2;
 
     /*
-     * Specified PIN when using FIXED_PIN for PairingMode
+     * Specified PIN for PairingMode.FixedPin
      */
     uint32 fixed_pin = 3;
     
