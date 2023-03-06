@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package meshtastic;
+
+option java_package = "com.geeksville.mesh";
+option java_outer_classname = "NeighborInfoProtos";
+option go_package = "github.com/meshtastic/go/generated";
+option csharp_namespace = "Meshtastic.Protobufs";
+option swift_prefix = "";
+
+/*
+* Full info on edges for a single node
+*/
+message NeighborInfo {
+  /*
+  * The node ID of the node sending info on its neighbors
+  */
+  uint32 node_id = 1;
+  /*
+  * Time at packet transmission (in millis, Unix epoch)
+  */
+  fixed32 tx_time = 2;
+
+  /*
+  * The list of neighbors
+  */
+  repeated Neighbor neighbors = 4;
+}
+
+/*
+* A single edge in the mesh
+*/
+message Neighbor {
+  /*
+  * Node ID of neighbor
+  */
+  uint32 node_id = 1;
+
+  /*
+  * SNR of last heard message
+  */
+  float snr = 2;
+
+  /*
+  * Time of last heard message (in millis, Unix epoch)
+  */
+  fixed32 rx_time = 3;
+}
