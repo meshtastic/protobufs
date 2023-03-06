@@ -48,3 +48,5 @@
 
 *Waypoint.name         max_size:30
 *Waypoint.description  max_size:100
+
+*NeighborInfo.neighbors max_count:10

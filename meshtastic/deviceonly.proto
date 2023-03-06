@@ -11,7 +11,6 @@ option swift_prefix = "";
 import "meshtastic/channel.proto";
 import "meshtastic/localonly.proto";
 import "meshtastic/mesh.proto";
-import "meshtastic/neighborinfo.proto";
 
 /*
  * This message is never sent over the wire, but it is used for serializing DB
