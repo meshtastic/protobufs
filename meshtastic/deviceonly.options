@@ -2,7 +2,8 @@
 # https://jpa.kapsi.fi/nanopb/docs/reference.html#proto-file-options
 
 # FIXME pick a higher number someday? or do dynamic alloc in nanopb?
-*DeviceState.node_db max_count:80
+*DeviceState.node_db max_count:40
+*DeviceState.node_db_neighbors max_count: 40
 
 # FIXME - max_count is actually 32 but we save/load this as one long string of preencoded MeshPacket bytes - not a big array in RAM
 *DeviceState.receive_queue max_count:1

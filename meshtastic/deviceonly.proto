@@ -11,6 +11,7 @@ option swift_prefix = "";
 import "meshtastic/channel.proto";
 import "meshtastic/localonly.proto";
 import "meshtastic/mesh.proto";
+import "meshtastic/neighborinfo.proto";
 
 /*
  * This message is never sent over the wire, but it is used for serializing DB
@@ -66,6 +67,12 @@ message DeviceState {
    */
   bool did_gps_reset = 11;
 
+  /*
+   * Sender information used by NeighborInfo Module to get edge info on the mesh.
+   * This is stored in each node's nodeDB so we'll have a SNR per edge when we sniff packets.
+   * This field should disabled (always zeroed) unless user opts in.
+   */
+  repeated Neighbor node_db_neighbors = 12;
 }
 
 /*
