@@ -17,9 +17,13 @@ message NeighborInfo {
   */
   uint32 node_id = 1;
   /*
+  * The node ID of the node sending info on its neighbors
+  */
+  uint32 last_sent_by_id = 2;
+  /*
   * Time at packet transmission (in millis, Unix epoch)
   */
-  fixed32 tx_time = 2;
+  fixed32 tx_time = 3;
 
   /*
   * The list of neighbors
