@@ -10,3 +10,6 @@
 *LoRaConfig.bandwidth int_size:16
 *LoRaConfig.coding_rate int_size:8
 *LoRaConfig.channel_num int_size:16
+
+*DisplayConfig.DisplayRawmode.width int_size:16
+*DisplayConfig.DisplayRawmode.height int_size:16

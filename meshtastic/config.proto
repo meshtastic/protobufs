@@ -487,9 +487,41 @@ message Config {
       OLED_SH1106 = 2;
 
       /*
-       * Can not be auto detected but set by proto. Used for 128x128 screens
+       * Can not be auto detected but set by proto. Defaults to GEOMETRY_128x128 screens
        */
       OLED_SH1107 = 3;
+    }
+
+    enum ScreenGeometry {
+      /*
+       * 128x64, default
+       */
+      GEOMETRY_128x64 = 0;
+
+      /*
+       * 128x32, not implemented in Meshtastic
+       */
+      GEOMETRY_128x32 = 1;
+
+      /*
+       * 64x48, not implemented in Meshtastic
+       */
+      GEOMETRY_64_48    = 2;
+
+      /*
+       * 64x32, not implemented in Meshtastic
+       */
+      GEOMETRY_64_32    = 3;
+
+      /*
+       * all other geometries, predominantly for TFT and EPaper Screens
+       */
+      GEOMETRY_RAWMODE  = 4;
+
+      /*
+       * 128x128
+       */
+      GEOMETRY_128x128 = 5;
     }
 
     /*
@@ -560,6 +592,21 @@ message Config {
      * Print first line in pseudo-bold? FALSE is original style, TRUE is bold
      */
     bool heading_bold = 9;
+
+    /*
+     * Screen Geometry
+     */
+    ScreenGeometry display_geometry = 10;
+
+    /*
+     * Screen Dimenations for GEOEMTRY_RAWMODE
+     */
+    message DisplayRawmode {
+      uint32 width = 1;
+      uint32 height = 2;
+    }
+
+    DisplayRawmode display_rawmode = 11;
   }
 
   /*
