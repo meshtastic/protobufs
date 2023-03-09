@@ -13,7 +13,7 @@ option swift_prefix = "";
  */
 message DeviceMetrics {
   /*
-   * 1-100 (0 means powered)
+   * 0-100 (>100 means powered)
    */
   uint32 battery_level = 1;
   
