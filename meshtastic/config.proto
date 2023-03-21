@@ -560,6 +560,11 @@ message Config {
      * Print first line in pseudo-bold? FALSE is original style, TRUE is bold
      */
     bool heading_bold = 9;
+
+    /*
+     * Should we wake the screen up on accelerometer detected motion or tap
+     */
+    bool wake_on_tap_or_motion = 10;
   }
 
   /*
