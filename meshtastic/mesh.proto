@@ -975,6 +975,12 @@ message NodeInfo {
    * The latest device metrics for the node.
    */
   DeviceMetrics device_metrics = 6;
+
+  /*
+   * local channel we heared that node
+   */
+  uint32 channel = 7;
+
 }
 
 /*
