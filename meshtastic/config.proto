@@ -124,6 +124,11 @@ message Config {
      * Defaults to 900 Seconds (15 minutes)
      */
     uint32 node_info_broadcast_secs = 7;
+
+    /*
+     * Treat double tap interrupt on supported accelerometers as a button press if set to true
+     */
+    bool double_tap_as_button_press = 8;
   }
 
   /*
