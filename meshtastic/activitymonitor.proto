@@ -12,15 +12,18 @@ option swift_prefix = "";
  * Activity monitor module configuration.
  */
 message ActivityMonitorModuleConfig {
-  int32 latitude = 1;
-  int32 longitude = 2;
-  int32 altitude = 3;
-  int32 unixTimeStamp = 4;
+  message GPS {
+    int32 latitude = 1;
+    int32 longitude = 2;
+    int32 altitude = 3;
+  }
+  GPS gpsData = 1
+  int64 unixTimeStamp = 2;
 
   enum DetectionType {
     DETECTION_TYPE_SEISMIC = 0;
     DETECTION_TYPE_VOICE = 1;
   }
 
-  DetectionType detectionType = 5;
+  DetectionType detectionType = 3;
 }
