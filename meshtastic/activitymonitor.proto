@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package meshtastic;
+
+option java_package = "com.geeksville.mesh";
+option java_outer_classname = "ActivityMonitorConfigProtos";
+option go_package = "github.com/meshtastic/go/generated";
+option csharp_namespace = "Meshtastic.Protobufs";
+option swift_prefix = "";
+
+/*
+ * Activity monitor module configuration.
+ */
+message ActivityMonitorModuleConfig {
+  int32 latitude = 1;
+  int32 longitude = 2;
+  int32 altitude = 3;
+  int32 unixTimeStamp = 4;
+
+  enum DetectionType {
+    DETECTION_TYPE_SEISMIC = 0;
+    DETECTION_TYPE_VOICE = 1;
+  }
+
+  DetectionType detectionType = 5;
+}
