@@ -17,7 +17,7 @@ message ActivityMonitorModuleConfig {
     int32 longitude = 2;
     int32 altitude = 3;
   }
-  GPS gpsData = 1
+  GPS gpsData = 1;
   int64 unixTimeStamp = 2;
 
   enum DetectionType {
