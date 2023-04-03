@@ -56,6 +56,11 @@ message ModuleConfig {
      * Whether to send / consume json packets on MQTT
      */
     bool json_enabled = 6;
+
+    /*
+     * If true, we attempt to establish a secure connection using TLS
+     */
+    bool tls_enabled = 7;
   }
 
   /*
