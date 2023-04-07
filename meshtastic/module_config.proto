@@ -61,6 +61,12 @@ message ModuleConfig {
      * If true, we attempt to establish a secure connection using TLS
      */
     bool tls_enabled = 7;
+
+    /*
+     * The root topic to use for MQTT messages. Default is "msh".
+     * This is useful if you want to use a single MQTT server for multiple meshtastic networks and separate them via ACLs
+     */
+    string root = 8;
   }
 
   /*
