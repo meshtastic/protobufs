@@ -10,7 +10,6 @@ option swift_prefix = "";
 
 import "meshtastic/channel.proto";
 import "meshtastic/config.proto";
-import "meshtastic/device_metadata.proto";
 import "meshtastic/mesh.proto";
 import "meshtastic/module_config.proto";
 import "meshtastic/connection_status.proto";
@@ -257,7 +256,7 @@ message AdminMessage {
     int32 reboot_ota_seconds = 95;
 
     /*
-     * This message is only supported for the simulator porduino build.
+     * This message is only supported for the simulator Portduino build.
      * If received the simulator will exit successfully.
      */
     bool exit_simulator = 96;

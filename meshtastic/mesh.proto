@@ -302,6 +302,11 @@ enum HardwareModel {
    * TODO: REPLACE
    */
   TLORA_T3_S3 = 16;
+  
+  /*
+   * B&Q Consulting Nano G1 Explorer: https://wiki.uniteng.com/en/meshtastic/nano-g1-explorer
+   */
+  NANO_G1_EXPLORER = 17;
 
   /*
    * B&Q Consulting Station Edition G1: https://uniteng.com/wiki/doku.php?id=meshtastic:station
@@ -309,7 +314,9 @@ enum HardwareModel {
   STATION_G1 = 25; 
   
   /*
+   * ---------------------------------------------------------------------------
    * Less common/prototype boards listed here (needs one more byte over the air)
+   * ---------------------------------------------------------------------------
    */
   LORA_RELAY_V1 = 32;
 
@@ -381,10 +388,12 @@ enum HardwareModel {
   /*
    * BetaFPV ExpressLRS "Nano" TX Module 900MHz with ESP32 CPU
    */
-   BETAFPV_900_NANO_TX = 46;
+  BETAFPV_900_NANO_TX = 46;
   
   /*
+   * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
+   * ------------------------------------------------------------------------------------------------------------------------------------------
    */
   PRIVATE_HW = 255;
 }
@@ -966,6 +975,12 @@ message NodeInfo {
    * The latest device metrics for the node.
    */
   DeviceMetrics device_metrics = 6;
+
+  /*
+   * local channel index we heard that node on. Only populated if its not the default channel.
+   */
+  uint32 channel = 7;
+
 }
 
 /*
@@ -1304,6 +1319,11 @@ message FromRadio {
      * File Transfer Chunk
      */
     XModem xmodemPacket = 12;
+
+    /*
+     * Device metadata message
+     */
+    DeviceMetadata metadata = 13;
   }
 }
 
@@ -1408,4 +1428,54 @@ message Neighbor {
   * Time of last heard message (in millis, Unix epoch)
   */
   fixed32 rx_time = 3;
+}
+
+/*
+ * Device metadata response
+ */
+ message DeviceMetadata {
+  /*
+   * Device firmware version string
+   */
+  string firmware_version = 1;
+
+  /*
+   * Device state version
+   */
+  uint32 device_state_version = 2;
+
+  /*
+   * Indicates whether the device can shutdown CPU natively or via power management chip
+   */
+  bool canShutdown = 3;
+
+  /*
+   * Indicates that the device has native wifi capability
+   */
+  bool hasWifi = 4;
+
+  /*
+   * Indicates that the device has native bluetooth capability
+   */
+  bool hasBluetooth = 5;
+
+  /*
+   * Indicates that the device has an ethernet peripheral
+   */
+  bool hasEthernet = 6;
+
+  /*
+   * Indicates that the device's role in the mesh
+   */
+  Config.DeviceConfig.Role role = 7;
+
+  /*
+   * Indicates the device's current enabled position flags
+   */
+  uint32 position_flags = 8;
+
+  /*
+   * Device hardware model
+   */
+  HardwareModel hw_model = 9;
 }

@@ -55,6 +55,12 @@ message Config {
        *   Position Mesh packets will be prioritized higher and sent more frequently by default.
        */
       TRACKER = 5;
+
+      /*
+       * Sensor device role
+       *   Telemetry Mesh packets will be prioritized higher and sent more frequently by default.
+       */
+      SENSOR = 6;
     }
 
     /*
@@ -118,6 +124,11 @@ message Config {
      * Defaults to 900 Seconds (15 minutes)
      */
     uint32 node_info_broadcast_secs = 7;
+
+    /*
+     * Treat double tap interrupt on supported accelerometers as a button press if set to true
+     */
+    bool double_tap_as_button_press = 8;
   }
 
   /*
@@ -246,7 +257,15 @@ message Config {
      */
     uint32 tx_gpio = 9;
  
+    /*
+     * The minimum distance in meters traveled (since the last send) before we can send a position to the mesh if position_broadcast_smart_enabled
+     */
+    uint32 broadcast_smart_minimum_distance = 10;
 
+    /*
+     * The minumum number of seconds (since the last send) before we can send a position to the mesh if position_broadcast_smart_enabled
+     */
+    uint32 broadcast_smart_minimum_interval_secs = 11;
   }
 
   /*
@@ -554,6 +573,11 @@ message Config {
      * Print first line in pseudo-bold? FALSE is original style, TRUE is bold
      */
     bool heading_bold = 9;
+
+    /*
+     * Should we wake the screen up on accelerometer detected motion or tap
+     */
+    bool wake_on_tap_or_motion = 10;
   }
 
   /*
@@ -579,7 +603,7 @@ message Config {
       EU_433 = 2;
 
       /*
-       * European Union 433mhz
+       * European Union 868mhz
        */
       EU_868 = 3;
 
@@ -692,7 +716,7 @@ message Config {
     }
 
     /*
-     * When enabled, the `modem_preset` fields will be adheared to, else the `bandwidth`/`spread_factor`/`coding_rate`
+     * When enabled, the `modem_preset` fields will be adhered to, else the `bandwidth`/`spread_factor`/`coding_rate`
      * will be taked from their respective manually defined fields
      */
     bool use_preset = 1;
@@ -750,7 +774,7 @@ message Config {
     bool tx_enabled = 9;
 
     /*
-     * If zero then, use default max legal continuous power (ie. something that won't
+     * If zero, then use default max legal continuous power (ie. something that won't
      * burn out the radio hardware)
      * In most cases you should use zero here.
      * Units are in dBm.
@@ -758,7 +782,7 @@ message Config {
     int32 tx_power = 10;
 
     /*
-     * This is controlling the actual hardware frequency the radio is transmitting on.
+     * This controls the actual hardware frequency the radio transmits on.
      * Most users should never need to be exposed to this field/concept.
      * A channel number between 1 and NUM_CHANNELS (whatever the max is in the current region).
      * If ZERO then the rule is "use the old channel name hash based
@@ -792,7 +816,7 @@ message Config {
     /*
      * For testing it is useful sometimes to force a node to never listen to
      * particular other nodes (simulating radio out of range). All nodenums listed
-     * in ignore_incoming will have packets they send droped on receive (by router.cpp)
+     * in ignore_incoming will have packets they send dropped on receive (by router.cpp)
      */
     repeated uint32 ignore_incoming = 103;
 
@@ -802,17 +826,17 @@ message Config {
 
     enum PairingMode {
       /*
-       * Device generates a random pin that will be shown on the screen of the device for pairing
+       * Device generates a random PIN that will be shown on the screen of the device for pairing
        */
       RANDOM_PIN = 0;
 
       /*
-       * Device requires a specified fixed pin for pairing
+       * Device requires a specified fixed PIN for pairing
        */
       FIXED_PIN = 1;
 
       /*
-       * Device requires no pin for pairing
+       * Device requires no PIN for pairing
        */
       NO_PIN = 2;
     }
@@ -828,7 +852,7 @@ message Config {
     PairingMode mode = 2;
 
     /*
-     * Specified pin for PairingMode.FixedPin
+     * Specified PIN for PairingMode.FixedPin
      */
     uint32 fixed_pin = 3;
     

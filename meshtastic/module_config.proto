@@ -56,6 +56,11 @@ message ModuleConfig {
      * Whether to send / consume json packets on MQTT
      */
     bool json_enabled = 6;
+
+    /*
+     * If true, we attempt to establish a secure connection using TLS
+     */
+    bool tls_enabled = 7;
   }
 
   /*
@@ -373,6 +378,17 @@ message ModuleConfig {
      * display the results in Fahrenheit as a "user preference".
      */
     bool environment_display_fahrenheit = 5;
+
+    /*
+     * Enable/Disable the air quality metrics
+     */
+    bool air_quality_enabled = 6;
+
+    /*
+     * Interval in seconds of how often we should try to send our
+     * air quality metrics to the mesh
+     */
+    uint32 air_quality_interval = 7;
   }
 
   /*
