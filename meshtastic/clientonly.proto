@@ -28,9 +28,9 @@ message DeviceProfile {
   optional string short_name = 2;
 
   /*
-   * The channels our node knows about
+   * The url of the channels from our node
    */
-  repeated Channel channels = 3;
+  optional string channel_url = 3;
 
   /*
    * The Config of the node
