@@ -1,0 +1,3 @@
+*DeviceProfile.channels max_count:8
+*DeviceProfile.long_name max_size:40
+*DeviceProfile.short_name max_size:5
