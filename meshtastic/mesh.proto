@@ -1396,7 +1396,7 @@ message NeighborInfo {
   */
   uint32 node_id = 1;
   /*
-  * The node ID of the node sending info on its neighbors
+  * Field to pass neighbor info for the next sending cycle
   */
   uint32 last_sent_by_id = 2;
   /*
