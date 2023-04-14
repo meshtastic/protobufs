@@ -1400,14 +1400,9 @@ message NeighborInfo {
   */
   uint32 last_sent_by_id = 2;
   /*
-  * Time at packet transmission (in millis, Unix epoch)
+  * The list of out edges from this node
   */
-  fixed32 tx_time = 3;
-
-  /*
-  * The list of neighbors
-  */
-  repeated Neighbor neighbors = 4;
+  repeated Neighbor neighbors = 3;
 }
 
 /*
@@ -1423,11 +1418,6 @@ message Neighbor {
   * SNR of last heard message
   */
   float snr = 2;
-
-  /*
-  * Time of last heard message (in millis, Unix epoch)
-  */
-  fixed32 rx_time = 3;
 }
 
 /*

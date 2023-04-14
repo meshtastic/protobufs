@@ -65,13 +65,6 @@ message DeviceState {
    * Some GPS receivers seem to have bogus settings from the factory, so we always do one factory reset.
    */
   bool did_gps_reset = 11;
-
-  /*
-   * Sender information used by NeighborInfo Module to get edge info on the mesh.
-   * This is stored in each node's nodeDB so we'll have a SNR per edge when we sniff packets.
-   * This field should disabled (always zeroed) unless user opts in.
-   */
-  repeated Neighbor node_db_neighbors = 12;
 }
 
 /*
