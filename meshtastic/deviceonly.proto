@@ -65,6 +65,7 @@ message DeviceState {
    * Some GPS receivers seem to have bogus settings from the factory, so we always do one factory reset.
    */
   bool did_gps_reset = 11;
+
 }
 
 /*
