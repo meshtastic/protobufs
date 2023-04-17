@@ -1388,6 +1388,39 @@ message Compressed {
 }
 
 /*
+* Full info on edges for a single node
+*/
+message NeighborInfo {
+  /*
+  * The node ID of the node sending info on its neighbors
+  */
+  uint32 node_id = 1;
+  /*
+  * Field to pass neighbor info for the next sending cycle
+  */
+  uint32 last_sent_by_id = 2;
+  /*
+  * The list of out edges from this node
+  */
+  repeated Neighbor neighbors = 3;
+}
+
+/*
+* A single edge in the mesh
+*/
+message Neighbor {
+  /*
+  * Node ID of neighbor
+  */
+  uint32 node_id = 1;
+
+  /*
+  * SNR of last heard message
+  */
+  float snr = 2;
+}
+
+/*
  * Device metadata response
  */
  message DeviceMetadata {
