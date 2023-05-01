@@ -66,6 +66,12 @@ message DeviceState {
    */
   bool did_gps_reset = 11;
 
+  /*
+   * We keep the last received waypoint stored in the device flash,
+   * so we can show it on the screen.
+   * Might be null
+   */
+  MeshPacket rx_waypoint = 12;
 }
 
 /*
