@@ -132,7 +132,7 @@ message Config {
 
     /*
      * If true, device is considered to be "managed" by a mesh administrator
-     * Clients should then limit available configuration and administrative option inside the user interface
+     * Clients should then limit available configuration and administrative options inside the user interface
      */
     bool is_managed = 9;
   }
