@@ -129,6 +129,12 @@ message Config {
      * Treat double tap interrupt on supported accelerometers as a button press if set to true
      */
     bool double_tap_as_button_press = 8;
+
+    /*
+     * If true, device is considered to be "managed" by a mesh administrator
+     * Clients should then limit available configuration and administrative option inside the user interface
+     */
+    bool is_managed = 9;
   }
 
   /*
