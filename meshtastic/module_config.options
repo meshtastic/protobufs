@@ -17,3 +17,4 @@
 
 *RemoteHardwareConfig:available_pins max_count:4
 *RemoteHardwarePin.name max_size:15
+*RemoteHardwarePin.gpio_pin int_size:8
