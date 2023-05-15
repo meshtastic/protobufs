@@ -77,7 +77,7 @@ message DeviceState {
   /*
    * The mesh's nodes with their available gpio pins for RemoteHardware module
    */
-  repeated NodeRemoteHardwarePins node_remote_hardware_pins = 13;
+  repeated NodeRemoteHardwarePin node_remote_hardware_pins = 13;
 }
 
 /*
