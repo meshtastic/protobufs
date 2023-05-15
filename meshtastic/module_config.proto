@@ -591,6 +591,11 @@ message ModuleConfig {
 
 enum RemoteHardwarePinType {
   /*
+   * Unset/unused
+   */
+  UNKNOWN = 0;
+
+  /*
    * GPIO pin can be read (if it is high / low)
    */
   DIGITAL_READ = 1;
