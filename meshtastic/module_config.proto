@@ -78,6 +78,16 @@ message ModuleConfig {
      * Whether the Module is enabled
      */
     bool enabled = 1;
+
+    /*
+     * Whether the Module allows consumers to read / write to pins not defined in available_pins
+     */
+    bool allow_undefined_pin_access = 2;
+
+    /*
+     * Exposes the available pins to the mesh for reading and writing
+     */
+    repeated RemoteHardwarePin available_pins = 3;
   }
 
   /*
@@ -557,4 +567,41 @@ message ModuleConfig {
     RemoteHardwareConfig remote_hardware = 9;
 
   }
+}
+
+/*
+ * A GPIO pin definition for remote hardware module
+ */
+ message RemoteHardwarePin {
+  /*
+   * GPIO Pin number (must match Arduino)
+   */
+  uint32 gpio_pin = 1;
+
+  /*
+   * Name for the GPIO pin (i.e. Front gate, mailbox, etc)
+   */
+  string name = 2;
+
+  /*
+   * Type of GPIO access available to consumers on the mesh
+   */
+  RemoteHardwarePinType type = 3;
+}
+
+enum RemoteHardwarePinType {
+  /*
+   * Unset/unused
+   */
+  UNKNOWN = 0;
+
+  /*
+   * GPIO pin can be read (if it is high / low)
+   */
+  DIGITAL_READ = 1;
+
+  /*
+   * GPIO pin can be written to (high / low)
+   */
+  DIGITAL_WRITE = 2;
 }

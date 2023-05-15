@@ -1468,4 +1468,9 @@ message Neighbor {
    * Device hardware model
    */
   HardwareModel hw_model = 9;
+
+  /*
+   * Has Remote Hardware enabled
+   */
+  bool hasRemoteHardware = 10;
 }

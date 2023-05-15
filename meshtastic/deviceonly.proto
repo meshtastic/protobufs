@@ -11,6 +11,7 @@ option swift_prefix = "";
 import "meshtastic/channel.proto";
 import "meshtastic/localonly.proto";
 import "meshtastic/mesh.proto";
+import "meshtastic/module_config.proto";
 
 /*
  * This message is never sent over the wire, but it is used for serializing DB
@@ -72,6 +73,11 @@ message DeviceState {
    * Might be null
    */
   MeshPacket rx_waypoint = 12;
+
+  /*
+   * The mesh's nodes with their available gpio pins for RemoteHardware module
+   */
+  repeated NodeRemoteHardwarePin node_remote_hardware_pins = 13;
 }
 
 /*
@@ -158,4 +164,20 @@ message OEMStore {
    * A Preset LocalModuleConfig to apply during factory reset
    */
   LocalModuleConfig oem_local_module_config = 8;
+}
+
+/*
+ * RemoteHardwarePins associated with a node
+ */
+message NodeRemoteHardwarePin {
+
+  /*
+   * The node_num exposing the available gpio pin
+   */
+  uint32 node_num = 1;
+
+  /*
+   * The the available gpio pin for usage with RemoteHardware module
+   */
+  RemoteHardwarePin pin = 2;
 }
