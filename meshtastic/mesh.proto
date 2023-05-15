@@ -1500,10 +1500,10 @@ enum RemoteHardwarePinType {
   /*
    * GPIO pin can be read (if it is high / low)
    */
-  ANALOG_READ = 1;
+  DIGITAL_READ = 1;
 
   /*
    * GPIO pin can be written to (high / low)
    */
-  ANALOG_WRITE = 2;
+  DIGITAL_WRITE = 2;
 }
