@@ -78,6 +78,16 @@ message ModuleConfig {
      * Whether the Module is enabled
      */
     bool enabled = 1;
+
+    /*
+     * Whether the Module allows consumers to read / write to pins not defined in available_pins
+     */
+    bool allow_undefined_pin_access = 2;
+
+    /*
+     * Exposes the available pins to the mesh for reading and writing
+     */
+    repeated RemoteHardwarePin available_pins = 3:
   }
 
   /*

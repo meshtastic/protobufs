@@ -1469,3 +1469,41 @@ message Neighbor {
    */
   HardwareModel hw_model = 9;
 }
+
+/*
+ * A GPIO pin definition for remote hardware module
+ */
+message RemoteHardwarePin {
+  /*
+   * GPIO Pin number (must match Arduino)
+   */
+  uint32 gpio_pin = 1;
+
+  /*
+   * Name for the GPIO pin (i.e. Front gate, mailbox, etc)
+   */
+  string name = 2;
+
+  /*
+   * Type of GPIO access available to consumers on the mesh
+   */
+  RemoteHardwarePinType type = 3;
+}
+
+enum RemoteHardwarePinType {
+
+  /*
+   * Unset/unused (should never occur)
+   */
+  UNSET = 0;
+
+  /*
+   * GPIO pin can be read (if it is high / low)
+   */
+  ANALOG_READ = 1;
+
+  /*
+   * GPIO pin can be written to (high / low)
+   */
+  ANALOG_WRITE = 2;
+}
