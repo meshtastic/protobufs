@@ -1468,6 +1468,11 @@ message Neighbor {
    * Device hardware model
    */
   HardwareModel hw_model = 9;
+
+  /*
+   * Available GPIO pins for RemoteHardware module
+   */
+  repeated RemoteHardwarePin remote_hardware_pins = 10;
 }
 
 /*
