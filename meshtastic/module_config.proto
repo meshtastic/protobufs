@@ -87,7 +87,7 @@ message ModuleConfig {
     /*
      * Exposes the available pins to the mesh for reading and writing
      */
-    repeated RemoteHardwarePin available_pins = 3:
+    repeated RemoteHardwarePin available_pins = 3;
   }
 
   /*
