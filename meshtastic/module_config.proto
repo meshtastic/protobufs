@@ -590,12 +590,6 @@ message ModuleConfig {
 }
 
 enum RemoteHardwarePinType {
-
-  /*
-   * Unset/unused (should never occur)
-   */
-  UNSET = 0;
-
   /*
    * GPIO pin can be read (if it is high / low)
    */
