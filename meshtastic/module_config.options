@@ -16,3 +16,4 @@
 *ExternalNotificationConfig.nag_timeout int_size:16
 
 *RemoteHardwareConfig:available_pins max_count:4
+*RemoteHardwarePin.name max_size:15
