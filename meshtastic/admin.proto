@@ -205,6 +205,15 @@ message AdminMessage {
     HamParameters set_ham_mode = 18;
 
     /*
+     * Get the mesh's nodes with their available gpio pins for RemoteHardware module use
+     */
+    bool get_node_remote_hardware_pins_request = 19;
+    
+    /*
+     * Respond with the mesh's nodes with their available gpio pins for RemoteHardware module use
+     */ 
+    NodeRemoteHardwarePinsResponse get_node_remote_hardware_pins_response = 20;
+    /*
      * Set the owner for this node
      */
     User set_owner = 32;
@@ -308,4 +317,14 @@ message HamParameters {
    * Optional short name of user
    */
   string short_name = 4;
+}
+
+/* 
+ * Response envelope for node_remote_hardware_pins
+ */
+message NodeRemoteHardwarePinsResponse {
+  /* 
+   * Nodes and their respective remote hardware GPIO pins
+   */
+  repeated NodeRemoteHardwarePins node_remote_hardware_pins = 1;
 }
