@@ -9,3 +9,4 @@
 
 *HamParameters.call_sign max_size:8
 *HamParameters.short_name max_size:6
+*NodeRemoteHardwarePinsResponse.node_remote_hardware_pins max_count:12
