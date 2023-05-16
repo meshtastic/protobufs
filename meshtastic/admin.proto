@@ -13,6 +13,7 @@ import "meshtastic/config.proto";
 import "meshtastic/mesh.proto";
 import "meshtastic/module_config.proto";
 import "meshtastic/connection_status.proto";
+import "meshtastic/deviceonly.proto";
 
 /*
  * This message is handled by the Admin module and is responsible for all settings/channel read/write operations.
@@ -213,6 +214,7 @@ message AdminMessage {
      * Respond with the mesh's nodes with their available gpio pins for RemoteHardware module use
      */ 
     NodeRemoteHardwarePinsResponse get_node_remote_hardware_pins_response = 20;
+
     /*
      * Set the owner for this node
      */
