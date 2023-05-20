@@ -2,14 +2,13 @@ syntax = "proto3";
 
 package meshtastic;
 
-option java_package = "com.geeksville.mesh";
-option java_outer_classname = "ClientOnlyProtos";
-option go_package = "github.com/meshtastic/go/generated";
-option csharp_namespace = "Meshtastic.Protobufs";
-option swift_prefix = "";
-
-
 import "meshtastic/localonly.proto";
+
+option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "ClientOnlyProtos";
+option java_package = "com.geeksville.mesh";
+option swift_prefix = "";
 
 /*
  * This abstraction is used to contain any configuration for provisioning a node on any client.

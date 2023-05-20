@@ -2,16 +2,16 @@ syntax = "proto3";
 
 package meshtastic;
 
-option java_package = "com.geeksville.mesh";
-option java_outer_classname = "DeviceOnly";
-option go_package = "github.com/meshtastic/go/generated";
-option csharp_namespace = "Meshtastic.Protobufs";
-option swift_prefix = "";
-
 import "meshtastic/channel.proto";
 import "meshtastic/localonly.proto";
 import "meshtastic/mesh.proto";
 import "meshtastic/module_config.proto";
+
+option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "DeviceOnly";
+option java_package = "com.geeksville.mesh";
+option swift_prefix = "";
 
 /*
  * This message is never sent over the wire, but it is used for serializing DB
@@ -21,7 +21,6 @@ import "meshtastic/module_config.proto";
  * the receive queue and use the preferences store for the other stuff
  */
 message DeviceState {
-
   /*
    * Read only settings/info about this node
    */
@@ -84,7 +83,6 @@ message DeviceState {
  * The on-disk saved channels
  */
 message ChannelFile {
-
   /*
    * The channels our node knows about
    */
@@ -102,7 +100,6 @@ message ChannelFile {
  * TODO: REPLACE
  */
 enum ScreenFonts {
-
   /*
    * TODO: REPLACE
    */
@@ -124,7 +121,6 @@ enum ScreenFonts {
  * show a secondary bootup screen with custom logo and text for 2.5 seconds.
  */
 message OEMStore {
-
   /*
    * The Logo width in Px
    */
@@ -170,7 +166,6 @@ message OEMStore {
  * RemoteHardwarePins associated with a node
  */
 message NodeRemoteHardwarePin {
-
   /*
    * The node_num exposing the available gpio pin
    */

@@ -2,10 +2,10 @@ syntax = "proto3";
 
 package meshtastic;
 
-option java_package = "com.geeksville.mesh";
-option java_outer_classname = "ConnStatusProtos";
-option go_package = "github.com/meshtastic/go/generated";
 option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "ConnStatusProtos";
+option java_package = "com.geeksville.mesh";
 option swift_prefix = "";
 
 message DeviceConnectionStatus {
@@ -39,7 +39,7 @@ message WifiConnectionStatus {
   NetworkConnectionStatus status = 1;
 
   /*
-   * WiFi access point SSID 
+   * WiFi access point SSID
    */
   string ssid = 2;
 
@@ -56,7 +56,7 @@ message EthernetConnectionStatus {
   /*
    * Connection status
    */
-   NetworkConnectionStatus status = 1;
+  NetworkConnectionStatus status = 1;
 }
 
 /*
@@ -67,7 +67,7 @@ message NetworkConnectionStatus {
    * IP address of device
    */
   fixed32 ip_address = 1;
-  
+
   /*
    * Whether the device has an active connection or not
    */
@@ -107,7 +107,7 @@ message BluetoothConnectionStatus {
 /*
  * Serial connection status
  */
- message SerialConnectionStatus {
+message SerialConnectionStatus {
   /*
    * Serial baud rate
    */

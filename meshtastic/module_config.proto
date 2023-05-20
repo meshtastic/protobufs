@@ -2,26 +2,24 @@ syntax = "proto3";
 
 package meshtastic;
 
-option java_package = "com.geeksville.mesh";
-option java_outer_classname = "ModuleConfigProtos";
-option go_package = "github.com/meshtastic/go/generated";
 option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "ModuleConfigProtos";
+option java_package = "com.geeksville.mesh";
 option swift_prefix = "";
 
 /*
  * Module Config
  */
 message ModuleConfig {
-
   /*
    * MQTT Client Config
    */
   message MQTTConfig {
-
     /*
      * If a meshtastic node is able to reach the internet it will normally attempt to gateway any channels that are marked as
      * is_uplink_enabled or is_downlink_enabled.
-    */
+     */
     bool enabled = 1;
 
     /*
@@ -73,7 +71,6 @@ message ModuleConfig {
    * RemoteHardwareModule Config
    */
   message RemoteHardwareConfig {
-
     /*
      * Whether the Module is enabled
      */
@@ -94,21 +91,20 @@ message ModuleConfig {
    * Audio Config for codec2 voice
    */
   message AudioConfig {
-
     /*
      * Baudrate for codec2 voice
      */
     enum Audio_Baud {
       CODEC2_DEFAULT = 0;
-      CODEC2_3200 = 1; 
-      CODEC2_2400 = 2; 
-      CODEC2_1600 = 3; 
-      CODEC2_1400 = 4; 
-      CODEC2_1300 = 5; 
-      CODEC2_1200 = 6; 
+      CODEC2_3200 = 1;
+      CODEC2_2400 = 2;
+      CODEC2_1600 = 3;
+      CODEC2_1400 = 4;
+      CODEC2_1300 = 5;
+      CODEC2_1200 = 6;
       CODEC2_700 = 7;
-      CODEC2_700B = 8; 
-    };
+      CODEC2_700B = 8;
+    }
 
     /*
      * Whether Audio is enabled
@@ -150,7 +146,6 @@ message ModuleConfig {
    * Serial Config
    */
   message SerialConfig {
-
     /*
      * TODO: REPLACE
      */
@@ -171,7 +166,7 @@ message ModuleConfig {
       BAUD_460800 = 13;
       BAUD_576000 = 14;
       BAUD_921600 = 15;
-    };
+    }
 
     /*
      * TODO: REPLACE
@@ -182,7 +177,7 @@ message ModuleConfig {
       PROTO = 2;
       TEXTMSG = 3;
       NMEA = 4;
-    };
+    }
 
     /*
      * Preferences for the SerialModule
@@ -194,12 +189,12 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     bool echo = 2;
- 
+
     /*
      * TODO: REPLACE
      */
     uint32 rxd = 3;
- 
+
     /*
      * TODO: REPLACE
      */
@@ -214,19 +209,17 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     uint32 timeout = 6;
- 
+
     /*
      * TODO: REPLACE
      */
     Serial_Mode mode = 7;
-
   }
 
   /*
    * External Notifications Config
    */
   message ExternalNotificationConfig {
-
     /*
      * Enable the ExternalNotificationModule
      */
@@ -321,22 +314,21 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     bool heartbeat = 2;
- 
+
     /*
      * TODO: REPLACE
      */
     uint32 records = 3;
- 
+
     /*
      * TODO: REPLACE
      */
     uint32 history_return_max = 4;
- 
+
     /*
      * TODO: REPLACE
      */
     uint32 history_return_window = 5;
-
   }
 
   /*
@@ -354,7 +346,7 @@ message ModuleConfig {
     uint32 sender = 2;
 
     /*
-     * Bool value indicating that this node should save a RangeTest.csv file. 
+     * Bool value indicating that this node should save a RangeTest.csv file.
      * ESP32 Only
      */
     bool save = 3;
@@ -364,7 +356,6 @@ message ModuleConfig {
    * Configuration for both device and environment metrics
    */
   message TelemetryConfig {
-    
     /*
      * Interval in seconds of how often we should try to send our
      * device metrics to the mesh
@@ -411,47 +402,45 @@ message ModuleConfig {
    * TODO: REPLACE
    */
   message CannedMessageConfig {
-    
     /*
      * TODO: REPLACE
      */
     enum InputEventChar {
-    
       /*
        * TODO: REPLACE
        */
-      NONE  = 0;
-    
+      NONE = 0;
+
       /*
        * TODO: REPLACE
        */
-      UP    = 17;
-    
+      UP = 17;
+
       /*
        * TODO: REPLACE
        */
-      DOWN  = 18;
-    
+      DOWN = 18;
+
       /*
        * TODO: REPLACE
        */
-      LEFT  = 19;
-    
+      LEFT = 19;
+
       /*
        * TODO: REPLACE
        */
-      RIGHT =  20;
-    
+      RIGHT = 20;
+
       /*
        * '\n'
        */
       SELECT = 10;
-    
+
       /*
        * TODO: REPLACE
        */
-      BACK  = 27;
-    
+      BACK = 27;
+
       /*
        * TODO: REPLACE
        */
@@ -467,48 +456,48 @@ message ModuleConfig {
      * GPIO pin for rotary encoder A port.
      */
     uint32 inputbroker_pin_a = 2;
- 
+
     /*
      * GPIO pin for rotary encoder B port.
      */
     uint32 inputbroker_pin_b = 3;
- 
+
     /*
      * GPIO pin for rotary encoder Press port.
      */
     uint32 inputbroker_pin_press = 4;
- 
+
     /*
      * Generate input event on CW of this kind.
      */
     InputEventChar inputbroker_event_cw = 5;
- 
+
     /*
      * Generate input event on CCW of this kind.
      */
     InputEventChar inputbroker_event_ccw = 6;
- 
+
     /*
      * Generate input event on Press of this kind.
      */
     InputEventChar inputbroker_event_press = 7;
- 
+
     /*
      * Enable the Up/Down/Select input device. Can be RAK rotary encoder or 3 buttons. Uses the a/b/press definitions from inputbroker.
      */
     bool updown1_enabled = 8;
-    
+
     /*
      * Enable/disable CannedMessageModule.
      */
     bool enabled = 9;
- 
+
     /*
      * Input event origin accepted by the canned message module.
      * Can be e.g. "rotEnc1", "upDownEnc1" or keyword "_any"
      */
     string allow_input_source = 10;
- 
+
     /*
      * CannedMessageModule also sends a bell character with the messages.
      * ExternalNotificationModule can benefit from this feature.
@@ -520,7 +509,6 @@ message ModuleConfig {
    * TODO: REPLACE
    */
   oneof payload_variant {
-
     /*
      * TODO: REPLACE
      */
@@ -565,14 +553,13 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     RemoteHardwareConfig remote_hardware = 9;
-
   }
 }
 
 /*
  * A GPIO pin definition for remote hardware module
  */
- message RemoteHardwarePin {
+message RemoteHardwarePin {
   /*
    * GPIO Pin number (must match Arduino)
    */
