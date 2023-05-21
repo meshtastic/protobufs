@@ -2,10 +2,10 @@ syntax = "proto3";
 
 package meshtastic;
 
-option java_package = "com.geeksville.mesh";
-option java_outer_classname = "RemoteHardware";
-option go_package = "github.com/meshtastic/go/generated";
 option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "RemoteHardware";
+option java_package = "com.geeksville.mesh";
 option swift_prefix = "";
 
 /*
@@ -20,12 +20,10 @@ option swift_prefix = "";
  * (a special channel once multichannel support is included?)
  */
 message HardwareMessage {
-
   /*
    * TODO: REPLACE
    */
   enum Type {
-
     /*
      * Unset/unused
      */

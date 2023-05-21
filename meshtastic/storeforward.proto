@@ -2,23 +2,21 @@ syntax = "proto3";
 
 package meshtastic;
 
-option java_package = "com.geeksville.mesh";
-option java_outer_classname = "StoreAndForwardProtos";
-option go_package = "github.com/meshtastic/go/generated";
 option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "StoreAndForwardProtos";
+option java_package = "com.geeksville.mesh";
 option swift_prefix = "";
 
 /*
  * TODO: REPLACE
  */
 message StoreAndForward {
-
   /*
    * 001 - 063 = From Router
    * 064 - 127 = From Client
    */
   enum RequestResponse {
-
     /*
      * Unset/unused
      */
@@ -96,7 +94,6 @@ message StoreAndForward {
    * TODO: REPLACE
    */
   message Statistics {
-
     /*
      * Number of messages we have ever seen
      */
@@ -147,7 +144,6 @@ message StoreAndForward {
    * TODO: REPLACE
    */
   message History {
-
     /*
      * Number of that will be sent to the client
      */
@@ -168,7 +164,6 @@ message StoreAndForward {
    * TODO: REPLACE
    */
   message Heartbeat {
-
     /*
      * Number of that will be sent to the client
      */

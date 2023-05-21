@@ -2,10 +2,10 @@ syntax = "proto3";
 
 package meshtastic;
 
-option java_package = "com.geeksville.mesh";
-option java_outer_classname = "TelemetryProtos";
-option go_package = "github.com/meshtastic/go/generated";
 option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "TelemetryProtos";
+option java_package = "com.geeksville.mesh";
 option swift_prefix = "";
 
 /*
@@ -16,7 +16,7 @@ message DeviceMetrics {
    * 0-100 (>100 means powered)
    */
   uint32 battery_level = 1;
-  
+
   /*
    * Voltage measured
    */
@@ -26,7 +26,7 @@ message DeviceMetrics {
    * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
    */
   float channel_utilization = 3;
-   
+
   /*
    * Percent of airtime for transmission used within the last hour.
    */
@@ -71,7 +71,7 @@ message EnvironmentMetrics {
 /*
  * Air quality metrics
  */
- message AirQualityMetrics {
+message AirQualityMetrics {
   /*
    * Concentration Units Standard PM1.0
    */
@@ -165,76 +165,76 @@ message Telemetry {
 }
 
 /*
-* Supported I2C Sensors for telemetry in Meshtastic
-*/
+ * Supported I2C Sensors for telemetry in Meshtastic
+ */
 enum TelemetrySensorType {
   /*
-  * No external telemetry sensor explicitly set
-  */
+   * No external telemetry sensor explicitly set
+   */
   SENSOR_UNSET = 0;
 
   /*
-  * High accuracy temperature, pressure, humidity
-  */
+   * High accuracy temperature, pressure, humidity
+   */
   BME280 = 1;
 
   /*
-  * High accuracy temperature, pressure, humidity, and air resistance
-  */
+   * High accuracy temperature, pressure, humidity, and air resistance
+   */
   BME680 = 2;
 
   /*
-  * Very high accuracy temperature
-  */
+   * Very high accuracy temperature
+   */
   MCP9808 = 3;
 
   /*
-  * Moderate accuracy current and voltage
-  */
+   * Moderate accuracy current and voltage
+   */
   INA260 = 4;
 
   /*
-  * Moderate accuracy current and voltage
-  */
+   * Moderate accuracy current and voltage
+   */
   INA219 = 5;
 
   /*
-  * High accuracy temperature and pressure
-  */
+   * High accuracy temperature and pressure
+   */
   BMP280 = 6;
 
   /*
-  * High accuracy temperature and humidity
-  */
+   * High accuracy temperature and humidity
+   */
   SHTC3 = 7;
-  
+
   /*
-  * High accuracy pressure
-  */
+   * High accuracy pressure
+   */
   LPS22 = 8;
 
   /*
-  * 3-Axis magnetic sensor
-  */
+   * 3-Axis magnetic sensor
+   */
   QMC6310 = 9;
 
   /*
-  * 6-Axis inertial measurement sensor
-  */
+   * 6-Axis inertial measurement sensor
+   */
   QMI8658 = 10;
-  
+
   /*
-  * 3-Axis magnetic sensor
-  */
+   * 3-Axis magnetic sensor
+   */
   QMC5883L = 11;
 
   /*
-  * High accuracy temperature and humidity
-  */
+   * High accuracy temperature and humidity
+   */
   SHT31 = 12;
 
   /*
    * PM2.5 air quality sensor
    */
   PMSA003I = 13;
-};
+}

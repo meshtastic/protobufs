@@ -5,7 +5,7 @@ on:
     inputs:
       increment_type:
         type: choice
-        description: "Select the type of version increment"
+        description: Select the type of version increment
         required: true
         options:
           - patch

@@ -2,10 +2,10 @@ syntax = "proto3";
 
 package meshtastic;
 
-option java_package = "com.geeksville.mesh";
-option java_outer_classname = "Portnums";
-option go_package = "github.com/meshtastic/go/generated";
 option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "Portnums";
+option java_package = "com.geeksville.mesh";
 option swift_prefix = "";
 
 /*
@@ -23,7 +23,6 @@ option swift_prefix = "";
  * This change is backwards compatible by treating the legacy OPAQUE/CLEAR_TEXT values identically.
  */
 enum PortNum {
-
   /*
    * Deprecated: do not use in new code (formerly called OPAQUE)
    * A message sent from a device outside of the mesh, in a form the mesh does not understand
@@ -129,10 +128,10 @@ enum PortNum {
   ZPS_APP = 68;
 
   /*
-   * Used to let multiple instances of Linux native applications communicate 
+   * Used to let multiple instances of Linux native applications communicate
    * as if they did using their LoRa chip.
-   * Maintained by GitHub user GUVWAF. 
-   * Project files at https://github.com/GUVWAF/Meshtasticator 
+   * Maintained by GitHub user GUVWAF.
+   * Project files at https://github.com/GUVWAF/Meshtasticator
    */
   SIMULATOR_APP = 69;
 
