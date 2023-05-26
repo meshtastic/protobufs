@@ -336,6 +336,11 @@ message Config {
      * 0 for default of 10 seconds
      */
     uint32 min_wake_secs = 8;
+
+    /*
+     * I2C address of INA_2XX to use read device battery voltage
+     */
+    uint32 device_battery_ina_address = 9;
   }
 
   /*
