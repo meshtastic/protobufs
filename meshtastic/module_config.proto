@@ -177,6 +177,8 @@ message ModuleConfig {
       PROTO = 2;
       TEXTMSG = 3;
       NMEA = 4;
+      // NMEA messages specifically tailored for CalTopo
+      CALTOPO = 5;
     }
 
     /*
