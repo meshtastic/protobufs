@@ -311,6 +311,11 @@ enum HardwareModel {
   STATION_G1 = 25;
 
   /*
+   * RAK11310 (RP2040 + SX1262)
+   */
+  RAK11310 = 26;
+
+  /*
    * ---------------------------------------------------------------------------
    * Less common/prototype boards listed here (needs one more byte over the air)
    * ---------------------------------------------------------------------------
@@ -388,19 +393,9 @@ enum HardwareModel {
   BETAFPV_900_NANO_TX = 46;
 
   /*
-   * Raspberry Pi Pico (with Waveshare SX1262 LoRa Node Module)
+   * Raspberry Pi Pico (W) with Waveshare SX1262 LoRa Node Module
    */
   RPI_PICO = 47;
-
-  /*
-   * Raspberry Pi Pico W (with Waveshare SX1262 LoRa Node Module)
-   */
-  RPI_PICO_W = 48;
-
-  /*
-   * RAK11310 (RP2040 + SX1262)
-   */
-  RAK11310 = 49;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
