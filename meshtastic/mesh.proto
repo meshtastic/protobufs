@@ -388,6 +388,21 @@ enum HardwareModel {
   BETAFPV_900_NANO_TX = 46;
 
   /*
+   * Raspberry Pi Pico (with Waveshare SX1262 LoRa Node Module)
+   */
+  RPI_PICO = 47;
+
+  /*
+   * Raspberry Pi Pico W (with Waveshare SX1262 LoRa Node Module)
+   */
+  RPI_PICO_W = 48;
+
+  /*
+   * RAK11310 (RP2040 + SX1262)
+   */
+  RAK11310 = 49;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
