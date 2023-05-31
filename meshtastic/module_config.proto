@@ -577,6 +577,11 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     RemoteHardwareConfig remote_hardware = 9;
+
+    /*
+     * TODO: REPLACE
+     */
+    NeighborInfoConfig neighbor_info = 10;
   }
 }
 
