@@ -88,6 +88,22 @@ message ModuleConfig {
   }
 
   /*
+   * NeighborInfoModule Config
+   */
+  message NeighborInfoConfig {
+    /*
+     * Whether the Module is enabled
+     */
+    bool enabled = 1;
+    
+    /*
+     * Interval in seconds of how often we should try to send our
+     * Neighbor Info to the mesh
+     */
+    uint32 update_interval = 2;
+  }
+
+  /*
    * Audio Config for codec2 voice
    */
   message AudioConfig {
