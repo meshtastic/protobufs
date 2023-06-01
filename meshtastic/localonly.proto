@@ -107,6 +107,11 @@ message LocalModuleConfig {
   ModuleConfig.RemoteHardwareConfig remote_hardware = 10;
 
   /*
+   * The part of the config that is specific to the Neighbor Info module
+   */
+  ModuleConfig.NeighborInfoConfig neighbor_info = 11;
+
+  /*
    * A version integer used to invalidate old save files when we make
    * incompatible changes This integer is set at build time and is private to
    * NodeDB.cpp in the device code.
