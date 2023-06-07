@@ -1062,9 +1062,10 @@ message MyNodeInfo {
   bool has_gps = 2;
 
   /*
+   * Deprecated in 2.1.x
    * The maximum number of 'software' channels that can be set on this node.
    */
-  uint32 max_channels = 3;
+  uint32 max_channels = 3 [deprecated = true];
 
   /*
    * 0.0.5 etc...
