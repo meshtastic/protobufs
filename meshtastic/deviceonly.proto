@@ -5,6 +5,7 @@ package meshtastic;
 import "meshtastic/channel.proto";
 import "meshtastic/localonly.proto";
 import "meshtastic/mesh.proto";
+import "meshtastic/telemetry.proto";
 import "meshtastic/module_config.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
@@ -32,9 +33,10 @@ message DeviceState {
   User owner = 3;
 
   /*
-   * TODO: REPLACE
+   * Deprecated in 2.1.x
+   * Old node_db. See NodeInfoLite node_db_lite
    */
-  repeated NodeInfo node_db = 4;
+  repeated NodeInfo node_db = 4 [deprecated = true];
 
   /*
    * Received packets saved for delivery to the phone
@@ -77,6 +79,49 @@ message DeviceState {
    * The mesh's nodes with their available gpio pins for RemoteHardware module
    */
   repeated NodeRemoteHardwarePin node_remote_hardware_pins = 13;
+
+  /*
+   * New lite version of NodeDB to decrease
+   */
+  repeated NodeInfoLite node_db_lite = 14;
+}
+
+message NodeInfoLite {
+  /*
+   * The node number
+   */
+  uint32 num = 1;
+
+  /*
+   * The user info for this node
+   */
+  User user = 2;
+
+  /*
+   * This position data. Note: before 1.2.14 we would also store the last time we've heard from this node in position.time, that is no longer true.
+   * Position.time now indicates the last time we received a POSITION from that node.
+   */
+  PositionLite position = 3;
+
+  /*
+   * Returns the Signal-to-noise ratio (SNR) of the last received message,
+   * as measured by the receiver. Return SNR of the last received message in dB
+   */
+  float snr = 4;
+
+  /*
+   * Set to indicate the last time we received a packet from this node
+   */
+  fixed32 last_heard = 5;
+  /*
+   * The latest device metrics for the node.
+   */
+  DeviceMetrics device_metrics = 6;
+
+  /*
+   * local channel index we heard that node on. Only populated if its not the default channel.
+   */
+  uint32 channel = 7;
 }
 
 /*
