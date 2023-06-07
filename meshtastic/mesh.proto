@@ -1114,6 +1114,7 @@ message MyNodeInfo {
   uint32 message_timeout_msec = 10 [deprecated = true];
 
   /*
+   * Deprecated in 2.1.x
    * The minimum app version that can talk to this device.
    * Phone/PC apps should compare this to their build number and if too low tell the user they must update their app
    */
