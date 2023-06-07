@@ -1082,18 +1082,18 @@ message MyNodeInfo {
    * (i.e. it will only be reported once)
    * a numeric error code to go with error message, zero means no error
    */
-  CriticalErrorCode error_code = 5;
+  CriticalErrorCode error_code = 5 [deprecated = true];
 
   /*
    * A numeric error address (nonzero if available)
    */
-  uint32 error_address = 6;
+  uint32 error_address = 6 [deprecated = true];
 
   /*
    * The total number of errors this node has ever encountered
    * (well - since the last time we discarded preferences)
    */
-  uint32 error_count = 7;
+  uint32 error_count = 7 [deprecated = true];
 
   /*
    * The total number of reboots this node has ever encountered
