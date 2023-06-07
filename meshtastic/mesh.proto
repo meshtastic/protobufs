@@ -1105,12 +1105,13 @@ message MyNodeInfo {
   float bitrate = 9;
 
   /*
+   * Deprecated in 2.1.x
    * How long before we consider a message abandoned and we can clear our
    * caches of any messages in flight Normally quite large to handle the worst case
    * message delivery time, 5 minutes.
    * Formerly called FLOOD_EXPIRE_TIME in the device code
    */
-  uint32 message_timeout_msec = 10;
+  uint32 message_timeout_msec = 10 [deprecated = true];
 
   /*
    * The minimum app version that can talk to this device.
@@ -1129,9 +1130,10 @@ message MyNodeInfo {
   repeated uint32 air_period_rx = 13;
 
   /*
+   * Deprecated in 2.1.x (Source from DeviceMetadata instead)
    * Is the device wifi capable?
    */
-  bool has_wifi = 14;
+  bool has_wifi = 14 [deprecated = true];
 
   /*
    * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
