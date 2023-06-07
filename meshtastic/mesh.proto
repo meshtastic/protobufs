@@ -1120,14 +1120,16 @@ message MyNodeInfo {
   uint32 min_app_version = 11;
 
   /*
+   * Deprecated in 2.1.x (Only used on device to keep track of utilization)
    * 24 time windows of 1hr each with the airtime transmitted out of the device per hour.
    */
-  repeated uint32 air_period_tx = 12;
+  repeated uint32 air_period_tx = 12 [deprecated = true];
 
   /*
+   * Deprecated in 2.1.x (Only used on device to keep track of utilization)
    * 24 time windows of 1hr each with the airtime of valid packets for your mesh.
    */
-  repeated uint32 air_period_rx = 13;
+  repeated uint32 air_period_rx = 13 [deprecated = true];
 
   /*
    * Deprecated in 2.1.x (Source from DeviceMetadata instead)
