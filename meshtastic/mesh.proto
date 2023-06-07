@@ -1062,9 +1062,10 @@ message MyNodeInfo {
   bool has_gps = 2;
 
   /*
+   * Deprecated in 2.1.x
    * The maximum number of 'software' channels that can be set on this node.
    */
-  uint32 max_channels = 3;
+  uint32 max_channels = 3 [deprecated = true];
 
   /*
    * 0.0.5 etc...
@@ -1104,12 +1105,13 @@ message MyNodeInfo {
   float bitrate = 9;
 
   /*
+   * Deprecated in 2.1.x
    * How long before we consider a message abandoned and we can clear our
    * caches of any messages in flight Normally quite large to handle the worst case
    * message delivery time, 5 minutes.
    * Formerly called FLOOD_EXPIRE_TIME in the device code
    */
-  uint32 message_timeout_msec = 10;
+  uint32 message_timeout_msec = 10 [deprecated = true];
 
   /*
    * The minimum app version that can talk to this device.
@@ -1118,29 +1120,34 @@ message MyNodeInfo {
   uint32 min_app_version = 11;
 
   /*
+   * Deprecated in 2.1.x (Only used on device to keep track of utilization)
    * 24 time windows of 1hr each with the airtime transmitted out of the device per hour.
    */
-  repeated uint32 air_period_tx = 12;
+  repeated uint32 air_period_tx = 12 [deprecated = true];
 
   /*
+   * Deprecated in 2.1.x (Only used on device to keep track of utilization)
    * 24 time windows of 1hr each with the airtime of valid packets for your mesh.
    */
-  repeated uint32 air_period_rx = 13;
+  repeated uint32 air_period_rx = 13 [deprecated = true];
 
   /*
+   * Deprecated in 2.1.x (Source from DeviceMetadata instead)
    * Is the device wifi capable?
    */
-  bool has_wifi = 14;
+  bool has_wifi = 14 [deprecated = true];
 
   /*
+   * Deprecated in 2.1.x (Source from DeviceMetrics telemetry payloads)
    * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
    */
-  float channel_utilization = 15;
+  float channel_utilization = 15 [deprecated = true];
 
   /*
+   * Deprecated in 2.1.x (Source from DeviceMetrics telemetry payloads)
    * Percent of airtime for transmission used within the last hour.
    */
-  float air_util_tx = 16;
+  float air_util_tx = 16 [deprecated = true];
 }
 
 /*
