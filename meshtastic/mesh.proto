@@ -1114,11 +1114,10 @@ message MyNodeInfo {
   uint32 message_timeout_msec = 10 [deprecated = true];
 
   /*
-   * Deprecated in 2.1.x
    * The minimum app version that can talk to this device.
    * Phone/PC apps should compare this to their build number and if too low tell the user they must update their app
    */
-  uint32 min_app_version = 11 [deprecated = true];
+  uint32 min_app_version = 11;
 
   /*
    * 24 time windows of 1hr each with the airtime transmitted out of the device per hour.
@@ -1137,14 +1136,16 @@ message MyNodeInfo {
   bool has_wifi = 14 [deprecated = true];
 
   /*
+   * Deprecated in 2.1.x (Source from DeviceMetrics telemetry payloads)
    * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
    */
-  float channel_utilization = 15;
+  float channel_utilization = 15 [deprecated = true];
 
   /*
+   * Deprecated in 2.1.x (Source from DeviceMetrics telemetry payloads)
    * Percent of airtime for transmission used within the last hour.
    */
-  float air_util_tx = 16;
+  float air_util_tx = 16 [deprecated = true];
 }
 
 /*
