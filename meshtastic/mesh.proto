@@ -16,6 +16,36 @@ option java_package = "com.geeksville.mesh";
 option swift_prefix = "";
 
 /*
+ * Position with static location information only
+ */
+message PositionLite {
+  /*
+   * The new preferred location encoding, multiply by 1e-7 to get degrees
+   * in floating point
+   */
+  sfixed32 latitude_i = 1;
+
+  /*
+   * TODO: REPLACE
+   */
+  sfixed32 longitude_i = 2;
+
+  /*
+   * In meters above MSL (but see issue #359)
+   */
+  int32 altitude = 3;
+
+  /*
+   * This is usually not sent over the mesh (to save space), but it is sent
+   * from the phone so that the local device can set its RTC If it is sent over
+   * the mesh (because there are devices on the mesh without GPS), it will only
+   * be sent by devices which has a hardware GPS clock.
+   * seconds since 1970
+   */
+  fixed32 time = 4;
+}
+
+/*
  * a gps position
  */
 message Position {
