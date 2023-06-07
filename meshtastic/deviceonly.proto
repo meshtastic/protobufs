@@ -152,6 +152,11 @@ message PositionLite {
    * seconds since 1970
    */
   fixed32 time = 4;
+
+  /*
+   * TODO: REPLACE
+   */
+  Position.LocSource location_source = 5;
 }
 
 /*
