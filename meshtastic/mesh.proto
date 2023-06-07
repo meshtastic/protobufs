@@ -1117,7 +1117,7 @@ message MyNodeInfo {
    * The minimum app version that can talk to this device.
    * Phone/PC apps should compare this to their build number and if too low tell the user they must update their app
    */
-  uint32 min_app_version = 11;
+  uint32 min_app_version = 11 [deprecated = true];
 
   /*
    * 24 time windows of 1hr each with the airtime transmitted out of the device per hour.
