@@ -448,10 +448,11 @@ message User {
   string short_name = 3;
 
   /*
+   * Deprecated in Meshtastic 2.1.x
    * This is the addr of the radio.
    * Not populated by the phone, but added by the esp32 when broadcasting
    */
-  bytes macaddr = 4;
+  bytes macaddr = 4 [deprecated = true];
 
   /*
    * TBEAM, HELTEC, etc...
