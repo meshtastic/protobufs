@@ -1056,7 +1056,7 @@ message MyNodeInfo {
   uint32 my_node_num = 1;
 
   /*
-   * Deprecated in 2.1.x
+   * Deprecated in 2.1.x (Source from device_metadata)
    * Note: This flag merely means we detected a hardware GPS in our node.
    * Not the same as UserPreferences.location_sharing
    */
@@ -1069,9 +1069,10 @@ message MyNodeInfo {
   uint32 max_channels = 3 [deprecated = true];
 
   /*
+   * Deprecated in 2.1.x (Source from device_metadata)
    * 0.0.5 etc...
    */
-  string firmware_version = 4;
+  string firmware_version = 4 [deprecated = true];
 
   /*
    * An error message we'd like to report back to the mothership through analytics.
