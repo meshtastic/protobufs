@@ -1,0 +1,219 @@
+syntax = "proto3";
+
+package meshtastic;
+
+option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "MTakProtos";
+option java_package = "com.geeksville.mesh";
+option swift_prefix = "";
+
+message TakCotEvent {
+    /*  
+     * eg. a-f-G-U-C
+     */
+    oneof Type {
+        /*
+         * a - Things
+         */
+        Atoms Atoms = 1;
+        /*
+         * b - Meta information about data sources.
+         */
+        Bits Bits = 2;
+        /*
+         * r - Reservation/Restriction/References
+         */
+        Reservation Reservation = 3;
+        /*
+         * t - Tasking (requests/orders)
+         */
+        Tasking Tasking = 4;
+        /*
+         * c - Capability (applied to an area)
+         */
+        Capability Capability = 5;
+    }
+    /*
+     * 128-bit representation of uuid?
+     * FIXME: Look into unishox2 compressed string as alternative
+     */
+    bytes Uid = 6;
+    /*
+     * Starts at (unix epoch)
+     */
+    optional fixed32 SendTime = 7;
+    /*
+     * Becomes effective at (unix epoch)
+     */
+    optional fixed32 StartTime = 8;
+    /*
+     * Becomes stale at (unix epoch)
+     */
+    optional fixed32 StaleTime = 9;
+    /*
+     * FIXME: Give it a structure like Describes?
+     */
+    optional string How = 10;
+    /*
+     * Latitude - Multiply by 1e-7 to get in floating point
+     */
+    optional sfixed32 Latitude_i = 11;
+    /*
+     * Longitude - Multiply by 1e-7 to get in floating point
+     */
+    optional sfixed32 Longitude_i = 12;
+    /*
+     * Height above ellipsoid
+     */
+    optional int32 HAE = 13;
+    /*
+     * What is this? Course?
+     */
+    optional int32 CE = 14;
+    /*
+     * What is this?
+     */
+    optional int32 LE = 15;
+
+    // TODO track, chat, and other details
+}
+
+enum Affiliation {
+    /*
+     * o - None specified
+     */
+    NoneSpecified = 0;
+    /*
+     * p - Pending
+     */
+    Pending = 1;
+    /*
+     * a - Assumed friend
+     */
+    AssumedFriend = 2;
+    /*
+     * f - Friend
+     */
+    Friend = 3;
+    /*
+     * n - Neutral
+     */
+    Neutral = 4;
+    /*
+     * s - Suspect
+     */
+    Suspect = 5;
+    /*
+     * h - Hostile
+     */
+    Hostile = 6;
+    /*
+     * j - Joker
+     */
+    Joker = 7;
+    /*
+     * k - Faker
+     */
+    Faker = 8;
+    /*
+     * u - Unknown
+     */
+    Unknown = 9;
+    /*
+     * x - Other
+     */
+    OtherAffiliation = 10;
+    /*
+     * g - Excercise Pending
+     */
+    ExcercisePending = 11;
+    /*
+     * w - Excercise Unknown
+     */
+    ExcerciseUnknown = 12;
+    /*
+     * m - Excercise Assumed Friend
+     */
+    ExcerciseAssumedFriend = 13;
+    /*
+     * d - Excercise Friend
+     */
+    ExcerciseFriend = 15;
+    /*
+     * l - Excercise Neutral
+     */
+    ExcerciseNeutral = 16;
+}
+
+/*
+ * Attributes describing the atoms
+ */
+message Atoms {
+    /*
+     * Affiliation of the Atoms
+     */
+    Affiliation Affiliation = 1;
+    /*
+     * Dimension of the Atoms
+     */
+    Dimension Dimension = 2;
+    /*
+     * Additional Mil-2525 function codes
+     */
+    string Functions = 3;
+}
+
+/*
+ * Dimension of atoms
+ */
+enum Dimension {
+    /*
+     * Z - Unknown
+     */
+    UnknownDimension = 0;
+    /*
+     * F - SOF
+     */
+    SOF = 1;
+    /*
+     * U - Sea subsurface
+     */
+    SeaSubsurface = 2;
+    /*
+     * S - Sea surface
+     */
+    SeaSurface = 3;
+    /*
+     * G - Ground
+     */
+    Ground = 4;
+    /*
+     * A - Air
+     */
+    Air = 5;
+    /*
+     * P - Space
+     */
+    Space = 6;
+    /*
+     * X - Other
+     */
+    OtherDimension = 7;
+}
+
+message Bits {
+    
+}
+
+message Reservation {
+    
+}
+
+message Tasking {
+    
+}
+
+message Capability {
+    
+}
