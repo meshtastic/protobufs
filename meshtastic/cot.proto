@@ -4,11 +4,11 @@ package meshtastic;
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
-option java_outer_classname = "MTakProtos";
+option java_outer_classname = "CoTProtos";
 option java_package = "com.geeksville.mesh";
 option swift_prefix = "";
 
-message TakCotEvent {
+message CotEvent {
     /*  
      * eg. a-f-G-U-C
      */
