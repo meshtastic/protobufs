@@ -8,6 +8,8 @@ option java_outer_classname = "CoTProtos";
 option java_package = "com.geeksville.mesh";
 option swift_prefix = "";
 
+import "meshtastic/cot_event_descriptors.proto";
+
 message CotEvent {
     /*  
      * eg. a-f-G-U-C
@@ -108,157 +110,11 @@ message Point {
      */
     optional int32 HAE = 3;
     /*
-     * Height
+     * Cirular error
      */
-    optional int32 Radius = 4;
+    optional int32 CircularError = 4;
     /*
-     * Radius
+     * Linear Error
      */
-    optional int32 Height = 5;
-}
-
-/*
- * Affiliation of the atoms
- */
-enum Affiliation {
-    /*
-     * o - None specified
-     */
-    NoneSpecified = 0;
-    /*
-     * p - Pending
-     */
-    Pending = 1;
-    /*
-     * a - Assumed friend
-     */
-    AssumedFriend = 2;
-    /*
-     * f - Friend
-     */
-    Friend = 3;
-    /*
-     * n - Neutral
-     */
-    Neutral = 4;
-    /*
-     * s - Suspect
-     */
-    Suspect = 5;
-    /*
-     * h - Hostile
-     */
-    Hostile = 6;
-    /*
-     * j - Joker
-     */
-    Joker = 7;
-    /*
-     * k - Faker
-     */
-    Faker = 8;
-    /*
-     * u - Unknown
-     */
-    Unknown = 9;
-    /*
-     * x - Other
-     */
-    OtherAffiliation = 10;
-    /*
-     * g - Excercise Pending
-     */
-    ExcercisePending = 11;
-    /*
-     * w - Excercise Unknown
-     */
-    ExcerciseUnknown = 12;
-    /*
-     * m - Excercise Assumed Friend
-     */
-    ExcerciseAssumedFriend = 13;
-    /*
-     * d - Excercise Friend
-     */
-    ExcerciseFriend = 15;
-    /*
-     * l - Excercise Neutral
-     */
-    ExcerciseNeutral = 16;
-}
-
-/*
- * Attributes describing the atoms
- */
-message Atoms {
-    /*
-     * Affiliation of the Atoms
-     */
-    Affiliation Affiliation = 1;
-    /*
-     * Dimension of the Atoms
-     */
-    Dimension Dimension = 2;
-    /*
-     * Additional Mil-2525 function codes
-     */
-    string Functions = 3;
-}
-
-/*
- * Dimension of atoms
- */
-enum Dimension {
-    /*
-     * Z - Unknown
-     */
-    UnknownDimension = 0;
-    /*
-     * F - SOF
-     */
-    SOF = 1;
-    /*
-     * U - Sea subsurface
-     */
-    SeaSubsurface = 2;
-    /*
-     * S - Sea surface
-     */
-    SeaSurface = 3;
-    /*
-     * G - Ground
-     */
-    Ground = 4;
-    /*
-     * A - Air
-     */
-    Air = 5;
-    /*
-     * P - Space
-     */
-    Space = 6;
-    /*
-     * X - Other
-     */
-    OtherDimension = 7;
-}
-/*
- * TODO
- */
- message Bits {
-}
-/*
- * TODO
- */
-message Reservation {
-}
-/*
- * TODO
- */
-message Tasking {
-}
-/*
- * TODO
- */
-message Capability {
+    optional int32 LinearError = 5;
 }
