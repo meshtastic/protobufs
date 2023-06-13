@@ -38,7 +38,7 @@ message CotEvent {
      * 128-bit representation of uuid?
      * FIXME: Look into unishox2 compressed string as alternative
      */
-    bytes Uid = 6;
+    optional bytes Uid = 6;
     /*
      * Starts at (unix epoch)
      */
@@ -52,33 +52,74 @@ message CotEvent {
      */
     optional fixed32 StaleTime = 9;
     /*
+     * Point position
+     */
+    optional Point Point = 10;
+    /*
+     * CoT event details
+     */
+    optional Detail Detail = 11;
+    /*
      * FIXME: Give it a structure like Describes?
      */
-    optional string How = 10;
+    optional string How = 12;
+}
+/*
+ * Details of CoT event
+ */
+message Detail {
+    /*
+     * Status of EUD
+     */
+    optional Status Status = 1;
+    /*
+     * Track
+     */
+    optional Track Track = 2;
+}
+/*
+ * EUD status
+ */
+message Status {
+    /*
+     * Battery level (percent)
+     */
+    optional uint32 Battery = 1;
+}
+/*
+ * Track
+ */
+message Track {
+}
+/*
+ * Position of the CoT event
+ */
+message Point {
     /*
      * Latitude - Multiply by 1e-7 to get in floating point
      */
-    optional sfixed32 Latitude_i = 11;
+    optional sfixed32 Latitude = 1;
     /*
      * Longitude - Multiply by 1e-7 to get in floating point
      */
-    optional sfixed32 Longitude_i = 12;
+    optional sfixed32 Longitude = 2;
     /*
      * Height above ellipsoid
      */
-    optional int32 HAE = 13;
+    optional int32 HAE = 3;
     /*
-     * What is this? Course?
+     * Height
      */
-    optional int32 CE = 14;
+    optional int32 Radius = 4;
     /*
-     * What is this?
+     * Radius
      */
-    optional int32 LE = 15;
-
-    // TODO track, chat, and other details
+    optional int32 Height = 5;
 }
 
+/*
+ * Affiliation of the atoms
+ */
 enum Affiliation {
     /*
      * o - None specified
@@ -201,19 +242,23 @@ enum Dimension {
      */
     OtherDimension = 7;
 }
-
-message Bits {
-    
+/*
+ * TODO
+ */
+ message Bits {
 }
-
+/*
+ * TODO
+ */
 message Reservation {
-    
 }
-
+/*
+ * TODO
+ */
 message Tasking {
-    
 }
-
+/*
+ * TODO
+ */
 message Capability {
-    
 }
