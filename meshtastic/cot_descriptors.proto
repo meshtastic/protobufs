@@ -4,7 +4,7 @@ package meshtastic;
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
-option java_outer_classname = "CoTEventDescriptorProtos";
+option java_outer_classname = "CoTDescriptorProtos";
 option java_package = "com.geeksville.mesh";
 option swift_prefix = "";
 
@@ -152,4 +152,46 @@ message Tasking {
  * TODO
  */
 message Capability {
+}
+
+/*
+ * Role for EUD user
+ */
+enum Role {
+    /*
+     * Unspecifed
+     */
+    Unspecifed = 0;
+    /*
+     * Team Member
+     */
+    TeamMember = 1;
+    /*
+     * Team Lead
+     */
+    TeamLead = 2;
+    /*
+     * Headquarters
+     */
+    HQ = 3;
+    /*
+     * Airsoft enthusiast
+     */
+    Sniper = 4;
+    /*
+     * Medic
+     */
+    Medic = 5;
+    /*
+     * ForwardObserver
+     */
+    ForwardObserver = 6;
+    /*
+     * Radio Telephone Operator
+     */
+    RTO = 7;
+    /*
+     * Doggo
+     */
+    K9 = 8;
 }

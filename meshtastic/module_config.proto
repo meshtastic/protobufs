@@ -2,11 +2,14 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "meshtastic/cot_descriptors.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "ModuleConfigProtos";
 option java_package = "com.geeksville.mesh";
 option swift_prefix = "";
+
 
 /*
  * Module Config
@@ -423,6 +426,16 @@ message ModuleConfig {
   }
 
   /*
+   * Configuration for TAK team and CoT exchange
+   */
+  message TakConfig {
+    /*
+     * Team role
+     */
+    Role role = 1;
+  }
+
+  /*
    * TODO: REPLACE
    */
   message CannedMessageConfig {
@@ -582,6 +595,11 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     NeighborInfoConfig neighbor_info = 10;
+
+    /*
+     * TODO: REPLACE
+     */
+    TakConfig tak = 11;
   }
 }
 
