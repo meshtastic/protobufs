@@ -529,6 +529,25 @@ message ModuleConfig {
     bool send_bell = 11;
   }
 
+    /*Ambient Lighting Module - Settings for control of onboard LEDs to allow users to adjust the brightness levels and respective color levels.
+  Initially created for the RAK14001 RGB LED module.
+  */
+  message AmbientLightingConfig {
+
+  /*Sets the overall current for the LED, firmware side range for the RAK14001 is 1-31, but users should be given a range of 0-100%  */
+      uint32 current = 1;
+
+  /*Sets the red level of the LED, firmware side values are 0-255, but users should be given a range of 0-100%  */
+
+      uint32 red = 2;      // Red level
+
+  /*Sets the green level of the LED, firmware side values are 0-255, but users should be given a range of 0-100%   */
+      uint32 green = 3;    // Green level
+
+  /*Sets the blue level of the LED, firmware side values are 0-255, but users should be given a range of 0-100%   */
+      uint32 blue = 4;     // Blue level
+  }
+
   /*
    * TODO: REPLACE
    */
@@ -582,27 +601,14 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     NeighborInfoConfig neighbor_info = 10;
+
+    /*
+     * TODO: REPLACE
+     */
+    AmbientLightingConfig ambient_lighting = 11;
   }
 
-  /*Ambient Lighting Module - Settings for control of onboard LEDs to allow users to adjust the brightness levels and respective color levels.
-Initially created for the RAK14001 RGB LED module.
-*/
 
-message AmblientLightingConfig {
-
-/*Sets the overall current for the LED, range for the RAK14001 is 1-31*/
-    uint32 current = 1;
-
-/*Sets the red level of the LED, values are 0-255*/
-
-    uint32 red = 2;      // Red level
-
-/*Sets the green level of the LED, values are 0-255*/
-    uint32 green = 3;    // Green level
-
-/*Sets the blue level of the LED, values are 0-255*/
-    uint32 blue = 4;     // Blue level
-}
 }
 
 /*
