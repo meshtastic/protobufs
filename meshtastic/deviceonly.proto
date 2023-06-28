@@ -81,7 +81,7 @@ message DeviceState {
   repeated NodeRemoteHardwarePin node_remote_hardware_pins = 13;
 
   /*
-   * New lite version of NodeDB to decrease
+   * New lite version of NodeDB to decrease memory footprint
    */
   repeated NodeInfoLite node_db_lite = 14;
 }
