@@ -534,18 +534,21 @@ message ModuleConfig {
   */
   message AmbientLightingConfig {
 
+  /*Sets LED to on or off.  */
+      bool led_state = 1;
+
   /*Sets the overall current for the LED, firmware side range for the RAK14001 is 1-31, but users should be given a range of 0-100%  */
-      uint32 current = 1;
+      uint32 current = 2;
 
   /*Sets the red level of the LED, firmware side values are 0-255, but users should be given a range of 0-100%  */
 
-      uint32 red = 2;      // Red level
+      uint32 red = 3;      // Red level
 
   /*Sets the green level of the LED, firmware side values are 0-255, but users should be given a range of 0-100%   */
-      uint32 green = 3;    // Green level
+      uint32 green = 4;    // Green level
 
   /*Sets the blue level of the LED, firmware side values are 0-255, but users should be given a range of 0-100%   */
-      uint32 blue = 4;     // Blue level
+      uint32 blue = 5;     // Blue level
   }
 
   /*
