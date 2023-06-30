@@ -31,3 +31,17 @@ message ServiceEnvelope {
    */
   string gateway_id = 3;
 }
+
+/*
+ * This message will be proxied over the PhoneAPI for client to deliver to the MQTT server
+ */
+message MqttClientProxyMessage {
+  /*
+   * The MQTT topic this message will be sent /received on
+   */
+  string topic = 1;
+  /*
+   * The actual payload for mqtt delivery
+   */
+  ServiceEnvelope envelope = 2;
+}
