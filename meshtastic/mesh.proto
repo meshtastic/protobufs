@@ -675,6 +675,20 @@ message Waypoint {
 }
 
 /*
+ * This message will be proxied over the PhoneAPI for client to deliver to the MQTT server
+ */
+ message MqttClientProxyMessage {
+  /*
+   * The MQTT topic this message will be sent /received on
+   */
+  string topic = 1;
+  /*
+   * The actual service envelope payload for mqtt delivery
+   */
+  bytes data = 2;
+}
+
+/*
  * A packet envelope sent/received over the mesh
  * only payload_variant is sent in the payload portion of the LORA packet.
  * The other fields are either not sent at all, or sent in the special 16 byte LORA header.
@@ -1320,6 +1334,11 @@ message FromRadio {
      * Device metadata message
      */
     DeviceMetadata metadata = 13;
+
+    /*
+     * MQTT Client Proxy Message
+     */
+    MqttClientProxyMessage mqttClientProxyMessage = 14;
   }
 }
 
