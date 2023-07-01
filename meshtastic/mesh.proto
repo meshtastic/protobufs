@@ -682,10 +682,26 @@ message Waypoint {
    * The MQTT topic this message will be sent /received on
    */
   string topic = 1;
+
   /*
    * The actual service envelope payload for mqtt delivery
    */
-  bytes data = 2;
+  oneof payload_variant {
+    /*
+     * Bytes
+     */
+    bytes data = 2;
+
+    /*
+     * Text
+     */
+    string text = 3;
+  }
+
+  /*
+   * Whether the message should be retained (or not)
+   */
+  bool retained = 4;
 }
 
 /*
