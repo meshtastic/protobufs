@@ -1396,6 +1396,11 @@ message ToRadio {
      */
 
     XModem xmodemPacket = 5;
+
+    /*
+     * MQTT Client Proxy Message
+     */
+    MqttClientProxyMessage mqttClientProxyMessage = 6;
   }
 }
 
