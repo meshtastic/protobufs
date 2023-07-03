@@ -675,7 +675,7 @@ message Waypoint {
 }
 
 /*
- * This message will be proxied over the PhoneAPI for client to deliver to the MQTT server
+ * This message will be proxied over the PhoneAPI for the client to deliver to the MQTT server
  */
  message MqttClientProxyMessage {
   /*
@@ -684,7 +684,7 @@ message Waypoint {
   string topic = 1;
 
   /*
-   * The actual service envelope payload for mqtt delivery
+   * The actual service envelope payload or text for mqtt pub / sub
    */
   oneof payload_variant {
     /*
