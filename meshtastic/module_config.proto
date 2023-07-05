@@ -65,6 +65,11 @@ message ModuleConfig {
      * This is useful if you want to use a single MQTT server for multiple meshtastic networks and separate them via ACLs
      */
     string root = 8;
+
+    /*
+     * If true, we can use the connected phone / client to proxy messages to MQTT instead of a direct connection
+     */
+    bool proxy_to_client_enabled = 9;
   }
 
   /*
