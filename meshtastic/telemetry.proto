@@ -53,7 +53,7 @@ message EnvironmentMetrics {
   float barometric_pressure = 3;
 
   /*
-   * Gas resistance in mOhm measured
+   * Gas resistance in MOhm measured
    */
   float gas_resistance = 4;
 
