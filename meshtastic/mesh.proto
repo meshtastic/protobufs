@@ -1372,7 +1372,7 @@ message FromRadio {
     DeviceMetadata metadata = 13;
 
     /*
-     * MQTT Client Proxy Message
+     * MQTT Client Proxy Message (device sending to client / phone for publishing to MQTT)
      */
     MqttClientProxyMessage mqttClientProxyMessage = 14;
   }
@@ -1418,7 +1418,7 @@ message ToRadio {
     XModem xmodemPacket = 5;
 
     /*
-     * MQTT Client Proxy Message
+     * MQTT Client Proxy Message (for client / phone subscribed to MQTT sending to device)
      */
     MqttClientProxyMessage mqttClientProxyMessage = 6;
   }
