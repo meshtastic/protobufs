@@ -109,6 +109,11 @@ message AdminMessage {
      * TODO: REPLACE
      */
     REMOTEHARDWARE_CONFIG = 8;
+
+    /*
+     * TODO: REPLACE
+     */
+    NEIGHBORINFO_CONFIG = 9;
   }
 
   /*
