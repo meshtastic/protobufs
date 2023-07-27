@@ -114,7 +114,7 @@ message AdminMessage {
      * TODO: REPLACE
      */
     NEIGHBORINFO_CONFIG = 9;
-     
+
     /*
      * TODO: REPLACE
      */
