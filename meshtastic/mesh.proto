@@ -418,6 +418,11 @@ enum HardwareModel {
   T_WATCH_S3 = 51;
 
   /*
+   * B&Q Consulting Nano G2 Ultra: https://wiki.uniteng.com/en/meshtastic/nano-g2-ultra
+   */
+  NANO_G2_ULTRA = 52;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
