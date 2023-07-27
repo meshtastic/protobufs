@@ -1475,6 +1475,11 @@ message Neighbor {
    * SNR of last heard message
    */
   float snr = 2;
+
+  /*
+   * Broadcast interval of the represented node
+   */
+  uint16 node_broadcast_interval = 3;
 }
 
 /*
