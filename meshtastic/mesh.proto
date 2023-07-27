@@ -1477,7 +1477,7 @@ message Neighbor {
   float snr = 2;
 
   /*
-   * Broadcast interval of the represented node
+   * Broadcast interval of the represented node (in seconds)
    */
   uint16 node_broadcast_interval = 3;
 }
