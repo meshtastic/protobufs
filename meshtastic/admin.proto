@@ -113,7 +113,7 @@ message AdminMessage {
     /*
      * TODO: REPLACE
      */
-     AMBIENTLIGHTING_CONFIG = 10;
+    AMBIENTLIGHTING_CONFIG = 10;
   }
 
   /*
