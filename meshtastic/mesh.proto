@@ -306,6 +306,11 @@ enum HardwareModel {
   NANO_G1_EXPLORER = 17;
 
   /*
+   * B&Q Consulting Nano G2 Ultra: https://wiki.uniteng.com/en/meshtastic/nano-g2-ultra
+   */
+  NANO_G2_ULTRA = 18;
+
+  /*
    * B&Q Consulting Station Edition G1: https://uniteng.com/wiki/doku.php?id=meshtastic:station
    */
   STATION_G1 = 25;
@@ -416,11 +421,6 @@ enum HardwareModel {
    * LilyGo T-Watch S3 with ESP32-S3 CPU and IPS display
    */
   T_WATCH_S3 = 51;
-
-  /*
-   * B&Q Consulting Nano G2 Ultra: https://wiki.uniteng.com/en/meshtastic/nano-g2-ultra
-   */
-  NANO_G2_ULTRA = 52;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
