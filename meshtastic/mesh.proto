@@ -1366,10 +1366,15 @@ message NeighborInfo {
    * Field to pass neighbor info for the next sending cycle
    */
   uint32 last_sent_by_id = 2;
+
+  /*
+   * Broadcast interval of the represented node (in seconds)
+   */
+  uint32 node_broadcast_interval_secs = 3;
   /*
    * The list of out edges from this node
    */
-  repeated Neighbor neighbors = 3;
+  repeated Neighbor neighbors = 4;
 }
 
 /*
@@ -1385,11 +1390,6 @@ message Neighbor {
    * SNR of last heard message
    */
   float snr = 2;
-
-  /*
-   * Broadcast interval of the represented node (in seconds)
-   */
-  uint32 node_broadcast_interval_secs = 3;
 }
 
 /*

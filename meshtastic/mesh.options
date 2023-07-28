@@ -52,7 +52,6 @@
 *Waypoint.description  max_size:100
 
 *NeighborInfo.neighbors max_count:10
-*Neighbor.node_broadcast_interval_secs int_size:16
 
 *DeviceMetadata.firmware_version max_size:18
 
