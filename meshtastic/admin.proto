@@ -119,6 +119,7 @@ message AdminMessage {
      * TODO: REPLACE
      */
     AMBIENTLIGHTING_CONFIG = 10;
+    
   }
 
   /*
