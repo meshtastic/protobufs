@@ -1390,6 +1390,18 @@ message Neighbor {
    * SNR of last heard message
    */
   float snr = 2;
+
+  /*
+  * Reception time (in secs since 1970) of last message that was last sent by this ID.
+  * Note: this is for local storage only and will not be sent out over the mesh.
+  */
+  fixed32 last_rx_time = 3;
+
+  /*
+   * Broadcast interval of this neighbor (in seconds).
+   * Note: this is for local storage only and will not be sent out over the mesh.
+   */
+  uint32 node_broadcast_interval_secs = 4;
 }
 
 /*
