@@ -307,12 +307,13 @@ message Config {
     uint32 wait_bluetooth_secs = 4;
 
     /*
+     * Deprecated in 2.1.X
      * Mesh Super Deep Sleep Timeout Seconds
      * While in Light Sleep if this value is exceeded we will lower into super deep sleep
      * for sds_secs (default 1 year) or a button press
      * 0 for default of two hours, MAXUINT for disabled
      */
-    uint32 mesh_sds_timeout_secs = 5;
+    uint32 mesh_sds_timeout_secs = 5 [deprecated = true];
 
     /*
      * Super Deep Sleep Seconds
