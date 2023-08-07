@@ -413,7 +413,7 @@ enum HardwareModel {
   HELTEC_WIRELESS_PAPER = 49;
 
   /*
-   * LilyGo T-Deck with ESP32-S3 CPU, Keyboard, and IPS display
+   * LilyGo T-Deck with ESP32-S3 CPU, Keyboard and IPS display
    */
   T_DECK = 50;
 
@@ -421,6 +421,11 @@ enum HardwareModel {
    * LilyGo T-Watch S3 with ESP32-S3 CPU and IPS display
    */
   T_WATCH_S3 = 51;
+  
+  /*
+   * Bobricius Picomputer with ESP32-S3 CPU, Keyboard and IPS display
+   */
+  PICOMPUTER_S3 = 52;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
