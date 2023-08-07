@@ -33,12 +33,6 @@ message DeviceState {
   User owner = 3;
 
   /*
-   * Deprecated in 2.1.x
-   * Old node_db. See NodeInfoLite node_db_lite
-   */
-  repeated NodeInfo node_db = 4 [deprecated = true];
-
-  /*
    * Received packets saved for delivery to the phone
    */
   repeated MeshPacket receive_queue = 5;
