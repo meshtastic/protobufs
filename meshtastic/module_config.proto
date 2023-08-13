@@ -120,7 +120,7 @@ message ModuleConfig {
     /*
      * Interval in seconds of how often we can send a message to the mesh when a state change is detected
      */
-    uint32 minumum_update_interval = 2;
+    uint32 minimum_update_interval = 2;
 
     /*
      * GPIO pin to monitor for state changes
