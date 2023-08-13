@@ -119,6 +119,11 @@ message AdminMessage {
      * TODO: REPLACE
      */
     AMBIENTLIGHTING_CONFIG = 10;
+
+    /*
+     * TODO: REPLACE
+     */
+    DETECTION_CONFIG = 11;
   }
 
   /*

@@ -109,6 +109,45 @@ message ModuleConfig {
   }
 
   /*
+   * Detection Module Config
+   */
+   message DetectionConfig {
+    /*
+     * Whether the Module is enabled
+     */
+    bool enabled = 1;
+
+    /*
+     * Interval in seconds of how often we can send a message, if a state change is detected
+     */
+    uint32 minumum_update_interval = 2;
+
+    /*
+     * GPIO pin to monitor for state changes
+     */
+    uint32 monitor_pin = 3;
+
+    /*
+     * Whether or not the GPIO pin state detection is triggered on HIGH (1)
+     * Otherwise LOW (0)
+     */
+    bool detection_triggered_high = 4;
+
+    /*
+     * Send ASCII bell with alert message
+     * Useful for trigger ext. notification on bell
+     */
+    bool send_bell = 5;
+
+    /*
+     * Friendly name used to format message sent to mesh
+     * Example: A name "Motion" would result in a message "Motion detected"
+     * Maximum length of 20 characters
+     */
+    string name = 6;
+  }
+
+  /*
    * Audio Config for codec2 voice
    */
   message AudioConfig {
@@ -614,9 +653,12 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     AmbientLightingConfig ambient_lighting = 11;
+
+    /*
+     * TODO: REPLACE
+     */
+    DetectionConfig detection = 12;
   }
-
-
 }
 
 /*
