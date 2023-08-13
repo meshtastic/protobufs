@@ -109,9 +109,9 @@ message ModuleConfig {
   }
 
   /*
-   * Detection Module Config
+   * Detection Sensor Module Config
    */
-   message DetectionConfig {
+   message DetectionSensorConfig {
     /*
      * Whether the Module is enabled
      */
@@ -657,7 +657,7 @@ message ModuleConfig {
     /*
      * TODO: REPLACE
      */
-    DetectionConfig detection = 12;
+    DetectionSensorConfig detection_sensor = 12;
   }
 }
 

@@ -117,9 +117,9 @@ message LocalModuleConfig {
    ModuleConfig.AmbientLightingConfig ambient_lighting = 12;
 
   /*
-   * The part of the config that is specific to the Neighbor Info module
+   * The part of the config that is specific to the Detection Sensor module
    */
-  ModuleConfig.DetectionConfig detection = 13;
+  ModuleConfig.DetectionSensorConfig detection_sensor = 13;
 
   /*
    * A version integer used to invalidate old save files when we make

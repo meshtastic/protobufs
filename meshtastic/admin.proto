@@ -123,7 +123,7 @@ message AdminMessage {
     /*
      * TODO: REPLACE
      */
-    DETECTION_CONFIG = 11;
+    DETECTIONSENSOR_CONFIG = 11;
   }
 
   /*
