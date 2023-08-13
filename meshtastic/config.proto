@@ -268,7 +268,7 @@ message Config {
     uint32 broadcast_smart_minimum_distance = 10;
 
     /*
-     * The minumum number of seconds (since the last send) before we can send a position to the mesh if position_broadcast_smart_enabled
+     * The minimum number of seconds (since the last send) before we can send a position to the mesh if position_broadcast_smart_enabled
      */
     uint32 broadcast_smart_minimum_interval_secs = 11;
   }
