@@ -118,7 +118,7 @@ message ModuleConfig {
     bool enabled = 1;
 
     /*
-     * Interval in seconds of how often we can send a message, if a state change is detected
+     * Interval in seconds of how often we can send a message to the mesh when a state change is detected
      */
     uint32 minumum_update_interval = 2;
 
