@@ -120,31 +120,38 @@ message ModuleConfig {
     /*
      * Interval in seconds of how often we can send a message to the mesh when a state change is detected
      */
-    uint32 minimum_update_interval = 2;
+    uint32 minimum_broadcast_secs = 2;
+
+    /*
+     * Interval in seconds of how often we should send a message to the mesh with the current state regardless of changes
+     * When set to 0, only state changes will be broadcasted
+     * Works as a sort of status heartbeat for peace of mind
+     */
+    uint32 state_broadcast_secs = 3;
 
     /*
      * GPIO pin to monitor for state changes
      */
-    uint32 monitor_pin = 3;
+    uint32 monitor_pin = 43;
 
     /*
      * Whether or not the GPIO pin state detection is triggered on HIGH (1)
      * Otherwise LOW (0)
      */
-    bool detection_triggered_high = 4;
+    bool detection_triggered_high = 5;
 
     /*
      * Send ASCII bell with alert message
-     * Useful for trigger ext. notification on bell
+     * Useful for triggering ext. notification on bell
      */
-    bool send_bell = 5;
+    bool send_bell = 6;
 
     /*
      * Friendly name used to format message sent to mesh
      * Example: A name "Motion" would result in a message "Motion detected"
      * Maximum length of 20 characters
      */
-    string name = 6;
+    string name = 7;
   }
 
   /*
