@@ -23,3 +23,6 @@
 *AmbientLightingConfig.red int_size:8
 *AmbientLightingConfig.green int_size:8
 *AmbientLightingConfig.blue int_size:8
+
+*DetectionSensorConfig.monitor_pin int_size:8
+*DetectionSensorConfig.name max_size:20

@@ -1094,7 +1094,7 @@ enum CriticalErrorCode {
   TRANSMIT_FAILED = 8;
 
   /*
-   * We detected that the main CPU voltage dropped below the minumum acceptable value
+   * We detected that the main CPU voltage dropped below the minimum acceptable value
    */
   BROWNOUT = 9;
 
