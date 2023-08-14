@@ -112,7 +112,7 @@ message LocalModuleConfig {
   ModuleConfig.NeighborInfoConfig neighbor_info = 11;
 
   /*
-   * The part of the config that is specific to the Neighbor Info module
+   * The part of the config that is specific to the Ambient Lighting module
    */
    ModuleConfig.AmbientLightingConfig ambient_lighting = 12;
 

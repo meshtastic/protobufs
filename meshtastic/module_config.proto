@@ -132,7 +132,7 @@ message ModuleConfig {
     /*
      * GPIO pin to monitor for state changes
      */
-    uint32 monitor_pin = 43;
+    uint32 monitor_pin = 4;
 
     /*
      * Whether or not the GPIO pin state detection is triggered on HIGH (1)
