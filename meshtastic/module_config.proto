@@ -128,30 +128,35 @@ message ModuleConfig {
      * Works as a sort of status heartbeat for peace of mind
      */
     uint32 state_broadcast_secs = 3;
-
-    /*
-     * GPIO pin to monitor for state changes
-     */
-    uint32 monitor_pin = 4;
-
-    /*
-     * Whether or not the GPIO pin state detection is triggered on HIGH (1)
-     * Otherwise LOW (0)
-     */
-    bool detection_triggered_high = 5;
-
     /*
      * Send ASCII bell with alert message
      * Useful for triggering ext. notification on bell
      */
-    bool send_bell = 6;
+    bool send_bell = 4;
 
     /*
      * Friendly name used to format message sent to mesh
      * Example: A name "Motion" would result in a message "Motion detected"
      * Maximum length of 20 characters
      */
-    string name = 7;
+    string name = 5;
+
+    /*
+     * GPIO pin to monitor for state changes
+     */
+    uint32 monitor_pin = 6;
+
+    /*
+     * Whether or not the GPIO pin state detection is triggered on HIGH (1)
+     * Otherwise LOW (0)
+     */
+    bool detection_triggered_high = 7;
+
+    /*
+     * Whether or not use INPUT_PULLUP mode for GPIO pin
+     * Only applicable if the board uses pull-up resistors on the pin
+     */
+    bool use_pullup = 8;
   }
 
   /*
