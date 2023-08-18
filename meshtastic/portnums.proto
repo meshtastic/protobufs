@@ -100,6 +100,11 @@ enum PortNum {
   AUDIO_APP = 9;
 
   /*
+   * Same as Text Message but originating from Detection Sensor Module.
+   */
+  DETECTION_SENSOR_APP = 10;
+
+  /*
    * Provides a 'ping' service that replies to any packet it receives.
    * Also serves as a small example module.
    * ENCODING: ASCII Plaintext
