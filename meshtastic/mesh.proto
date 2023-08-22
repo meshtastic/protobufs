@@ -431,7 +431,7 @@ enum HardwareModel {
    * Bobricius Picomputer with ESP32-S3 CPU, Keyboard and IPS display
    */
   PICOMPUTER_S3 = 52;
-
+  
    /*
    * Heltec HT-CT62 with ESP32-C3 CPU and SX1262 LoRa
    */
