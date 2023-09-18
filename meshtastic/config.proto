@@ -134,6 +134,11 @@ message Config {
      * Clients should then limit available configuration and administrative options inside the user interface
      */
     bool is_managed = 9;
+
+    /*
+     * Enables the triple-press of user button to enable or disable GPS
+     */
+    bool enable_triple_click = 10;
   }
 
   /*
@@ -272,6 +277,11 @@ message Config {
      * The minimum number of seconds (since the last send) before we can send a position to the mesh if position_broadcast_smart_enabled
      */
     uint32 broadcast_smart_minimum_interval_secs = 11;
+
+    /*
+     * (Re)define PIN_GPS_EN for your board.
+     */
+    uint32 gps_en_gpio = 12;
   }
 
   /*
