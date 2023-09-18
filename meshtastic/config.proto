@@ -758,6 +758,7 @@ message Config {
     /*
      * Maximum number of hops. This can't be greater than 7.
      * Default of 3
+     * Attempting to set a value > 7 results in the default
      */
     uint32 hop_limit = 8;
 
