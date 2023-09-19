@@ -136,9 +136,9 @@ message Config {
     bool is_managed = 9;
 
     /*
-     * Enables the triple-press of user button to enable or disable GPS
+     * Disables the triple-press of user button to enable or disable GPS
      */
-    bool enable_triple_click = 10;
+    bool disable_triple_click = 10;
   }
 
   /*
