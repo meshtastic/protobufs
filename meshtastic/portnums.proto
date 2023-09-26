@@ -101,6 +101,7 @@ enum PortNum {
 
   /*
    * Same as Text Message but originating from Detection Sensor Module.
+   * NOTE: This portnum traffic is not sent to the public MQTT starting at firmware version 2.2.9
    */
   DETECTION_SENSOR_APP = 10;
 
@@ -137,6 +138,7 @@ enum PortNum {
   /*
    * Optional port for messages for the range test module.
    * ENCODING: ASCII Plaintext
+   * NOTE: This portnum traffic is not sent to the public MQTT starting at firmware version 2.2.9
    */
   RANGE_TEST_APP = 66;
 
