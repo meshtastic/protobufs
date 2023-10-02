@@ -1,5 +1,8 @@
 name: Push commit to schema registry
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -11,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Buf
-        uses: bufbuild/buf-setup-action@v1.18.0
+        uses: bufbuild/buf-setup-action@v1.26.1
         with:
           github_token: ${{ github.token }}
 
