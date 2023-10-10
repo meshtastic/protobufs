@@ -437,7 +437,7 @@ enum HardwareModel {
   HELTEC_HT62 = 53;
 
   /*
-   * Boards with EBYTE SPI LoRa modules and ESP32-S3 MCU
+   * EBYTE SPI LoRa module and ESP32-S3
    */
   EBYTE_ESP32_S3 = 54;
   
