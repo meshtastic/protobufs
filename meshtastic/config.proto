@@ -64,6 +64,14 @@ message Config {
        *   send environment telemetry, and then sleep for telemetry.environment_update_interval seconds.
        */
       SENSOR = 6;
+
+      /*
+       * TAK device role
+       *    Used for nodes dedicated for connection to an ATAK EUD.
+       *    Turns off many of the routine broadcasts to favor CoT packet stream
+       *    from the Meshtastic ATAK plugin -> IMeshService -> Node
+       */
+      TAK = 7;
     }
 
     /*
