@@ -379,6 +379,12 @@ message ModuleConfig {
      * and/or beep for 60 seconds
      */
     uint32 nag_timeout = 14;
+
+    /*
+     * When true, enables devices with native I2S audio output to use the RTTTL over speaker like a buzzer
+     * T-Watch S3 and T-Deck for example have this capability
+     */
+    bool use_i2s_as_buzzer = 15;
   }
 
   /*
