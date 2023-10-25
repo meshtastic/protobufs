@@ -346,12 +346,12 @@ message ModuleConfig {
      *
      * Deprecated: Use this ExternalNotificationCase instead:
      *
-     *   case {
+     *   cases {
      *     condition {
-     *       content_any: true
+     *       content_any: {}
      *     }
      *     actions {
-     *       output_primary: true
+     *       output_primary: {}
      *     }
      *   }
      */
@@ -362,12 +362,12 @@ message ModuleConfig {
      *
      * Deprecated: Use this ExternalNotificationCase instead:
      *
-     *   case {
+     *   cases {
      *     condition {
-     *       content_any: true
+     *       content_any: {}
      *     }
      *     actions {
-     *       output_vibra: true
+     *       output_vibra: {}
      *     }
      *   }
      */
@@ -378,12 +378,12 @@ message ModuleConfig {
      *
      * Deprecated: Use this ExternalNotificationCase instead:
      *
-     *   case {
+     *   cases {
      *     condition {
-     *       content_any: true
+     *       content_any: {}
      *     }
      *     actions {
-     *       output_buzzer: true
+     *       output_buzzer: {}
      *     }
      *   }
      */
@@ -394,12 +394,12 @@ message ModuleConfig {
      *
      * Deprecated: Use this ExternalNotificationCase instead:
      *
-     *   case {
+     *   cases {
      *     condition {
-     *       content_bell: true
+     *       content_bell: {}
      *     }
      *     actions {
-     *       output_primary: true
+     *       output_primary: {}
      *     }
      *   }
      */
@@ -410,12 +410,12 @@ message ModuleConfig {
      *
      * Deprecated: Use this ExternalNotificationCase instead:
      *
-     *   case {
+     *   cases {
      *     condition {
-     *       content_bell: true
+     *       content_bell: {}
      *     }
      *     actions {
-     *       output_vibra: true
+     *       output_vibra: {}
      *     }
      *   }
      */
@@ -426,12 +426,12 @@ message ModuleConfig {
      *
      * Deprecated: Use this ExternalNotificationCase instead:
      *
-     *   case {
+     *   cases {
      *     condition {
-     *       content_bell: true
+     *       content_bell: {}
      *     }
      *     actions {
-     *       output_buzzer: true
+     *       output_buzzer: {}
      *     }
      *   }
      */
@@ -456,6 +456,46 @@ message ModuleConfig {
      * T-Watch S3 and T-Deck for example have this capability
      */
     bool use_i2s_as_buzzer = 15;
+
+    /*
+     * The conditions and actions for external notifications.
+     *
+     * Each case is run independently, so if multiple cases match the same
+     * message, then each of their actions are run.
+     *
+     * For the example message (where \x07 is the ASCII bell character):
+     *
+     *   from: 123
+     *   to: 456
+     *   decoded {
+     *     portnum: TEXT_MESSAGE_APP
+     *     payload: "direct with bell \x07"
+     *   }
+     *
+     * with the notification config:
+     *
+     *   cases {
+     *     condition {
+     *       dest_direct: {}
+     *       content_bell: {}
+     *     }
+     *     actions {
+     *       output_primary: {}
+     *     }
+     *   }
+     *
+     *   cases {
+     *     condition {
+     *       content_any: {}
+     *     }
+     *     actions {
+     *       output_vibra: {}
+     *     }
+     *   }
+     *
+     * Both the primary output and the vibration pins would be activated.
+     */
+    repeated ExternalNotificationCase cases = 16;
   }
 
   /*
@@ -806,7 +846,7 @@ enum RemoteHardwarePinType {
  * A case which turns on the buzzer and vibration when receiving a direct
  * message containing a bell character looks like this:
  *
- *   case {
+ *   cases {
  *     condition {
  *       dest_direct: {}
  *       content_bell: {}
