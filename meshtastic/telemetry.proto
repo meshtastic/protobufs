@@ -66,6 +66,26 @@ message EnvironmentMetrics {
    * Current measured
    */
   float current = 6;
+
+  /*
+   * Voltage measured (Ch 2)
+   */
+  float voltage2 = 7;
+
+  /*
+   * Current measured (Ch 2)
+   */
+  float current2 = 8;
+
+  /*
+   * Voltage measured (Ch 3)
+   */
+  float voltage3 = 9;
+
+  /*
+   * Current measured (Ch 3)
+   */
+  float current3 = 10;
 }
 
 /*
@@ -233,4 +253,9 @@ enum TelemetrySensorType {
    * PM2.5 air quality sensor
    */
   PMSA003I = 13;
+
+  /*
+  * INA3221 3 Channel Voltage / Current Sensor
+  */
+  INA3221 = 14;
 }
