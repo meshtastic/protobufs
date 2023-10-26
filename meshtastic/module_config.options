@@ -14,6 +14,7 @@
 *ExternalNotificationConfig.output_vibra int_size:8
 *ExternalNotificationConfig.output_buzzer int_size:8
 *ExternalNotificationConfig.nag_timeout int_size:16
+*ExternalNotificationConfig.cases max_count:4
 
 *RemoteHardwareConfig.available_pins max_count:4
 *RemoteHardwarePin.name max_size:15
