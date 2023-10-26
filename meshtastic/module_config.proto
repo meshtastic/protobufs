@@ -350,8 +350,8 @@ message ModuleConfig {
      *     condition {
      *       content_any: {}
      *     }
-     *     actions {
-     *       output_primary: {}
+     *     action {
+     *       output_primary: true
      *     }
      *   }
      */
@@ -366,8 +366,8 @@ message ModuleConfig {
      *     condition {
      *       content_any: {}
      *     }
-     *     actions {
-     *       output_vibra: {}
+     *     action {
+     *       output_vibra: true
      *     }
      *   }
      */
@@ -382,8 +382,8 @@ message ModuleConfig {
      *     condition {
      *       content_any: {}
      *     }
-     *     actions {
-     *       output_buzzer: {}
+     *     action {
+     *       output_buzzer: true
      *     }
      *   }
      */
@@ -398,8 +398,8 @@ message ModuleConfig {
      *     condition {
      *       content_bell: {}
      *     }
-     *     actions {
-     *       output_primary: {}
+     *     action {
+     *       output_primary: true
      *     }
      *   }
      */
@@ -414,8 +414,8 @@ message ModuleConfig {
      *     condition {
      *       content_bell: {}
      *     }
-     *     actions {
-     *       output_vibra: {}
+     *     action {
+     *       output_vibra: true
      *     }
      *   }
      */
@@ -430,8 +430,8 @@ message ModuleConfig {
      *     condition {
      *       content_bell: {}
      *     }
-     *     actions {
-     *       output_buzzer: {}
+     *     action {
+     *       output_buzzer: true
      *     }
      *   }
      */
@@ -458,7 +458,7 @@ message ModuleConfig {
     bool use_i2s_as_buzzer = 15;
 
     /*
-     * The conditions and actions for external notifications.
+     * The conditions and action for external notifications.
      *
      * Each case is run independently, so if multiple cases match the same
      * message, then each of their actions are run.
@@ -479,8 +479,8 @@ message ModuleConfig {
      *       dest_direct: {}
      *       content_bell: {}
      *     }
-     *     actions {
-     *       output_primary: {}
+     *     action {
+     *       output_primary: true
      *     }
      *   }
      *
@@ -488,8 +488,8 @@ message ModuleConfig {
      *     condition {
      *       content_any: {}
      *     }
-     *     actions {
-     *       output_vibra: {}
+     *     action {
+     *       output_vibra: true
      *     }
      *   }
      *
@@ -838,10 +838,10 @@ enum RemoteHardwarePinType {
 }
 
 /*
- * An external notification condition and actions.
+ * An external notification condition and action.
  *
- * When a message matches the ExternalNotificationCondition, each of the
- * ExternalNotificationActions is executed.
+ * When a message matches the ExternalNotificationCondition, the
+ * ExternalNotificationAction is executed.
  *
  * A case which turns on the buzzer and vibration when receiving a direct
  * message containing a bell character looks like this:
@@ -851,11 +851,9 @@ enum RemoteHardwarePinType {
  *       dest_direct: {}
  *       content_bell: {}
  *     }
- *     actions {
- *       output_buzzer: {}
- *     }
- *     actions {
- *       output_vibra: {}
+ *     action {
+ *       output_buzzer: true
+ *       output_vibra: true
  *     }
  *   }
  */
@@ -868,12 +866,12 @@ message ExternalNotificationCase {
   /*
    * The actions to perform if condition matches an incoming message.
    */
-  repeated ExternalNotificationAction actions = 2;
+  ExternalNotificationAction action = 2;
 }
 
 /*
  * A matcher for incoming messages. If a message matches this condition, then
- * the ExternalNotificationActions are executed.
+ * the ExternalNotificationAction is executed.
  *
  * All oneof groups must match for the overall condition to match the incoming
  * message.
@@ -942,27 +940,22 @@ message ExternalNotificationCondition {
 }
 
 /*
- * An external notification action to perform when a message matches an
+ * External notification actions to perform when a message matches an
  * ExternalNotificationCondition.
  */
 message ExternalNotificationAction {
   /*
-   * If no field is set, then no action is performed.
+   * Turn on the primary GPIO pin.
    */
-  oneof action {
-    /*
-     * Turn on the primary GPIO pin.
-     */
-    google.protobuf.Empty output_primary = 1;
+  bool output_primary = 1;
 
-    /*
-     * Turn on the secondary vibration GPIO pin.
-     */
-    google.protobuf.Empty output_vibra = 2;
+  /*
+   * Turn on the secondary vibration GPIO pin.
+   */
+  bool output_vibra = 2;
 
-    /*
-     * Turn on the tertiary buzzer GPIO pin.
-     */
-    google.protobuf.Empty output_buzzer = 3;
-  }
+  /*
+   * Turn on the tertiary buzzer GPIO pin.
+   */
+  bool output_buzzer = 3;
 }
