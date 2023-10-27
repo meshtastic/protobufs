@@ -273,4 +273,12 @@ enum TelemetrySensorType {
    * PM2.5 air quality sensor
    */
   PMSA003I = 13;
+
+  /*
+   * INA3221 3 Channel Voltage / Current Sensor
+   */
+  INA3221 = 14;
+
+
+
 }
