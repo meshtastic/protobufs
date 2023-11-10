@@ -1,5 +1,5 @@
 *NetworkConfig.wifi_ssid max_size:33
-*NetworkConfig.wifi_psk max_size:64
+*NetworkConfig.wifi_psk max_size:65
 *NetworkConfig.ntp_server max_size:33
 *NetworkConfig.rsyslog_server max_size:33
 
