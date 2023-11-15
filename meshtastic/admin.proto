@@ -261,6 +261,11 @@ message AdminMessage {
     string set_ringtone_message = 37;
 
     /*
+     * Remove the node by the specified node-num from the NodeDB on the device
+     */
+    uint32 remove_by_nodenum = 38;
+
+    /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes
      * This will delay the standard *implicit* save to the file system and subsequent reboot behavior until committed (commit_edit_settings)
      */
