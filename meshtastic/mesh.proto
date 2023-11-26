@@ -512,6 +512,11 @@ message User {
    * Also, "long_name" should be their licence number.
    */
   bool is_licensed = 6;
+
+  /*
+   * Indicates that the user's role in the mesh
+   */
+  Config.DeviceConfig.Role role = 7;
 }
 
 /*
@@ -1046,11 +1051,6 @@ message NodeInfo {
    * local channel index we heard that node on. Only populated if its not the default channel.
    */
   uint32 channel = 7;
-
-  /*
-   * Indicates that the device's role in the mesh
-   */
-  Config.DeviceConfig.Role role = 8;
 }
 
 /*
