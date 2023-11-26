@@ -512,6 +512,11 @@ message User {
    * Also, "long_name" should be their licence number.
    */
   bool is_licensed = 6;
+
+  /*
+   * Indicates that the user's role in the mesh
+   */
+  Config.DeviceConfig.Role role = 7;
 }
 
 /*
