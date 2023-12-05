@@ -72,6 +72,23 @@ message Config {
        *    from the Meshtastic ATAK plugin -> IMeshService -> Node
        */
       TAK = 7;
+
+      /*
+       * Client Hidden device role
+       *    Used for nodes that "only speak when spoken to"
+       *    Turns all of the routine broadcasts but allows for ad-hoc communication
+       *    Still rebroadcasts, but with local only rebroadcast mode (known meshes only)
+       *    Can be used for clandestine operation or to dramatically reduce airtime / power consumption 
+       */
+      CLIENT_HIDDEN = 8;
+
+      /*
+       * Lost and Found device role
+       *    Used to automatically send a text message to the mesh 
+       *    with the current position of the device on a frequent interval:
+       *    "I'm lost! Position: lat / long"
+       */
+      LOST_AND_FOUND = 9;
     }
 
     /*
