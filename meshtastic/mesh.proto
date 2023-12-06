@@ -325,6 +325,16 @@ enum HardwareModel {
   RAK11310 = 26;
 
   /*
+   * Makerfabs SenseLoRA Receiver (RP2040 + RFM96)
+   */
+  SENSELORA_RP2040 = 27;
+
+  /*
+   * Makerfabs SenseLoRA Industrial Monitor (ESP32-S3 + RFM96)
+   */
+  SENSELORA_S3 = 28;
+
+  /*
    * ---------------------------------------------------------------------------
    * Less common/prototype boards listed here (needs one more byte over the air)
    * ---------------------------------------------------------------------------
