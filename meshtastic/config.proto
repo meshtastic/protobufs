@@ -112,6 +112,12 @@ message Config {
        * Only rebroadcasts message on the nodes local primary / secondary channels.
        */
       LOCAL_ONLY = 2;
+      
+      /*
+       * Ignores observed messages from foreign meshes like LOCAL_ONLY,
+       * but takes it step further by also ignoring messages from nodenums not in the node's known list (NodeDB)
+       */
+      KNOWN_ONLY = 3;
     }
 
     /*
