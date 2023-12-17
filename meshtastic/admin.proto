@@ -124,6 +124,11 @@ message AdminMessage {
      * TODO: REPLACE
      */
     DETECTIONSENSOR_CONFIG = 11;
+
+    /*
+     * TODO: REPLACE
+     */
+    PAXCOUNTER_CONFIG = 12;
   }
 
   /*

@@ -215,6 +215,23 @@ message ModuleConfig {
   }
 
   /*
+   * Config for the Paxcounter Module
+   */
+  message PaxcounterConfig {
+    /*
+     * Enable the Paxcounter Module
+     */
+    bool enabled = 1;
+
+    /*
+     * Interval in seconds of how often we should try to send our
+     * metrics to the mesh
+     */
+
+    uint32 paxcounter_update_interval = 2;
+  }
+
+  /*
    * Serial Config
    */
   message SerialConfig {
@@ -713,6 +730,11 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     DetectionSensorConfig detection_sensor = 12;
+
+    /*
+     * TODO: REPLACE
+     */
+    PaxcounterConfig paxcounter = 13;
   }
 }
 
