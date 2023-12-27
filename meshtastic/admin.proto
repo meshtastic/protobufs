@@ -232,7 +232,7 @@ message AdminMessage {
     NodeRemoteHardwarePinsResponse get_node_remote_hardware_pins_response = 20;
 
     /*
-     * Enter (serial) DFU mode
+     * Enter (UF2) DFU mode
      * Only implemented on NRF52 currently
      */
     bool enter_dfu_mode_request = 21;
