@@ -706,6 +706,16 @@ message Config {
        * Ukraine 868mhz
        */
       UA_868 = 15;
+
+      /*
+       * Malaysia 433mhz
+       */
+      MY_433 = 16;
+
+      /*
+       * Malaysia 919mhz
+       */
+      MY_919 = 17;
     }
 
     /*
