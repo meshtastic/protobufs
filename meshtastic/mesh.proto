@@ -959,7 +959,7 @@ message MeshPacket {
   /*
    * Describe if this message is delayed
    */
-  Delayed delayed = 13;
+  Delayed delayed = 13 [deprecated = true];
 }
 
 /*
