@@ -450,6 +450,11 @@ enum HardwareModel {
    * EBYTE SPI LoRa module and ESP32-S3
    */
   EBYTE_ESP32_S3 = 54;
+
+  /*
+   * Waveshare ESP32-S3-PICO with PICO LoRa HAT and 2.9inch e-Ink
+   */
+  ESP32_S3_PICO = 55;
   
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
