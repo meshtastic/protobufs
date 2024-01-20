@@ -866,6 +866,11 @@ message Config {
      * in ignore_incoming will have packets they send dropped on receive (by router.cpp)
      */
     repeated uint32 ignore_incoming = 103;
+
+    /*
+     * If true, the device will not process any packets received via LoRa that passed via MQTT anywhere on the path towards it.
+     */
+    bool ignore_mqtt = 104;
   }
 
   message BluetoothConfig {
