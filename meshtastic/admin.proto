@@ -238,6 +238,11 @@ message AdminMessage {
     bool enter_dfu_mode_request = 21;
 
     /*
+     * Delete the file by the specified path from the device
+     */
+    string delete_file_request = 22;
+
+    /*
      * Set the owner for this node
      */
     User set_owner = 32;
