@@ -464,6 +464,10 @@ enum HardwareModel {
   CHATTER_2 = 56;
   
   /*
+   * LilyGo T3 V1.6.1 TCXO Version
+   */
+  TLORA_V1_6_1_TCXO;
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
