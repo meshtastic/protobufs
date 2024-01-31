@@ -335,6 +335,11 @@ enum HardwareModel {
   SENSELORA_S3 = 28;
 
   /*
+    * Canary Radio Company - CanaryOne: https://canaryradio.io/products/canaryone
+    */
+  CANARYONE = 29;
+
+  /*
    * ---------------------------------------------------------------------------
    * Less common/prototype boards listed here (needs one more byte over the air)
    * ---------------------------------------------------------------------------
