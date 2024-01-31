@@ -249,6 +249,23 @@ message Config {
       SPEED = 0x0200;
     }
 
+    enum GpsMode {
+      /*
+      * GPS is present but disabled
+      */
+      DISABLED = 0;
+
+      /*
+      * GPS is present and enabled
+      */
+      ENABLED = 1;
+
+      /*
+      * GPS is not present on the device
+      */
+      NOT_PRESENT = 2;
+    }
+
     /*
      * We should send our position this often (but only if it has changed significantly)
      * Defaults to 15 minutes
@@ -270,7 +287,7 @@ message Config {
     /*
      * Is GPS enabled for this node?
      */
-    bool gps_enabled = 4;
+    bool gps_enabled = 4[deprecated = true];
 
     /*
      * How often should we try to get GPS position (in seconds)
@@ -314,6 +331,11 @@ message Config {
      * (Re)define PIN_GPS_EN for your board.
      */
     uint32 gps_en_gpio = 12;
+
+    /*
+     * Set where GPS is enabled, disabled, or not present
+     */
+    GpsMode gps_mode = 13;
   }
 
   /*
