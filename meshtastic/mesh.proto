@@ -1519,3 +1519,45 @@ message DeviceMetadata {
    */
   bool hasRemoteHardware = 10;
 }
+
+/*
+ * Packets for the official ATAK Plugin 
+ */
+message TAK_Packet
+{
+  string call_sign = 1;
+  /*
+   * The payload of the packet
+   */
+  oneof payload_variant {
+    /*
+     * TAK position report
+     */
+    TAK_PLI tak_pli = 1;
+    /*
+     * Other binary data
+     */
+    bytes data = 2;
+  }
+}
+/*
+ * Position Location Information from ATAK
+ */
+message TAK_PLI {
+  /*
+   * The new preferred location encoding, multiply by 1e-7 to get degrees
+   * in floating point
+   */
+  sfixed32 latitude_i = 1;
+
+  /*
+   * The new preferred location encoding, multiply by 1e-7 to get degrees
+   * in floating point
+   */
+  sfixed32 longitude_i = 2;
+
+  /*
+   * Altitude
+   */
+  int32 altitude = 3;
+}
