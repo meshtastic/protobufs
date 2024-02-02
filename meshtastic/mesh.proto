@@ -1533,11 +1533,11 @@ message TAK_Packet
     /*
      * TAK position report
      */
-    TAK_PLI tak_pli = 1;
+    TAK_PLI tak_pli = 2;
     /*
      * Other binary data
      */
-    bytes data = 2;
+    bytes data = 3;
   }
 }
 /*
