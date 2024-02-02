@@ -44,7 +44,6 @@
 # MyMessage.name         max_size:40 
 # or fixed_length or fixed_count, or max_count
 
-
 #This value may want to be a few bytes smaller to compensate for the parent fields.
 *Compressed.data max_size:237
 
@@ -58,3 +57,6 @@
 *MqttClientProxyMessage.topic max_size:60
 *MqttClientProxyMessage.data max_size:435
 *MqttClientProxyMessage.text max_size:435
+
+*TAK_Packet.callsign_variant.uncompressed max_size:64
+*TAK_Packet.callsign_variant.compressed max_size:64
