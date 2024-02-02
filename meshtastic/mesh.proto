@@ -1529,11 +1529,11 @@ message TAK_Packet
     /*
      * Uncompressed callsign from ATAK
      */
-    string uncompressed = 1;
+    string callsign_uncompressed = 1;
     /*
      * Compressed callsign using unishox2 for the wire
      */
-    string compressed = 2;
+    string callsign_compressed = 2;
   }
   /*
    * The payload of the packet
