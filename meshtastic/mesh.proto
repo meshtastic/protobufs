@@ -467,6 +467,15 @@ enum HardwareModel {
    * with one cut and one jumper Meshtastic works
   */
   CHATTER_2 = 56;
+
+  /*
+   * Heltec Wireless Paper, With ESP32-S3 CPU and E-Ink display
+   * Older "V1.0" Variant, has no "version sticker"
+   * E-Ink model is DEPG0213BNS800
+   * Tab on the screen protector is RED
+   * Flex connector marking is FPC-7528B
+   */
+  HELTEC_WIRELESS_PAPER_V1_0 = 57;
   
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
