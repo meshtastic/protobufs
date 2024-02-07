@@ -211,12 +211,17 @@ message PLI {
   sfixed32 longitude_i = 2;
 
   /*
+   * Altitude (ATAK prefers HAE)
+   */
+  uint32 altitude = 3;
+
+  /*
    * Speed
    */
-  uint32 speed = 3;
+  uint32 speed = 4;
 
   /*
    * Course in degrees
    */
-  uint32 course = 4;  
+  uint32 course = 5;  
 }
