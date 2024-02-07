@@ -1,4 +1,4 @@
 *Contact.callsign max_size:120
-
 *Status.battery int_size:8
 *PLI.course int_size:16
+*GeoChat.message max_size:200

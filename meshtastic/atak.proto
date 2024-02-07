@@ -13,17 +13,21 @@ option swift_prefix = "";
 message TAKPacket
 {
   /*
+   * Are the payloads strings compressed for LoRA transport?
+   */
+  boolean is_compressed = 1;
+  /*
    * The contact / callsign for ATAK user
    */
-  Contact contact = 1;
+  Contact contact = 2;
   /*
    * The group for ATAK user
    */
-  Group group = 2;
+  Group group = 3;
   /*
    * The status of the ATAK EUD
    */
-  Status status = 5;
+  Status status = 4;
   /*
    * The payload of the packet
    */
@@ -31,12 +35,22 @@ message TAKPacket
     /*
      * TAK position report
      */
-    PLI pli = 3;
+    PLI pli = 5;
     /*
-     * Other binary data
+     * ATAK GeoChat message
      */
-    bytes data = 4;
+    GeoChat chat = 6;
   }
+}
+
+/*
+ * ATAK GeoChat message
+ */
+message GeoChat {
+  /*
+   * The text message
+   */
+  string message = 1;
 }
 
 /*
