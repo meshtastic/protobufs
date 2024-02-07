@@ -10,7 +10,7 @@ option swift_prefix = "";
 /*
  * Packets for the official ATAK Plugin 
  */
-message Packet
+message TAKPacket
 {
   /*
    * The contact / callsign for ATAK user

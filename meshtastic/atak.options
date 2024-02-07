@@ -1,4 +1,4 @@
-*TakPacket.callsign_uncompressed max_size:120
-*TakPacket.callsign_compressed max_size:64
+*TAKPacket.callsign_uncompressed max_size:120
+*TAKPacket.callsign_compressed max_size:64
 
 *Status.battery int_size:8
