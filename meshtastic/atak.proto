@@ -15,7 +15,7 @@ message TAKPacket
   /*
    * Are the payloads strings compressed for LoRA transport?
    */
-  boolean is_compressed = 1;
+  bool is_compressed = 1;
   /*
    * The contact / callsign for ATAK user
    */
