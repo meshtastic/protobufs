@@ -57,6 +57,3 @@
 *MqttClientProxyMessage.topic max_size:60
 *MqttClientProxyMessage.data max_size:435
 *MqttClientProxyMessage.text max_size:435
-
-*TAK_Packet.callsign_uncompressed max_size:512
-*TAK_Packet.callsign_compressed max_size:241
