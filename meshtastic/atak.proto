@@ -211,7 +211,12 @@ message PLI {
   sfixed32 longitude_i = 2;
 
   /*
-   * Altitude
+   * Speed
    */
-  int32 altitude = 3;
+  uint32 speed = 3;
+
+  /*
+   * Course in degrees
+   */
+  uint32 course = 4;  
 }
