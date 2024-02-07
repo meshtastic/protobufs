@@ -176,18 +176,9 @@ message Status {
  */
 message Contact {
   /*
-   * Compressed or uncompressed callsign
+   * Callsign
    */
-  oneof callsign_variant {
-    /*
-     * Uncompressed callsign from ATAK
-     */
-    string callsign_uncompressed = 1;
-    /*
-     * Compressed callsign using unishox2 for the wire
-     */
-    string callsign_compressed = 2;
-  }
+  string callsign = 1;
   /*
    * IP address of endpoint in integer form (0.0.0.0 default)
    */

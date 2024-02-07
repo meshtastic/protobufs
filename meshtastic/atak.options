@@ -1,4 +1,3 @@
-*Contact.callsign_uncompressed max_size:120
-*Contact.callsign_compressed max_size:64
+*Contact.callsign max_size:120
 
 *Status.battery int_size:8
