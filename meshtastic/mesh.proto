@@ -1528,3 +1528,4 @@ message DeviceMetadata {
    */
   bool hasRemoteHardware = 10;
 }
+
