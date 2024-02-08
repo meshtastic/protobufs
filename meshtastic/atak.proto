@@ -51,6 +51,11 @@ message GeoChat {
    * The text message
    */
   string message = 1;
+
+  /*
+   * Uid recipient of the message
+   */
+  optional string to = 2;
 }
 
 /*
