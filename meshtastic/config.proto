@@ -735,6 +735,11 @@ message Config {
        * Malaysia 919mhz
        */
       MY_919 = 17;
+
+      /*
+       * Singapore 923mhz
+       */
+      SG_923 = 18;
     }
 
     /*
