@@ -336,6 +336,11 @@ message Config {
      * Set where GPS is enabled, disabled, or not present
      */
     GpsMode gps_mode = 13;
+
+    /*
+     * Set GPS precision in bits, or 0 for disabled
+     */
+    uint32 channel_precision[8] = 14;
   }
 
   /*
