@@ -59,6 +59,16 @@ message StoreAndForward {
     ROUTER_STATS = 7;
 
     /*
+     * Router sends a text message from its history that was a direct message.
+     */
+    ROUTER_TEXT_DIRECT = 8;
+
+    /*
+     * Router sends a text message from its history that was a broadcast.
+     */
+    ROUTER_TEXT_BROADCAST = 9;
+
+    /*
      * Client is an in error state.
      */
     CLIENT_ERROR = 64;
@@ -130,12 +140,12 @@ message StoreAndForward {
     bool heartbeat = 7;
 
     /*
-     * Is the heartbeat enabled on the server?
+     * Maximum number of messages the server will return.
      */
     uint32 return_max = 8;
 
     /*
-     * Is the heartbeat enabled on the server?
+     * Maximum history window in minutes the server will return messages from.
      */
     uint32 return_window = 9;
   }
@@ -155,7 +165,8 @@ message StoreAndForward {
     uint32 window = 2;
 
     /*
-     * The window of messages that was used to filter the history client requested
+     * Index in the packet history of the last message sent in a previous request to the server.
+     * Will be sent to the client before sending the history and can be set in a subsequent request to avoid getting packets the server already sent to the client.
      */
     uint32 last_request = 3;
   }
@@ -165,7 +176,7 @@ message StoreAndForward {
    */
   message Heartbeat {
     /*
-     * Number of that will be sent to the client
+     * Period in seconds that the heartbeat is sent out that will be sent to the client
      */
     uint32 period = 1;
 
@@ -200,8 +211,8 @@ message StoreAndForward {
     Heartbeat heartbeat = 4;
 
     /*
-     * Empty Payload
+     * Text from history message.
      */
-    bool empty = 5;
+    bytes text = 5;
   }
 }

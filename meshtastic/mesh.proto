@@ -340,6 +340,11 @@ enum HardwareModel {
   CANARYONE = 29;
 
   /*
+   * Waveshare RP2040 LoRa - https://www.waveshare.com/rp2040-lora.htm
+   */
+  RP2040_LORA = 30;
+
+  /*
    * ---------------------------------------------------------------------------
    * Less common/prototype boards listed here (needs one more byte over the air)
    * ---------------------------------------------------------------------------
