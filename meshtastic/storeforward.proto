@@ -59,6 +59,16 @@ message StoreAndForward {
     ROUTER_STATS = 7;
 
     /*
+     * Router sends a text message from its history that was a direct message.
+     */
+    ROUTER_TEXT_DIRECT = 8;
+
+    /*
+     * Router sends a text message from its history that was a broadcast.
+     */
+    ROUTER_TEXT_BROADCAST = 9;
+
+    /*
      * Client is an in error state.
      */
     CLIENT_ERROR = 64;
