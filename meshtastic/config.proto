@@ -19,6 +19,7 @@ message Config {
     enum Role {
       /*
        * Description: App connected or stand alone messaging device.
+       * Technical Details: Default Role
        */
       CLIENT = 0;
       /*
