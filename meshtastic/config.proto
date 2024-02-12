@@ -81,7 +81,7 @@ message Config {
       CLIENT_HIDDEN = 8;
 
       /*
-       * Description: 
+       * Description: Broadcasts location as message to default channel regularly for to assist with device recovery.
        * Technical Details: Used to automatically send a text message to the mesh 
        *    with the current position of the device on a frequent interval:
        *    "I'm lost! Position: lat / long"
