@@ -72,7 +72,7 @@ message Config {
       TAK = 7;
 
       /*
-       * Description: Device that only broadcasts as needed for stealth or power savings."
+       * Description: Device that only broadcasts as needed for stealth or power savings.
        * Technical Details: Used for nodes that "only speak when spoken to"
        *    Turns all of the routine broadcasts but allows for ad-hoc communication
        *    Still rebroadcasts, but with local only rebroadcast mode (known meshes only)
