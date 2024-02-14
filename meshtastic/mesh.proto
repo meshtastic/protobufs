@@ -430,7 +430,7 @@ enum HardwareModel {
    * Heltec Wireless Tracker with ESP32-S3 CPU, built-in GPS, and TFT
    * Newer V1.1, version is written on the PCB near the display.
    */
-  HELTEC_WIRELESS_TRACKER_V1_1 = 48;
+  HELTEC_WIRELESS_TRACKER = 48;
 
   /*
    * Heltec Wireless Paper with ESP32-S3 CPU and E-Ink display
