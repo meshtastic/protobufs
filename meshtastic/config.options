@@ -12,3 +12,5 @@
 *LoRaConfig.channel_num int_size:16
 
 *PowerConfig.device_battery_ina_address int_size:8
+
+*PositionConfig.channel_precision max_count:8
