@@ -203,6 +203,11 @@ message Position {
    *   detect lost updates if needed
    */
   uint32 seq_number = 22;
+
+  /*
+   * Indicates the bits of precision set by the sending node
+   */
+  uint32 precision_bits = 23;
 }
 
 /*
