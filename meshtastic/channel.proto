@@ -84,6 +84,16 @@ message ChannelSettings {
 }
 
 /*
+ * This message is specifically for modules to store per-channel configuration data.
+ */
+message ModuleSettings {
+/*
+ * Bits of precision for the location sent in position packets.
+ */
+  uint32 position_precision = 1;
+}
+
+/*
  * A pair of a channel number, mode and the (sharable) settings for that channel
  */
 message Channel {
@@ -132,4 +142,9 @@ message Channel {
    * TODO: REPLACE
    */
   Role role = 3;
+
+  /*
+   * Per-channel module settings.
+   */
+   ModuleSettings module_settings = 4;
 }
