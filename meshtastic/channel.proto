@@ -81,6 +81,11 @@ message ChannelSettings {
    * If true, messages seen on the internet will be forwarded to the local mesh.
    */
   bool downlink_enabled = 6;
+
+  /*
+   * Per-channel module settings.
+   */
+   ModuleSettings module_settings = 7;
 }
 
 /*
@@ -142,9 +147,4 @@ message Channel {
    * TODO: REPLACE
    */
   Role role = 3;
-
-  /*
-   * Per-channel module settings.
-   */
-   ModuleSettings module_settings = 4;
 }
