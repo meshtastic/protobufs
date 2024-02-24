@@ -901,8 +901,7 @@ message MeshPacket {
   fixed32 from = 1;
 
   /*
-   * The (immediate) destination for this packet. If we are using routing, the
-   * final destination will be in payload.dest
+   * The (immediate) destination for this packet
    */
   fixed32 to = 2;
 
