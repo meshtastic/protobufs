@@ -350,6 +350,11 @@ enum HardwareModel {
   RP2040_LORA = 30;
 
   /*
+   * B&Q Consulting Station G2: https://wiki.uniteng.com/en/meshtastic/station-g2
+   */
+  STATION_G2 = 31;
+
+  /*
    * ---------------------------------------------------------------------------
    * Less common/prototype boards listed here (needs one more byte over the air)
    * ---------------------------------------------------------------------------
