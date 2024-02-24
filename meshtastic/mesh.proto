@@ -901,8 +901,8 @@ message MeshPacket {
   fixed32 from = 1;
 
   /*
-   * The (immediatSee Priority description for more details.y should be fixed32 instead, this encoding only
-   * hurts the ble link though.
+   * The (immediate) destination for this packet. If we are using routing, the
+   * final destination will be in payload.dest
    */
   fixed32 to = 2;
 
