@@ -364,6 +364,7 @@ message Config {
     /*
      * Ratio of voltage divider for battery pin eg. 3.20 (R1=100k, R2=220k)
      * Overrides the ADC_MULTIPLIER defined in variant for battery voltage calculation.
+     * https://meshtastic.org/docs/configuration/radio/power/#adc-multiplier-override
      * Should be set to floating point value between 2 and 6
      */
     float adc_multiplier_override = 3;
