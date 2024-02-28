@@ -203,6 +203,11 @@ message Position {
    *   detect lost updates if needed
    */
   uint32 seq_number = 22;
+
+  /*
+   * Indicates the bits of precision set by the sending node
+   */
+  uint32 precision_bits = 23;
 }
 
 /*
@@ -343,6 +348,11 @@ enum HardwareModel {
    * Waveshare RP2040 LoRa - https://www.waveshare.com/rp2040-lora.htm
    */
   RP2040_LORA = 30;
+
+  /*
+   * B&Q Consulting Station G2: https://wiki.uniteng.com/en/meshtastic/station-g2
+   */
+  STATION_G2 = 31;
 
   /*
    * ---------------------------------------------------------------------------
@@ -891,13 +901,11 @@ message MeshPacket {
    * The sending node number.
    * Note: Our crypto implementation uses this field as well.
    * See [crypto](/docs/overview/encryption) for details.
-   * FIXME - really should be fixed32 instead, this encoding only hurts the ble link though.
    */
   fixed32 from = 1;
 
   /*
-   * The (immediatSee Priority description for more details.y should be fixed32 instead, this encoding only
-   * hurts the ble link though.
+   * The (immediate) destination for this packet
    */
   fixed32 to = 2;
 
@@ -942,8 +950,6 @@ message MeshPacket {
    * any ACK or the completion of a mesh broadcast flood).
    * Note: Our crypto implementation uses this id as well.
    * See [crypto](/docs/overview/encryption) for details.
-   * FIXME - really should be fixed32 instead, this encoding only
-   * hurts the ble link though.
    */
   fixed32 id = 6;
 
