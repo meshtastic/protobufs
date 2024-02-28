@@ -1003,6 +1003,12 @@ message MeshPacket {
    * Describes whether this packet passed via MQTT somewhere along the path it currently took.
    */
   bool via_mqtt = 14;
+
+  /* 
+   * Hop limit with which the original packet started. Sent via LoRa using three bits in the unencrypted header. 
+   * When receiving a packet, the difference between hop_start and hop_limit gives how many hops it traveled.
+   */ 
+  uint32 hop_start = 15;
 }
 
 /*
@@ -1540,4 +1546,3 @@ message DeviceMetadata {
    */
   bool hasRemoteHardware = 10;
 }
-
