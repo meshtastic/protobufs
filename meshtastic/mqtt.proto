@@ -59,43 +59,48 @@ message MapReport {
   HardwareModel hw_model = 4;
 
   /*
+   * Device firmware version string
+   */
+  string firmware_version = 5;
+
+  /*
   * The region code for the radio (US, CN, EU433, etc...)
   */
-  Config.LoRaConfig.RegionCode region = 5;
+  Config.LoRaConfig.RegionCode region = 6;
 
   /*
   * Modem preset used by the radio (LongFast, MediumSlow, etc...)
   */
-  Config.LoRaConfig.ModemPreset modem_preset = 6;
+  Config.LoRaConfig.ModemPreset modem_preset = 7;
 
   /*
   * Whether the node has a channel with default PSK and name (LongFast, MediumSlow, etc...)
   * and it uses the default frequency slot given the region and modem preset.
   */
-  bool has_default_channel = 7;
+  bool has_default_channel = 8;
 
   /*
    * Latitude: multiply by 1e-7 to get degrees in floating point
    */
-  sfixed32 latitude_i = 8;
+  sfixed32 latitude_i = 9;
 
   /*
    * Longitude: multiply by 1e-7 to get degrees in floating point
    */
-  sfixed32 longitude_i = 9;
+  sfixed32 longitude_i = 10;
 
   /*
    * Altitude in meters above MSL
    */
-  int32 altitude = 10;
+  int32 altitude = 11;
 
   /*
    * Indicates the bits of precision for latitude and longitude set by the sending node
    */
-  uint32 position_precision = 11;
+  uint32 position_precision = 12;
 
   /*
    * Number of online nodes (heard in the last 2 hours) this node has in its list that were received locally (not via MQTT)
    */
-  uint32 num_online_local_nodes = 12;
+  uint32 num_online_local_nodes = 13;
 }
