@@ -1,3 +1,7 @@
 *ServiceEnvelope.packet type:FT_POINTER
 *ServiceEnvelope.channel_id type:FT_POINTER
 *ServiceEnvelope.gateway_id type:FT_POINTER
+
+*MapReport.long_name max_size:40
+*MapReport.short_name max_size:5
+*MapReport.num_online_local_nodes int_size:16

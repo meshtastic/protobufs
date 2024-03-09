@@ -70,6 +70,31 @@ message ModuleConfig {
      * If true, we can use the connected phone / client to proxy messages to MQTT instead of a direct connection
      */
     bool proxy_to_client_enabled = 9;
+
+    /*
+     * If true, we will periodically report unencrypted information about our node to a map via MQTT
+     */
+    bool map_reporting_enabled = 10;
+
+    /*
+     * Settings for reporting information about our node to a map via MQTT
+     */
+    MapReportSettings map_report_settings = 11;
+  }
+
+  /*
+   * Settings for reporting unencrypted information about our node to a map via MQTT
+   */
+  message MapReportSettings {
+    /*
+     * How often we should report our info to the map (in seconds)
+     */
+    uint32 publish_interval_secs = 1;
+
+    /*
+     * Bits of precision for the location sent (default of 32 is full precision).
+     */
+    uint32 position_precision = 2;
   }
 
   /*
