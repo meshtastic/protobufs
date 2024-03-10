@@ -33,12 +33,6 @@ message DeviceState {
   User owner = 3;
 
   /*
-   * Deprecated in 2.1.x
-   * Old node_db. See NodeInfoLite node_db_lite
-   */
-  repeated NodeInfo node_db = 4 [deprecated = true];
-
-  /*
    * Received packets saved for delivery to the phone
    */
   repeated MeshPacket receive_queue = 5;
@@ -81,7 +75,7 @@ message DeviceState {
   repeated NodeRemoteHardwarePin node_remote_hardware_pins = 13;
 
   /*
-   * New lite version of NodeDB to decrease
+   * New lite version of NodeDB to decrease memory footprint
    */
   repeated NodeInfoLite node_db_lite = 14;
 }
@@ -122,6 +116,16 @@ message NodeInfoLite {
    * local channel index we heard that node on. Only populated if its not the default channel.
    */
   uint32 channel = 7;
+
+  /*
+   * True if we witnessed the node over MQTT instead of LoRA transport
+   */
+  bool via_mqtt = 8;
+
+  /*
+   * Number of hops away from us this node is (0 if adjacent)
+   */
+  uint32 hops_away = 9;
 }
 
 /*

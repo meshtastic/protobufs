@@ -37,9 +37,8 @@ message Position {
 
   /*
    * This is usually not sent over the mesh (to save space), but it is sent
-   * from the phone so that the local device can set its RTC If it is sent over
-   * the mesh (because there are devices on the mesh without GPS), it will only
-   * be sent by devices which has a hardware GPS clock.
+   * from the phone so that the local device can set its time if it is sent over
+   * the mesh (because there are devices on the mesh without GPS or RTC).
    * seconds since 1970
    */
   fixed32 time = 4;
@@ -204,6 +203,11 @@ message Position {
    *   detect lost updates if needed
    */
   uint32 seq_number = 22;
+
+  /*
+   * Indicates the bits of precision set by the sending node
+   */
+  uint32 precision_bits = 23;
 }
 
 /*
@@ -306,6 +310,16 @@ enum HardwareModel {
   NANO_G1_EXPLORER = 17;
 
   /*
+   * B&Q Consulting Nano G2 Ultra: https://wiki.uniteng.com/en/meshtastic/nano-g2-ultra
+   */
+  NANO_G2_ULTRA = 18;
+
+  /*
+   * LoRAType device: https://loratype.org/
+   */
+  LORA_TYPE = 19;
+
+  /*
    * B&Q Consulting Station Edition G1: https://uniteng.com/wiki/doku.php?id=meshtastic:station
    */
   STATION_G1 = 25;
@@ -314,6 +328,31 @@ enum HardwareModel {
    * RAK11310 (RP2040 + SX1262)
    */
   RAK11310 = 26;
+
+  /*
+   * Makerfabs SenseLoRA Receiver (RP2040 + RFM96)
+   */
+  SENSELORA_RP2040 = 27;
+
+  /*
+   * Makerfabs SenseLoRA Industrial Monitor (ESP32-S3 + RFM96)
+   */
+  SENSELORA_S3 = 28;
+
+  /*
+    * Canary Radio Company - CanaryOne: https://canaryradio.io/products/canaryone
+    */
+  CANARYONE = 29;
+
+  /*
+   * Waveshare RP2040 LoRa - https://www.waveshare.com/rp2040-lora.htm
+   */
+  RP2040_LORA = 30;
+
+  /*
+   * B&Q Consulting Station G2: https://wiki.uniteng.com/en/meshtastic/station-g2
+   */
+  STATION_G2 = 31;
 
   /*
    * ---------------------------------------------------------------------------
@@ -398,6 +437,69 @@ enum HardwareModel {
   RPI_PICO = 47;
 
   /*
+   * Heltec Wireless Tracker with ESP32-S3 CPU, built-in GPS, and TFT
+   * Newer V1.1, version is written on the PCB near the display.
+   */
+  HELTEC_WIRELESS_TRACKER = 48;
+
+  /*
+   * Heltec Wireless Paper with ESP32-S3 CPU and E-Ink display
+   */
+  HELTEC_WIRELESS_PAPER = 49;
+
+  /*
+   * LilyGo T-Deck with ESP32-S3 CPU, Keyboard and IPS display
+   */
+  T_DECK = 50;
+
+  /*
+   * LilyGo T-Watch S3 with ESP32-S3 CPU and IPS display
+   */
+  T_WATCH_S3 = 51;
+  
+  /*
+   * Bobricius Picomputer with ESP32-S3 CPU, Keyboard and IPS display
+   */
+  PICOMPUTER_S3 = 52;
+  
+   /*
+   * Heltec HT-CT62 with ESP32-C3 CPU and SX1262 LoRa
+   */
+  HELTEC_HT62 = 53;
+
+  /*
+   * EBYTE SPI LoRa module and ESP32-S3
+   */
+  EBYTE_ESP32_S3 = 54;
+
+  /*
+   * Waveshare ESP32-S3-PICO with PICO LoRa HAT and 2.9inch e-Ink
+   */
+  ESP32_S3_PICO = 55;
+
+  /*
+   * CircuitMess Chatter 2 LLCC68 Lora Module and ESP32 Wroom
+   * Lora module can be swapped out for a Heltec RA-62 which is "almost" pin compatible
+   * with one cut and one jumper Meshtastic works
+  */
+  CHATTER_2 = 56;
+
+  /*
+   * Heltec Wireless Paper, With ESP32-S3 CPU and E-Ink display
+   * Older "V1.0" Variant, has no "version sticker"
+   * E-Ink model is DEPG0213BNS800
+   * Tab on the screen protector is RED
+   * Flex connector marking is FPC-7528B
+   */
+  HELTEC_WIRELESS_PAPER_V1_0 = 57;
+
+  /*
+   * Heltec Wireless Tracker with ESP32-S3 CPU, built-in GPS, and TFT
+   * Older "V1.0" Variant
+   */
+  HELTEC_WIRELESS_TRACKER_V1_0 = 58;
+  
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
@@ -468,6 +570,11 @@ message User {
    * Also, "long_name" should be their licence number.
    */
   bool is_licensed = 6;
+
+  /*
+   * Indicates that the user's role in the mesh
+   */
+  Config.DeviceConfig.Role role = 7;
 }
 
 /*
@@ -675,6 +782,36 @@ message Waypoint {
 }
 
 /*
+ * This message will be proxied over the PhoneAPI for the client to deliver to the MQTT server
+ */
+ message MqttClientProxyMessage {
+  /*
+   * The MQTT topic this message will be sent /received on
+   */
+  string topic = 1;
+
+  /*
+   * The actual service envelope payload or text for mqtt pub / sub
+   */
+  oneof payload_variant {
+    /*
+     * Bytes
+     */
+    bytes data = 2;
+
+    /*
+     * Text
+     */
+    string text = 3;
+  }
+
+  /*
+   * Whether the message should be retained (or not)
+   */
+  bool retained = 4;
+}
+
+/*
  * A packet envelope sent/received over the mesh
  * only payload_variant is sent in the payload portion of the LORA packet.
  * The other fields are either not sent at all, or sent in the special 16 byte LORA header.
@@ -695,9 +832,9 @@ message MeshPacket {
    * to make sure that critical packets are sent ASAP.
    * In the case of meshtastic that means we want to send protocol acks as soon as possible
    * (to prevent unneeded retransmissions), we want routing messages to be sent next,
-   * then messages marked as reliable and finally ‘background’ packets like periodic position updates.
+   * then messages marked as reliable and finally 'background' packets like periodic position updates.
    * So I bit the bullet and implemented a new (internal - not sent over the air)
-   * field in MeshPacket called ‘priority’.
+   * field in MeshPacket called 'priority'.
    * And the transmission queue in the router object is now a priority queue.
    */
   enum Priority {
@@ -764,13 +901,11 @@ message MeshPacket {
    * The sending node number.
    * Note: Our crypto implementation uses this field as well.
    * See [crypto](/docs/overview/encryption) for details.
-   * FIXME - really should be fixed32 instead, this encoding only hurts the ble link though.
    */
   fixed32 from = 1;
 
   /*
-   * The (immediatSee Priority description for more details.y should be fixed32 instead, this encoding only
-   * hurts the ble link though.
+   * The (immediate) destination for this packet
    */
   fixed32 to = 2;
 
@@ -815,8 +950,6 @@ message MeshPacket {
    * any ACK or the completion of a mesh broadcast flood).
    * Note: Our crypto implementation uses this id as well.
    * See [crypto](/docs/overview/encryption) for details.
-   * FIXME - really should be fixed32 instead, this encoding only
-   * hurts the ble link though.
    */
   fixed32 id = 6;
 
@@ -870,7 +1003,18 @@ message MeshPacket {
   /*
    * Describe if this message is delayed
    */
-  Delayed delayed = 13;
+  Delayed delayed = 13 [deprecated = true];
+
+  /*
+   * Describes whether this packet passed via MQTT somewhere along the path it currently took.
+   */
+  bool via_mqtt = 14;
+
+  /* 
+   * Hop limit with which the original packet started. Sent via LoRa using three bits in the unencrypted header. 
+   * When receiving a packet, the difference between hop_start and hop_limit gives how many hops it traveled.
+   */ 
+  uint32 hop_start = 15;
 }
 
 /*
@@ -972,6 +1116,16 @@ message NodeInfo {
    * local channel index we heard that node on. Only populated if its not the default channel.
    */
   uint32 channel = 7;
+
+  /*
+   * True if we witnessed the node over MQTT instead of LoRA transport
+   */
+  bool via_mqtt = 8;
+
+  /*
+   * Number of hops away from us this node is (0 if adjacent)
+   */
+  uint32 hops_away = 9;
 }
 
 /*
@@ -1029,7 +1183,7 @@ enum CriticalErrorCode {
   TRANSMIT_FAILED = 8;
 
   /*
-   * We detected that the main CPU voltage dropped below the minumum acceptable value
+   * We detected that the main CPU voltage dropped below the minimum acceptable value
    */
   BROWNOUT = 9;
 
@@ -1056,101 +1210,16 @@ message MyNodeInfo {
   uint32 my_node_num = 1;
 
   /*
-   * Deprecated in 2.1.x (Source from device_metadata)
-   * Note: This flag merely means we detected a hardware GPS in our node.
-   * Not the same as UserPreferences.location_sharing
-   */
-  bool has_gps = 2 [deprecated = true];
-
-  /*
-   * Deprecated in 2.1.x
-   * The maximum number of 'software' channels that can be set on this node.
-   */
-  uint32 max_channels = 3 [deprecated = true];
-
-  /*
-   * Deprecated in 2.1.x (Source from device_metadata)
-   * 0.0.5 etc...
-   */
-  string firmware_version = 4 [deprecated = true];
-
-  /*
-   * An error message we'd like to report back to the mothership through analytics.
-   * It indicates a serious bug occurred on the device, the device coped with it,
-   * but we still want to tell the devs about the bug.
-   * This field will be cleared after the phone reads MyNodeInfo
-   * (i.e. it will only be reported once)
-   * a numeric error code to go with error message, zero means no error
-   */
-  CriticalErrorCode error_code = 5 [deprecated = true];
-
-  /*
-   * A numeric error address (nonzero if available)
-   */
-  uint32 error_address = 6 [deprecated = true];
-
-  /*
-   * The total number of errors this node has ever encountered
-   * (well - since the last time we discarded preferences)
-   */
-  uint32 error_count = 7 [deprecated = true];
-
-  /*
    * The total number of reboots this node has ever encountered
    * (well - since the last time we discarded preferences)
    */
   uint32 reboot_count = 8;
 
   /*
-   * Deprecated in 2.1.x
-   * Calculated bitrate of the current channel (in Bytes Per Second)
-   */
-  float bitrate = 9 [deprecated = true];
-
-  /*
-   * Deprecated in 2.1.x
-   * How long before we consider a message abandoned and we can clear our
-   * caches of any messages in flight Normally quite large to handle the worst case
-   * message delivery time, 5 minutes.
-   * Formerly called FLOOD_EXPIRE_TIME in the device code
-   */
-  uint32 message_timeout_msec = 10 [deprecated = true];
-
-  /*
    * The minimum app version that can talk to this device.
    * Phone/PC apps should compare this to their build number and if too low tell the user they must update their app
    */
   uint32 min_app_version = 11;
-
-  /*
-   * Deprecated in 2.1.x (Only used on device to keep track of utilization)
-   * 24 time windows of 1hr each with the airtime transmitted out of the device per hour.
-   */
-  repeated uint32 air_period_tx = 12 [deprecated = true];
-
-  /*
-   * Deprecated in 2.1.x (Only used on device to keep track of utilization)
-   * 24 time windows of 1hr each with the airtime of valid packets for your mesh.
-   */
-  repeated uint32 air_period_rx = 13 [deprecated = true];
-
-  /*
-   * Deprecated in 2.1.x (Source from DeviceMetadata instead)
-   * Is the device wifi capable?
-   */
-  bool has_wifi = 14 [deprecated = true];
-
-  /*
-   * Deprecated in 2.1.x (Source from DeviceMetrics telemetry payloads)
-   * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
-   */
-  float channel_utilization = 15 [deprecated = true];
-
-  /*
-   * Deprecated in 2.1.x (Source from DeviceMetrics telemetry payloads)
-   * Percent of airtime for transmission used within the last hour.
-   */
-  float air_util_tx = 16 [deprecated = true];
 }
 
 /*
@@ -1320,6 +1389,11 @@ message FromRadio {
      * Device metadata message
      */
     DeviceMetadata metadata = 13;
+
+    /*
+     * MQTT Client Proxy Message (device sending to client / phone for publishing to MQTT)
+     */
+    MqttClientProxyMessage mqttClientProxyMessage = 14;
   }
 }
 
@@ -1361,6 +1435,11 @@ message ToRadio {
      */
 
     XModem xmodemPacket = 5;
+
+    /*
+     * MQTT Client Proxy Message (for client / phone subscribed to MQTT sending to device)
+     */
+    MqttClientProxyMessage mqttClientProxyMessage = 6;
   }
 }
 
@@ -1391,10 +1470,15 @@ message NeighborInfo {
    * Field to pass neighbor info for the next sending cycle
    */
   uint32 last_sent_by_id = 2;
+
+  /*
+   * Broadcast interval of the represented node (in seconds)
+   */
+  uint32 node_broadcast_interval_secs = 3;
   /*
    * The list of out edges from this node
    */
-  repeated Neighbor neighbors = 3;
+  repeated Neighbor neighbors = 4;
 }
 
 /*
@@ -1410,6 +1494,18 @@ message Neighbor {
    * SNR of last heard message
    */
   float snr = 2;
+
+  /*
+  * Reception time (in secs since 1970) of last message that was last sent by this ID.
+  * Note: this is for local storage only and will not be sent out over the mesh.
+  */
+  fixed32 last_rx_time = 3;
+
+  /*
+   * Broadcast interval of this neighbor (in seconds).
+   * Note: this is for local storage only and will not be sent out over the mesh.
+   */
+  uint32 node_broadcast_interval_secs = 4;
 }
 
 /*

@@ -109,6 +109,26 @@ message AdminMessage {
      * TODO: REPLACE
      */
     REMOTEHARDWARE_CONFIG = 8;
+
+    /*
+     * TODO: REPLACE
+     */
+    NEIGHBORINFO_CONFIG = 9;
+
+    /*
+     * TODO: REPLACE
+     */
+    AMBIENTLIGHTING_CONFIG = 10;
+
+    /*
+     * TODO: REPLACE
+     */
+    DETECTIONSENSOR_CONFIG = 11;
+
+    /*
+     * TODO: REPLACE
+     */
+    PAXCOUNTER_CONFIG = 12;
   }
 
   /*
@@ -212,6 +232,17 @@ message AdminMessage {
     NodeRemoteHardwarePinsResponse get_node_remote_hardware_pins_response = 20;
 
     /*
+     * Enter (UF2) DFU mode
+     * Only implemented on NRF52 currently
+     */
+    bool enter_dfu_mode_request = 21;
+
+    /*
+     * Delete the file by the specified path from the device
+     */
+    string delete_file_request = 22;
+
+    /*
      * Set the owner for this node
      */
     User set_owner = 32;
@@ -244,6 +275,11 @@ message AdminMessage {
      * Set the ringtone for ExternalNotification.
      */
     string set_ringtone_message = 37;
+
+    /*
+     * Remove the node by the specified node-num from the NodeDB on the device
+     */
+    uint32 remove_by_nodenum = 38;
 
     /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes

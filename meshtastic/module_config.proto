@@ -68,6 +68,36 @@ message ModuleConfig {
      * This is useful if you want to use a single MQTT server for multiple meshtastic networks and separate them via ACLs
      */
     string root = 8;
+
+    /*
+     * If true, we can use the connected phone / client to proxy messages to MQTT instead of a direct connection
+     */
+    bool proxy_to_client_enabled = 9;
+
+    /*
+     * If true, we will periodically report unencrypted information about our node to a map via MQTT
+     */
+    bool map_reporting_enabled = 10;
+
+    /*
+     * Settings for reporting information about our node to a map via MQTT
+     */
+    MapReportSettings map_report_settings = 11;
+  }
+
+  /*
+   * Settings for reporting unencrypted information about our node to a map via MQTT
+   */
+  message MapReportSettings {
+    /*
+     * How often we should report our info to the map (in seconds)
+     */
+    uint32 publish_interval_secs = 1;
+
+    /*
+     * Bits of precision for the location sent (default of 32 is full precision).
+     */
+    uint32 position_precision = 2;
   }
 
   /*
@@ -104,6 +134,57 @@ message ModuleConfig {
      * Neighbor Info to the mesh
      */
     uint32 update_interval = 2;
+  }
+
+  /*
+   * Detection Sensor Module Config
+   */
+   message DetectionSensorConfig {
+    /*
+     * Whether the Module is enabled
+     */
+    bool enabled = 1;
+
+    /*
+     * Interval in seconds of how often we can send a message to the mesh when a state change is detected
+     */
+    uint32 minimum_broadcast_secs = 2;
+
+    /*
+     * Interval in seconds of how often we should send a message to the mesh with the current state regardless of changes
+     * When set to 0, only state changes will be broadcasted
+     * Works as a sort of status heartbeat for peace of mind
+     */
+    uint32 state_broadcast_secs = 3;
+    /*
+     * Send ASCII bell with alert message
+     * Useful for triggering ext. notification on bell
+     */
+    bool send_bell = 4;
+
+    /*
+     * Friendly name used to format message sent to mesh
+     * Example: A name "Motion" would result in a message "Motion detected"
+     * Maximum length of 20 characters
+     */
+    string name = 5;
+
+    /*
+     * GPIO pin to monitor for state changes
+     */
+    uint32 monitor_pin = 6;
+
+    /*
+     * Whether or not the GPIO pin state detection is triggered on HIGH (1)
+     * Otherwise LOW (0)
+     */
+    bool detection_triggered_high = 7;
+
+    /*
+     * Whether or not use INPUT_PULLUP mode for GPIO pin
+     * Only applicable if the board uses pull-up resistors on the pin
+     */
+    bool use_pullup = 8;
   }
 
   /*
@@ -159,6 +240,23 @@ message ModuleConfig {
      * I2S Clock
      */
     uint32 i2s_sck = 7;
+  }
+
+  /*
+   * Config for the Paxcounter Module
+   */
+  message PaxcounterConfig {
+    /*
+     * Enable the Paxcounter Module
+     */
+    bool enabled = 1;
+
+    /*
+     * Interval in seconds of how often we should try to send our
+     * metrics to the mesh
+     */
+
+    uint32 paxcounter_update_interval = 2;
   }
 
   /*
@@ -326,6 +424,12 @@ message ModuleConfig {
      * and/or beep for 60 seconds
      */
     uint32 nag_timeout = 14;
+
+    /*
+     * When true, enables devices with native I2S audio output to use the RTTTL over speaker like a buzzer
+     * T-Watch S3 and T-Deck for example have this capability
+     */
+    bool use_i2s_as_buzzer = 15;
   }
 
   /*
@@ -423,6 +527,24 @@ message ModuleConfig {
      * air quality metrics to the mesh
      */
     uint32 air_quality_interval = 7;
+
+    /*
+     * Interval in seconds of how often we should try to send our
+     * air quality metrics to the mesh
+     */
+    bool power_measurement_enabled = 8;
+
+    /*
+     * Interval in seconds of how often we should try to send our
+     * air quality metrics to the mesh
+     */
+    uint32 power_update_interval = 9;
+
+    /*
+     * Interval in seconds of how often we should try to send our
+     * air quality metrics to the mesh
+     */
+    bool power_screen_enabled = 10;
   }
 
   /*
@@ -543,6 +665,38 @@ message ModuleConfig {
   }
 
   /*
+    Ambient Lighting Module - Settings for control of onboard LEDs to allow users to adjust the brightness levels and respective color levels.
+    Initially created for the RAK14001 RGB LED module.
+  */
+  message AmbientLightingConfig {
+
+    /*
+     * Sets LED to on or off.
+     */
+    bool led_state = 1;
+
+    /*
+     * Sets the current for the LED output. Default is 10.
+     */
+    uint32 current = 2;
+
+    /*
+     * Sets the red LED level. Values are 0-255.
+     */
+    uint32 red = 3;
+
+    /*
+     * Sets the green LED level. Values are 0-255.
+     */
+    uint32 green = 4;
+
+    /*
+     * Sets the blue LED level. Values are 0-255.
+     */
+    uint32 blue = 5;
+  }
+
+  /*
    * TODO: REPLACE
    */
   oneof payload_variant {
@@ -595,11 +749,26 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     NeighborInfoConfig neighbor_info = 10;
+    
+    /*
+     * TODO: REPLACE
+     */
+    AmbientLightingConfig ambient_lighting = 11;
 
     /*
      * TODO: REPLACE
      */
-    TakConfig tak = 11;
+    DetectionSensorConfig detection_sensor = 12;
+
+    /*
+     * TODO: REPLACE
+     */
+    PaxcounterConfig paxcounter = 13;
+    
+    /*
+     * TODO: REPLACE
+     */
+    TakConfig tak = 14;
   }
 }
 

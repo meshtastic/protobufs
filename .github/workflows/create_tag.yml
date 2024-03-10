@@ -1,5 +1,8 @@
 name: Create tag
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
     inputs:
@@ -18,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - id: version
@@ -47,7 +50,7 @@ jobs:
           echo "NEW_VERSION=v$MAJOR.$MINOR.$PATCH" >> $GITHUB_OUTPUT
 
       - name: Create release
-        uses: ncipollo/release-action@v1.12.0
+        uses: ncipollo/release-action@v1.13.0
         with:
           name: Meshtastic Protobufs ${{ steps.version.outputs.NEW_VERSION }}
           tag: ${{ steps.version.outputs.NEW_VERSION }}
@@ -55,7 +58,7 @@ jobs:
           token: ${{ github.token }}
 
       - name: Setup Buf
-        uses: bufbuild/buf-setup-action@v1
+        uses: bufbuild/buf-setup-action@v1.26.1
         with:
           github_token: ${{ github.token }}
 

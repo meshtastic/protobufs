@@ -18,3 +18,11 @@
 *RemoteHardwareConfig.available_pins max_count:4
 *RemoteHardwarePin.name max_size:15
 *RemoteHardwarePin.gpio_pin int_size:8
+
+*AmbientLightingConfig.current int_size:8
+*AmbientLightingConfig.red int_size:8
+*AmbientLightingConfig.green int_size:8
+*AmbientLightingConfig.blue int_size:8
+
+*DetectionSensorConfig.monitor_pin int_size:8
+*DetectionSensorConfig.name max_size:20

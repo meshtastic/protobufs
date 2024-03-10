@@ -53,19 +53,54 @@ message EnvironmentMetrics {
   float barometric_pressure = 3;
 
   /*
-   * Gas resistance in mOhm measured
+   * Gas resistance in MOhm measured
    */
   float gas_resistance = 4;
 
   /*
-   * Voltage measured
+   * Voltage measured (To be depreciated in favor of PowerMetrics in Meshtastic 3.x)
    */
   float voltage = 5;
 
   /*
-   * Current measured
+   * Current measured (To be depreciated in favor of PowerMetrics in Meshtastic 3.x)
    */
   float current = 6;
+}
+
+/*
+ * Power Metrics (voltage / current / etc)
+ */
+message PowerMetrics {
+  /*
+   * Voltage (Ch1)
+   */
+  float ch1_voltage = 1;
+
+  /*
+   * Current (Ch1)
+   */
+  float ch1_current = 2;
+
+  /*
+   * Voltage (Ch2)
+   */
+  float ch2_voltage = 3;
+
+  /*
+   * Current (Ch2)
+   */
+  float ch2_current = 4;
+
+  /*
+   * Voltage (Ch3)
+   */
+  float ch3_voltage = 5;
+
+  /*
+   * Current (Ch3)
+   */
+  float ch3_current = 6;
 }
 
 /*
@@ -138,11 +173,7 @@ message AirQualityMetrics {
  */
 message Telemetry {
   /*
-   * This is usually not sent over the mesh (to save space), but it is sent
-   * from the phone so that the local device can set its RTC If it is sent over
-   * the mesh (because there are devices on the mesh without GPS), it will only
-   * be sent by devices which has a hardware GPS clock (IE Mobile Phone).
-   * seconds since 1970
+   * Seconds since 1970 - or 0 for unknown/unset
    */
   fixed32 time = 1;
 
@@ -161,6 +192,11 @@ message Telemetry {
      * Air quality metrics
      */
     AirQualityMetrics air_quality_metrics = 4;
+
+    /*
+     * Power Metrics 
+     */
+    PowerMetrics power_metrics = 5;
   }
 }
 
@@ -237,4 +273,15 @@ enum TelemetrySensorType {
    * PM2.5 air quality sensor
    */
   PMSA003I = 13;
+
+  /*
+   * INA3221 3 Channel Voltage / Current Sensor
+   */
+  INA3221 = 14;
+
+  /*
+   * BMP085/BMP180 High accuracy temperature and pressure (older Version of BMP280)
+   */
+  BMP085 = 15;
+
 }
