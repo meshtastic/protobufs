@@ -1444,7 +1444,7 @@ message ToRadio {
     /*
      * Heartbeat message (used to keep the device connection awake on serial)
      */
-    Heartbeat hearbeat = 7;
+    Heartbeat heartbeat = 7;
   }
 }
 
