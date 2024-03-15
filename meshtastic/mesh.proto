@@ -1440,6 +1440,11 @@ message ToRadio {
      * MQTT Client Proxy Message (for client / phone subscribed to MQTT sending to device)
      */
     MqttClientProxyMessage mqttClientProxyMessage = 6;
+
+    /*
+     * Heartbeat message (used to keep the device connection awake on serial)
+     */
+    Heartbeat hearbeat = 7;
   }
 }
 
@@ -1561,4 +1566,12 @@ message DeviceMetadata {
    * Has Remote Hardware enabled
    */
   bool hasRemoteHardware = 10;
+}
+
+/* 
+ * A heartbeat message is sent to the node from the client to keep the connection alive.
+ * This is currently only needed to keep serial connections alive, but can be used by any PhoneAPI.
+ */
+message Heartbeat {
+  
 }
