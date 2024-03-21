@@ -130,7 +130,7 @@ message NodeInfoLite {
 
   /*
    * True if node is in our favorites list
-   * Persists between NodeDB resets and internal clean up
+   * Persists between NodeDB internal clean ups
    */
   bool is_favorite = 10;
 }
