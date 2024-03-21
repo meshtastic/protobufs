@@ -129,6 +129,12 @@ message NodeInfoLite {
    * Number of hops away from us this node is (0 if adjacent)
    */
   uint32 hops_away = 9;
+
+  /*
+   * True if node is in our favorites list
+   * Persists between NodeDB internal clean ups
+   */
+  bool is_favorite = 10;
 }
 
 /*
