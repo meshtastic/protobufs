@@ -7,12 +7,14 @@ import "meshtastic/localonly.proto";
 import "meshtastic/mesh.proto";
 import "meshtastic/telemetry.proto";
 import "meshtastic/module_config.proto";
+import "nanopb.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "DeviceOnly";
 option java_package = "com.geeksville.mesh";
 option swift_prefix = "";
+option (nanopb_fileopt).include = "<vector>";
 
 /*
  * This message is never sent over the wire, but it is used for serializing DB
@@ -78,7 +80,7 @@ message DeviceState {
   /*
    * New lite version of NodeDB to decrease memory footprint
    */
-  repeated NodeInfoLite node_db_lite = 14;
+  repeated NodeInfoLite node_db_lite = 14 [(nanopb).callback_datatype="std::vector<meshtastic_NodeInfoLite>"];
 }
 
 message NodeInfoLite {
