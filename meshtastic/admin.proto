@@ -280,6 +280,16 @@ message AdminMessage {
      * Remove the node by the specified node-num from the NodeDB on the device
      */
     uint32 remove_by_nodenum = 38;
+    
+    /*
+     * Set specified node-num to be favorited on the NodeDB on the device
+     */
+    uint32 set_favorite_node = 39;
+
+    /*
+     * Set specified node-num to be un-favorited on the NodeDB on the device
+     */
+    uint32 remove_favorite_node = 40;
 
     /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes
