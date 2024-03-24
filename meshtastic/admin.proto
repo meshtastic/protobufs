@@ -292,6 +292,16 @@ message AdminMessage {
     uint32 remove_favorite_node = 40;
 
     /*
+     * Set fixed position data on the node and then set the position.fixed_position = true
+     */
+    Position set_fixed_position = 41;
+
+    /*
+     * Clear fixed position coordinates and then set position.fixed_position = false 
+     */
+    bool remove_fixed_position = 42;
+
+    /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes
      * This will delay the standard *implicit* save to the file system and subsequent reboot behavior until committed (commit_edit_settings)
      */
