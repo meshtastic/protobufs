@@ -7,7 +7,6 @@ import "meshtastic/localonly.proto";
 import "meshtastic/mesh.proto";
 import "meshtastic/telemetry.proto";
 import "meshtastic/module_config.proto";
-import "meshtastic/remote_hardware.proto";
 import "nanopb.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
