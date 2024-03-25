@@ -5,7 +5,6 @@ package meshtastic;
 import "meshtastic/channel.proto";
 import "meshtastic/config.proto";
 import "meshtastic/connection_status.proto";
-import "meshtastic/deviceonly.proto";
 import "meshtastic/mesh.proto";
 import "meshtastic/module_config.proto";
 
