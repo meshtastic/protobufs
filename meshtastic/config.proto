@@ -645,6 +645,44 @@ message Config {
      * Should we wake the screen up on accelerometer detected motion or tap
      */
     bool wake_on_tap_or_motion = 10;
+
+    enum EInkScreensaver {
+      /*
+       * Description: Label overtop existing screen image
+       */
+      OVERLAY = 0;
+
+      /*
+       * Description: Meshtastic logo
+       */
+      LOGO = 1;
+
+      /*
+       * Description: Clear screen
+       */
+      BLANK = 2;
+
+      /*
+       * Description: No change from existing screen image
+       */
+      NONE = 3;
+
+      /*
+       * Description: A variant-specific custom screensaver, if one exists
+       */
+      CUSTOM = 4;
+    }
+
+    /*
+     * Description: Which behavior E-Ink display uses when updates are paused
+     */
+    EInkScreensaver eink_screensaver = 11;
+
+    /*
+     * Descrption: Will perform slower, more robust refreshes, improving outdoor performance for some displays
+     * Technical Details: Indicates a preference for full-refresh
+     */
+    bool eink_direct_sun = 12;
   }
 
   /*
