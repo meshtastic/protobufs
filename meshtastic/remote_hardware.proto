@@ -73,3 +73,18 @@ message HardwareMessage {
    */
   uint64 gpio_value = 3;
 }
+
+/*
+ * RemoteHardwarePins associated with a node
+ */
+message NodeRemoteHardwarePin {
+  /*
+   * The node_num exposing the available gpio pin
+   */
+  uint32 node_num = 1;
+
+  /*
+   * The the available gpio pin for usage with RemoteHardware module
+   */
+  RemoteHardwarePin pin = 2;
+}
