@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "google/protobuf/empty.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "ModuleConfigProtos";
@@ -125,7 +127,7 @@ message ModuleConfig {
      * Whether the Module is enabled
      */
     bool enabled = 1;
-    
+
     /*
      * Interval in seconds of how often we should try to send our
      * Neighbor Info to the mesh
@@ -339,7 +341,10 @@ message ModuleConfig {
   }
 
   /*
-   * External Notifications Config
+   * External Notifications Config.
+   *
+   * The deprecated fields will be converted into a new-style list of
+   * ExternalNotificationCase messages.
    */
   message ExternalNotificationConfig {
     /*
@@ -373,40 +378,106 @@ message ModuleConfig {
     uint32 output_buzzer = 9;
 
     /*
-     * IF this is true, the 'output' Pin will be pulled active high, false
-     * means active low.
+     * If this is true, the primary 'output' Pin will be pulled active high,
+     * false means active low.
      */
     bool active = 4;
 
     /*
      * True: Alert when a text message arrives (output)
+     *
+     * Deprecated: Use this ExternalNotificationCase instead:
+     *
+     *   cases {
+     *     condition {
+     *       content_any: {}
+     *     }
+     *     action {
+     *       output_primary: true
+     *     }
+     *   }
      */
-    bool alert_message = 5;
+    bool alert_message = 5 [deprecated = true];
 
     /*
      * True: Alert when a text message arrives (output_vibra)
+     *
+     * Deprecated: Use this ExternalNotificationCase instead:
+     *
+     *   cases {
+     *     condition {
+     *       content_any: {}
+     *     }
+     *     action {
+     *       output_vibra: true
+     *     }
+     *   }
      */
-    bool alert_message_vibra = 10;
+    bool alert_message_vibra = 10 [deprecated = true];
 
     /*
      * True: Alert when a text message arrives (output_buzzer)
+     *
+     * Deprecated: Use this ExternalNotificationCase instead:
+     *
+     *   cases {
+     *     condition {
+     *       content_any: {}
+     *     }
+     *     action {
+     *       output_buzzer: true
+     *     }
+     *   }
      */
-    bool alert_message_buzzer = 11;
+    bool alert_message_buzzer = 11 [deprecated = true];
 
     /*
      * True: Alert when the bell character is received (output)
+     *
+     * Deprecated: Use this ExternalNotificationCase instead:
+     *
+     *   cases {
+     *     condition {
+     *       content_bell: {}
+     *     }
+     *     action {
+     *       output_primary: true
+     *     }
+     *   }
      */
-    bool alert_bell = 6;
+    bool alert_bell = 6 [deprecated = true];
 
     /*
      * True: Alert when the bell character is received (output_vibra)
+     *
+     * Deprecated: Use this ExternalNotificationCase instead:
+     *
+     *   cases {
+     *     condition {
+     *       content_bell: {}
+     *     }
+     *     action {
+     *       output_vibra: true
+     *     }
+     *   }
      */
-    bool alert_bell_vibra = 12;
+    bool alert_bell_vibra = 12 [deprecated = true];
 
     /*
      * True: Alert when the bell character is received (output_buzzer)
+     *
+     * Deprecated: Use this ExternalNotificationCase instead:
+     *
+     *   cases {
+     *     condition {
+     *       content_bell: {}
+     *     }
+     *     action {
+     *       output_buzzer: true
+     *     }
+     *   }
      */
-    bool alert_bell_buzzer = 13;
+    bool alert_bell_buzzer = 13 [deprecated = true];
 
     /*
      * use a PWM output instead of a simple on/off output. This will ignore
@@ -427,6 +498,46 @@ message ModuleConfig {
      * T-Watch S3 and T-Deck for example have this capability
      */
     bool use_i2s_as_buzzer = 15;
+
+    /*
+     * The conditions and action for external notifications.
+     *
+     * Each case is run independently, so if multiple cases match the same
+     * message, then each of their actions are run.
+     *
+     * For the example message (where \x07 is the ASCII bell character):
+     *
+     *   from: 123
+     *   to: 456
+     *   decoded {
+     *     portnum: TEXT_MESSAGE_APP
+     *     payload: "direct with bell \x07"
+     *   }
+     *
+     * with the notification config:
+     *
+     *   cases {
+     *     condition {
+     *       dest_direct: {}
+     *       content_bell: {}
+     *     }
+     *     action {
+     *       output_primary: true
+     *     }
+     *   }
+     *
+     *   cases {
+     *     condition {
+     *       content_any: {}
+     *     }
+     *     action {
+     *       output_vibra: true
+     *     }
+     *   }
+     *
+     * Both the primary output and the vibration pins would be activated.
+     */
+    repeated ExternalNotificationCase cases = 16;
   }
 
   /*
@@ -798,4 +909,127 @@ enum RemoteHardwarePinType {
    * GPIO pin can be written to (high / low)
    */
   DIGITAL_WRITE = 2;
+}
+
+/*
+ * An external notification condition and action.
+ *
+ * When a message matches the ExternalNotificationCondition, the
+ * ExternalNotificationAction is executed.
+ *
+ * A case which turns on the buzzer and vibration when receiving a direct
+ * message containing a bell character looks like this:
+ *
+ *   cases {
+ *     condition {
+ *       dest_direct: {}
+ *       content_bell: {}
+ *     }
+ *     action {
+ *       output_buzzer: true
+ *       output_vibra: true
+ *     }
+ *   }
+ */
+message ExternalNotificationCase {
+  /*
+   * The condition to compare against an incoming message.
+   */
+  ExternalNotificationCondition condition = 1;
+
+  /*
+   * The actions to perform if condition matches an incoming message.
+   */
+  ExternalNotificationAction action = 2;
+}
+
+/*
+ * A matcher for incoming messages. If a message matches this condition, then
+ * the ExternalNotificationAction is executed.
+ *
+ * All oneof groups must match for the overall condition to match the incoming
+ * message.
+ *
+ * Empty oneof groups match everything. This means that a completely empty
+ * ExternalNotificationCondition will match all incoming messages.
+ *
+ * For example, if node 456 received the message:
+ *
+ *   from: 123
+ *   to: 456
+ *   decoded {
+ *     portnum: TEXT_MESSAGE_APP
+ *     payload: "direct"
+ *   }
+ *
+ * Then this ExternalNotificationCondition would match:
+ *
+ *   dest_any: {}
+ *   content_any: {}
+ *
+ * As would the condition:
+ *
+ *   dest_direct: {}
+ *   content_any: {}
+ *
+ * However, this ExternalNotificationCondition would not match:
+ *
+ *   dest_direct: {}
+ *   content_bell: {}
+ *
+ * Because the message does not contain a bell character.
+ */
+message ExternalNotificationCondition {
+
+  /*
+   * Matches the destination of the message. dest_any is selected by default.
+   */
+  oneof destination_condition {
+
+    /*
+     * Matches any destination, either a group or direct message. This is the default.
+     */
+    google.protobuf.Empty dest_any = 1;
+
+    /*
+     * Only match direct messages to this node.
+     */
+    google.protobuf.Empty dest_direct = 2;
+  }
+
+  /*
+   * Matches the content of the message. content_any is selected by default.
+   */
+  oneof content_condition {
+    /*
+     * Matches any message content. This is the default.
+     */
+    google.protobuf.Empty content_any = 3;
+
+    /*
+     * Matches if there is a bell character present anywhere in the message.
+     */
+    google.protobuf.Empty content_bell = 4;
+  }
+}
+
+/*
+ * External notification actions to perform when a message matches an
+ * ExternalNotificationCondition.
+ */
+message ExternalNotificationAction {
+  /*
+   * Turn on the primary GPIO pin.
+   */
+  bool output_primary = 1;
+
+  /*
+   * Turn on the secondary vibration GPIO pin.
+   */
+  bool output_vibra = 2;
+
+  /*
+   * Turn on the tertiary buzzer GPIO pin.
+   */
+  bool output_buzzer = 3;
 }
