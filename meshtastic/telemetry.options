@@ -1,4 +1,5 @@
 # options for nanopb
 # https://jpa.kapsi.fi/nanopb/docs/reference.html#proto-file-options
 
-
+*EnvironmentMetrics.weather max_count:8
+*EnvironmentMetrics.power max_count:8
