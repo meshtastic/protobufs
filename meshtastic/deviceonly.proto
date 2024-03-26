@@ -49,7 +49,7 @@ message DeviceState {
    * so we can show it on the screen.
    * Might be null
    */
-  MeshPacket rx_text_message = 7;
+  //MeshPacket rx_text_message = 7;
 
   /*
    * Used only during development.
