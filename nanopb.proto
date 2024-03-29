@@ -6,40 +6,41 @@
 // for memory-limited environments.
 
 syntax = "proto2";
+
 import "google/protobuf/descriptor.proto";
 
 option java_package = "fi.kapsi.koti.jpa.nanopb";
 
 enum FieldType {
-    FT_DEFAULT = 0; // Automatically decide field type, generate static field if possible.
-    FT_CALLBACK = 1; // Always generate a callback field.
-    FT_POINTER = 4; // Always generate a dynamically allocated field.
-    FT_STATIC = 2; // Generate a static field or raise an exception if not possible.
-    FT_IGNORE = 3; // Ignore the field completely.
-    FT_INLINE = 5; // Legacy option, use the separate 'fixed_length' option instead
+  FT_DEFAULT = 0; // Automatically decide field type, generate static field if possible.
+  FT_CALLBACK = 1; // Always generate a callback field.
+  FT_POINTER = 4; // Always generate a dynamically allocated field.
+  FT_STATIC = 2; // Generate a static field or raise an exception if not possible.
+  FT_IGNORE = 3; // Ignore the field completely.
+  FT_INLINE = 5; // Legacy option, use the separate 'fixed_length' option instead
 }
 
 enum IntSize {
-    IS_DEFAULT = 0; // Default, 32/64bit based on type in .proto
-    IS_8 = 8;
-    IS_16 = 16;
-    IS_32 = 32;
-    IS_64 = 64;
+  IS_DEFAULT = 0; // Default, 32/64bit based on type in .proto
+  IS_8 = 8;
+  IS_16 = 16;
+  IS_32 = 32;
+  IS_64 = 64;
 }
 
 enum TypenameMangling {
-    M_NONE = 0; // Default, no typename mangling
-    M_STRIP_PACKAGE = 1; // Strip current package name
-    M_FLATTEN = 2; // Only use last path component
-    M_PACKAGE_INITIALS = 3; // Replace the package name by the initials
+  M_NONE = 0; // Default, no typename mangling
+  M_STRIP_PACKAGE = 1; // Strip current package name
+  M_FLATTEN = 2; // Only use last path component
+  M_PACKAGE_INITIALS = 3; // Replace the package name by the initials
 }
 
 enum DescriptorSize {
-    DS_AUTO = 0; // Select minimal size based on field type
-    DS_1 = 1;    // 1 word; up to 15 byte fields, no arrays
-    DS_2 = 2;    // 2 words; up to 4095 byte fields, 4095 entry arrays
-    DS_4 = 4;    // 4 words; up to 2^32-1 byte fields, 2^16-1 entry arrays
-    DS_8 = 8;    // 8 words; up to 2^32-1 entry arrays
+  DS_AUTO = 0; // Select minimal size based on field type
+  DS_1 = 1; // 1 word; up to 15 byte fields, no arrays
+  DS_2 = 2; // 2 words; up to 4095 byte fields, 4095 entry arrays
+  DS_4 = 4; // 4 words; up to 2^32-1 byte fields, 2^16-1 entry arrays
+  DS_8 = 8; // 8 words; up to 2^32-1 entry arrays
 }
 
 // This is the inner options message, which basically defines options for
@@ -49,32 +50,32 @@ message NanoPBOptions {
   // Allocated size for 'bytes' and 'string' fields.
   // For string fields, this should include the space for null terminator.
   optional int32 max_size = 1;
-  
+
   // Maximum length for 'string' fields. Setting this is equivalent
   // to setting max_size to a value of length+1.
   optional int32 max_length = 14;
-  
+
   // Allocated number of entries in arrays ('repeated' fields)
   optional int32 max_count = 2;
-  
+
   // Size of integer fields. Can save some memory if you don't need
   // full 32 bits for the value.
   optional IntSize int_size = 7 [default = IS_DEFAULT];
 
   // Force type of field (callback or static allocation)
   optional FieldType type = 3 [default = FT_DEFAULT];
-  
+
   // Use long names for enums, i.e. EnumName_EnumValue.
   optional bool long_names = 4 [default = true];
-  
+
   // Add 'packed' attribute to generated structs.
   // Note: this cannot be used on CPUs that break on unaligned
   // accesses to variables.
   optional bool packed_struct = 5 [default = false];
-  
+
   // Add 'packed' attribute to generated enums.
   optional bool packed_enum = 10 [default = false];
-  
+
   // Skip this message
   optional bool skip_message = 6 [default = false];
 
@@ -89,7 +90,7 @@ message NanoPBOptions {
 
   // Proto3 singular field does not generate a "has_" flag
   optional bool proto3 = 12 [default = false];
-  
+
   // Force proto3 messages to have no "has_" flag.
   // This was default behavior until nanopb-0.4.0.
   optional bool proto3_singular_msgs = 21 [default = false];
@@ -139,7 +140,7 @@ message NanoPBOptions {
 
   // Package name that applies only for nanopb.
   optional string package = 25;
-  
+
   // Override type of the field in generated C code. Only to be used with related field types
   optional google.protobuf.FieldDescriptorProto.Type type_override = 27;
 
@@ -152,7 +153,7 @@ message NanoPBOptions {
   // A field that can become a static member of a c struct (e.g. int, bool, etc)
   // will be a a static field.
   // Fields with dynamic length are converted to either a pointer or a callback.
-  optional FieldType fallback_type = 29 [default = FT_CALLBACK]; 
+  optional FieldType fallback_type = 29 [default = FT_CALLBACK];
 }
 
 // Extensions to protoc 'Descriptor' type in order to define options
@@ -167,19 +168,17 @@ message NanoPBOptions {
 // --------------------------------
 
 extend google.protobuf.FileOptions {
-    optional NanoPBOptions nanopb_fileopt = 1010;
+  optional NanoPBOptions nanopb_fileopt = 1010;
 }
 
 extend google.protobuf.MessageOptions {
-    optional NanoPBOptions nanopb_msgopt = 1010;
+  optional NanoPBOptions nanopb_msgopt = 1010;
 }
 
 extend google.protobuf.EnumOptions {
-    optional NanoPBOptions nanopb_enumopt = 1010;
+  optional NanoPBOptions nanopb_enumopt = 1010;
 }
 
 extend google.protobuf.FieldOptions {
-    optional NanoPBOptions nanopb = 1010;
+  optional NanoPBOptions nanopb = 1010;
 }
-
-

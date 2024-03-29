@@ -1,3 +1,3 @@
 {
-  "recommendations": ["trunk.io", "pbkit.vscode-pbkit", "bufbuild.vscode-buf"]
+  "recommendations": ["pbkit.vscode-pbkit", "bufbuild.vscode-buf"]
 }

@@ -50,7 +50,7 @@ jobs:
           echo "NEW_VERSION=v$MAJOR.$MINOR.$PATCH" >> $GITHUB_OUTPUT
 
       - name: Create release
-        uses: ncipollo/release-action@v1.13.0
+        uses: ncipollo/release-action@v1
         with:
           name: Meshtastic Protobufs ${{ steps.version.outputs.NEW_VERSION }}
           tag: ${{ steps.version.outputs.NEW_VERSION }}
@@ -58,7 +58,7 @@ jobs:
           token: ${{ github.token }}
 
       - name: Setup Buf
-        uses: bufbuild/buf-setup-action@v1.26.1
+        uses: bufbuild/buf-setup-action@v1.30.0
         with:
           github_token: ${{ github.token }}
 
