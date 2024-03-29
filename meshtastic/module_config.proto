@@ -125,7 +125,7 @@ message ModuleConfig {
      * Whether the Module is enabled
      */
     bool enabled = 1;
-    
+
     /*
      * Interval in seconds of how often we should try to send our
      * Neighbor Info to the mesh
@@ -136,7 +136,7 @@ message ModuleConfig {
   /*
    * Detection Sensor Module Config
    */
-   message DetectionSensorConfig {
+  message DetectionSensorConfig {
     /*
      * Whether the Module is enabled
      */
@@ -542,15 +542,6 @@ message ModuleConfig {
      * air quality metrics to the mesh
      */
     bool power_screen_enabled = 10;
-
-
-
-
-
-
-
-
-
   }
 
   /*
@@ -661,11 +652,10 @@ message ModuleConfig {
   }
 
   /*
-    Ambient Lighting Module - Settings for control of onboard LEDs to allow users to adjust the brightness levels and respective color levels.
-    Initially created for the RAK14001 RGB LED module.
+     Ambient Lighting Module - Settings for control of onboard LEDs to allow users to adjust the brightness levels and respective color levels.
+     Initially created for the RAK14001 RGB LED module.
   */
   message AmbientLightingConfig {
-
     /*
      * Sets LED to on or off.
      */

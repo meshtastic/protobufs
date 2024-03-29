@@ -279,7 +279,7 @@ message AdminMessage {
      * Remove the node by the specified node-num from the NodeDB on the device
      */
     uint32 remove_by_nodenum = 38;
-    
+
     /*
      * Set specified node-num to be favorited on the NodeDB on the device
      */
@@ -296,7 +296,7 @@ message AdminMessage {
     Position set_fixed_position = 41;
 
     /*
-     * Clear fixed position coordinates and then set position.fixed_position = false 
+     * Clear fixed position coordinates and then set position.fixed_position = false
      */
     bool remove_fixed_position = 42;
 

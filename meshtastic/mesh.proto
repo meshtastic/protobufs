@@ -340,8 +340,8 @@ enum HardwareModel {
   SENSELORA_S3 = 28;
 
   /*
-    * Canary Radio Company - CanaryOne: https://canaryradio.io/products/canaryone
-    */
+   * Canary Radio Company - CanaryOne: https://canaryradio.io/products/canaryone
+   */
   CANARYONE = 29;
 
   /*
@@ -456,13 +456,13 @@ enum HardwareModel {
    * LilyGo T-Watch S3 with ESP32-S3 CPU and IPS display
    */
   T_WATCH_S3 = 51;
-  
+
   /*
    * Bobricius Picomputer with ESP32-S3 CPU, Keyboard and IPS display
    */
   PICOMPUTER_S3 = 52;
-  
-   /*
+
+  /*
    * Heltec HT-CT62 with ESP32-C3 CPU and SX1262 LoRa
    */
   HELTEC_HT62 = 53;
@@ -481,7 +481,7 @@ enum HardwareModel {
    * CircuitMess Chatter 2 LLCC68 Lora Module and ESP32 Wroom
    * Lora module can be swapped out for a Heltec RA-62 which is "almost" pin compatible
    * with one cut and one jumper Meshtastic works
-  */
+   */
   CHATTER_2 = 56;
 
   /*
@@ -498,7 +498,7 @@ enum HardwareModel {
    * Older "V1.0" Variant
    */
   HELTEC_WIRELESS_TRACKER_V1_0 = 58;
-  
+
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
@@ -784,7 +784,7 @@ message Waypoint {
 /*
  * This message will be proxied over the PhoneAPI for the client to deliver to the MQTT server
  */
- message MqttClientProxyMessage {
+message MqttClientProxyMessage {
   /*
    * The MQTT topic this message will be sent /received on
    */
@@ -1010,10 +1010,10 @@ message MeshPacket {
    */
   bool via_mqtt = 14;
 
-  /* 
-   * Hop limit with which the original packet started. Sent via LoRa using three bits in the unencrypted header. 
+  /*
+   * Hop limit with which the original packet started. Sent via LoRa using three bits in the unencrypted header.
    * When receiving a packet, the difference between hop_start and hop_limit gives how many hops it traveled.
-   */ 
+   */
   uint32 hop_start = 15;
 }
 
@@ -1126,7 +1126,7 @@ message NodeInfo {
    * Number of hops away from us this node is (0 if adjacent)
    */
   uint32 hops_away = 9;
-  
+
   /*
    * True if node is in our favorites list
    * Persists between NodeDB internal clean ups
@@ -1507,9 +1507,9 @@ message Neighbor {
   float snr = 2;
 
   /*
-  * Reception time (in secs since 1970) of last message that was last sent by this ID.
-  * Note: this is for local storage only and will not be sent out over the mesh.
-  */
+   * Reception time (in secs since 1970) of last message that was last sent by this ID.
+   * Note: this is for local storage only and will not be sent out over the mesh.
+   */
   fixed32 last_rx_time = 3;
 
   /*
@@ -1574,13 +1574,11 @@ message DeviceMetadata {
   bool hasRemoteHardware = 10;
 }
 
-/* 
+/*
  * A heartbeat message is sent to the node from the client to keep the connection alive.
  * This is currently only needed to keep serial connections alive, but can be used by any PhoneAPI.
  */
-message Heartbeat {
-  
-}
+message Heartbeat {}
 
 /*
  * RemoteHardwarePins associated with a node
