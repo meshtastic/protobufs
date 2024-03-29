@@ -50,7 +50,7 @@ message Config {
       /*
        * Description: Broadcasts GPS position packets as priority.
        * Technical Details: Position Mesh packets will be prioritized higher and sent more frequently by default.
-       *   When used in conjunction with power.is_power_saving = true, nodes will wake up, 
+       *   When used in conjunction with power.is_power_saving = true, nodes will wake up,
        *   send position, and then sleep for position.position_broadcast_secs seconds.
        */
       TRACKER = 5;
@@ -58,7 +58,7 @@ message Config {
       /*
        * Description: Broadcasts telemetry packets as priority.
        * Technical Details: Telemetry Mesh packets will be prioritized higher and sent more frequently by default.
-       *   When used in conjunction with power.is_power_saving = true, nodes will wake up, 
+       *   When used in conjunction with power.is_power_saving = true, nodes will wake up,
        *   send environment telemetry, and then sleep for telemetry.environment_update_interval seconds.
        */
       SENSOR = 6;
@@ -76,18 +76,18 @@ message Config {
        * Technical Details: Used for nodes that "only speak when spoken to"
        *    Turns all of the routine broadcasts but allows for ad-hoc communication
        *    Still rebroadcasts, but with local only rebroadcast mode (known meshes only)
-       *    Can be used for clandestine operation or to dramatically reduce airtime / power consumption 
+       *    Can be used for clandestine operation or to dramatically reduce airtime / power consumption
        */
       CLIENT_HIDDEN = 8;
 
       /*
        * Description: Broadcasts location as message to default channel regularly for to assist with device recovery.
-       * Technical Details: Used to automatically send a text message to the mesh 
+       * Technical Details: Used to automatically send a text message to the mesh
        *    with the current position of the device on a frequent interval:
        *    "I'm lost! Position: lat / long"
        */
       LOST_AND_FOUND = 9;
-      
+
       /*
        * Description: Enables automatic TAK PLI broadcasts and reduces routine broadcasts.
        * Technical Details: Turns off many of the routine broadcasts to favor ATAK CoT packet stream
@@ -118,7 +118,7 @@ message Config {
        * Only rebroadcasts message on the nodes local primary / secondary channels.
        */
       LOCAL_ONLY = 2;
-      
+
       /*
        * Ignores observed messages from foreign meshes like LOCAL_ONLY,
        * but takes it step further by also ignoring messages from nodenums not in the node's known list (NodeDB)
@@ -257,18 +257,18 @@ message Config {
 
     enum GpsMode {
       /*
-      * GPS is present but disabled
-      */
+       * GPS is present but disabled
+       */
       DISABLED = 0;
 
       /*
-      * GPS is present and enabled
-      */
+       * GPS is present and enabled
+       */
       ENABLED = 1;
 
       /*
-      * GPS is not present on the device
-      */
+       * GPS is not present on the device
+       */
       NOT_PRESENT = 2;
     }
 
@@ -293,7 +293,7 @@ message Config {
     /*
      * Is GPS enabled for this node?
      */
-    bool gps_enabled = 4[deprecated = true];
+    bool gps_enabled = 4 [deprecated = true];
 
     /*
      * How often should we try to get GPS position (in seconds)
@@ -305,7 +305,7 @@ message Config {
     /*
      * Deprecated in favor of using smart / regular broadcast intervals as implicit attempt time
      */
-    uint32 gps_attempt_time = 6  [deprecated = true];
+    uint32 gps_attempt_time = 6 [deprecated = true];
 
     /*
      * Bit field of boolean configuration options for POSITION messages

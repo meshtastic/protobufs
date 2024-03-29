@@ -184,7 +184,7 @@ enum PortNum {
    * ENCODING: Protobuf
    */
   NEIGHBORINFO_APP = 71;
-  
+
   /*
    * ATAK Plugin
    * Portnum for payloads from the official Meshtastic ATAK plugin
