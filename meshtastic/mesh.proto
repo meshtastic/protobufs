@@ -500,6 +500,11 @@ enum HardwareModel {
   HELTEC_WIRELESS_TRACKER_V1_0 = 58;
 
   /*
+   * unPhone with ESP32-S3, TFT touchscreen,  LSM6DS3TR-C accelerometer and gyroscope
+   */
+  UNPHONE = 59;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
