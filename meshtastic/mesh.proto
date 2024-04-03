@@ -505,6 +505,12 @@ enum HardwareModel {
   UNPHONE = 59;
 
   /*
+   * Teledatics TD-LORAC NRF52840 based M.2 LoRA module
+   * Compatible with the TD-WRLS development board
+   */
+  TD_LORAC = 60;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
