@@ -182,9 +182,9 @@ message Config {
     bool disable_triple_click = 10;
 
     /*
-     * Timezone offset against UTC in minutes, to support the few places with fractional offsets.
+     * POSIX Timezone definition string from https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv.
      */
-    int32 time_offset = 11;
+    string tzdef = 11;
   }
 
   /*
