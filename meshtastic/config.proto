@@ -180,6 +180,11 @@ message Config {
      * Disables the triple-press of user button to enable or disable GPS
      */
     bool disable_triple_click = 10;
+
+    /*
+     * POSIX Timezone definition string from https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv.
+     */
+    string tzdef = 11;
   }
 
   /*
