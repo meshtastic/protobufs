@@ -66,6 +66,12 @@ message EnvironmentMetrics {
    * Current measured (To be depreciated in favor of PowerMetrics in Meshtastic 3.x)
    */
   float current = 6;
+
+  /* 
+   * relative scale IAQ value as measured by Bosch BME680 . value 0-500.
+   * Belongs to Air Quality but is not particle but VOC measurement. Other VOC values can also be put in here.
+   */
+  uint32 iaq = 7;
 }
 
 /*
