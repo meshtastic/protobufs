@@ -31,6 +31,11 @@ message DeviceMetrics {
    * Percent of airtime for transmission used within the last hour.
    */
   float air_util_tx = 4;
+
+  /*
+   * How long the device has been running since the last reboot (in seconds)
+   */
+  uint32 uptime_seconds = 5;
 }
 
 /*
