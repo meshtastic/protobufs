@@ -81,7 +81,7 @@ message EnvironmentMetrics {
   /*
    * RCWL9620 Doppler Radar Distance Sensor, used for water level detection. Float value in mm.
    */
-  float water_level = 8;
+  float distance = 8;
 }
 
 /*
