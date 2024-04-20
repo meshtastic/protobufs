@@ -187,9 +187,9 @@ message Config {
     string tzdef = 11;
 
     /*
-     * If true, inhibit blinking LED at LED_PIN regularly
+     * If true, disable the default blinking LED (LED_PIN) behavior on the device 
      */
-    bool status_led_off = 12;
+    bool led_heartbeat_disabled = 12;
   }
 
   /*
