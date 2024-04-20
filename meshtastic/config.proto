@@ -185,6 +185,11 @@ message Config {
      * POSIX Timezone definition string from https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv.
      */
     string tzdef = 11;
+
+    /*
+     * If true, inhibit blinking LED at LED_PIN regularly
+     */
+    bool status_led_off = 12;
   }
 
   /*
