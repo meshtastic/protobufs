@@ -96,6 +96,12 @@ message ModuleSettings {
    * Bits of precision for the location sent in position packets.
    */
   uint32 position_precision = 1;
+
+  /*
+   * Controls whether or not the phone / clients should mute the current channel
+   * Useful for noisy public channels you don't necessarily want to disable
+   */
+  bool is_client_muted = 2;
 }
 
 /*
