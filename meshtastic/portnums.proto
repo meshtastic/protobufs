@@ -48,28 +48,28 @@ enum PortNum {
 
   /*
    * The built-in position messaging app.
-   * Payload is a [Position](/docs/developers/protobufs/api#position) message
+   * Payload is a Position message.
    * ENCODING: Protobuf
    */
   POSITION_APP = 3;
 
   /*
    * The built-in user info app.
-   * Payload is a [User](/docs/developers/protobufs/api#user) message
+   * Payload is a User message.
    * ENCODING: Protobuf
    */
   NODEINFO_APP = 4;
 
   /*
    * Protocol control packets for mesh protocol use.
-   * Payload is a [Routing](/docs/developers/protobufs/api#routing) message
+   * Payload is a Routing message.
    * ENCODING: Protobuf
    */
   ROUTING_APP = 5;
 
   /*
    * Admin control packets.
-   * Payload is a [AdminMessage](/docs/developers/protobufs/api#adminmessage) message
+   * Payload is a AdminMessage message.
    * ENCODING: Protobuf
    */
   ADMIN_APP = 6;
@@ -85,7 +85,7 @@ enum PortNum {
 
   /*
    * Waypoint payloads.
-   * Payload is a [Waypoint](/docs/developers/protobufs/api#waypoint) message
+   * Payload is a Waypoint message.
    * ENCODING: Protobuf
    */
   WAYPOINT_APP = 8;
@@ -184,12 +184,17 @@ enum PortNum {
    * ENCODING: Protobuf
    */
   NEIGHBORINFO_APP = 71;
-  
+
   /*
    * ATAK Plugin
    * Portnum for payloads from the official Meshtastic ATAK plugin
    */
   ATAK_PLUGIN = 72;
+
+  /*
+   * Provides unencrypted information about a node for consumption by a map via MQTT
+   */
+  MAP_REPORT_APP = 73;
 
   /*
    * Private applications should use portnums >= 256.

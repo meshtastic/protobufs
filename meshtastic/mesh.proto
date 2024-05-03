@@ -203,6 +203,11 @@ message Position {
    *   detect lost updates if needed
    */
   uint32 seq_number = 22;
+
+  /*
+   * Indicates the bits of precision set by the sending node
+   */
+  uint32 precision_bits = 23;
 }
 
 /*
@@ -335,14 +340,19 @@ enum HardwareModel {
   SENSELORA_S3 = 28;
 
   /*
-    * Canary Radio Company - CanaryOne: https://canaryradio.io/products/canaryone
-    */
+   * Canary Radio Company - CanaryOne: https://canaryradio.io/products/canaryone
+   */
   CANARYONE = 29;
 
   /*
    * Waveshare RP2040 LoRa - https://www.waveshare.com/rp2040-lora.htm
    */
   RP2040_LORA = 30;
+
+  /*
+   * B&Q Consulting Station G2: https://wiki.uniteng.com/en/meshtastic/station-g2
+   */
+  STATION_G2 = 31;
 
   /*
    * ---------------------------------------------------------------------------
@@ -446,13 +456,13 @@ enum HardwareModel {
    * LilyGo T-Watch S3 with ESP32-S3 CPU and IPS display
    */
   T_WATCH_S3 = 51;
-  
+
   /*
    * Bobricius Picomputer with ESP32-S3 CPU, Keyboard and IPS display
    */
   PICOMPUTER_S3 = 52;
-  
-   /*
+
+  /*
    * Heltec HT-CT62 with ESP32-C3 CPU and SX1262 LoRa
    */
   HELTEC_HT62 = 53;
@@ -471,7 +481,7 @@ enum HardwareModel {
    * CircuitMess Chatter 2 LLCC68 Lora Module and ESP32 Wroom
    * Lora module can be swapped out for a Heltec RA-62 which is "almost" pin compatible
    * with one cut and one jumper Meshtastic works
-  */
+   */
   CHATTER_2 = 56;
 
   /*
@@ -488,7 +498,28 @@ enum HardwareModel {
    * Older "V1.0" Variant
    */
   HELTEC_WIRELESS_TRACKER_V1_0 = 58;
-  
+
+  /*
+   * unPhone with ESP32-S3, TFT touchscreen,  LSM6DS3TR-C accelerometer and gyroscope
+   */
+  UNPHONE = 59;
+
+  /*
+   * Teledatics TD-LORAC NRF52840 based M.2 LoRA module
+   * Compatible with the TD-WRLS development board
+   */
+  TD_LORAC = 60;
+
+  /*
+   * CDEBYTE EoRa-S3 board using their own MM modules, clone of LILYGO T3S3
+   */
+  CDEBYTE_EORA_S3 = 61;
+
+/*
+   * TWC_MESH_V4 
+   * Adafruit NRF52840 feather express with SX1262, SSD1306 OLED and NEO6M GPS
+   */
+  TWC_MESH_V4 = 62;
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
@@ -774,7 +805,7 @@ message Waypoint {
 /*
  * This message will be proxied over the PhoneAPI for the client to deliver to the MQTT server
  */
- message MqttClientProxyMessage {
+message MqttClientProxyMessage {
   /*
    * The MQTT topic this message will be sent /received on
    */
@@ -891,13 +922,11 @@ message MeshPacket {
    * The sending node number.
    * Note: Our crypto implementation uses this field as well.
    * See [crypto](/docs/overview/encryption) for details.
-   * FIXME - really should be fixed32 instead, this encoding only hurts the ble link though.
    */
   fixed32 from = 1;
 
   /*
-   * The (immediatSee Priority description for more details.y should be fixed32 instead, this encoding only
-   * hurts the ble link though.
+   * The (immediate) destination for this packet
    */
   fixed32 to = 2;
 
@@ -942,8 +971,6 @@ message MeshPacket {
    * any ACK or the completion of a mesh broadcast flood).
    * Note: Our crypto implementation uses this id as well.
    * See [crypto](/docs/overview/encryption) for details.
-   * FIXME - really should be fixed32 instead, this encoding only
-   * hurts the ble link though.
    */
   fixed32 id = 6;
 
@@ -1003,6 +1030,12 @@ message MeshPacket {
    * Describes whether this packet passed via MQTT somewhere along the path it currently took.
    */
   bool via_mqtt = 14;
+
+  /*
+   * Hop limit with which the original packet started. Sent via LoRa using three bits in the unencrypted header.
+   * When receiving a packet, the difference between hop_start and hop_limit gives how many hops it traveled.
+   */
+  uint32 hop_start = 15;
 }
 
 /*
@@ -1104,6 +1137,22 @@ message NodeInfo {
    * local channel index we heard that node on. Only populated if its not the default channel.
    */
   uint32 channel = 7;
+
+  /*
+   * True if we witnessed the node over MQTT instead of LoRA transport
+   */
+  bool via_mqtt = 8;
+
+  /*
+   * Number of hops away from us this node is (0 if adjacent)
+   */
+  uint32 hops_away = 9;
+
+  /*
+   * True if node is in our favorites list
+   * Persists between NodeDB internal clean ups
+   */
+  bool is_favorite = 10;
 }
 
 /*
@@ -1418,6 +1467,11 @@ message ToRadio {
      * MQTT Client Proxy Message (for client / phone subscribed to MQTT sending to device)
      */
     MqttClientProxyMessage mqttClientProxyMessage = 6;
+
+    /*
+     * Heartbeat message (used to keep the device connection awake on serial)
+     */
+    Heartbeat heartbeat = 7;
   }
 }
 
@@ -1474,9 +1528,9 @@ message Neighbor {
   float snr = 2;
 
   /*
-  * Reception time (in secs since 1970) of last message that was last sent by this ID.
-  * Note: this is for local storage only and will not be sent out over the mesh.
-  */
+   * Reception time (in secs since 1970) of last message that was last sent by this ID.
+   * Note: this is for local storage only and will not be sent out over the mesh.
+   */
   fixed32 last_rx_time = 3;
 
   /*
@@ -1541,3 +1595,23 @@ message DeviceMetadata {
   bool hasRemoteHardware = 10;
 }
 
+/*
+ * A heartbeat message is sent to the node from the client to keep the connection alive.
+ * This is currently only needed to keep serial connections alive, but can be used by any PhoneAPI.
+ */
+message Heartbeat {}
+
+/*
+ * RemoteHardwarePins associated with a node
+ */
+message NodeRemoteHardwarePin {
+  /*
+   * The node_num exposing the available gpio pin
+   */
+  uint32 node_num = 1;
+
+  /*
+   * The the available gpio pin for usage with RemoteHardware module
+   */
+  RemoteHardwarePin pin = 2;
+}

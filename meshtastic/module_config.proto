@@ -70,6 +70,31 @@ message ModuleConfig {
      * If true, we can use the connected phone / client to proxy messages to MQTT instead of a direct connection
      */
     bool proxy_to_client_enabled = 9;
+
+    /*
+     * If true, we will periodically report unencrypted information about our node to a map via MQTT
+     */
+    bool map_reporting_enabled = 10;
+
+    /*
+     * Settings for reporting information about our node to a map via MQTT
+     */
+    MapReportSettings map_report_settings = 11;
+  }
+
+  /*
+   * Settings for reporting unencrypted information about our node to a map via MQTT
+   */
+  message MapReportSettings {
+    /*
+     * How often we should report our info to the map (in seconds)
+     */
+    uint32 publish_interval_secs = 1;
+
+    /*
+     * Bits of precision for the location sent (default of 32 is full precision).
+     */
+    uint32 position_precision = 2;
   }
 
   /*
@@ -100,7 +125,7 @@ message ModuleConfig {
      * Whether the Module is enabled
      */
     bool enabled = 1;
-    
+
     /*
      * Interval in seconds of how often we should try to send our
      * Neighbor Info to the mesh
@@ -111,7 +136,7 @@ message ModuleConfig {
   /*
    * Detection Sensor Module Config
    */
-   message DetectionSensorConfig {
+  message DetectionSensorConfig {
     /*
      * Whether the Module is enabled
      */
@@ -517,15 +542,6 @@ message ModuleConfig {
      * air quality metrics to the mesh
      */
     bool power_screen_enabled = 10;
-
-
-
-
-
-
-
-
-
   }
 
   /*
@@ -636,11 +652,10 @@ message ModuleConfig {
   }
 
   /*
-    Ambient Lighting Module - Settings for control of onboard LEDs to allow users to adjust the brightness levels and respective color levels.
-    Initially created for the RAK14001 RGB LED module.
+     Ambient Lighting Module - Settings for control of onboard LEDs to allow users to adjust the brightness levels and respective color levels.
+     Initially created for the RAK14001 RGB LED module.
   */
   message AmbientLightingConfig {
-
     /*
      * Sets LED to on or off.
      */

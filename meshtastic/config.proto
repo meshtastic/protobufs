@@ -50,7 +50,7 @@ message Config {
       /*
        * Description: Broadcasts GPS position packets as priority.
        * Technical Details: Position Mesh packets will be prioritized higher and sent more frequently by default.
-       *   When used in conjunction with power.is_power_saving = true, nodes will wake up, 
+       *   When used in conjunction with power.is_power_saving = true, nodes will wake up,
        *   send position, and then sleep for position.position_broadcast_secs seconds.
        */
       TRACKER = 5;
@@ -58,7 +58,7 @@ message Config {
       /*
        * Description: Broadcasts telemetry packets as priority.
        * Technical Details: Telemetry Mesh packets will be prioritized higher and sent more frequently by default.
-       *   When used in conjunction with power.is_power_saving = true, nodes will wake up, 
+       *   When used in conjunction with power.is_power_saving = true, nodes will wake up,
        *   send environment telemetry, and then sleep for telemetry.environment_update_interval seconds.
        */
       SENSOR = 6;
@@ -76,18 +76,18 @@ message Config {
        * Technical Details: Used for nodes that "only speak when spoken to"
        *    Turns all of the routine broadcasts but allows for ad-hoc communication
        *    Still rebroadcasts, but with local only rebroadcast mode (known meshes only)
-       *    Can be used for clandestine operation or to dramatically reduce airtime / power consumption 
+       *    Can be used for clandestine operation or to dramatically reduce airtime / power consumption
        */
       CLIENT_HIDDEN = 8;
 
       /*
        * Description: Broadcasts location as message to default channel regularly for to assist with device recovery.
-       * Technical Details: Used to automatically send a text message to the mesh 
+       * Technical Details: Used to automatically send a text message to the mesh
        *    with the current position of the device on a frequent interval:
        *    "I'm lost! Position: lat / long"
        */
       LOST_AND_FOUND = 9;
-      
+
       /*
        * Description: Enables automatic TAK PLI broadcasts and reduces routine broadcasts.
        * Technical Details: Turns off many of the routine broadcasts to favor ATAK CoT packet stream
@@ -118,7 +118,7 @@ message Config {
        * Only rebroadcasts message on the nodes local primary / secondary channels.
        */
       LOCAL_ONLY = 2;
-      
+
       /*
        * Ignores observed messages from foreign meshes like LOCAL_ONLY,
        * but takes it step further by also ignoring messages from nodenums not in the node's known list (NodeDB)
@@ -180,6 +180,16 @@ message Config {
      * Disables the triple-press of user button to enable or disable GPS
      */
     bool disable_triple_click = 10;
+
+    /*
+     * POSIX Timezone definition string from https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv.
+     */
+    string tzdef = 11;
+
+    /*
+     * If true, disable the default blinking LED (LED_PIN) behavior on the device 
+     */
+    bool led_heartbeat_disabled = 12;
   }
 
   /*
@@ -257,18 +267,18 @@ message Config {
 
     enum GpsMode {
       /*
-      * GPS is present but disabled
-      */
+       * GPS is present but disabled
+       */
       DISABLED = 0;
 
       /*
-      * GPS is present and enabled
-      */
+       * GPS is present and enabled
+       */
       ENABLED = 1;
 
       /*
-      * GPS is not present on the device
-      */
+       * GPS is not present on the device
+       */
       NOT_PRESENT = 2;
     }
 
@@ -293,7 +303,7 @@ message Config {
     /*
      * Is GPS enabled for this node?
      */
-    bool gps_enabled = 4[deprecated = true];
+    bool gps_enabled = 4 [deprecated = true];
 
     /*
      * How often should we try to get GPS position (in seconds)
@@ -305,7 +315,7 @@ message Config {
     /*
      * Deprecated in favor of using smart / regular broadcast intervals as implicit attempt time
      */
-    uint32 gps_attempt_time = 6  [deprecated = true];
+    uint32 gps_attempt_time = 6 [deprecated = true];
 
     /*
      * Bit field of boolean configuration options for POSITION messages
@@ -342,11 +352,6 @@ message Config {
      * Set where GPS is enabled, disabled, or not present
      */
     GpsMode gps_mode = 13;
-
-    /*
-     * Set GPS precision in bits per channel, or 0 for disabled
-     */
-    repeated uint32 channel_precision = 14;
   }
 
   /*
@@ -355,30 +360,28 @@ message Config {
    */
   message PowerConfig {
     /*
-     * If set, we are powered from a low-current source (i.e. solar), so even if it looks like we have power flowing in
-     * we should try to minimize power consumption as much as possible.
-     * YOU DO NOT NEED TO SET THIS IF YOU'VE set is_router (it is implied in that case).
-     * Advanced Option
+     * Description: Will sleep everything as much as possible, for the tracker and sensor role this will also include the lora radio. 
+     * Don't use this setting if you want to use your device with the phone apps or are using a device without a user button.
+     * Technical Details: Works for ESP32 devices and NRF52 devices in the Sensor or Tracker roles
      */
     bool is_power_saving = 1;
 
     /*
-     * If non-zero, the device will fully power off this many seconds after external power is removed.
+     *  Description: If non-zero, the device will fully power off this many seconds after external power is removed.
      */
     uint32 on_battery_shutdown_after_secs = 2;
 
     /*
      * Ratio of voltage divider for battery pin eg. 3.20 (R1=100k, R2=220k)
      * Overrides the ADC_MULTIPLIER defined in variant for battery voltage calculation.
-     * Should be set to floating point value between 2 and 4
-     * Fixes issues on Heltec v2
+     * https://meshtastic.org/docs/configuration/radio/power/#adc-multiplier-override
+     * Should be set to floating point value between 2 and 6
      */
     float adc_multiplier_override = 3;
 
     /*
-     * Wait Bluetooth Seconds
-     * The number of seconds for to wait before turning off BLE in No Bluetooth states
-     * 0 for default of 1 minute
+     *  Description: The number of seconds for to wait before turning off BLE in No Bluetooth states
+     *  Technical Details: ESP32 Only 0 for default of 1 minute
      */
     uint32 wait_bluetooth_secs = 4;
 
@@ -391,17 +394,14 @@ message Config {
     uint32 sds_secs = 6;
 
     /*
-     * Light Sleep Seconds
-     * In light sleep the CPU is suspended, LoRa radio is on, BLE is off an GPS is on
-     * ESP32 Only
-     * 0 for default of 300
+     * Description: In light sleep the CPU is suspended, LoRa radio is on, BLE is off an GPS is on
+     * Technical Details: ESP32 Only 0 for default of 300
      */
     uint32 ls_secs = 7;
 
     /*
-     * Minimum Wake Seconds
-     * While in light sleep when we receive packets on the LoRa radio we will wake and handle them and stay awake in no BLE mode for this value
-     * 0 for default of 10 seconds
+     * Description: While in light sleep when we receive packets on the LoRa radio we will wake and handle them and stay awake in no BLE mode for this value
+     * Technical Details: ESP32 Only 0 for default of 10 seconds
      */
     uint32 min_wake_secs = 8;
 

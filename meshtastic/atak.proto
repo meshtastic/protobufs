@@ -7,11 +7,11 @@ option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "ATAKProtos";
 option java_package = "com.geeksville.mesh";
 option swift_prefix = "";
+
 /*
- * Packets for the official ATAK Plugin 
+ * Packets for the official ATAK Plugin
  */
-message TAKPacket
-{
+message TAKPacket {
   /*
    * Are the payloads strings compressed for LoRA transport?
    */
@@ -189,6 +189,7 @@ message Status {
    */
   uint32 battery = 1;
 }
+
 /*
  * ATAK Contact
  * <contact endpoint='0.0.0.0:4242:tcp' phone='+12345678' callsign='FALKE'/>
@@ -237,7 +238,7 @@ message PLI {
   /*
    * Altitude (ATAK prefers HAE)
    */
-  uint32 altitude = 3;
+  int32 altitude = 3;
 
   /*
    * Speed
@@ -247,5 +248,5 @@ message PLI {
   /*
    * Course in degrees
    */
-  uint32 course = 5;  
+  uint32 course = 5;
 }

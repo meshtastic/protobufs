@@ -31,6 +31,11 @@ message DeviceMetrics {
    * Percent of airtime for transmission used within the last hour.
    */
   float air_util_tx = 4;
+
+  /*
+   * How long the device has been running since the last reboot (in seconds)
+   */
+  uint32 uptime_seconds = 5;
 }
 
 /*
@@ -66,6 +71,17 @@ message EnvironmentMetrics {
    * Current measured (To be depreciated in favor of PowerMetrics in Meshtastic 3.x)
    */
   float current = 6;
+
+  /* 
+   * relative scale IAQ value as measured by Bosch BME680 . value 0-500.
+   * Belongs to Air Quality but is not particle but VOC measurement. Other VOC values can also be put in here.
+   */
+  uint32 iaq = 7;
+
+  /*
+   * RCWL9620 Doppler Radar Distance Sensor, used for water level detection. Float value in mm.
+   */
+  float distance = 8;
 }
 
 /*
@@ -194,7 +210,7 @@ message Telemetry {
     AirQualityMetrics air_quality_metrics = 4;
 
     /*
-     * Power Metrics 
+     * Power Metrics
      */
     PowerMetrics power_metrics = 5;
   }
@@ -279,6 +295,13 @@ enum TelemetrySensorType {
    */
   INA3221 = 14;
 
+  /*
+   * BMP085/BMP180 High accuracy temperature and pressure (older Version of BMP280)
+   */
+  BMP085 = 15;
 
-
+  /*
+   * RCWL-9620 Doppler Radar Distance Sensor, used for water level detection
+   */
+  RCWL9620 = 16;
 }
