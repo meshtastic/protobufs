@@ -1,0 +1,5 @@
+# options for nanopb
+# https://jpa.kapsi.fi/nanopb/docs/reference.html#proto-file-options
+
+*Message.sender_short_name max_size:5
+*Message.content max_size:237

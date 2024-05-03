@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package meshtastic;
+
+message Message {
+  /*
+   * The sending node's short name.
+   */
+  string sender_short_name = 1;
+
+ /*
+  * Whether the message is from this device.
+  */
+  bool from_self = 2;
+
+  // TODO: Comment
+  string content = 3;
+
+  /*
+   * Values 1 through 7 indicate what secondary channel index this message was sent on.
+   * Value 0 indicates that this message was sent on the primary channel. Value 8
+   * indicates that this message was sent as a direct message.
+   */
+  uint32 category = 4;
+
+  /*
+   * The time this message was received by the esp32 (secs since 1970).
+   * Note: this field is _never_ sent on the radio link itself (to save space) Times
+   * are typically not sent over the mesh, but they will be added to any Packet
+   * (chain of SubPacket) sent to the phone (so the phone can know exact time of reception)
+   */
+   fixed32 rx_time = 5;
+
+   // TODO: Write comment
+   bool rx_ack = 6;
+}
