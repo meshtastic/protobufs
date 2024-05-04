@@ -320,6 +320,11 @@ enum HardwareModel {
   LORA_TYPE = 19;
 
   /*
+   * wiphone https://www.wiphone.io/
+   */
+  WIPHONE = 20;
+
+  /*
    * B&Q Consulting Station Edition G1: https://uniteng.com/wiki/doku.php?id=meshtastic:station
    */
   STATION_G1 = 25;
