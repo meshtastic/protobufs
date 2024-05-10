@@ -2,6 +2,10 @@ syntax = "proto3";
 
 package meshtastic;
 
+/*
+ * Representation of a received or sent message to be stored long-term to create a
+ * message history
+ */
 message Message {
   /*
    * The sending node's short name.
