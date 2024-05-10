@@ -304,4 +304,9 @@ enum TelemetrySensorType {
    * RCWL-9620 Doppler Radar Distance Sensor, used for water level detection
    */
   RCWL9620 = 16;
+
+  /*
+   * Sensirion High accuracy temperature and humidity
+   */
+  SHT4X = 17;
 }
