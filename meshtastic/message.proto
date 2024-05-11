@@ -17,7 +17,9 @@ message Message {
   */
   bool from_self = 2;
 
-  // TODO: Comment
+  /*
+   * The text of the message.
+   */
   string content = 3;
 
   /*
@@ -35,6 +37,9 @@ message Message {
    */
    fixed32 rx_time = 5;
 
-   // TODO: Write comment
+  /*
+   * Whether we have received an ack for this message.
+   * NOTE: Not yet implemented.
+   */
    bool rx_ack = 6;
 }

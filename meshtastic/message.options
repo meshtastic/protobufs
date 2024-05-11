@@ -3,3 +3,4 @@
 
 *Message.sender_short_name max_size:5
 *Message.content max_size:237
+*Message.category int_size:8
