@@ -158,6 +158,13 @@ message DeviceState {
   uint32 version = 8;
 
   /*
+   * We keep the last received text message (only) stored in the device flash,
+   * so we can show it on the screen.
+   * Might be null
+   */
+   MeshPacket rx_text_message = 7;
+
+  /*
    * Used only during development.
    * Indicates developer is testing and changes should never be saved to flash.
    * Deprecated in 2.3.1
