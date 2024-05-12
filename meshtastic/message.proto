@@ -30,10 +30,7 @@ message Message {
   uint32 category = 4;
 
   /*
-   * The time this message was received by the esp32 (secs since 1970).
-   * Note: this field is _never_ sent on the radio link itself (to save space) Times
-   * are typically not sent over the mesh, but they will be added to any Packet
-   * (chain of SubPacket) sent to the phone (so the phone can know exact time of reception)
+   * The time this message was received using UNIX epoch time.
    */
    fixed32 rx_time = 5;
 
