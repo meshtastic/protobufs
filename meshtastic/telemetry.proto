@@ -89,16 +89,9 @@ message EnvironmentMetrics {
   float lux = 9;
 
   /*
-   * VEML7700 raw white light data digital 16-bit resolution sensor.
+   * VEML7700 high accuracy white light(irradiance) not calibrated digital 16-bit resolution sensor.
    */
-  uint32 white = 10;
-
-  /*
-   * VEML7700 raw ALS data digital 16-bit resolution sensor.
-   */
-  uint32 ALS = 11;
-
-
+  float white_lux = 10;
 }
 
 /*
