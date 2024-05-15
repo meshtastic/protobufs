@@ -82,6 +82,16 @@ message EnvironmentMetrics {
    * RCWL9620 Doppler Radar Distance Sensor, used for water level detection. Float value in mm.
    */
   float distance = 8;
+
+  /*
+   * VEML7700 high accuracy ambient light(Lux) digital 16-bit resolution sensor.
+   */
+  float lux = 9;
+
+  /*
+   * VEML7700 high accuracy white light(irradiance) not calibrated digital 16-bit resolution sensor.
+   */
+  float white_lux = 10;
 }
 
 /*
@@ -309,4 +319,8 @@ enum TelemetrySensorType {
    * Sensirion High accuracy temperature and humidity
    */
   SHT4X = 17;
+  /*
+   * VEML7700 high accuracy ambient light(Lux) digital 16-bit resolution sensor.
+   */
+  VEML7700 = 18;
 }
