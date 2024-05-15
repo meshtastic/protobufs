@@ -319,8 +319,29 @@ enum TelemetrySensorType {
    * Sensirion High accuracy temperature and humidity
    */
   SHT4X = 17;
+
   /*
    * VEML7700 high accuracy ambient light(Lux) digital 16-bit resolution sensor.
    */
   VEML7700 = 18;
+
+  /*
+   * MLX90632 non-contact IR temperature sensor.
+   */
+  MLX90632 = 19;
+
+  /*
+   * TI OPT3001 Ambient Light Sensor
+   */
+  OPT3001 = 20;
+
+  /*
+   * Lite On LTR-390UV-01 UV Light Sensor
+   */
+  LTR390UV = 21;
+
+  /*
+   * AMS TSL25911FN RGB Light Sensor
+   */
+  TSL25911FN = 22;
 }
