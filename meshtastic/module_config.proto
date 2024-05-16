@@ -254,6 +254,17 @@ message ModuleConfig {
      */
 
     uint32 paxcounter_update_interval = 2;
+
+    /*
+     * WiFi RSSI threshold. Defaults to -80
+     */
+    int32 wifi_threshold = 3;
+
+    /*
+     * BLE RSSI threshold. Defaults to -80
+     */
+    int32 ble_threshold = 4;
+
   }
 
   /*
