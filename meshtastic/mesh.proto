@@ -520,7 +520,7 @@ enum HardwareModel {
    */
   CDEBYTE_EORA_S3 = 61;
 
-/*
+  /*
    * TWC_MESH_V4 
    * Adafruit NRF52840 feather express with SX1262, SSD1306 OLED and NEO6M GPS
    */
@@ -536,7 +536,7 @@ enum HardwareModel {
    * RadioMaster 900 Bandit Nano, https://www.radiomasterrc.com/products/bandit-nano-expresslrs-rf-module
    * ESP32-D0WDQ6 With SX1276/SKY66122, SSD1306 OLED and No GPS
    */
-   RADIOMASTER_900_BANDIT_NANO = 64
+  RADIOMASTER_900_BANDIT_NANO = 64;
    
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
