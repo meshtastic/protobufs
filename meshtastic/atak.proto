@@ -56,6 +56,11 @@ message GeoChat {
    * Uid recipient of the message
    */
   optional string to = 2;
+
+  /*
+   * Callsign of the recipient for the message
+   */
+  optional string to_callsign = 3;
 }
 
 /*
