@@ -344,4 +344,9 @@ enum TelemetrySensorType {
    * AMS TSL25911FN RGB Light Sensor
    */
   TSL25911FN = 22;
+  
+  /*
+   * AHT10 Integrated temperature and humidity sensor
+   */
+  AHT10 = 23;
 }
