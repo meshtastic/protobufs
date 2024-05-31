@@ -192,6 +192,11 @@ message Config {
     bool led_heartbeat_disabled = 12;
   }
 
+    /*
+     * If true, disable the FAN (RF95_FAN_EN) behavior on the device
+     */
+    bool pa_fan_disabled = 13;
+    
   /*
    * Position Config
    */
