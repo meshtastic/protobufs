@@ -193,7 +193,7 @@ message Config {
   }
 
     /*
-     * If true, disable the build-in FAN using pin defind in RF95_FAN_EN.
+     * If true, disable the build-in PA FAN using pin define in RF95_FAN_EN.
      */
     bool pa_fan_disabled = 13;
     
