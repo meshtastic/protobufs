@@ -1626,3 +1626,51 @@ message NodeRemoteHardwarePin {
    */
   RemoteHardwarePin pin = 2;
 }
+
+message ChunkedPayload {
+  /*
+   * The ID of the entire payload
+   */
+  uint32 payload_id = 1;
+
+  /*
+   * The total number of chunks in the payload
+   */
+  uint32 chunk_count = 2;
+
+  /*
+   * The current chunk index in the total
+   */
+  uint32 chunk_index = 3;
+
+  /*
+   * The binary data of the current chunk
+   */
+  bytes payload_chunk = 4;
+}
+
+/*
+ * Responses to a ChunkedPayload request
+ */
+message ChunkedPayloadResponse {
+  /*
+   * The ID of the entire payload
+   */
+  uint32 payload_id = 1;
+
+  oneof payload_variant {
+    /*
+     * Request to transfer chunked payload
+     */
+    bool request_transfer = 2;
+
+    /*
+     * Accept the transfer chunked payload
+     */
+    bool accept_transfer = 3;
+    /*
+     * Request missing indexes in the chunked payload
+     */
+    repeated uint32 resend_chunks = 4;
+  }
+}
