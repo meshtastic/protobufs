@@ -1657,6 +1657,13 @@ message ChunkedPayload {
 }
 
 /*
+ * Wrapper message for broken repeated oneof support
+ */
+message resend_chunks {
+    repeated uint32 chunks = 1;
+}
+
+/*
  * Responses to a ChunkedPayload request
  */
 message ChunkedPayloadResponse {
@@ -1678,6 +1685,6 @@ message ChunkedPayloadResponse {
     /*
      * Request missing indexes in the chunked payload
      */
-    repeated uint32 resend_chunks = 4;
+    resend_chunks resend_chunks = 4;
   }
 }
