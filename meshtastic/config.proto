@@ -751,6 +751,11 @@ message Config {
        * Singapore 923mhz
        */
       SG_923 = 18;
+      
+      /*
+       * Israel AS923-4 (917-920mhz)
+       */
+      IL = 19;
     }
 
     /*
