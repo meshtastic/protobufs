@@ -92,6 +92,27 @@ message EnvironmentMetrics {
    * VEML7700 high accuracy white light(irradiance) not calibrated digital 16-bit resolution sensor.
    */
   float white_lux = 10;
+
+  /*
+   * Infrared lux
+   */
+  float ir_lux = 11;
+
+  /*
+   * Ultraviolet lux
+   */
+  float uv_lux = 12;
+
+  /*
+   * Wind direction in degrees
+   * 0 degrees = North, 90 = East, etc...
+   */
+  uint32 wind_direction = 13;
+
+  /*
+   * Wind speed in m/s
+   */
+  float wind_speed = 14;
 }
 
 /*
@@ -349,4 +370,9 @@ enum TelemetrySensorType {
    * AHT10 Integrated temperature and humidity sensor
    */
   AHT10 = 23;
+
+  /*
+   * DFRobot Lark Weather station (temperature, humidity, pressure, wind speed and direction) 
+   */
+  DFROBOT_LARK = 24;
 }
