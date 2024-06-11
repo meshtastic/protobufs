@@ -650,6 +650,53 @@ message Config {
      * Should we wake the screen up on accelerometer detected motion or tap
      */
     bool wake_on_tap_or_motion = 10;
+
+    enum CompassOrientation {
+      /*
+       * The compass and the display are in the same orientation.
+       */
+      DEGREES_0 = 0;
+
+      /*
+       * Rotate the compass by 90 degrees.
+       */
+      DEGREES_90 = 1;
+
+      /*
+       * Rotate the compass by 180 degrees.
+       */
+      DEGREES_180 = 2;
+
+      /*
+       * Rotate the compass by 270 degrees.
+       */
+      DEGREES_270 = 3;
+
+      /*
+       * Don't rotate the compass, but invert the result.
+       */
+      DEGREES_0_INVERTED = 4;
+
+      /*
+       * Rotate the compass by 90 degrees and invert.
+       */
+      DEGREES_90_INVERTED = 5;
+
+      /*
+       * Rotate the compass by 180 degrees and invert.
+       */
+      DEGREES_180_INVERTED = 6;
+
+      /*
+       * Rotate the compass by 270 degrees and invert.
+       */
+      DEGREES_270_INVERTED = 7;
+      }
+
+    /*
+     * Indicates how to rotate or invert the compass output to accurate display on the display.
+     */
+    CompassOrientation compass_orientation = 11;
   }
 
   /*
