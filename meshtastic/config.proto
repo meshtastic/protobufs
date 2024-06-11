@@ -654,7 +654,7 @@ message Config {
     /*
      * Indicates how to rotate or invert the compass output to accurate display on the display.
      */
-    uint32 compass_orientation = 11;
+    uint8 compass_orientation = 11;
   }
 
   /*
