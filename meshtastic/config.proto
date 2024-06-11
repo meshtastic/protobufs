@@ -655,7 +655,7 @@ message Config {
       /*
        * The compass and the display are in the same orientation.
        */
-      DEFAULT = 0;
+      DEGREES_0 = 0;
 
       /*
        * Rotate the compass by 90 degrees.
@@ -675,7 +675,7 @@ message Config {
       /*
        * Don't rotate the compass, but invert the result.
        */
-      INVERTED = 4;
+      DEGREES_0_INVERTED = 4;
 
       /*
        * Rotate the compass by 90 degrees and invert.
