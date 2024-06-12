@@ -542,6 +542,11 @@ enum HardwareModel {
    * ESP32-D0WDQ6 With SX1276/SKY66122, SSD1306 OLED and No GPS
    */
   RADIOMASTER_900_BANDIT_NANO = 64;
+  
+  /*
+   * Heltec Capsule Sensor V3 with ESP32-S3 CPU, Portable LoRa device that can replace GNSS modules or sensors
+   */
+  HELTEC_CAPSULE_SENSOR_V3 = 65;
    
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
