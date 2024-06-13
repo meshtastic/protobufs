@@ -113,6 +113,11 @@ message EnvironmentMetrics {
    * Wind speed in m/s
    */
   float wind_speed = 14;
+
+  /*
+   * Weight in KG
+   */
+  float weight = 15;
 }
 
 /*
