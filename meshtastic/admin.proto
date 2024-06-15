@@ -242,6 +242,11 @@ message AdminMessage {
     string delete_file_request = 22;
 
     /*
+     * Set zero and offset for scale chips
+     */
+    uint32 set_scale = 23;
+
+    /*
      * Set the owner for this node
      */
     User set_owner = 32;
