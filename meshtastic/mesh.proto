@@ -330,6 +330,11 @@ enum HardwareModel {
   WIO_WM1110 = 21;
 
   /*
+   * RAK2560 Solar base station based on RAK4630
+   */
+  RAK2560 = 22;
+
+  /*
    * B&Q Consulting Station Edition G1: https://uniteng.com/wiki/doku.php?id=meshtastic:station
    */
   STATION_G1 = 25;
