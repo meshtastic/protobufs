@@ -990,6 +990,11 @@ message Config {
      * Specified PIN for PairingMode.FixedPin
      */
     uint32 fixed_pin = 3;
+
+    /*
+     * Enables device (serial style logs) over Bluetooth
+     */
+    bool device_logging_enabled = 4;
   }
 
   /*
