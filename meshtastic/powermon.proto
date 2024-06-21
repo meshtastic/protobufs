@@ -6,49 +6,47 @@ option java_outer_classname = "PowerMonProtos";
 option java_package = "com.geeksville.mesh";
 option swift_prefix = "";
 
-package meshtastic.PowerMon;
+package meshtastic;
 
-/* Any significant power changing event in meshtastic should be tagged with a powermon state transition.
-  If you are making new meshtastic features feel free to add new entries at the end of this definition.
+/* Note: There are no 'PowerMon' messages normally in use (PowerMons are sent only as structured logs - slogs).
+But we wrap our State enum in this message to effectively nest a namespace (without our linter yelling at us)
 */
-enum State {
-  None = 0;
-
-  CPU_DeepSleep = 0x01;
-  CPU_LightSleep = 0x02;
-
-  /*
-  The external Vext1 power is on.  Many boards have auxillary power rails that the CPU turns on only
-  occasionally.  In cases where that rail has multiple devices on it we usually want to have logging on
-  the state of that rail as an independent record.
-  For instance on the Heltec Tracker 1.1 board, this rail is the power source for the GPS and screen.
+message PowerMon {
+  /* Any significant power changing event in meshtastic should be tagged with a powermon state transition.
+    If you are making new meshtastic features feel free to add new entries at the end of this definition.
   */
-  Vext1_On = 0x04;
+  enum State {
+    None = 0;
 
-  Lora_RXOn = 0x08;
-  Lora_TXOn = 0x10;
-  Lora_RXActive = 0x20;
-  BT_On = 0x40;
-  LED_On = 0x80;
+    CPU_DeepSleep = 0x01;
+    CPU_LightSleep = 0x02;
 
-  Screen_On = 0x100;
-  Screen_Drawing = 0x200;
-  Wifi_On = 0x400;
+    /*
+    The external Vext1 power is on.  Many boards have auxillary power rails that the CPU turns on only
+    occasionally.  In cases where that rail has multiple devices on it we usually want to have logging on
+    the state of that rail as an independent record.
+    For instance on the Heltec Tracker 1.1 board, this rail is the power source for the GPS and screen.
 
-  /*
-  GPS is actively trying to find our location
-  See GPSPowerState for more details
-  */
-  GPS_Active = 0x800;
-}
+    The log messages will be short and complete (see PowerMon.Event in the protobufs for details).
+    something like "S:PM:C,0x00001234,REASON" where the hex number is the bitmask of all current states.
+    (We use a bitmask for states so that if a log message gets lost it won't be fatal)
+    */
+    Vext1_On = 0x04;
 
-/*
-  the log messages will be short and complete (see PowerMon.Event in the protobufs for details). 
-  something like "PwrMon,C,0x00001234,REASON" where the hex number is the bitmask of all current states. 
-  (We use a bitmask for states so that if a log message gets lost it won't be fatal)
-*/
-message Event {
+    Lora_RXOn = 0x08;
+    Lora_TXOn = 0x10;
+    Lora_RXActive = 0x20;
+    BT_On = 0x40;
+    LED_On = 0x80;
 
-  // Bitwise-OR of States
-  optional uint64 states = 1;
+    Screen_On = 0x100;
+    Screen_Drawing = 0x200;
+    Wifi_On = 0x400;
+
+    /*
+    GPS is actively trying to find our location
+    See GPSPowerState for more details
+    */
+    GPS_Active = 0x800;
+  }
 }
