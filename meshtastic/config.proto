@@ -409,6 +409,12 @@ message Config {
      * I2C address of INA_2XX to use for reading device battery voltage
      */
     uint32 device_battery_ina_address = 9;
+
+    /*
+     * If non-zero, we want powermon log outputs.  With the particular (bitfield) sources enabled.
+     * Note: we picked an ID of 32 so that lower more efficient IDs can be used for more frequently used options.
+     */
+     uint64 powermon_enables = 32;    
   }
 
   /*
