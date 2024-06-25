@@ -43,6 +43,8 @@
 *LogRecord.message max_size:64
 *LogRecord.source max_size:8
 
+*FileInfo.file_name max_size:228
+
 # MyMessage.name         max_size:40 
 # or fixed_length or fixed_count, or max_count
 
