@@ -1459,7 +1459,27 @@ message FromRadio {
      * MQTT Client Proxy Message (device sending to client / phone for publishing to MQTT)
      */
     MqttClientProxyMessage mqttClientProxyMessage = 14;
+
+    /*
+     * File system manifest messages
+     */
+    FileInfo fileInfo = 15;
   }
+}
+
+/*
+ * Individual File info for the device
+ */
+message FileInfo {
+  /*
+   * The fully qualified path of the file
+   */
+  string file_name = 1;
+
+  /*
+   * The size of the file in bytes
+   */
+  uint32 size_bytes = 2;
 }
 
 /*
