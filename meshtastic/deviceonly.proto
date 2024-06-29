@@ -5,7 +5,6 @@ package meshtastic;
 import "meshtastic/channel.proto";
 import "meshtastic/localonly.proto";
 import "meshtastic/mesh.proto";
-import "meshtastic/module_config.proto";
 import "meshtastic/telemetry.proto";
 import "nanopb.proto";
 
