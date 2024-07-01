@@ -40,8 +40,8 @@
 
 *Routing.variant anonymous_oneof:true
 
-*LogRecord.message max_size:64
-*LogRecord.source max_size:8
+*LogRecord.message max_size:384
+*LogRecord.source max_size:32
 
 *FileInfo.file_name max_size:228
 
