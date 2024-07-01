@@ -574,7 +574,7 @@ enum HardwareModel {
   HELTEC_VISION_MASTER_E290 = 68;
    
    /*
-   * Heltec Mesh Node T114 borad with nRF52840 CPU, and a 1.14 inch TFT display, Ultimate low-power design,
+   * Heltec Mesh Node T114 board with nRF52840 CPU, and a 1.14 inch TFT display, Ultimate low-power design,
    * specifically adapted for the Meshtatic project
    */
   HELTEC_MESH_NODE_T114 = 69;
