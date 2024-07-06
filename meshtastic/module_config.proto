@@ -468,6 +468,11 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     uint32 history_return_window = 5;
+
+    /*
+     * Set to true to let this node act as a server that stores received messages and resends them upon request.
+     */
+    bool is_server = 6;
   }
 
   /*
