@@ -954,6 +954,11 @@ message Config {
     float override_frequency = 14;
 
     /*
+     * If true, disable the build-in PA FAN using pin define in RF95_FAN_EN.
+     */
+    bool pa_fan_disabled = 15;
+
+    /*
      * For testing it is useful sometimes to force a node to never listen to
      * particular other nodes (simulating radio out of range). All nodenums listed
      * in ignore_incoming will have packets they send dropped on receive (by router.cpp)
