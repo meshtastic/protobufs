@@ -118,6 +118,16 @@ message EnvironmentMetrics {
    * Weight in KG
    */
   float weight = 15;
+
+  /*
+   * Wind gust in m/s
+   */
+  float wind_gust = 16;
+
+  /*
+   * Wind lull in m/s
+   */
+  float wind_lull = 17;
 }
 
 /*

@@ -304,6 +304,8 @@ message ModuleConfig {
       NMEA = 4;
       // NMEA messages specifically tailored for CalTopo
       CALTOPO = 5;
+      // Ecowitt WS85 weather station
+      WS85 = 6;
     }
 
     /*
