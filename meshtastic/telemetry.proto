@@ -122,12 +122,12 @@ message EnvironmentMetrics {
   /*
    * Wind gust in m/s
    */
-  float wind_gust = 15;
+  float wind_gust = 16;
 
   /*
    * Wind lull in m/s
    */
-  float wind_lull = 16;
+  float wind_lull = 17;
 }
 
 /*
