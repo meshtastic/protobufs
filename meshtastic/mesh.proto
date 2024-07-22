@@ -578,6 +578,11 @@ enum HardwareModel {
    * specifically adapted for the Meshtatic project
    */
   HELTEC_MESH_NODE_T114 = 69;
+
+  /*
+   * Sensecap Indicator from Seeed Studio. ESP32-S3 device with TFT and RP2040 coprocessor
+   */
+  SENSECAP_INDICATOR = 70;
   
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
