@@ -588,6 +588,12 @@ enum HardwareModel {
    * Seeed studio T1000-E tracker card. NRF52840 w/ LR1110 radio, GPS, button, buzzer, and sensors.
    */
   TRACKER_T1000_E = 71;
+
+  /*
+   * RadioMaster 900 Bandit, https://www.radiomasterrc.com/products/bandit-expresslrs-rf-module
+   * SSD1306 OLED and No GPS
+   */
+  RADIOMASTER_900_BANDIT_NANO = 72;
   
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
