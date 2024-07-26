@@ -593,7 +593,7 @@ enum HardwareModel {
    * RadioMaster 900 Bandit, https://www.radiomasterrc.com/products/bandit-expresslrs-rf-module
    * SSD1306 OLED and No GPS
    */
-  RADIOMASTER_900_BANDIT_NANO = 72;
+  RADIOMASTER_900_BANDIT = 72;
   
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
