@@ -583,6 +583,11 @@ enum HardwareModel {
    * Sensecap Indicator from Seeed Studio. ESP32-S3 device with TFT and RP2040 coprocessor
    */
   SENSECAP_INDICATOR = 70;
+
+   /*
+   * Seeed studio T1000-E tracker card. NRF52840 w/ LR1110 radio, GPS, button, buzzer, and sensors.
+   */
+  TRACKER_T1000_E = 71;
   
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
