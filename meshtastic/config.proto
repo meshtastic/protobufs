@@ -192,6 +192,11 @@ message Config {
      * If true, disable the default blinking LED (LED_PIN) behavior on the device 
      */
     bool led_heartbeat_disabled = 12;
+    
+    /*
+     * Enable LogRecord messages over Serial for API connections
+     */
+    bool logrecord_serial_enabled = 13;
   }
 
   /*
