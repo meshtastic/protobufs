@@ -325,6 +325,21 @@ enum HardwareModel {
   WIPHONE = 20;
 
   /*
+   * WIO Tracker WM1110 family from Seeed Studio. Includes wio-1110-tracker and wio-1110-sdk
+   */
+  WIO_WM1110 = 21;
+
+  /*
+   * RAK2560 Solar base station based on RAK4630
+   */
+  RAK2560 = 22;
+
+  /*
+   * Heltec HRU-3601: https://heltec.org/project/hru-3601/
+   */
+  HELTEC_HRU_3601 = 23;
+
+  /*
    * B&Q Consulting Station Edition G1: https://uniteng.com/wiki/doku.php?id=meshtastic:station
    */
   STATION_G1 = 25;
@@ -537,7 +552,43 @@ enum HardwareModel {
    * ESP32-D0WDQ6 With SX1276/SKY66122, SSD1306 OLED and No GPS
    */
   RADIOMASTER_900_BANDIT_NANO = 64;
+  
+  /*
+   * Heltec Capsule Sensor V3 with ESP32-S3 CPU, Portable LoRa device that can replace GNSS modules or sensors
+   */
+  HELTEC_CAPSULE_SENSOR_V3 = 65;
    
+   /*
+   * Heltec Vision Master T190 with ESP32-S3 CPU, and a 1.90 inch TFT display
+   */
+  HELTEC_VISION_MASTER_T190 = 66;
+   
+   /*
+   * Heltec Vision Master E213 with ESP32-S3 CPU, and a 2.13 inch E-Ink display
+   */
+  HELTEC_VISION_MASTER_E213 = 67;
+   
+   /*
+   * Heltec Vision Master E290 with ESP32-S3 CPU, and a 2.9 inch E-Ink display
+   */
+  HELTEC_VISION_MASTER_E290 = 68;
+   
+   /*
+   * Heltec Mesh Node T114 board with nRF52840 CPU, and a 1.14 inch TFT display, Ultimate low-power design,
+   * specifically adapted for the Meshtatic project
+   */
+  HELTEC_MESH_NODE_T114 = 69;
+
+  /*
+   * Sensecap Indicator from Seeed Studio. ESP32-S3 device with TFT and RP2040 coprocessor
+   */
+  SENSECAP_INDICATOR = 70;
+
+   /*
+   * Seeed studio T1000-E tracker card. NRF52840 w/ LR1110 radio, GPS, button, buzzer, and sensors.
+   */
+  TRACKER_T1000_E = 71;
+  
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
@@ -1439,7 +1490,27 @@ message FromRadio {
      * MQTT Client Proxy Message (device sending to client / phone for publishing to MQTT)
      */
     MqttClientProxyMessage mqttClientProxyMessage = 14;
+
+    /*
+     * File system manifest messages
+     */
+    FileInfo fileInfo = 15;
   }
+}
+
+/*
+ * Individual File info for the device
+ */
+message FileInfo {
+  /*
+   * The fully qualified path of the file
+   */
+  string file_name = 1;
+
+  /*
+   * The size of the file in bytes
+   */
+  uint32 size_bytes = 2;
 }
 
 /*
@@ -1632,4 +1703,59 @@ message NodeRemoteHardwarePin {
    * The the available gpio pin for usage with RemoteHardware module
    */
   RemoteHardwarePin pin = 2;
+}
+
+message ChunkedPayload {
+  /*
+   * The ID of the entire payload
+   */
+  uint32 payload_id = 1;
+
+  /*
+   * The total number of chunks in the payload
+   */
+  uint32 chunk_count = 2;
+
+  /*
+   * The current chunk index in the total
+   */
+  uint32 chunk_index = 3;
+
+  /*
+   * The binary data of the current chunk
+   */
+  bytes payload_chunk = 4;
+}
+
+/*
+ * Wrapper message for broken repeated oneof support
+ */
+message resend_chunks {
+    repeated uint32 chunks = 1;
+}
+
+/*
+ * Responses to a ChunkedPayload request
+ */
+message ChunkedPayloadResponse {
+  /*
+   * The ID of the entire payload
+   */
+  uint32 payload_id = 1;
+
+  oneof payload_variant {
+    /*
+     * Request to transfer chunked payload
+     */
+    bool request_transfer = 2;
+
+    /*
+     * Accept the transfer chunked payload
+     */
+    bool accept_transfer = 3;
+    /*
+     * Request missing indexes in the chunked payload
+     */
+    resend_chunks resend_chunks = 4;
+  }
 }

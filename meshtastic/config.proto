@@ -37,8 +37,10 @@ message Config {
 
       /*
        * Description: Combination of both ROUTER and CLIENT. Not for mobile devices.
+       * Deprecated in v2.3.15 because improper usage is impacting public meshes: Use ROUTER or CLIENT instead.
        */
-      ROUTER_CLIENT = 3;
+      
+      ROUTER_CLIENT = 3 [deprecated = true];
 
       /*
        * Description: Infrastructure node for extending network coverage by relaying messages with minimal overhead. Not visible in Nodes list.
@@ -409,6 +411,12 @@ message Config {
      * I2C address of INA_2XX to use for reading device battery voltage
      */
     uint32 device_battery_ina_address = 9;
+
+    /*
+     * If non-zero, we want powermon log outputs.  With the particular (bitfield) sources enabled.
+     * Note: we picked an ID of 32 so that lower more efficient IDs can be used for more frequently used options.
+     */
+     uint64 powermon_enables = 32;    
   }
 
   /*
@@ -650,6 +658,53 @@ message Config {
      * Should we wake the screen up on accelerometer detected motion or tap
      */
     bool wake_on_tap_or_motion = 10;
+
+    enum CompassOrientation {
+      /*
+       * The compass and the display are in the same orientation.
+       */
+      DEGREES_0 = 0;
+
+      /*
+       * Rotate the compass by 90 degrees.
+       */
+      DEGREES_90 = 1;
+
+      /*
+       * Rotate the compass by 180 degrees.
+       */
+      DEGREES_180 = 2;
+
+      /*
+       * Rotate the compass by 270 degrees.
+       */
+      DEGREES_270 = 3;
+
+      /*
+       * Don't rotate the compass, but invert the result.
+       */
+      DEGREES_0_INVERTED = 4;
+
+      /*
+       * Rotate the compass by 90 degrees and invert.
+       */
+      DEGREES_90_INVERTED = 5;
+
+      /*
+       * Rotate the compass by 180 degrees and invert.
+       */
+      DEGREES_180_INVERTED = 6;
+
+      /*
+       * Rotate the compass by 270 degrees and invert.
+       */
+      DEGREES_270_INVERTED = 7;
+      }
+
+    /*
+     * Indicates how to rotate or invert the compass output to accurate display on the display.
+     */
+    CompassOrientation compass_orientation = 11;
   }
 
   /*
@@ -899,6 +954,11 @@ message Config {
     float override_frequency = 14;
 
     /*
+     * If true, disable the build-in PA FAN using pin define in RF95_FAN_EN.
+     */
+    bool pa_fan_disabled = 15;
+
+    /*
      * For testing it is useful sometimes to force a node to never listen to
      * particular other nodes (simulating radio out of range). All nodenums listed
      * in ignore_incoming will have packets they send dropped on receive (by router.cpp)
@@ -943,6 +1003,11 @@ message Config {
      * Specified PIN for PairingMode.FixedPin
      */
     uint32 fixed_pin = 3;
+
+    /*
+     * Enables device (serial style logs) over Bluetooth
+     */
+    bool device_logging_enabled = 4;
   }
 
   /*
