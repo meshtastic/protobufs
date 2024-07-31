@@ -8,9 +8,9 @@ package meshtastic;
  */
 message Message {
   /*
-   * The sending node's short name.
+   * The sending node number.
    */
-  string sender_short_name = 1;
+  fixed32 from = 1;
 
  /*
   * Whether the message is from this device.
