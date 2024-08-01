@@ -11,6 +11,7 @@
 *OEMStore.oem_aes_key max_size:32
 
 *DeviceState.node_remote_hardware_pins max_count:12
+*DeviceState.nodes_seen max_count:2000
 
 *NodeInfoLite.channel int_size:8
 *NodeInfoLite.hops_away int_size:8

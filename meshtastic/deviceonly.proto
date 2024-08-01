@@ -191,6 +191,12 @@ message DeviceState {
    * New lite version of NodeDB to decrease memory footprint
    */
   repeated NodeInfoLite node_db_lite = 14 [(nanopb).callback_datatype = "std::vector<meshtastic_NodeInfoLite>"];
+
+  repeated uint32 nodes_seen = 15;
+
+  uint32 total_packets = 16;
+
+  uint32 rejected_packets = 17;
 }
 
 /*
