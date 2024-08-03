@@ -395,6 +395,21 @@ enum TelemetrySensorType {
    * NAU7802 Scale Chip or compatible
    */
   NAU7802 = 25;
+
+  /*
+   * BMP3XX High accuracy temperature and pressure
+   */
+  BMP3XX = 26;
+
+  /*
+   * ICM-20948 9-Axis digital motion processor
+   */
+  ICM20948 = 27;
+
+  /*
+   * MAX17048 1S lipo battery sensor (voltage, state of charge, time to go)
+   */
+  MAX17048 = 28;
 }
 
 /*
