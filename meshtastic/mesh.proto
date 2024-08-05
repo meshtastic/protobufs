@@ -681,6 +681,12 @@ message User {
    * Indicates that the user's role in the mesh
    */
   Config.DeviceConfig.Role role = 7;
+
+  /*
+   * The public key of the user's device.
+   * This is sent out to other nodes on the mesh to allow them to compute a shared secret key.
+   */
+  bytes public_key = 8;
 }
 
 /*
@@ -1345,6 +1351,12 @@ message MyNodeInfo {
    * Phone/PC apps should compare this to their build number and if too low tell the user they must update their app
    */
   uint32 min_app_version = 11;
+
+  /*
+   * The private key of the device.
+   * This is used to create a shared key with a remote device.
+   */
+  bytes private_key = 12;
 }
 
 /*
