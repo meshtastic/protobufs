@@ -1291,6 +1291,19 @@ enum CriticalErrorCode {
    * If this occurs on your board, please post in the forum so that we can ask you to collect some information to allow fixing this bug
    */
   RADIO_SPI_BUG = 11;
+
+  /*
+   * Corruption was detected on the flash filesystem but we were able to repair things.
+   * If you see this failure in the field please post in the forum because we are interested in seeing if this is occurring in the field.
+   */
+  FLASH_CORRUPTION_RECOVERABLE = 12;
+
+  /*
+   * Corruption was detected on the flash filesystem but we were unable to repair things.
+   * NOTE: Your node will probably need to be reconfigured the next time it reboots (it will lose the region code etc...)
+   * If you see this failure in the field please post in the forum because we are interested in seeing if this is occurring in the field.
+   */
+  FLASH_CORRUPTION_UNRECOVERABLE = 13;
 }
 
 /*
