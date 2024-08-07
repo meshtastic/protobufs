@@ -1361,12 +1361,6 @@ message MyNodeInfo {
    * Phone/PC apps should compare this to their build number and if too low tell the user they must update their app
    */
   uint32 min_app_version = 11;
-
-  /*
-   * The private key of the device.
-   * This is used to create a shared key with a remote device.
-   */
-  bytes private_key = 12;
 }
 
 /*

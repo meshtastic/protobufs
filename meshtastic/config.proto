@@ -135,14 +135,16 @@ message Config {
 
     /*
      * Disabling this will disable the SerialConsole by not initilizing the StreamAPI
+     * Moved to SecurityConfig
      */
-    bool serial_enabled = 2;
+    bool serial_enabled = 2[deprecated = true];
 
     /*
      * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
      * Set this to true to leave the debug log outputting even when API is active.
+     * Moved to SecurityConfig
      */
-    bool debug_log_enabled = 3;
+    bool debug_log_enabled = 3[deprecated = true];
 
     /*
      * For boards without a hard wired button, this is the pin number that will be used
@@ -175,8 +177,9 @@ message Config {
     /*
      * If true, device is considered to be "managed" by a mesh administrator
      * Clients should then limit available configuration and administrative options inside the user interface
+     * Moved to SecurityConfig
      */
-    bool is_managed = 9;
+    bool is_managed = 9[deprecated = true];
 
     /*
      * Disables the triple-press of user button to enable or disable GPS
@@ -1018,6 +1021,44 @@ message Config {
     bool device_logging_enabled = 4;
   }
 
+  message SecurityConfig {
+
+  /*
+   * The public key of the user's device.
+   * This is sent out to other nodes on the mesh to allow them to compute a shared secret key.
+   */
+    bytes public_key = 1;
+
+  /*
+   * The private key of the device.
+   * This is used to create a shared key with a remote device.
+   */
+    bytes private_key = 2;
+
+    /*
+     * This is the public key authorized to send admin messages to this node
+     */
+    bytes admin_key = 3;
+
+    /*
+     * If true, device is considered to be "managed" by a mesh administrator
+     * Clients should then limit available configuration and administrative options inside the user interface
+     */
+    bool is_managed = 4;
+
+    /*
+     * Disabling this will disable the SerialConsole by not initilizing the StreamAPI
+     */
+    bool serial_enabled = 5;
+
+    /*
+     * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
+     * Set this to true to leave the debug log outputting even when API is active.
+     */
+    bool debug_log_enabled = 6;
+
+  }
+
   /*
    * Payload Variant
    */
@@ -1029,5 +1070,6 @@ message Config {
     DisplayConfig display = 5;
     LoRaConfig lora = 6;
     BluetoothConfig bluetooth = 7;
+    SecurityConfig security = 8;
   }
 }
