@@ -153,6 +153,7 @@ message ModuleConfig {
      * Works as a sort of status heartbeat for peace of mind
      */
     uint32 state_broadcast_secs = 3;
+
     /*
      * Send ASCII bell with alert message
      * Useful for triggering ext. notification on bell

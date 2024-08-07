@@ -23,17 +23,17 @@ message Position {
    * The new preferred location encoding, multiply by 1e-7 to get degrees
    * in floating point
    */
-  sfixed32 latitude_i = 1;
+  optional sfixed32 latitude_i = 1;
 
   /*
    * TODO: REPLACE
    */
-  sfixed32 longitude_i = 2;
+  optional sfixed32 longitude_i = 2;
 
   /*
    * In meters above MSL (but see issue #359)
    */
-  int32 altitude = 3;
+  optional int32 altitude = 3;
 
   /*
    * This is usually not sent over the mesh (to save space), but it is sent
@@ -122,12 +122,12 @@ message Position {
   /*
    * HAE altitude in meters - can be used instead of MSL altitude
    */
-  sint32 altitude_hae = 9;
+  optional sint32 altitude_hae = 9;
 
   /*
    * Geoidal separation in meters
    */
-  sint32 altitude_geoidal_separation = 10;
+  optional sint32 altitude_geoidal_separation = 10;
 
   /*
    * Horizontal, Vertical and Position Dilution of Precision, in 1/100 units
@@ -163,12 +163,12 @@ message Position {
    * - "yaw" indicates a relative rotation about the vertical axis
    * TODO: REMOVE/INTEGRATE
    */
-  uint32 ground_speed = 15;
+  optional uint32 ground_speed = 15;
 
   /*
    * TODO: REPLACE
    */
-  uint32 ground_track = 16;
+  optional uint32 ground_track = 16;
 
   /*
    * GPS fix quality (from NMEA GxGGA statement or similar)
@@ -853,12 +853,12 @@ message Waypoint {
   /*
    * latitude_i
    */
-  sfixed32 latitude_i = 2;
+  optional sfixed32 latitude_i = 2;
 
   /*
    * longitude_i
    */
-  sfixed32 longitude_i = 3;
+  optional sfixed32 longitude_i = 3;
 
   /*
    * Time the waypoint is to expire (epoch)
