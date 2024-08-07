@@ -1063,6 +1063,11 @@ message Config {
      * Moved to SecurityConfig
      */
     bool bluetooth_logging_enabled = 7;
+
+    /*
+     * Enables incoming admin control over the "admin" channel
+     */
+    bool admin_channel_enabled = 8 [default = false];
   }
 
   /*
