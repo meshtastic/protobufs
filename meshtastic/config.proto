@@ -1009,8 +1009,9 @@ message Config {
 
     /*
      * Enables device (serial style logs) over Bluetooth
+     * Moved to SecurityConfig
      */
-    bool device_logging_enabled = 4;
+    bool device_logging_enabled = 4[deprecated = true];
   }
 
   message SecurityConfig {
@@ -1049,6 +1050,11 @@ message Config {
      */
     bool debug_log_enabled = 6;
 
+    /*
+     * Enables device (serial style logs) over Bluetooth
+     * Moved to SecurityConfig
+     */
+    bool bluetooth_logging_enabled = 7;
   }
 
   /*
