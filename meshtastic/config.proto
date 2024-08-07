@@ -1059,7 +1059,7 @@ message Config {
     /*
      * Enables incoming admin control over the "admin" channel
      */
-    bool admin_channel_enabled = 8 [default = false];
+    bool admin_channel_enabled = 8;
   }
 
   /*
