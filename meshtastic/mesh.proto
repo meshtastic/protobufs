@@ -1508,7 +1508,39 @@ message FromRadio {
      * File system manifest messages
      */
     FileInfo fileInfo = 15;
+
+    /*
+     * Notification message to the client
+     */
+    ClientNotification clientNotification = 16;
   }
+}
+
+/*
+ * A notification message from the device to the client
+ * To be used for important messages that should to be displayed to the user
+ * in the form of push notifications or validation messages when saving
+ * invalid configuration.
+ */
+message ClientNotification {
+  /*
+   * The id of the packet we're notifying in response to
+   */
+  optional uint32 reply_id = 1;
+
+  /*
+   * Seconds since 1970 - or 0 for unknown/unset
+   */
+  fixed32 time = 2;
+
+  /*
+   * The level type of notification
+   */
+  LogRecord.Level level = 3;
+  /*
+   * The message body of the notification
+   */
+  string message = 4;
 }
 
 /*

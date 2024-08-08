@@ -45,6 +45,8 @@
 
 *FileInfo.file_name max_size:228
 
+*ClientNotification.message max_size:400
+
 # MyMessage.name         max_size:40 
 # or fixed_length or fixed_count, or max_count
 
