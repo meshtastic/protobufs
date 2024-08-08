@@ -1048,7 +1048,7 @@ message Config {
      * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
      * Output live debug logging over serial.
      */
-    bool debug_log_enabled = 6;
+    bool debug_log_api_enabled = 6;
 
     /*
      * Enables device (serial style logs) over Bluetooth
