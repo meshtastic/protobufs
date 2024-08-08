@@ -58,6 +58,11 @@ message LocalConfig {
    * NodeDB.cpp in the device code.
    */
   uint32 version = 8;
+
+  /*
+   * The part of the config that is specific to Security settings
+   */
+  Config.SecurityConfig security = 9;
 }
 
 message LocalModuleConfig {

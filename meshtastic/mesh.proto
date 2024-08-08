@@ -665,6 +665,12 @@ message User {
    * Indicates that the user's role in the mesh
    */
   Config.DeviceConfig.Role role = 7;
+
+  /*
+   * The public key of the user's device.
+   * This is sent out to other nodes on the mesh to allow them to compute a shared secret key.
+   */
+  bytes public_key = 8;
 }
 
 /*
@@ -1105,6 +1111,16 @@ message MeshPacket {
    * When receiving a packet, the difference between hop_start and hop_limit gives how many hops it traveled.
    */
   uint32 hop_start = 15;
+
+  /*
+   * Records the public key the packet was encrypted with, if applicable.
+   */
+  bytes public_key = 16;
+
+  /*
+   * Indicates whether the packet was en/decrypted using PKI
+   */
+  bool pki_encrypted = 17;
 }
 
 /*
