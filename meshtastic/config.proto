@@ -1026,46 +1026,45 @@ message Config {
 
   /*
    * The public key of the user's device.
-   * This is sent out to other nodes on the mesh to allow them to compute a shared secret key.
+   * Sent out to other nodes on the mesh to allow them to compute a shared secret key.
    */
     bytes public_key = 1;
 
   /*
    * The private key of the device.
-   * This is used to create a shared key with a remote device.
+   * Used to create a shared key with a remote device.
    */
     bytes private_key = 2;
 
     /*
-     * This is the public key authorized to send admin messages to this node
+     * The public key authorized to send admin messages to this node.
      */
     bytes admin_key = 3;
 
     /*
-     * If true, device is considered to be "managed" by a mesh administrator
-     * Clients should then limit available configuration and administrative options inside the user interface
+     * If true, device is considered to be "managed" by a mesh administrator via admin messages
+     * Device is managed by a mesh administrator.
      */
     bool is_managed = 4;
 
     /*
-     * Disabling this will disable the SerialConsole by not initilizing the StreamAPI
+     * Serial Console over the Stream API."
      */
     bool serial_enabled = 5;
 
     /*
      * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
-     * Set this to true to leave the debug log outputting even when API is active.
+     * Output live debug logging over serial.
      */
     bool debug_log_enabled = 6;
 
     /*
      * Enables device (serial style logs) over Bluetooth
-     * Moved to SecurityConfig
      */
     bool bluetooth_logging_enabled = 7;
 
     /*
-     * Enables incoming admin control over the "admin" channel
+     * Allow incoming device control over the insecure legacy admin channel.
      */
     bool admin_channel_enabled = 8;
   }
