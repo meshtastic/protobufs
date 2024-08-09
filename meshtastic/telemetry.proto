@@ -36,6 +36,11 @@ message DeviceMetrics {
    * How long the device has been running since the last reboot (in seconds)
    */
   uint32 uptime_seconds = 5;
+
+  /*
+   * Time remaining for the battery to charge/discharge in seconds
+   */
+  uint32 battery_time_to_go_seconds = 6;
 }
 
 /*
