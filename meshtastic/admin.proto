@@ -58,6 +58,11 @@ message AdminMessage {
      * TODO: REPLACE
      */
     BLUETOOTH_CONFIG = 6;
+
+    /*
+     * TODO: REPLACE
+     */
+    SECURITY_CONFIG = 7;
   }
 
   /*
