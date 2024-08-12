@@ -600,6 +600,12 @@ enum HardwareModel {
   WIO_E5 = 73;
 
   /*
+   * RadioMaster 900 Bandit, https://www.radiomasterrc.com/products/bandit-expresslrs-rf-module
+   * SSD1306 OLED and No GPS
+   */
+  RADIOMASTER_900_BANDIT = 74;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
