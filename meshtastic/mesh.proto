@@ -769,6 +769,11 @@ message Routing {
      * (i.e you did not send the request on the required bound channel)
      */
     NOT_AUTHORIZED = 33;
+
+    /*
+     * This message is not a failure, and indicates that the message was sent via PKI
+     */
+    NONE_PKI = 34;
   }
 
   oneof variant {
