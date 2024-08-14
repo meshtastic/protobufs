@@ -774,6 +774,11 @@ message Routing {
      * The client specified a PKI transport, but the node was unable to send the packet using PKI (and did not send the message at all)
      */
     PKI_FAILED = 34;
+
+    /*
+     * The receiving node does not have a Public Key to decode with
+     */
+     PKI_UNKNOWN_PUBKEY = 35;
   }
 
   oneof variant {
