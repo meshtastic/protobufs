@@ -20,6 +20,14 @@ option swift_prefix = "";
  * (Prior to 1.2 these operations were done via special ToRadio operations)
  */
 message AdminMessage {
+
+  /*
+   * The node generates this key and sends it with any get_x_response packets.
+   * The client MUST include the same key with any set_x commands. Key expires after 300 seconds.
+   * Prevents replay attacks for admin messages.
+   */
+  bytes session_passkey = 101;
+
   /*
    * TODO: REPLACE
    */
