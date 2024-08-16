@@ -319,6 +319,12 @@ message AdminMessage {
     bool remove_fixed_position = 42;
 
     /*
+     * Set time only on the node
+     * Convenience method to set the time on the node (as NTP quality) without any other position data
+     */
+    fixed32 set_time_only = 43;
+
+    /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes
      * This will delay the standard *implicit* save to the file system and subsequent reboot behavior until committed (commit_edit_settings)
      */
