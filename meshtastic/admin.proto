@@ -320,7 +320,7 @@ message AdminMessage {
 
     /*
      * Set time only on the node
-     * Convenience method to set the time on the node (as NTP quality) without any other position data
+     * Convenience method to set the time on the node (as Net quality) without any other position data
      */
     fixed32 set_time_only = 43;
 
