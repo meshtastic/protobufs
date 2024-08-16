@@ -605,6 +605,11 @@ enum HardwareModel {
    */
   RADIOMASTER_900_BANDIT = 74;
 
+   /*
+   * Minewsemi ME25LS01 (ME25LE01_V1.0). NRF52840 w/ LR1110 radio, buttons and leds and pins.
+   */
+  ME25LS01_4Y10TD = 75;
+
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
