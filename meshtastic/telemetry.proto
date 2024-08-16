@@ -231,6 +231,49 @@ message AirQualityMetrics {
 }
 
 /*
+ * Local device mesh statistics
+ */
+message LocalStats {
+  /*
+   * How long the device has been running since the last reboot (in seconds)
+   */
+  uint32 uptime_seconds = 1;
+  /*
+   * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
+   */
+  float channel_utilization = 2;
+  /*
+   * Percent of airtime for transmission used within the last hour.
+   */
+  float air_util_tx = 3;
+
+  /*
+   * Number of packets sent
+   */
+  uint32 num_packets_tx = 4;
+  
+  /*
+   * Number of packets received good
+   */
+  uint32 num_packets_rx = 5;
+
+  /*
+   * Number of packets received that are malformed or violate the protocol
+   */
+  uint32 num_packets_rx_bad = 6;
+
+  /*
+   * Number of nodes online (in the past 2 hours)
+   */
+  uint32 num_online_nodes = 7;
+
+  /*
+   * Number of nodes total
+   */
+  uint32 num_total_nodes = 8;
+}
+
+/*
  * Types of Measurements the telemetry module is equipped to handle
  */
 message Telemetry {
@@ -259,6 +302,11 @@ message Telemetry {
      * Power Metrics
      */
     PowerMetrics power_metrics = 5;
+
+    /*
+     * Local device mesh statistics
+     */
+    LocalStats local_stats = 6;
   }
 }
 
