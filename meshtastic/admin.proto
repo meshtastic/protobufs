@@ -322,7 +322,7 @@ message AdminMessage {
      * Set time only on the node
      * Convenience method to set the time on the node (as NTP quality) without any other position data
      */
-    uint32 set_time_only = 43;
+    fixed32 set_time_only = 43;
 
     /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes
