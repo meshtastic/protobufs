@@ -695,13 +695,28 @@ message User {
 }
 
 /*
- * A message used in our Dynamic Source Routing protocol (RFC 4728 based)
+ * A message used in a traceroute
  */
 message RouteDiscovery {
   /*
-   * The list of nodenums this packet has visited so far
+   * The list of nodenums this packet has visited so far to the destination.
    */
   repeated fixed32 route = 1;
+
+  /*
+   * The list of SNRs (in dB, scaled by 4) in the route towards the destination.
+   */
+  repeated int32 snr_towards = 2;
+
+  /*
+   * The list of nodenums the packet has visited on the way back from the destination.
+   */
+  repeated fixed32 route_back = 3;
+
+  /*
+   * The list of SNRs (in dB, scaled by 4) in the route back from the destination.
+   */
+  repeated int32 snr_back = 4;
 }
 
 /*
