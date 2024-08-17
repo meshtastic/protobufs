@@ -6,6 +6,7 @@ import "meshtastic/channel.proto";
 import "meshtastic/localonly.proto";
 import "meshtastic/mesh.proto";
 import "meshtastic/telemetry.proto";
+import "meshtastic/config.proto";
 import "nanopb.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
@@ -51,6 +52,50 @@ message PositionLite {
   Position.LocSource location_source = 5;
 }
 
+message UserLite {
+  /*
+   * This is the addr of the radio.
+   */
+  bytes macaddr = 1 [deprecated = true];
+
+  /*
+   * A full name for this user, i.e. "Kevin Hester"
+   */
+  string long_name = 2;
+
+  /*
+   * A VERY short name, ideally two characters.
+   * Suitable for a tiny OLED screen
+   */
+  string short_name = 3;
+
+  /*
+   * TBEAM, HELTEC, etc...
+   * Starting in 1.2.11 moved to hw_model enum in the NodeInfo object.
+   * Apps will still need the string here for older builds
+   * (so OTA update can find the right image), but if the enum is available it will be used instead.
+   */
+  HardwareModel hw_model = 4;
+
+  /*
+   * In some regions Ham radio operators have different bandwidth limitations than others.
+   * If this user is a licensed operator, set this flag.
+   * Also, "long_name" should be their licence number.
+   */
+  bool is_licensed = 5;
+
+  /*
+   * Indicates that the user's role in the mesh
+   */
+  Config.DeviceConfig.Role role = 6;
+
+  /*
+   * The public key of the user's device.
+   * This is sent out to other nodes on the mesh to allow them to compute a shared secret key.
+   */
+  bytes public_key = 7;
+}
+
 message NodeInfoLite {
   /*
    * The node number
@@ -60,7 +105,7 @@ message NodeInfoLite {
   /*
    * The user info for this node
    */
-  User user = 2;
+  UserLite user = 2;
 
   /*
    * This position data. Note: before 1.2.14 we would also store the last time we've heard from this node in position.time, that is no longer true.

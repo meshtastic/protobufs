@@ -15,27 +15,27 @@ message DeviceMetrics {
   /*
    * 0-100 (>100 means powered)
    */
-  uint32 battery_level = 1;
+  optional uint32 battery_level = 1;
 
   /*
    * Voltage measured
    */
-  float voltage = 2;
+  optional float voltage = 2;
 
   /*
    * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
    */
-  float channel_utilization = 3;
+  optional float channel_utilization = 3;
 
   /*
    * Percent of airtime for transmission used within the last hour.
    */
-  float air_util_tx = 4;
+  optional float air_util_tx = 4;
 
   /*
    * How long the device has been running since the last reboot (in seconds)
    */
-  uint32 uptime_seconds = 5;
+  optional uint32 uptime_seconds = 5;
 }
 
 /*
@@ -45,89 +45,89 @@ message EnvironmentMetrics {
   /*
    * Temperature measured
    */
-  float temperature = 1;
+  optional float temperature = 1;
 
   /*
    * Relative humidity percent measured
    */
-  float relative_humidity = 2;
+  optional float relative_humidity = 2;
 
   /*
    * Barometric pressure in hPA measured
    */
-  float barometric_pressure = 3;
+  optional float barometric_pressure = 3;
 
   /*
    * Gas resistance in MOhm measured
    */
-  float gas_resistance = 4;
+  optional float gas_resistance = 4;
 
   /*
    * Voltage measured (To be depreciated in favor of PowerMetrics in Meshtastic 3.x)
    */
-  float voltage = 5;
+  optional float voltage = 5;
 
   /*
    * Current measured (To be depreciated in favor of PowerMetrics in Meshtastic 3.x)
    */
-  float current = 6;
+  optional float current = 6;
 
   /* 
    * relative scale IAQ value as measured by Bosch BME680 . value 0-500.
    * Belongs to Air Quality but is not particle but VOC measurement. Other VOC values can also be put in here.
    */
-  uint32 iaq = 7;
+  optional uint32 iaq = 7;
 
   /*
    * RCWL9620 Doppler Radar Distance Sensor, used for water level detection. Float value in mm.
    */
-  float distance = 8;
+  optional float distance = 8;
 
   /*
    * VEML7700 high accuracy ambient light(Lux) digital 16-bit resolution sensor.
    */
-  float lux = 9;
+  optional float lux = 9;
 
   /*
    * VEML7700 high accuracy white light(irradiance) not calibrated digital 16-bit resolution sensor.
    */
-  float white_lux = 10;
+  optional float white_lux = 10;
 
   /*
    * Infrared lux
    */
-  float ir_lux = 11;
+  optional float ir_lux = 11;
 
   /*
    * Ultraviolet lux
    */
-  float uv_lux = 12;
+  optional float uv_lux = 12;
 
   /*
    * Wind direction in degrees
    * 0 degrees = North, 90 = East, etc...
    */
-  uint32 wind_direction = 13;
+  optional uint32 wind_direction = 13;
 
   /*
    * Wind speed in m/s
    */
-  float wind_speed = 14;
+  optional float wind_speed = 14;
 
   /*
    * Weight in KG
    */
-  float weight = 15;
+  optional float weight = 15;
 
   /*
    * Wind gust in m/s
    */
-  float wind_gust = 16;
+  optional float wind_gust = 16;
 
   /*
    * Wind lull in m/s
    */
-  float wind_lull = 17;
+  optional float wind_lull = 17;
 }
 
 /*
@@ -137,32 +137,32 @@ message PowerMetrics {
   /*
    * Voltage (Ch1)
    */
-  float ch1_voltage = 1;
+  optional float ch1_voltage = 1;
 
   /*
    * Current (Ch1)
    */
-  float ch1_current = 2;
+  optional float ch1_current = 2;
 
   /*
    * Voltage (Ch2)
    */
-  float ch2_voltage = 3;
+  optional float ch2_voltage = 3;
 
   /*
    * Current (Ch2)
    */
-  float ch2_current = 4;
+  optional float ch2_current = 4;
 
   /*
    * Voltage (Ch3)
    */
-  float ch3_voltage = 5;
+  optional float ch3_voltage = 5;
 
   /*
    * Current (Ch3)
    */
-  float ch3_current = 6;
+  optional float ch3_current = 6;
 }
 
 /*
@@ -172,62 +172,105 @@ message AirQualityMetrics {
   /*
    * Concentration Units Standard PM1.0
    */
-  uint32 pm10_standard = 1;
+  optional uint32 pm10_standard = 1;
 
   /*
    * Concentration Units Standard PM2.5
    */
-  uint32 pm25_standard = 2;
+  optional uint32 pm25_standard = 2;
 
   /*
    * Concentration Units Standard PM10.0
    */
-  uint32 pm100_standard = 3;
+  optional uint32 pm100_standard = 3;
 
   /*
    * Concentration Units Environmental PM1.0
    */
-  uint32 pm10_environmental = 4;
+  optional uint32 pm10_environmental = 4;
 
   /*
    * Concentration Units Environmental PM2.5
    */
-  uint32 pm25_environmental = 5;
+  optional uint32 pm25_environmental = 5;
 
   /*
    * Concentration Units Environmental PM10.0
    */
-  uint32 pm100_environmental = 6;
+  optional uint32 pm100_environmental = 6;
 
   /*
    * 0.3um Particle Count
    */
-  uint32 particles_03um = 7;
+  optional uint32 particles_03um = 7;
 
   /*
    * 0.5um Particle Count
    */
-  uint32 particles_05um = 8;
+  optional uint32 particles_05um = 8;
 
   /*
    * 1.0um Particle Count
    */
-  uint32 particles_10um = 9;
+  optional uint32 particles_10um = 9;
 
   /*
    * 2.5um Particle Count
    */
-  uint32 particles_25um = 10;
+  optional uint32 particles_25um = 10;
 
   /*
    * 5.0um Particle Count
    */
-  uint32 particles_50um = 11;
+  optional uint32 particles_50um = 11;
 
   /*
    * 10.0um Particle Count
    */
-  uint32 particles_100um = 12;
+  optional uint32 particles_100um = 12;
+}
+
+/*
+ * Local device mesh statistics
+ */
+message LocalStats {
+  /*
+   * How long the device has been running since the last reboot (in seconds)
+   */
+  uint32 uptime_seconds = 1;
+  /*
+   * Utilization for the current channel, including well formed TX, RX and malformed RX (aka noise).
+   */
+  float channel_utilization = 2;
+  /*
+   * Percent of airtime for transmission used within the last hour.
+   */
+  float air_util_tx = 3;
+
+  /*
+   * Number of packets sent
+   */
+  uint32 num_packets_tx = 4;
+  
+  /*
+   * Number of packets received good
+   */
+  uint32 num_packets_rx = 5;
+
+  /*
+   * Number of packets received that are malformed or violate the protocol
+   */
+  uint32 num_packets_rx_bad = 6;
+
+  /*
+   * Number of nodes online (in the past 2 hours)
+   */
+  uint32 num_online_nodes = 7;
+
+  /*
+   * Number of nodes total
+   */
+  uint32 num_total_nodes = 8;
 }
 
 /*
@@ -259,6 +302,11 @@ message Telemetry {
      * Power Metrics
      */
     PowerMetrics power_metrics = 5;
+
+    /*
+     * Local device mesh statistics
+     */
+    LocalStats local_stats = 6;
   }
 }
 

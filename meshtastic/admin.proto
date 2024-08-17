@@ -20,6 +20,14 @@ option swift_prefix = "";
  * (Prior to 1.2 these operations were done via special ToRadio operations)
  */
 message AdminMessage {
+
+  /*
+   * The node generates this key and sends it with any get_x_response packets.
+   * The client MUST include the same key with any set_x commands. Key expires after 300 seconds.
+   * Prevents replay attacks for admin messages.
+   */
+  bytes session_passkey = 101;
+
   /*
    * TODO: REPLACE
    */
@@ -58,6 +66,11 @@ message AdminMessage {
      * TODO: REPLACE
      */
     BLUETOOTH_CONFIG = 6;
+
+    /*
+     * TODO: REPLACE
+     */
+    SECURITY_CONFIG = 7;
   }
 
   /*
@@ -304,6 +317,12 @@ message AdminMessage {
      * Clear fixed position coordinates and then set position.fixed_position = false
      */
     bool remove_fixed_position = 42;
+
+    /*
+     * Set time only on the node
+     * Convenience method to set the time on the node (as Net quality) without any other position data
+     */
+    fixed32 set_time_only = 43;
 
     /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes
