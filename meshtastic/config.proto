@@ -140,13 +140,6 @@ message Config {
     bool serial_enabled = 2[deprecated = true];
 
     /*
-     * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
-     * Set this to true to leave the debug log outputting even when API is active.
-     * Moved to SecurityConfig
-     */
-    bool debug_log_enabled = 3[deprecated = true];
-
-    /*
      * For boards without a hard wired button, this is the pin number that will be used
      * Boards that have more than one button can swap the function with this one. defaults to BUTTON_PIN if defined.
      */
@@ -1014,12 +1007,6 @@ message Config {
      * Specified PIN for PairingMode.FixedPin
      */
     uint32 fixed_pin = 3;
-
-    /*
-     * Enables device (serial style logs) over Bluetooth
-     * Moved to SecurityConfig
-     */
-    bool device_logging_enabled = 4[deprecated = true];
   }
 
   message SecurityConfig {
@@ -1054,14 +1041,9 @@ message Config {
 
     /*
      * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
-     * Output live debug logging over serial.
+     * Output live debug logging over serial or bluetooth is set to true.
      */
     bool debug_log_api_enabled = 6;
-
-    /*
-     * Enables device (serial style logs) over Bluetooth
-     */
-    bool bluetooth_logging_enabled = 7;
 
     /*
      * Allow incoming device control over the insecure legacy admin channel.
