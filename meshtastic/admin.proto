@@ -71,6 +71,11 @@ message AdminMessage {
      * TODO: REPLACE
      */
     SECURITY_CONFIG = 7;
+
+    /*
+     *
+     */
+    SESSIONKEY_CONFIG = 8;
   }
 
   /*

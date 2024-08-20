@@ -1070,6 +1070,11 @@ message Config {
   }
 
   /*
+   * Blank config request, strictly for getting the session key
+   */
+  message SessionkeyConfig {}
+
+  /*
    * Payload Variant
    */
   oneof payload_variant {
@@ -1081,5 +1086,6 @@ message Config {
     LoRaConfig lora = 6;
     BluetoothConfig bluetooth = 7;
     SecurityConfig security = 8;
+    SessionkeyConfig sessionkey = 9;
   }
 }
