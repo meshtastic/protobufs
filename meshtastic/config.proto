@@ -1026,7 +1026,7 @@ message Config {
     /*
      * The public key authorized to send admin messages to this node.
      */
-    bytes admin_key = 3;
+    repeated bytes admin_key = 3;
 
     /*
      * If true, device is considered to be "managed" by a mesh administrator via admin messages
