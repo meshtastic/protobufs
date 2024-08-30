@@ -458,6 +458,11 @@ enum TelemetrySensorType {
    * MAX17048 1S lipo battery sensor (voltage, state of charge, time to go)
    */
   MAX17048 = 28;
+
+  /*
+   * Custom I2C sensor implementation based on https://github.com/meshtastic/i2c-sensor
+   */
+  CUSTOM_SENSOR = 29;
 }
 
 /*
