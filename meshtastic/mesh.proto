@@ -1021,6 +1021,11 @@ message MeshPacket {
     RELIABLE = 70;
 
     /*
+     * Higher priority for specific message types (portnums) to distinguish between other reliable packets.
+     */ 
+    HIGH = 100;
+
+    /*
      * Ack/naks are sent with very high priority to ensure that retransmission
      * stops as soon as possible
      */
