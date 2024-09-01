@@ -1021,6 +1021,12 @@ message MeshPacket {
     RELIABLE = 70;
 
     /*
+     * If priority is unset but the packet is a response to a request, we want it to get there relatively quickly.
+     * Furthermore, responses stop relaying packets directed to a node early.
+     */
+    RESPONSE = 80;
+
+    /*
      * Higher priority for specific message types (portnums) to distinguish between other reliable packets.
      */ 
     HIGH = 100;
