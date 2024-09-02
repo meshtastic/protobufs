@@ -128,6 +128,11 @@ message EnvironmentMetrics {
    * Wind lull in m/s
    */
   optional float wind_lull = 17;
+  
+  /*
+   * CO2 measurement in ppm
+   */
+  optional uint32 co2 = 18;
 }
 
 /*
@@ -463,6 +468,11 @@ enum TelemetrySensorType {
    * Custom I2C sensor implementation based on https://github.com/meshtastic/i2c-sensor
    */
   CUSTOM_SENSOR = 29;
+  
+  /*
+   * SCD40/SCD41 CO2, humidity, temperature sensor
+   */
+  SCD4X = 30;
 }
 
 /*
