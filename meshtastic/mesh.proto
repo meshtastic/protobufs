@@ -892,7 +892,7 @@ message Data {
   /*
    * Defaults to false. Indicates the user approves the packet being uploaded to MQTT.
    */
-  bool OKToMqtt = 9;
+  optional bool ok_to_mqtt = 9;
 }
 
 /*

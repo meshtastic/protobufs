@@ -973,6 +973,11 @@ message Config {
      * If true, the device will not process any packets received via LoRa that passed via MQTT anywhere on the path towards it.
      */
     bool ignore_mqtt = 104;
+
+    /*
+     * Sets the ok_to_mqtt bit on outgoing packets
+     */
+    bool config_ok_to_mqtt = 105;
   }
 
   message BluetoothConfig {
