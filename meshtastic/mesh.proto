@@ -890,9 +890,9 @@ message Data {
   fixed32 emoji = 8;
 
   /*
-   * Defaults to false. Indicates the user approves the packet being uploaded to MQTT.
+   * Bitfield for extra flags. First use is to indicate that user approves the packet being uploaded to MQTT.
    */
-  optional bool ok_to_mqtt = 9;
+  optional uint32 bitfield = 9;
 }
 
 /*
