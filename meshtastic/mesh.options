@@ -22,6 +22,7 @@
 
 *NodeInfo.channel int_size:8
 *NodeInfo.hops_away int_size:8
+*NodeInfo.max_hop_start int_size:8
 
 # Big enough for 1.2.28.568032c-d
 *MyNodeInfo.firmware_version max_size:18
@@ -54,7 +55,7 @@
 
 *ClientNotification.message max_size:400
 
-# MyMessage.name         max_size:40 
+# MyMessage.name         max_size:40
 # or fixed_length or fixed_count, or max_count
 
 #This value may want to be a few bytes smaller to compensate for the parent fields.

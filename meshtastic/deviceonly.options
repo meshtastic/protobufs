@@ -14,6 +14,7 @@
 
 *NodeInfoLite.channel int_size:8
 *NodeInfoLite.hops_away int_size:8
+*NodeInfoLite.max_hop_start int_size:8
 
 *UserLite.long_name max_size:40
 *UserLite.short_name max_size:5
