@@ -1307,8 +1307,8 @@ message NodeInfo {
    * Number of hops away from us this node
    *  hops_away > 0, this value is the distance of hops from this node
    *  hops_away == 0, this can represent one of two states
-   *    firmware <= 2.3: hops_away is unknown, can infer this is the case if max_hop_start is not present
-   *    firmware > 2.3: this is the adjacent node
+   *    data from firmware <= 2.3: hops_away is unknown, can infer this is the case if max_hop_start is not present
+   *    data from firmware > 2.3: this is the adjacent node
    */
   uint32 hops_away = 9;
 
