@@ -1828,6 +1828,11 @@ message DeviceMetadata {
    * Has Remote Hardware enabled
    */
   bool hasRemoteHardware = 10;
+
+  /*
+   * Has PKC capabilities
+   */
+  bool hasPKC = 11;
 }
 
 /*
