@@ -183,6 +183,13 @@ message ModuleConfig {
      * Only applicable if the board uses pull-up resistors on the pin
      */
     bool use_pullup = 8;
+
+    /*
+     * Whether or not all the state transition should be broadcasted.
+     * Causes an additional message to be sent to mesh when detection state goes
+     * back to false.
+     */
+    bool broadcast_all_state_transitions = 9;
   }
 
   /*
