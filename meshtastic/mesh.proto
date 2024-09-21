@@ -624,10 +624,15 @@ enum HardwareModel {
    *  ^^^ short A0 to switch to I2C address 0x3C
    *
    */
-RP2040_FEATHER_RFM95 = 76;
+  RP2040_FEATHER_RFM95 = 76;
+  
   /* M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, Paper) https://m5stack.com/ */
   M5STACK_COREBASIC=77;
   M5STACK_CORE2=78;
+
+  /* Pico2 with Waveshare Hat, same as Pico */
+  RPI_PICO2=79;
+  
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
