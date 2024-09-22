@@ -432,7 +432,7 @@ enum HardwareModel {
   DR_DEV = 41;
 
   /*
-   * M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, Paper) https://m5stack.com/
+   * M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, CoreS3, Paper) https://m5stack.com/
    */
   M5STACK = 42;
 
@@ -626,12 +626,15 @@ enum HardwareModel {
    */
   RP2040_FEATHER_RFM95 = 76;
   
-  /* M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, Paper) https://m5stack.com/ */
+  /* M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, CoreS3, Paper) https://m5stack.com/ */
   M5STACK_COREBASIC=77;
   M5STACK_CORE2=78;
 
   /* Pico2 with Waveshare Hat, same as Pico */
   RPI_PICO2=79;
+
+  /* M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, CoreS3, Paper) https://m5stack.com/ */
+  M5STACK_CORES3=80;
   
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
