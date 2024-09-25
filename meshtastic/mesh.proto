@@ -636,6 +636,8 @@ enum HardwareModel {
   /* M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, CoreS3, Paper) https://m5stack.com/ */
   M5STACK_CORES3=80;
   
+  /* Seeed XIAO S3 DK*/
+  SEEED_XIAO_S3=81;
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
