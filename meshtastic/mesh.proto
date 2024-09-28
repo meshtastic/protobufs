@@ -627,22 +627,27 @@ enum HardwareModel {
   RP2040_FEATHER_RFM95 = 76;
   
   /* M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, CoreS3, Paper) https://m5stack.com/ */
-  M5STACK_COREBASIC=77;
-  M5STACK_CORE2=78;
+  M5STACK_COREBASIC = 77;
+  M5STACK_CORE2 = 78;
 
   /* Pico2 with Waveshare Hat, same as Pico */
-  RPI_PICO2=79;
+  RPI_PICO2 = 79;
 
   /* M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, CoreS3, Paper) https://m5stack.com/ */
-  M5STACK_CORES3=80;
+  M5STACK_CORES3 = 80;
   
   /* Seeed XIAO S3 DK*/
-  SEEED_XIAO_S3=81;
+  SEEED_XIAO_S3 = 81;
 
    /*
    * Nordic nRF52840+Semtech SX1262 LoRa BLE Combo Module. nRF52840+SX1262 MS24SF1
    */
-  MS24SF1=82;
+  MS24SF1 = 82;
+
+  /*
+   * Lilygo TLora-C6 with the new ESP32-C6 MCU
+   */
+  TLORA_C6 = 83;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
