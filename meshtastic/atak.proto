@@ -43,7 +43,7 @@ message TAKPacket {
 
     /*
      * Generic CoT detail XML
-     * May be compressed / truncated by the sender
+     * May be compressed / truncated by the sender (EUD)
      */
     bytes detail = 7;
   }
