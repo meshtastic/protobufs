@@ -584,13 +584,13 @@ message ModuleConfig {
      * Preferences for the (Health) Telemetry Module
      * Enable/Disable the telemetry measurement module measurement collection
      */
-    bool health_measurement_enabled = 3;
+    bool health_measurement_enabled = 11;
 
     /*
      * Interval in seconds of how often we should try to send our
      * health metrics to the mesh
      */
-    uint32 health_update_interval = 2;
+    uint32 health_update_interval = 12;
   }
 
   /*
