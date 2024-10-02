@@ -253,7 +253,7 @@ message LocalStats {
   uint32 num_packets_tx = 4;
   
   /*
-   * Number of packets received good
+   * Number of packets received (both good and bad)
    */
   uint32 num_packets_rx = 5;
 
@@ -271,6 +271,23 @@ message LocalStats {
    * Number of nodes total
    */
   uint32 num_total_nodes = 8;
+
+  /*
+   * Number of received packets that were duplicates (due to multiple nodes relaying).
+   * If this number is high, there are nodes in the mesh relaying packets when it's unnecessary, for example due to the ROUTER/REPEATER role.
+   */
+  uint32 num_rx_dupe = 9;
+
+  /*
+   * Number of packets we transmitted that were a relay for others (not originating from ourselves).
+   */
+  uint32 num_tx_relay = 10;
+
+  /*
+   * Number of times we canceled a packet to be relayed, because someone else did it before us.
+   * This will always be zero for ROUTERs/REPEATERs. If this number is high, some other node(s) is/are relaying faster than you.
+   */
+  uint32 num_tx_relay_canceled = 11;
 }
 
 /*
