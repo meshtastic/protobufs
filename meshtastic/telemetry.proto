@@ -274,6 +274,26 @@ message LocalStats {
 }
 
 /*
+ * Health telemetry metrics
+ */
+ message HealthMetrics {
+  /*
+   * Heart rate (beats per minute)
+   */
+  optional uint32 heart_bpm = 1;
+
+  /*
+   * SpO2 (blood oxygen saturation) level
+   */
+  optional uint32 spO2 = 2;
+
+  /*
+   * Body temperature in degrees Celsius
+   */
+  optional float temperature = 3;
+}
+
+/*
  * Types of Measurements the telemetry module is equipped to handle
  */
 message Telemetry {
@@ -307,6 +327,11 @@ message Telemetry {
      * Local device mesh statistics
      */
     LocalStats local_stats = 6;
+
+    /*
+     * Health telemetry metrics
+     */
+    HealthMetrics health_metrics = 7;
   }
 }
 
@@ -463,6 +488,11 @@ enum TelemetrySensorType {
    * Custom I2C sensor implementation based on https://github.com/meshtastic/i2c-sensor
    */
   CUSTOM_SENSOR = 29;
+
+  /*
+   * MAX30102 Pulse Oximeter and Heart-Rate Sensor 
+   */
+  MAX30102 = 30;
 }
 
 /*
