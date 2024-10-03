@@ -510,6 +510,11 @@ enum TelemetrySensorType {
    * MAX30102 Pulse Oximeter and Heart-Rate Sensor 
    */
   MAX30102 = 30;
+  
+  /*
+   * MLX90614 non-contact IR temperature sensor.
+   */
+  MLX90614 = 31;
 }
 
 /*
