@@ -1,10 +1,9 @@
 name: Publish to Cargo & JSR
 
 on:
-  workflow_dispatch:
   push:
-    tags:
-      - "**"
+    # tags:
+    #   - "**"
 
 permissions: write-all
 
