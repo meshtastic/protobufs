@@ -18,8 +18,8 @@ jobs:
       - name: Set Package Versions to current tag
         # run: sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/ts/deno.json \
         #   && sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/rust/Cargo.toml
-        run: sed -i "s/__PACKAGE_VERSION__/2.5.6/g" packages/ts/deno.json \
-          && sed -i "s/__PACKAGE_VERSION__/2.5.6/g" packages/rust/Cargo.toml
+        run: sed -i "s/__PACKAGE_VERSION__/2.5.6/g" ./packages/ts/deno.json \
+          && sed -i "s/__PACKAGE_VERSION__/2.5.6/g" ./packages/rust/Cargo.toml
       - name: Setup Buf
         uses: bufbuild/buf-setup-action@main
         with:
