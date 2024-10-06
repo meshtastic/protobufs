@@ -1,6 +1,6 @@
 {
   "name": "@meshtastic/protobufs",
-  "version": "__PACKAGE_VERSION__",
+  "version": "",
   "exports": {
     ".": "./mod.ts"
   },
