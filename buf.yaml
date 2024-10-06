@@ -1,14 +1,18 @@
-version: v1
-name: buf.build/meshtastic/protobufs
-deps: []
-build:
-  excludes: []
-breaking:
-  use:
-    - FILE
-lint:
-  ignore_only:
-    PACKAGE_DEFINED:
-      - nanopb.proto
-  use:
-    - MINIMAL
+version: v2
+modules:
+  - path: meshtastic
+    name: buf.build/meshtastic/protobufs
+    excludes:
+      - meshtastic/device_only/
+    lint:
+      use:
+        - MINIMAL
+      except:
+        - PACKAGE_NO_IMPORT_CYCLE
+      disallow_comment_ignores: true
+    breaking:
+      use:
+        - FILE
+      except:
+        - EXTENSION_NO_DELETE
+        - FIELD_SAME_DEFAULT
