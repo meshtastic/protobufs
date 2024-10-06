@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: debug
-        run: echo $GITHUB_REF && ls -la && pwd
+        run: ls -la . && ls -la packages && ls -la packages/ts && ls -la packages/rust
       - name: Set Package Versions to current tag
         # run: sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/ts/deno.json \
         #   && sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/rust/Cargo.toml
