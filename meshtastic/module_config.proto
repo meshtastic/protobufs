@@ -563,20 +563,18 @@ message ModuleConfig {
     uint32 air_quality_interval = 7;
 
     /*
-     * Interval in seconds of how often we should try to send our
-     * air quality metrics to the mesh
+     * Enable/disable Power metrics
      */
     bool power_measurement_enabled = 8;
 
     /*
      * Interval in seconds of how often we should try to send our
-     * air quality metrics to the mesh
+     * power metrics to the mesh
      */
     uint32 power_update_interval = 9;
 
     /*
-     * Interval in seconds of how often we should try to send our
-     * air quality metrics to the mesh
+     * Enable/Disable the power measurement module on-device display
      */
     bool power_screen_enabled = 10;
 
@@ -591,6 +589,11 @@ message ModuleConfig {
      * health metrics to the mesh
      */
     uint32 health_update_interval = 12;
+
+    /*
+     * Enable/Disable the health telemetry module on-device display
+     */
+    bool health_screen_enabled = 13;
   }
 
   /*
