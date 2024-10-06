@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: debug
+        run: echo $GITHUB_REF && ls -la && pwd
       - name: Set Package Versions to current tag
         run: sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/ts/deno.json \
           && sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/rust/Cargo.toml
