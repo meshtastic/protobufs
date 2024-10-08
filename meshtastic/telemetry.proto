@@ -228,6 +228,11 @@ message AirQualityMetrics {
    * 10.0um Particle Count
    */
   optional uint32 particles_100um = 12;
+  
+  /*
+   * 10.0um Particle Count
+   */
+  optional uint32 co2 = 13;
 }
 
 /*
@@ -512,9 +517,14 @@ enum TelemetrySensorType {
   MAX30102 = 30;
   
   /*
-   * MLX90614 non-contact IR temperature sensor.
+   * MLX90614 non-contact IR temperature sensor
    */
   MLX90614 = 31;
+  
+  /*
+   * SCD40/SCD41 CO2, humidity, temperature sensor
+   */
+  SCD4X = 32;
 }
 
 /*
