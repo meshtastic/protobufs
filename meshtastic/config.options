@@ -19,4 +19,4 @@
 *SecurityConfig.public_key max_size:32
 *SecurityConfig.private_key max_size:32
 *SecurityConfig.admin_key max_size:32
-*SecurityConfig.admin_key max_count:1
+*SecurityConfig.admin_key max_count:3

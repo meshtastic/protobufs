@@ -40,6 +40,12 @@ message TAKPacket {
      * ATAK GeoChat message
      */
     GeoChat chat = 6;
+
+    /*
+     * Generic CoT detail XML
+     * May be compressed / truncated by the sender (EUD)
+     */
+    bytes detail = 7;
   }
 }
 

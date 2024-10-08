@@ -802,6 +802,21 @@ message Config {
        * Singapore 923mhz
        */
       SG_923 = 18;
+      
+      /*
+       * Philippines 433mhz
+       */
+      PH_433 = 19;
+      
+      /*
+       * Philippines 868mhz
+       */
+      PH_868 = 20;
+      
+      /*
+       * Philippines 915mhz
+       */
+      PH_915 = 21;
     }
 
     /*
@@ -973,6 +988,11 @@ message Config {
      * If true, the device will not process any packets received via LoRa that passed via MQTT anywhere on the path towards it.
      */
     bool ignore_mqtt = 104;
+
+    /*
+     * Sets the ok_to_mqtt bit on outgoing packets
+     */
+    bool config_ok_to_mqtt = 105;
   }
 
   message BluetoothConfig {

@@ -338,6 +338,11 @@ enum HardwareModel {
    * Heltec HRU-3601: https://heltec.org/project/hru-3601/
    */
   HELTEC_HRU_3601 = 23;
+  
+  /*
+   * Heltec Wireless Bridge
+   */
+  HELTEC_WIRELESS_BRIDGE = 24;
 
   /*
    * B&Q Consulting Station Edition G1: https://uniteng.com/wiki/doku.php?id=meshtastic:station
@@ -427,7 +432,7 @@ enum HardwareModel {
   DR_DEV = 41;
 
   /*
-   * M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, Paper) https://m5stack.com/
+   * M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, CoreS3, Paper) https://m5stack.com/
    */
   M5STACK = 42;
 
@@ -619,10 +624,31 @@ enum HardwareModel {
    *  ^^^ short A0 to switch to I2C address 0x3C
    *
    */
-RP2040_FEATHER_RFM95 = 76;
-  /* M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, Paper) https://m5stack.com/ */
-  M5STACK_COREBASIC=77;
-  M5STACK_CORE2=78;
+  RP2040_FEATHER_RFM95 = 76;
+  
+  /* M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, CoreS3, Paper) https://m5stack.com/ */
+  M5STACK_COREBASIC = 77;
+  M5STACK_CORE2 = 78;
+
+  /* Pico2 with Waveshare Hat, same as Pico */
+  RPI_PICO2 = 79;
+
+  /* M5 esp32 based MCU modules with enclosure, TFT and LORA Shields. All Variants (Basic, Core, Fire, Core2, CoreS3, Paper) https://m5stack.com/ */
+  M5STACK_CORES3 = 80;
+  
+  /* Seeed XIAO S3 DK*/
+  SEEED_XIAO_S3 = 81;
+
+   /*
+   * Nordic nRF52840+Semtech SX1262 LoRa BLE Combo Module. nRF52840+SX1262 MS24SF1
+   */
+  MS24SF1 = 82;
+
+  /*
+   * Lilygo TLora-C6 with the new ESP32-C6 MCU
+   */
+  TLORA_C6 = 83;
+
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
@@ -811,7 +837,17 @@ message Routing {
     /*
      * The receiving node does not have a Public Key to decode with
      */
-     PKI_UNKNOWN_PUBKEY = 35;
+    PKI_UNKNOWN_PUBKEY = 35;
+
+    /*
+     * Admin packet otherwise checks out, but uses a bogus or expired session key
+     */
+    ADMIN_BAD_SESSION_KEY = 36;
+
+    /*
+     * Admin packet sent using PKC, but not from a public key on the admin key list
+     */
+    ADMIN_PUBLIC_KEY_UNAUTHORIZED = 37;
   }
 
   oneof variant {
@@ -888,6 +924,11 @@ message Data {
    * a message a heart or poop emoji.
    */
   fixed32 emoji = 8;
+
+  /*
+   * Bitfield for extra flags. First use is to indicate that user approves the packet being uploaded to MQTT.
+   */
+  optional uint32 bitfield = 9;
 }
 
 /*
@@ -1301,7 +1342,7 @@ message NodeInfo {
   /*
    * Number of hops away from us this node is (0 if adjacent)
    */
-  uint32 hops_away = 9;
+  optional uint32 hops_away = 9;
 
   /*
    * True if node is in our favorites list
@@ -1813,6 +1854,11 @@ message DeviceMetadata {
    * Has Remote Hardware enabled
    */
   bool hasRemoteHardware = 10;
+
+  /*
+   * Has PKC capabilities
+   */
+  bool hasPKC = 11;
 }
 
 /*

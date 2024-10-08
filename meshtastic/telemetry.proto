@@ -128,11 +128,6 @@ message EnvironmentMetrics {
    * Wind lull in m/s
    */
   optional float wind_lull = 17;
-  
-  /*
-   * CO2 measurement in ppm
-   */
-  optional uint32 co2 = 18;
 }
 
 /*
@@ -258,7 +253,7 @@ message LocalStats {
   uint32 num_packets_tx = 4;
   
   /*
-   * Number of packets received good
+   * Number of packets received (both good and bad)
    */
   uint32 num_packets_rx = 5;
 
@@ -276,6 +271,43 @@ message LocalStats {
    * Number of nodes total
    */
   uint32 num_total_nodes = 8;
+
+  /*
+   * Number of received packets that were duplicates (due to multiple nodes relaying).
+   * If this number is high, there are nodes in the mesh relaying packets when it's unnecessary, for example due to the ROUTER/REPEATER role.
+   */
+  uint32 num_rx_dupe = 9;
+
+  /*
+   * Number of packets we transmitted that were a relay for others (not originating from ourselves).
+   */
+  uint32 num_tx_relay = 10;
+
+  /*
+   * Number of times we canceled a packet to be relayed, because someone else did it before us.
+   * This will always be zero for ROUTERs/REPEATERs. If this number is high, some other node(s) is/are relaying faster than you.
+   */
+  uint32 num_tx_relay_canceled = 11;
+}
+
+/*
+ * Health telemetry metrics
+ */
+ message HealthMetrics {
+  /*
+   * Heart rate (beats per minute)
+   */
+  optional uint32 heart_bpm = 1;
+
+  /*
+   * SpO2 (blood oxygen saturation) level
+   */
+  optional uint32 spO2 = 2;
+
+  /*
+   * Body temperature in degrees Celsius
+   */
+  optional float temperature = 3;
 }
 
 /*
@@ -312,6 +344,11 @@ message Telemetry {
      * Local device mesh statistics
      */
     LocalStats local_stats = 6;
+
+    /*
+     * Health telemetry metrics
+     */
+    HealthMetrics health_metrics = 7;
   }
 }
 
@@ -468,11 +505,16 @@ enum TelemetrySensorType {
    * Custom I2C sensor implementation based on https://github.com/meshtastic/i2c-sensor
    */
   CUSTOM_SENSOR = 29;
+
+  /*
+   * MAX30102 Pulse Oximeter and Heart-Rate Sensor 
+   */
+  MAX30102 = 30;
   
   /*
-   * SCD40/SCD41 CO2, humidity, temperature sensor
+   * MLX90614 non-contact IR temperature sensor.
    */
-  SCD4X = 30;
+  MLX90614 = 31;
 }
 
 /*

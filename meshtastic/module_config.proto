@@ -137,20 +137,39 @@ message ModuleConfig {
    * Detection Sensor Module Config
    */
   message DetectionSensorConfig {
+
+    enum TriggerType {
+      // Event is triggered if pin is low
+      LOGIC_LOW = 0;
+      // Event is triggered if pin is high
+      LOGIC_HIGH = 1;
+      // Event is triggered when pin goes high to low
+      FALLING_EDGE = 2;
+      // Event is triggered when pin goes low to high
+      RISING_EDGE = 3;
+      // Event is triggered on every pin state change, low is considered to be
+      // "active"
+      EITHER_EDGE_ACTIVE_LOW = 4;
+      // Event is triggered on every pin state change, high is considered to be
+      // "active"
+      EITHER_EDGE_ACTIVE_HIGH = 5;
+    }
     /*
      * Whether the Module is enabled
      */
     bool enabled = 1;
 
     /*
-     * Interval in seconds of how often we can send a message to the mesh when a state change is detected
+     * Interval in seconds of how often we can send a message to the mesh when a
+     * trigger event is detected
      */
     uint32 minimum_broadcast_secs = 2;
 
     /*
-     * Interval in seconds of how often we should send a message to the mesh with the current state regardless of changes
-     * When set to 0, only state changes will be broadcasted
-     * Works as a sort of status heartbeat for peace of mind
+     * Interval in seconds of how often we should send a message to the mesh
+     * with the current state regardless of trigger events When set to 0, only
+     * trigger events will be broadcasted Works as a sort of status heartbeat
+     * for peace of mind
      */
     uint32 state_broadcast_secs = 3;
 
@@ -173,10 +192,9 @@ message ModuleConfig {
     uint32 monitor_pin = 6;
 
     /*
-     * Whether or not the GPIO pin state detection is triggered on HIGH (1)
-     * Otherwise LOW (0)
+     * The type of trigger event to be used
      */
-    bool detection_triggered_high = 7;
+    TriggerType detection_trigger_type = 7;
 
     /*
      * Whether or not use INPUT_PULLUP mode for GPIO pin
@@ -545,22 +563,37 @@ message ModuleConfig {
     uint32 air_quality_interval = 7;
 
     /*
-     * Interval in seconds of how often we should try to send our
-     * air quality metrics to the mesh
+     * Enable/disable Power metrics
      */
     bool power_measurement_enabled = 8;
 
     /*
      * Interval in seconds of how often we should try to send our
-     * air quality metrics to the mesh
+     * power metrics to the mesh
      */
     uint32 power_update_interval = 9;
 
     /*
-     * Interval in seconds of how often we should try to send our
-     * air quality metrics to the mesh
+     * Enable/Disable the power measurement module on-device display
      */
     bool power_screen_enabled = 10;
+
+    /*
+     * Preferences for the (Health) Telemetry Module
+     * Enable/Disable the telemetry measurement module measurement collection
+     */
+    bool health_measurement_enabled = 11;
+
+    /*
+     * Interval in seconds of how often we should try to send our
+     * health metrics to the mesh
+     */
+    uint32 health_update_interval = 12;
+
+    /*
+     * Enable/Disable the health telemetry module on-device display
+     */
+    bool health_screen_enabled = 13;
   }
 
   /*
