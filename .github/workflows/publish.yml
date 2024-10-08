@@ -19,16 +19,20 @@ jobs:
         # run: sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/ts/deno.json \
         #   && sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/rust/Cargo.toml
         run: |
-          sed -i "s/__PACKAGE_VERSION__/2.5.6/g" packages/ts/deno.json
-          sed -i "s/__PACKAGE_VERSION__/2.5.6/g" packages/rust/Cargo.toml
+          sed -i "s/__PACKAGE_VERSION__/2.5.7/g" packages/ts/deno.json
+          sed -i "s/__PACKAGE_VERSION__/2.5.7/g" packages/rust/Cargo.toml
       - name: Setup Buf
         uses: bufbuild/buf-setup-action@main
         with:
           github_token: ${{ github.token }}
       - name: Generate code
         run: buf generate
-      - name: Copy license
-        run: cp LICENSE packages/ts && cp LICENSE packages/rust
+      - name: Copy license & README
+        run: |
+          cp LICENSE packages/ts
+          cp LICENSE packages/rust
+          cp README.md packages/ts
+          cp README.md packages/rust
       - name: Upload Rust code
         uses: actions/upload-artifact@v4
         with:
