@@ -59,17 +59,17 @@ message NodeFilter {
   /*
    * Filter unknown nodes
    */
-  bool switch_unknown = 1;
+  bool unknown_switch = 1;
 
   /*
    * Filter offline nodes
    */
-  bool switch_offline = 2;
+  bool offline_switch = 2;
    
   /*
    * Filter nodes w/o public key
    */
-  bool switch_public_key = 3;
+  bool public_key_switch = 3;
    
   /*
    * Filter based on hops away
@@ -79,7 +79,7 @@ message NodeFilter {
   /*
    * Filter nodes w/o position
    */
-  bool switch_position = 5;
+  bool position_switch = 5;
    
   /*
    * Filter nodes by matching name string
@@ -92,22 +92,22 @@ message NodeHighlight {
   /*
    * Hightlight nodes w/ active chat
    */
-  bool switch_chat = 1;
+  bool chat_switch = 1;
 
   /*
    * Highlight nodes w/ position
    */
-  bool switch_position = 2;
+  bool position_switch = 2;
    
   /*
    * Highlight nodes w/ telemetry data
    */
-  bool switch_telemetry = 3;
+  bool telemetry_switch = 3;
 
   /*
    * Highlight nodes w/ iaq data
    */
-  bool switch_iaq = 4;
+  bool iaq_switch = 4;
    
   /*
    * Highlight nodes by matching name string
