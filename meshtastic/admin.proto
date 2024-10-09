@@ -338,17 +338,17 @@ message AdminMessage {
     /*
      * Tell the node to send the stored ui data.
      */
-    bool get_ui_config_request = 102;
+    bool get_ui_config_request = 44;
 
     /*
      * Reply stored device ui data.
      */
-    DeviceUIConfig get_ui_config_response = 103;
+    DeviceUIConfig get_ui_config_response = 45;
 
     /*
      * Tell the node to store UI data persistently.
      */
-    DeviceUIConfig store_ui_config = 104;
+    DeviceUIConfig store_ui_config = 46;
 
     /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes
