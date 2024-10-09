@@ -74,7 +74,7 @@ message NodeFilter {
   /*
    * Filter based on hops away
    */
-  int32 hopys_away = 4;
+  int32 hops_away = 4;
    
   /*
    * Filter nodes w/o position
