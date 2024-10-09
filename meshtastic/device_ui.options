@@ -1,0 +1,5 @@
+*DeviceUIConfig.screen_brightness int_size:8
+*DeviceUIConfig.screen_timeout int_size:16
+*NodeFilter.node_name max_size:16
+*NodeFilter.hopys_away int_size:8
+*NodeHighlight.node_name max_size:16

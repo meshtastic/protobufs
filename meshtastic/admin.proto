@@ -7,6 +7,7 @@ import "meshtastic/config.proto";
 import "meshtastic/connection_status.proto";
 import "meshtastic/mesh.proto";
 import "meshtastic/module_config.proto";
+import "meshtastic/device_ui.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -76,6 +77,11 @@ message AdminMessage {
      *
      */
     SESSIONKEY_CONFIG = 8;
+
+    /*
+     * device-ui config
+     */
+    DEVICEUI_CONFIG = 9;
   }
 
   /*
@@ -376,6 +382,21 @@ message AdminMessage {
      * Tell the node to reset the nodedb.
      */
     int32 nodedb_reset = 100;
+
+    /*
+     * Tell the node to send the stored ui data.
+     */
+    bool get_ui_config_request = 102;
+
+    /*
+     * reply stored device ui data.
+     */
+    DeviceUIConfig get_ui_config_response = 103;
+
+    /*
+     * Tell the node to store UI data persistently.
+     */
+    DeviceUIConfig store_ui_config = 104;
   }
 }
 

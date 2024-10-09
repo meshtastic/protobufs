@@ -1,0 +1,167 @@
+syntax = "proto3";
+
+package meshtastic;
+
+option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "LocalOnlyProtos";
+option java_package = "com.geeksville.mesh";
+option swift_prefix = "";
+
+/*
+ * Protobuf structures for device-ui persistency
+ */
+
+message DeviceUIConfig {
+  /*
+   * TFT display brightness 1..255 
+   */
+  uint32 screen_brightness = 1;
+
+  /*
+   * Screen timeout 0..900 
+   */
+  uint32 screen_timeout = 2;
+
+  /*
+   * Screen lock enabled 
+   */
+  bool screen_lock = 3;
+
+  /*
+   * Color theme 
+   */
+  Theme theme = 4;
+
+  /*
+   * Audible message alert enabled
+   */
+  bool alert_enabled = 5;
+
+  /*
+   * Localization 
+   */
+  Language language = 6;
+
+  /*
+   * Node list filter 
+   */
+  NodeFilter node_filter = 7;
+
+  /*
+   * Node list highlightening 
+   */
+  NodeHighlight node_highlight = 8;
+}
+
+
+message NodeFilter {
+  /*
+   * Filter unknown nodes
+   */
+  bool switch_unknown = 1;
+
+  /*
+   * Filter offline nodes
+   */
+  bool switch_offline = 2;
+   
+  /*
+   * Filter nodes w/o public key
+   */
+  bool switch_public_key = 3;
+   
+  /*
+   * Filter based on hops away
+   */
+  int32 hopys_away = 4;
+   
+  /*
+   * Filter nodes w/o position
+   */
+  bool switch_position = 5;
+   
+  /*
+   * Filter nodes by matching name string
+   */
+  string node_name = 6;
+   
+}
+
+message NodeHighlight {
+  /*
+   * Hightlight nodes w/ active chat
+   */
+  bool switch_chat = 1;
+
+  /*
+   * Highlight nodes w/ position
+   */
+  bool switch_position = 2;
+   
+  /*
+   * Highlight nodes w/ telemetry data
+   */
+  bool switch_telemetry = 3;
+
+  /*
+   * Highlight nodes w/ iaq data
+   */
+  bool switch_iaq = 4;
+   
+  /*
+   * Highlight nodes by matching name string
+   */
+  string node_name = 5;
+   
+}
+
+enum Theme {
+  /*
+   * Dark
+   */
+  DARK = 0;
+  /*
+   * Light
+   */
+  LIGHT = 1;
+  /*
+   * Red
+   */
+  RED = 2;
+}
+
+/*
+ * Localization
+ */
+enum Language {
+  /*
+   * English
+   */
+  ENGLISH = 0;
+
+  /*
+   * French
+   */
+  FRENCH = 1;
+
+  /*
+   * German
+   */
+  GERMAN = 2;
+
+  /*
+   * Italian
+   */
+  ITALIAN = 3;
+
+  /*
+   * Portuguese
+   */
+  PORTUGUESE = 4;
+
+  /*
+   * Spanish
+   */
+  SPANISH = 5;
+}
