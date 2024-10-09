@@ -336,6 +336,21 @@ message AdminMessage {
     fixed32 set_time_only = 43;
 
     /*
+     * Tell the node to send the stored ui data.
+     */
+    bool get_ui_config_request = 102;
+
+    /*
+     * Reply stored device ui data.
+     */
+    DeviceUIConfig get_ui_config_response = 103;
+
+    /*
+     * Tell the node to store UI data persistently.
+     */
+    DeviceUIConfig store_ui_config = 104;
+
+    /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes
      * This will delay the standard *implicit* save to the file system and subsequent reboot behavior until committed (commit_edit_settings)
      */
@@ -382,21 +397,6 @@ message AdminMessage {
      * Tell the node to reset the nodedb.
      */
     int32 nodedb_reset = 100;
-
-    /*
-     * Tell the node to send the stored ui data.
-     */
-    bool get_ui_config_request = 102;
-
-    /*
-     * reply stored device ui data.
-     */
-    DeviceUIConfig get_ui_config_response = 103;
-
-    /*
-     * Tell the node to store UI data persistently.
-     */
-    DeviceUIConfig store_ui_config = 104;
   }
 }
 
