@@ -126,6 +126,11 @@ message Config {
        * but takes it step further by also ignoring messages from nodenums not in the node's known list (NodeDB)
        */
       KNOWN_ONLY = 3;
+
+      /*
+       * Only permitted for SENSOR, TRACKER and TAK_TRACKER roles, this will inhibit all rebroadcasts, not unlike CLIENT_MUTE role.
+       */
+      NONE = 4;
     }
 
     /*
