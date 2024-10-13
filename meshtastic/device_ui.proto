@@ -164,4 +164,25 @@ enum Language {
    * Spanish
    */
   SPANISH = 5;
+
+  /*
+   * Swedish
+   */
+  SWEDISH = 6;
+  
+  /*
+   * Finnish
+   */
+  FINNISH = 7;
+  
+  /*
+   * Polish
+   */
+  POLISH = 8;
+  
+  /*
+   * Turkish
+   */
+  TURKISH = 9;
 }
+
