@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package meshtastic;
+
+/*
+ * Representation of a received or sent message to be stored long-term to create a
+ * message history
+ */
+message Message {
+  /*
+   * The sending node number.
+   */
+  fixed32 from = 1;
+
+ /*
+  * Whether the message is from this device.
+  */
+  bool from_self = 2;
+
+  /*
+   * The text of the message.
+   */
+  string content = 3;
+
+  /*
+   * Values 1 through 7 indicate what secondary channel index this message was sent on.
+   * Value 0 indicates that this message was sent on the primary channel. Value 8
+   * indicates that this message was sent as a direct message.
+   */
+  uint32 category = 4;
+
+  /*
+   * The time this message was received using UNIX epoch time.
+   */
+   fixed32 rx_time = 5;
+
+  /*
+   * Whether we have received an ack for this message.
+   * NOTE: Not yet implemented.
+   */
+   bool rx_ack = 6;
+}
