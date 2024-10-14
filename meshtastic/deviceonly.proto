@@ -3,7 +3,6 @@ syntax = "proto3";
 package meshtastic;
 
 import "meshtastic/channel.proto";
-import "meshtastic/localonly.proto";
 import "meshtastic/mesh.proto";
 import "meshtastic/telemetry.proto";
 import "meshtastic/config.proto";
@@ -151,27 +150,6 @@ message NodeInfoLite {
 }
 
 /*
- * Font sizes for the device screen
- */
-enum ScreenFonts {
-  /*
-   * TODO: REPLACE
-   */
-  FONT_SMALL = 0;
-
-  /*
-   * TODO: REPLACE
-   */
-  FONT_MEDIUM = 1;
-
-  /*
-   * TODO: REPLACE
-   */
-  FONT_LARGE = 2;
-}
-
-
-/*
  * This message is never sent over the wire, but it is used for serializing DB
  * state to flash in the device code
  * FIXME, since we write this each time we enter deep sleep (and have infinite
@@ -253,50 +231,4 @@ message ChannelFile {
    * NodeDB.cpp in the device code.
    */
   uint32 version = 2;
-}
-
-/*
- * This can be used for customizing the firmware distribution. If populated,
- * show a secondary bootup screen with custom logo and text for 2.5 seconds.
- */
-message OEMStore {
-  /*
-   * The Logo width in Px
-   */
-  uint32 oem_icon_width = 1;
-
-  /*
-   * The Logo height in Px
-   */
-  uint32 oem_icon_height = 2;
-
-  /*
-   * The Logo in XBM bytechar format
-   */
-  bytes oem_icon_bits = 3;
-
-  /*
-   * Use this font for the OEM text.
-   */
-  ScreenFonts oem_font = 4;
-
-  /*
-   * Use this font for the OEM text.
-   */
-  string oem_text = 5;
-
-  /*
-   * The default device encryption key, 16 or 32 byte
-   */
-  bytes oem_aes_key = 6;
-
-  /*
-   * A Preset LocalConfig to apply during factory reset
-   */
-  LocalConfig oem_local_config = 7;
-
-  /*
-   * A Preset LocalModuleConfig to apply during factory reset
-   */
-  LocalModuleConfig oem_local_module_config = 8;
 }
