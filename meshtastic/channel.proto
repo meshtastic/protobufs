@@ -86,6 +86,13 @@ message ChannelSettings {
    * Per-channel module settings.
    */
   ModuleSettings module_settings = 7;
+
+  /*
+   * If true, audio will be allowed on the channel. This is purposely at a high level and to be set by the channel initiator.
+   * This is to prevent a user from accidentally transmitting audio where it's not intended (eg: default channels).
+   */
+  bool audio_permitted = 8;
+
 }
 
 /*
