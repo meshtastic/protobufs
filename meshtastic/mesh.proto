@@ -1457,6 +1457,11 @@ message MyNodeInfo {
    * Phone/PC apps should compare this to their build number and if too low tell the user they must update their app
    */
   uint32 min_app_version = 11;
+
+  /*
+   * Unique hardware identifier for this device
+   */
+  uint64 device_id = 12;
 }
 
 /*
