@@ -1461,7 +1461,7 @@ message MyNodeInfo {
   /*
    * Unique hardware identifier for this device
    */
-  uint64 device_id = 12;
+  bytes device_id = 12;
 }
 
 /*

@@ -25,6 +25,7 @@
 
 # Big enough for 1.2.28.568032c-d
 *MyNodeInfo.firmware_version max_size:18
+*MyNodeInfo.device_id max_size:16
 
 *MyNodeInfo.air_period_tx       max_count:8
 *MyNodeInfo.air_period_rx       max_count:8
