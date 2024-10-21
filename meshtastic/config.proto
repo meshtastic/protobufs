@@ -131,6 +131,12 @@ message Config {
        * Only permitted for SENSOR, TRACKER and TAK_TRACKER roles, this will inhibit all rebroadcasts, not unlike CLIENT_MUTE role.
        */
       NONE = 4;
+
+      /*
+       * Ignores packets from non-standard portnums such as: TAK, RangeTest, PaxCounter, etc.
+       * Only rebroadcasts packets with standard portnums: NodeInfo, Text, Position, Telemetry, and Routing.
+       */
+      CORE_PORTNUMS_ONLY = 5;
     }
 
     /*
