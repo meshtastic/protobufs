@@ -43,6 +43,11 @@ jobs:
         with:
           name: ts_code
           path: packages/ts
+      - name: Upload C code
+        uses: actions/upload-artifact@v4
+        with:
+          name: c_code
+          path: packages/c
 
   publish-jsr:
     runs-on: ubuntu-24.04

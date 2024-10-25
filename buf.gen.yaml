@@ -8,3 +8,5 @@ plugins:
   - remote: buf.build/community/neoeinstein-prost-crate:v0.4.1
     out: packages/rust/src/generated
     opt: no_features
+  - remote: buf.build/community/nanopb:v0.4.9
+    out: packages/c
