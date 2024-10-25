@@ -368,6 +368,11 @@ message ModuleConfig {
      * Existing logging over the Serial Console will still be present
      */
     bool override_console_serial_port = 8;
+
+    /*
+     * Whether to require ACKs for serial packets
+     */
+    bool ack = 9 [default = true];
   }
 
   /*
