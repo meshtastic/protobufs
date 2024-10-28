@@ -14,44 +14,53 @@ option swift_prefix = "";
 
 message DeviceUIConfig {
   /*
+   * A version integer used to invalidate saved files when we make incompatible changes.
+   */
+  uint32 version = 1;
+
+  /*
    * TFT display brightness 1..255 
    */
-  uint32 screen_brightness = 1;
+  uint32 screen_brightness = 2;
 
   /*
    * Screen timeout 0..900 
    */
-  uint32 screen_timeout = 2;
+  uint32 screen_timeout = 3;
 
   /*
-   * Screen lock enabled 
+   * Screen/Settings lock enabled 
    */
-  bool screen_lock = 3;
+  bool screen_lock = 4;
+  bool settings_lock = 5;
+  uint32 pin_code = 6;
 
   /*
    * Color theme 
    */
-  Theme theme = 4;
+  Theme theme = 7;
 
   /*
-   * Audible message alert enabled
+   * Audible message, banner and ring tone
    */
-  bool alert_enabled = 5;
+  bool alert_enabled = 8;
+  bool banner_enabled = 9;
+  uint32 ring_tone_id = 10;
 
   /*
    * Localization 
    */
-  Language language = 6;
+  Language language = 11;
 
   /*
    * Node list filter 
    */
-  NodeFilter node_filter = 7;
+  NodeFilter node_filter = 12;
 
   /*
-   * Node list highlightening 
+   * Node list highlightening
    */
-  NodeHighlight node_highlight = 8;
+  NodeHighlight node_highlight = 13;
 }
 
 
@@ -184,5 +193,35 @@ enum Language {
    * Turkish
    */
   TURKISH = 9;
-}
+
+  /*
+   * Serbian
+   */
+  SERBIAN = 10;
+
+  /*
+   * Russian
+   */
+  RUSSIAN = 11;
+
+  /*
+   * Dutch
+   */
+  DUTCH = 12;
+
+  /*
+   * Greek
+   */
+  GREEK = 13;
+
+  /*
+   * Simplified Chinese (experimental)
+   */
+  SIMPLIFIED_CHINESE = 30;
+
+  /*
+   * Traditional Chinese (experimental)
+   */
+  TRADITIONAL_CHINESE = 31;
+  }
 
