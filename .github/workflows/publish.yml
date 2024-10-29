@@ -19,8 +19,8 @@ jobs:
         # run: sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/ts/deno.json \
         #   && sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/rust/Cargo.toml
         run: |
-          sed -i "s/__PACKAGE_VERSION__/2.5.7/g" packages/ts/deno.json
-          sed -i "s/__PACKAGE_VERSION__/2.5.7/g" packages/rust/Cargo.toml
+          sed -i "s/__PACKAGE_VERSION__/2.5.9/g" packages/ts/deno.json
+          sed -i "s/__PACKAGE_VERSION__/2.5.9/g" packages/rust/Cargo.toml
       - name: Setup Buf
         uses: bufbuild/buf-setup-action@main
         with:
@@ -82,5 +82,5 @@ jobs:
       - name: Publish to crates.io
         uses: katyo/publish-crates@v2
         with:
-            registry-token: ${{ secrets.CARGO_TOKEN }}
-            ignore-unpublished-changes: true
+          registry-token: ${{ secrets.CARGO_TOKEN }}
+          ignore-unpublished-changes: true
