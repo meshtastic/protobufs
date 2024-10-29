@@ -8,6 +8,7 @@ import "module_config.proto";
 import "portnums.proto";
 import "telemetry.proto";
 import "xmodem.proto";
+import "device_ui.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -1456,6 +1457,11 @@ message MyNodeInfo {
    * Phone/PC apps should compare this to their build number and if too low tell the user they must update their app
    */
   uint32 min_app_version = 11;
+
+  /*
+   * Unique hardware identifier for this device
+   */
+  bytes device_id = 12;
 }
 
 /*
@@ -1640,6 +1646,11 @@ message FromRadio {
      * Notification message to the client
      */
     ClientNotification clientNotification = 16;
+
+    /*
+     * Persistent data for device-ui
+     */
+    DeviceUIConfig deviceuiConfig = 17;
   }
 }
 

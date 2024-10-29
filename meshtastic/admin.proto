@@ -7,6 +7,7 @@ import "config.proto";
 import "connection_status.proto";
 import "mesh.proto";
 import "module_config.proto";
+import "device_ui.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -76,6 +77,11 @@ message AdminMessage {
      *
      */
     SESSIONKEY_CONFIG = 8;
+
+    /*
+     * device-ui config
+     */
+    DEVICEUI_CONFIG = 9;
   }
 
   /*
@@ -328,6 +334,21 @@ message AdminMessage {
      * Convenience method to set the time on the node (as Net quality) without any other position data
      */
     fixed32 set_time_only = 43;
+
+    /*
+     * Tell the node to send the stored ui data.
+     */
+    bool get_ui_config_request = 44;
+
+    /*
+     * Reply stored device ui data.
+     */
+    DeviceUIConfig get_ui_config_response = 45;
+
+    /*
+     * Tell the node to store UI data persistently.
+     */
+    DeviceUIConfig store_ui_config = 46;
 
     /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes

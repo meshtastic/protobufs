@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "meshtastic/device_ui.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "ConfigProtos";
@@ -126,6 +128,17 @@ message Config {
        * but takes it step further by also ignoring messages from nodenums not in the node's known list (NodeDB)
        */
       KNOWN_ONLY = 3;
+
+      /*
+       * Only permitted for SENSOR, TRACKER and TAK_TRACKER roles, this will inhibit all rebroadcasts, not unlike CLIENT_MUTE role.
+       */
+      NONE = 4;
+
+      /*
+       * Ignores packets from non-standard portnums such as: TAK, RangeTest, PaxCounter, etc.
+       * Only rebroadcasts packets with standard portnums: NodeInfo, Text, Position, Telemetry, and Routing.
+       */
+      CORE_PORTNUMS_ONLY = 5;
     }
 
     /*
@@ -802,6 +815,21 @@ message Config {
        * Singapore 923mhz
        */
       SG_923 = 18;
+      
+      /*
+       * Philippines 433mhz
+       */
+      PH_433 = 19;
+      
+      /*
+       * Philippines 868mhz
+       */
+      PH_868 = 20;
+      
+      /*
+       * Philippines 915mhz
+       */
+      PH_915 = 21;
     }
 
     /*
@@ -1074,5 +1102,6 @@ message Config {
     BluetoothConfig bluetooth = 7;
     SecurityConfig security = 8;
     SessionkeyConfig sessionkey = 9;
+    DeviceUIConfig device_ui = 10;
   }
 }
