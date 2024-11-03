@@ -1870,6 +1870,11 @@ message DeviceMetadata {
    * Has PKC capabilities
    */
   bool hasPKC = 11;
+  
+  /*
+   * Device firmware environment string
+   */
+  string hw_env = 12;
 }
 
 /*
