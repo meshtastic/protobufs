@@ -1870,6 +1870,89 @@ message DeviceMetadata {
    * Has PKC capabilities
    */
   bool hasPKC = 11;
+
+  /*
+   * Bit field of boolean for excluded modules
+   * (bitwise OR of ExcludedModules)
+   */
+  uint32 excluded_modules = 12;
+}
+
+/*
+ * Enum for modules excluded from a device's configuration.
+ * Each value represents a ModuleConfigType that can be toggled as excluded
+ * by setting its corresponding bit in the `excluded_modules` bitmask field.
+ */
+enum ExcludedModules {
+  /*
+   * Default value of 0 indicates no modules are excluded.
+   */
+  EXCLUDED_NONE = 0x0000;
+
+  /*
+   * MQTT module
+   */
+  MQTT_CONFIG = 0x0001;
+
+  /*
+   * Serial module
+   */
+  SERIAL_CONFIG = 0x0002;
+
+  /*
+   * External Notification module
+   */
+  EXTNOTIF_CONFIG = 0x0004;
+
+  /*
+   * Store and Forward module
+   */
+  STOREFORWARD_CONFIG = 0x0008;
+
+  /*
+   * Range Test module
+   */
+  RANGETEST_CONFIG = 0x0010;
+
+  /*
+   * Telemetry module
+   */
+  TELEMETRY_CONFIG = 0x0020;
+
+  /*
+   * Canned Message module
+   */
+  CANNEDMSG_CONFIG = 0x0040;
+
+  /*
+   * Audio module
+   */
+  AUDIO_CONFIG = 0x0080;
+
+  /*
+   * Remote Hardware module
+   */
+  REMOTEHARDWARE_CONFIG = 0x0100;
+
+  /*
+   * Neighbor Info module
+   */
+  NEIGHBORINFO_CONFIG = 0x0200;
+
+  /*
+   * Ambient Lighting module
+   */
+  AMBIENTLIGHTING_CONFIG = 0x0400;
+
+  /*
+   * Detection Sensor module
+   */
+  DETECTIONSENSOR_CONFIG = 0x0800;
+
+  /*
+   * Paxcounter module
+   */
+  PAXCOUNTER_CONFIG = 0x1000;
 }
 
 /*
