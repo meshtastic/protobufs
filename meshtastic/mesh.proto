@@ -1874,7 +1874,7 @@ message DeviceMetadata {
   /*
    * Device firmware environment string
    */
-  string hw_env = 12;
+  string pio_env = 12;
 }
 
 /*
