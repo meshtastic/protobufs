@@ -67,7 +67,7 @@
 *NeighborInfo.neighbors max_count:10
 
 *DeviceMetadata.firmware_version max_size:18
-*DeviceMetadata.hw_env max_size:40
+*DeviceMetadata.pio_env max_size:40
 
 *MqttClientProxyMessage.topic max_size:60
 *MqttClientProxyMessage.data max_size:435
