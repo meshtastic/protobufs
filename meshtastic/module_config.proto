@@ -201,6 +201,16 @@ message ModuleConfig {
      * Only applicable if the board uses pull-up resistors on the pin
      */
     bool use_pullup = 8;
+
+    /* If this is set, message are send to channel set in "sendTo" else a "NodeID"*/
+    bool sendTochannel = 9;
+
+    /* Send module messages to Channel/Node.
+     * Example: A name "Detection" would result in a message send to channel "Detection" if sendToChannel **is** set
+     * Example: A name "01020304" would result in a message send to node "01020304" if sendToChannel is **not** set
+     * Maximum length of 12 characters
+     */
+    string sendTo = 10;
   }
 
   /*
