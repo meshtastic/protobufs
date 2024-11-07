@@ -2,10 +2,11 @@ syntax = "proto3";
 
 package meshtastic;
 
-import "meshtastic/channel.proto";
-import "meshtastic/mesh.proto";
-import "meshtastic/telemetry.proto";
-import "meshtastic/config.proto";
+import "channel.proto";
+import "localonly.proto";
+import "mesh.proto";
+import "telemetry.proto";
+import "config.proto";
 import "nanopb.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";

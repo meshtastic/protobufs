@@ -1177,7 +1177,7 @@ message MeshPacket {
   float rx_snr = 8;
 
   /*
-   * If unset treated as zero (no forwarding, send to adjacent nodes only)
+   * If unset treated as zero (no forwarding, send to direct neighbor nodes only)
    * if 1, allow hopping through one node, etc...
    * For our usecase real world topologies probably have a max of about 3.
    * This field is normally placed into a few of bits in the header.
@@ -1317,7 +1317,7 @@ message NodeInfo {
   /*
    * TODO: REMOVE/INTEGRATE
    * Not currently used (till full DSR deployment?) Our current preferred node node for routing - might be the same as num if
-   * we are adjacent Or zero if we don't yet know a route to this node.
+   * we are direct neighbor or zero if we don't yet know a route to this node.
    * fixed32 next_hop = 5;
    */
 
@@ -1341,7 +1341,7 @@ message NodeInfo {
   bool via_mqtt = 8;
 
   /*
-   * Number of hops away from us this node is (0 if adjacent)
+   * Number of hops away from us this node is (0 if direct neighbor)
    */
   optional uint32 hops_away = 9;
 
