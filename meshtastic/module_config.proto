@@ -205,12 +205,11 @@ message ModuleConfig {
     /* If this is set, message are send to channel set in "sendTo" else a "NodeID"*/
     bool sendTochannel = 9;
 
-    /* Send module messages to Channel/Node.
-     * Example: A name "Detection" would result in a message send to channel "Detection" if sendToChannel **is** set
-     * Example: A name "01020304" would result in a message send to node "01020304" if sendToChannel is **not** set
-     * Maximum length of 12 characters
+    /* Send module messages to Channel Index/UserID.
+     * Example: A number set as "1" would result in a message send to channel index "1" if sendToChannel is set
+     * Example: A number of "FFFFFFFF" would result in a message send to UserID "FFFFFFFF" if sendToChannel is not set
      */
-    string sendTo = 10;
+    uint32_t sendTo = 10;
   }
 
   /*
