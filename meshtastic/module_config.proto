@@ -210,8 +210,8 @@ message ModuleConfig {
 
     /*
      * Send module messages to Channel Index/NodeNum.
-     * Example: A number set as "1" would result in a message send to channel index "1" if sendToChannel is set
-     * Example: A number of "0x11111111" would result in a message send to NodeNum "0x11111111" if sendToChannel is not set
+     * Example: A number set as "1" would result in a message send to channel index "1" if send_as_dm is set false
+     * Example: A number of "0x11111111" would result in a message send to NodeNum "0x11111111" if send_as_dm is set true
      */
     uint32 send_to = 10;
   }
