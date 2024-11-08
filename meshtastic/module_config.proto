@@ -201,13 +201,17 @@ message ModuleConfig {
      * Only applicable if the board uses pull-up resistors on the pin
      */
     bool use_pullup = 8;
+ 
+   /*
+    * If this is set true, messages are send as a direct message to the NodeNum set in "sendTo". 
+    * If set to false, messages are broadcasted to a channel with the index set in "sendTo".
+    */
+    bool send_as_dm = 9;
 
-    /* If this is set, message are send to channel set in "sendTo" else a "NodeID"*/
-    bool sendAsDM = 9;
-
-    /* Send module messages to Channel Index/UserID.
+    /*
+     * Send module messages to Channel Index/NodeNum.
      * Example: A number set as "1" would result in a message send to channel index "1" if sendToChannel is set
-     * Example: A number of "0x11111111" would result in a message send to UserID "0x11111111" if sendToChannel is not set
+     * Example: A number of "0x11111111" would result in a message send to NodeNum "0x11111111" if sendToChannel is not set
      */
     uint32 sendTo = 10;
   }
