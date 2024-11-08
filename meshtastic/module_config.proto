@@ -209,7 +209,7 @@ message ModuleConfig {
      * Example: A number set as "1" would result in a message send to channel index "1" if sendToChannel is set
      * Example: A number of "FFFFFFFF" would result in a message send to UserID "FFFFFFFF" if sendToChannel is not set
      */
-    uint32_t sendTo = 10;
+    uint32 sendTo = 10;
   }
 
   /*
