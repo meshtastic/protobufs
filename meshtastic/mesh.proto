@@ -1350,6 +1350,12 @@ message NodeInfo {
    * Persists between NodeDB internal clean ups
    */
   bool is_favorite = 10;
+
+  /*
+   * True if node is in our ignored list
+   * Persists between NodeDB internal clean ups
+   */
+  bool is_ignored = 11;
 }
 
 /*

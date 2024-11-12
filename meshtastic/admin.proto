@@ -351,6 +351,16 @@ message AdminMessage {
     DeviceUIConfig store_ui_config = 46;
 
     /*
+     * Set specified node-num to be ignored on the NodeDB on the device
+     */
+    uint32 set_ignored_node = 47;
+
+    /*
+     * Set specified node-num to be un-ignored on the NodeDB on the device
+     */
+    uint32 remove_ignored_node = 48;
+
+    /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes
      * This will delay the standard *implicit* save to the file system and subsequent reboot behavior until committed (commit_edit_settings)
      */
