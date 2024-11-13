@@ -830,6 +830,11 @@ message Config {
        * Philippines 915mhz
        */
       PH_915 = 21;
+      
+      /*
+       * Indonesia
+       */
+      ID = 22;
     }
 
     /*
