@@ -1,6 +1,7 @@
 *DeviceUIConfig.screen_brightness int_size:8
 *DeviceUIConfig.screen_timeout int_size:16
 *DeviceUIConfig.ring_tone_id int_size:8
+*DeviceUIConfig.calibration_data max_size:16
 *NodeFilter.node_name max_size:16
 *NodeFilter.hops_away int_size:8
 *NodeHighlight.node_name max_size:16
