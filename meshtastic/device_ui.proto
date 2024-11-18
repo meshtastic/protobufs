@@ -61,6 +61,11 @@ message DeviceUIConfig {
    * Node list highlightening
    */
   NodeHighlight node_highlight = 13;
+
+  /*
+   * 8 integers for screen calibration data
+   */
+  bytes calibration_data = 14;
 }
 
 
@@ -215,6 +220,11 @@ enum Language {
   GREEK = 13;
 
   /*
+   * Norwegian
+   */
+  NORWEGIAN = 14;
+
+   /*
    * Simplified Chinese (experimental)
    */
   SIMPLIFIED_CHINESE = 30;
