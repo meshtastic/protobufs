@@ -38,6 +38,8 @@
 *MeshPacket.hop_limit int_size:8
 *MeshPacket.hop_start int_size:8
 *MeshPacket.channel int_size:8
+*MeshPacket.next_hop int_size:8
+*MeshPacket.relay_node int_size:8
 
 *QueueStatus.res int_size:8
 *QueueStatus.free int_size:8
