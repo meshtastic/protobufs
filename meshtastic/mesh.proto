@@ -651,6 +651,12 @@ enum HardwareModel {
   TLORA_C6 = 83;
 
   /*
+   * WisMesh Tap
+   * RAK-4631 w/ TFT in injection modled case
+   */
+  WISMESH_TAP = 84;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
