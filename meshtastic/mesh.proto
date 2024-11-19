@@ -1233,6 +1233,18 @@ message MeshPacket {
    * Indicates whether the packet was en/decrypted using PKI
    */
   bool pki_encrypted = 17;
+
+  /*
+   * Last byte of the node number of the node that should be used as the next hop in routing. 
+   * Set by the firmware internally, clients are not supposed to set this.
+   */
+  uint32 next_hop = 18;
+
+  /*
+   * Last byte of the node number of the node that will relay/relayed this packet.
+   * Set by the firmware internally, clients are not supposed to set this.
+   */
+  uint32 relay_node = 19;
 }
 
 /*
