@@ -128,6 +128,12 @@ message EnvironmentMetrics {
    * Wind lull in m/s
    */
   optional float wind_lull = 17;
+
+  /*
+  * Radiation in µR/h
+  */
+  optional float radiation = 18;
+
 }
 
 /*
@@ -525,6 +531,12 @@ enum TelemetrySensorType {
    * SCD40/SCD41 CO2, humidity, temperature sensor
    */
   SCD4X = 32;
+
+  /*
+   * ClimateGuard RadSens, radiation, Geiger-Muller Tube
+   */
+  RADSENS = 33;
+
 }
 
 /*
