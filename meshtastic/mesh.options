@@ -17,7 +17,7 @@
 
 # note: this payload length is ONLY the bytes that are sent inside of the Data protobuf (excluding protobuf overhead). The 16 byte header is
 # outside of this envelope
-*Data.payload max_size:237
+*Data.payload max_size:233
 *Data.bitfield int_size:8
 
 *NodeInfo.channel int_size:8
@@ -62,7 +62,7 @@
 # or fixed_length or fixed_count, or max_count
 
 #This value may want to be a few bytes smaller to compensate for the parent fields.
-*Compressed.data max_size:237
+*Compressed.data max_size:233
 
 *Waypoint.name         max_size:30
 *Waypoint.description  max_size:100
