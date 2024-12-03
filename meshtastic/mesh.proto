@@ -657,6 +657,12 @@ enum HardwareModel {
   WISMESH_TAP = 84;
 
   /*
+   * Heltec Mesh Node T114 board with nRF52840 CPU, without TFT display, Ultimate low-power design,
+   * specifically adapted for the Meshtatic project
+   */
+  HELTEC_MESH_NODE_T114_NOSCREEN = 85;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
