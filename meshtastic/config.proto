@@ -293,6 +293,44 @@ message Config {
       NOT_PRESENT = 2;
     }
 
+
+    enum GpsDynamicMode {
+      /*
+       * For pedestrian use and hiking (default)
+       */
+      PEDESTRIAN = 0;
+
+      /*
+       * For cycling.
+       */
+      BIKE = 1;
+
+      /*
+       * For use in a moving car.
+       */
+      CAR = 2;
+
+      /*
+       * For use in a boat at sea level.
+       */
+      BOAT = 3;
+
+      /*
+       * For use in a plane.
+       */
+      PLANE = 4;
+
+      /*
+       * For use in a high-altitude balloon.
+       */
+      BALLOON = 5;
+
+      /*
+       * For fixed-position use of GPS.
+       */
+      STATIONARY = 6;
+    }
+
     /*
      * We should send our position this often (but only if it has changed significantly)
      * Defaults to 15 minutes
@@ -363,6 +401,11 @@ message Config {
      * Set where GPS is enabled, disabled, or not present
      */
     GpsMode gps_mode = 13;
+
+  /*
+     * Set what type of activity is expected for the GPS Usage.
+     */
+    GpsMode gps_dynamic_mode = 14;
   }
 
   /*
