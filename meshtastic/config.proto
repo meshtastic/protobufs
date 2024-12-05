@@ -1006,6 +1006,14 @@ message Config {
      * Sets the ok_to_mqtt bit on outgoing packets
      */
     bool config_ok_to_mqtt = 105;
+
+    /*
+     * For testing this simulate a node which cannot be heared directly.
+     * All comunications received from this node will be dropped.
+     * Due to space constraints in the header, only the last byte of
+     * the relayer is transmited, thus only the last byte can be checked.
+     */
+    bytes ignore_direct = 106;
   }
 
   message BluetoothConfig {
