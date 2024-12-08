@@ -1272,6 +1272,13 @@ message MeshPacket {
    * Set by the firmware internally, clients are not supposed to set this.
    */
   uint32 relay_node = 19;
+
+  /*
+   * *Never* sent over the radio links.
+   * Timestamp after which this packet may be sent.
+   * Set by the firmware internally, clients are not supposed to set this.
+   */
+  uint32 tx_after = 20;
 }
 
 /*
