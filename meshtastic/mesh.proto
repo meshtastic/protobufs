@@ -665,7 +665,7 @@ enum HardwareModel {
   ROUTASTIC = 85;
 
   /*
-   * Mesh-Tab esp32 based
+   * Mesh-Tab, esp32 based
    * https://github.com/valzzu/Mesh-Tab
    */
   MESH_TAB = 86;
