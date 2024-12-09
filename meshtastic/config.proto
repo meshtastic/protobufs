@@ -107,7 +107,7 @@ message Config {
        *    but should not be given priority over other routers in order to avoid unnecessaraily
        *    consuming hops.
        */
-      ROUTER_INFILL = 11;
+      ROUTER_LATE = 11;
     }
 
     /*
