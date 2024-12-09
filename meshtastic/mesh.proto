@@ -1117,11 +1117,6 @@ message MeshPacket {
      * The message is delayed and was originally a direct message
      */
     DELAYED_DIRECT = 2;
-
-    /*
-     * The rebroadcast of this message is delayed because another node was heard rebroadcasting it.
-     */
-    DELAYED_REBROADCAST = 3;
   }
 
   /*
@@ -1230,7 +1225,7 @@ message MeshPacket {
   /*
    * Describe if this message is delayed
    */
-  Delayed delayed = 13;
+  Delayed delayed = 13 [deprecated = true];
 
   /*
    * Describes whether this packet passed via MQTT somewhere along the path it currently took.
