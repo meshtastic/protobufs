@@ -665,6 +665,14 @@ enum HardwareModel {
   ROUTASTIC = 85;
 
   /*
+   * Mesh-Tab, esp32 based
+   * https://github.com/valzzu/Mesh-Tab
+   */
+  MESH_TAB = 86;
+
+  
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
