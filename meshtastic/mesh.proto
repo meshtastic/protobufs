@@ -1096,7 +1096,7 @@ message MeshPacket {
     HIGH = 100;
 
     /*
-     * Higher priority alert message used for critical messages which take priority over other reliable packets.
+     * Higher priority alert message used for critical alerts which take priority over other reliable packets.
      */ 
     ALERT = 110;
 
