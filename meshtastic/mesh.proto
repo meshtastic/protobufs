@@ -1096,6 +1096,11 @@ message MeshPacket {
     HIGH = 100;
 
     /*
+     * Higher priority alert message used for critical alerts which take priority over other reliable packets.
+     */ 
+    ALERT = 110;
+
+    /*
      * Ack/naks are sent with very high priority to ensure that retransmission
      * stops as soon as possible
      */
