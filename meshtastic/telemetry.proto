@@ -536,6 +536,11 @@ enum TelemetrySensorType {
    * ClimateGuard RadSens, radiation, Geiger-Muller Tube
    */
   RADSENS = 33;
+  
+  /*
+   * High accuracy current and voltage
+   */
+  INA226 = 34;
 
 }
 
