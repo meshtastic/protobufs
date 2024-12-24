@@ -431,6 +431,11 @@ message Config {
     uint32 device_battery_ina_address = 9;
 
     /*
+     * Number of battery cells in use. Battery charge is calculated using (v / num_cells).
+     */
+    uint32 device_battery_num_cells = 10;
+
+    /*
      * If non-zero, we want powermon log outputs.  With the particular (bitfield) sources enabled.
      * Note: we picked an ID of 32 so that lower more efficient IDs can be used for more frequently used options.
      */
