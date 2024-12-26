@@ -2,12 +2,12 @@
 
 *AdminMessage.session_passkey max_size:8
 
-*AdminMessage.set_canned_message_module_messages max_size:201
-*AdminMessage.get_canned_message_module_messages_response max_size:201
-*AdminMessage.delete_file_request max_size:201
+*AdminMessage.set_canned_message_module_messages max_size:256
+*AdminMessage.get_canned_message_module_messages_response max_size:256
+*AdminMessage.delete_file_request max_size:256
 
-*AdminMessage.set_ringtone_message max_size:231
-*AdminMessage.get_ringtone_response max_size:231
+*AdminMessage.set_ringtone_message max_size:256
+*AdminMessage.get_ringtone_response max_size:256
 
 *HamParameters.call_sign max_size:8
 *HamParameters.short_name max_size:5

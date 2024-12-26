@@ -16,7 +16,7 @@
 *ExternalNotificationConfig.nag_timeout int_size:16
 
 *RemoteHardwareConfig.available_pins max_count:4
-*RemoteHardwarePin.name max_size:15
+*RemoteHardwarePin.name max_size:16
 *RemoteHardwarePin.gpio_pin int_size:8
 
 *AmbientLightingConfig.current int_size:8
@@ -25,5 +25,5 @@
 *AmbientLightingConfig.blue int_size:8
 
 *DetectionSensorConfig.monitor_pin int_size:8
-*DetectionSensorConfig.name max_size:20
+*DetectionSensorConfig.name max_size:32
 *DetectionSensorConfig.detection_trigger_type max_size:8

@@ -2,4 +2,4 @@
 
 # 256 bit or 128 bit psk key
 *ChannelSettings.psk max_size:32
-*ChannelSettings.name max_size:12
+*ChannelSettings.name max_size:16
