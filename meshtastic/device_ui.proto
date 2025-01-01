@@ -100,6 +100,11 @@ message NodeFilter {
    */
   string node_name = 6;
    
+  /*
+   * Filter based on channel
+   */
+  int32 channel = 7;
+   
 }
 
 message NodeHighlight {
@@ -223,6 +228,11 @@ enum Language {
    * Norwegian
    */
   NORWEGIAN = 14;
+
+  /*
+   * Slovenian
+   */
+  SLOVENIAN = 15;
 
    /*
    * Simplified Chinese (experimental)
