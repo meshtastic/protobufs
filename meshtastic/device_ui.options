@@ -4,4 +4,5 @@
 *DeviceUIConfig.calibration_data max_size:16
 *NodeFilter.node_name max_size:16
 *NodeFilter.hops_away int_size:8
+*NodeFilter.channel int_size:8
 *NodeHighlight.node_name max_size:16
