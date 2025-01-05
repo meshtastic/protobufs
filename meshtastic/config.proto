@@ -515,6 +515,26 @@ message Config {
      * rsyslog Server and Port
      */
     string rsyslog_server = 9;
+
+    /*
+     * Flags for enabling/disabling network protocols
+     */
+    uint32 enabled_protocols = 10;
+
+    /*
+     * Available flags auxiliary network protocols
+     */
+    enum ProtocolFlags {
+      /*
+       * Do not broadcast packets over any network protocol
+       */
+      NO_BROADCAST = 0x0000;
+
+      /*
+       * Enable broadcasting packets via UDP over the local network
+       */
+      UDP_BROADCAST = 0x0001;
+    }
   }
 
   /*
