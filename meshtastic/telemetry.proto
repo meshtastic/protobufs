@@ -134,6 +134,16 @@ message EnvironmentMetrics {
   */
   optional float radiation = 18;
 
+  /*
+  * Rainfall in the last hour in mm
+  */
+  optional float rainfall_1h = 19;
+
+    /*
+  * Rainfall in the last 24 hours in mm
+  */
+  optional float rainfall_24h = 20;
+
 }
 
 /*
@@ -541,6 +551,11 @@ enum TelemetrySensorType {
    * High accuracy current and voltage
    */
   INA226 = 34;
+
+  /*
+   * DFRobot Gravity tipping bucket rain gauge
+   */
+  DFROBOT_RAIN = 35;
 
 }
 
