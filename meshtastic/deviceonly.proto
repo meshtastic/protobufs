@@ -220,11 +220,20 @@ message DeviceState {
    * The mesh's nodes with their available gpio pins for RemoteHardware module
    */
   repeated NodeRemoteHardwarePin node_remote_hardware_pins = 13;
+}
+
+message NodeDatabase {
+  /*
+   * A version integer used to invalidate old save files when we make
+   * incompatible changes This integer is set at build time and is private to
+   * NodeDB.cpp in the device code.
+   */
+  uint32 version = 1;
 
   /*
    * New lite version of NodeDB to decrease memory footprint
    */
-  repeated NodeInfoLite node_db_lite = 14 [(nanopb).callback_datatype = "std::vector<meshtastic_NodeInfoLite>"];
+  repeated NodeInfoLite nodes = 2 [(nanopb).callback_datatype = "std::vector<meshtastic_NodeInfoLite>"];
 }
 
 /*
