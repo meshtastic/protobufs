@@ -205,9 +205,10 @@ message DeviceState {
   bool no_save = 9 [deprecated = true];
 
   /*
-   * Some GPS receivers seem to have bogus settings from the factory, so we always do one factory reset.
+   * Previously used to manage GPS factory resets.
+   * Deprecated in 2.5.23
    */
-  bool did_gps_reset = 11;
+  bool did_gps_reset = 11 [deprecated = true];
 
   /*
    * We keep the last received waypoint stored in the device flash,
