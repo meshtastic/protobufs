@@ -257,7 +257,7 @@ message ChannelFile {
 /*
  * The on-disk backup of the node's preferences
  */
- message BackupPrefs {
+ message BackupPreferences {
   /*
    * The version of the backup
    */
