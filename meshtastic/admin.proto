@@ -154,6 +154,18 @@ message AdminMessage {
     PAXCOUNTER_CONFIG = 12;
   }
 
+  enum BackupLocation {
+    /*
+     * Backup to the internal flash
+     */
+    FLASH = 0;
+
+    /*
+     * Backup to the SD card
+     */
+    SD = 1;
+  }
+
   /*
    * TODO: REPLACE
    */
@@ -269,6 +281,16 @@ message AdminMessage {
      * Set zero and offset for scale chips
      */
     uint32 set_scale = 23;
+
+    /*
+     * Backup the node's preferences
+     */
+    BackupLocation backup_preferences = 24;
+
+    /*
+     * Restore the node's preferences
+     */
+    BackupLocation restore_preferences = 25;
 
     /*
      * Set the owner for this node
