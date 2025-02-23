@@ -265,22 +265,27 @@ message ChannelFile {
   uint32 version = 1;
 
   /*
+   * The timestamp of the backup (if node has time)
+   */
+  fixed32 timestamp = 2;
+
+  /*
    * The node's configuration
    */
-  LocalConfig config = 2;
+  LocalConfig config = 3;
 
   /*
    * The node's module configuration
    */
-  LocalModuleConfig module_config = 3;
+  LocalModuleConfig module_config = 4;
 
   /*
    * The node's channels
    */
-  ChannelFile channels = 4;
+  ChannelFile channels = 5;
 
   /*
    * The node's user (owner) information
    */
-  User owner = 5;
+  User owner = 6;
 }
