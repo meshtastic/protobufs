@@ -66,6 +66,11 @@ message DeviceUIConfig {
    * 8 integers for screen calibration data
    */
   bytes calibration_data = 14;
+
+  /*
+   * Map related data
+   */
+  Map map_data = 15;
 }
 
 
@@ -133,6 +138,40 @@ message NodeHighlight {
    */
   string node_name = 5;
    
+}
+
+message GeoPoint {
+  /*
+   * Zoom level
+   */
+  int32 zoom = 1;
+
+   /*
+    * Coordinate: latitude 
+    */
+  int32 latitude = 2;
+   
+   /*
+    * Coordinate: longitude
+    */
+  int32 longitude = 3;
+}
+
+message Map {
+  /*
+   * Home coordinates
+   */
+  GeoPoint home = 1;
+
+  /*
+   * Map tile style
+   */
+  string style = 2;
+  
+  /*
+   * Map scroll follows GPS
+   */
+  bool follow_gps = 3;
 }
 
 enum Theme {
