@@ -293,6 +293,10 @@ message AdminMessage {
     BackupLocation restore_preferences = 25;
 
     /*
+     * Remove backups of the node's preferences
+     */
+    BackupLocation remove_backup_preferences = 26;
+    /*
      * Set the owner for this node
      */
     User set_owner = 32;
