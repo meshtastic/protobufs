@@ -6,3 +6,5 @@
 *NodeFilter.hops_away int_size:8
 *NodeFilter.channel int_size:8
 *NodeHighlight.node_name max_size:16
+*GeoPoint.zoom int_size:8
+*Map.style max_size:20
