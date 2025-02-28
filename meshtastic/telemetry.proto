@@ -128,6 +128,22 @@ message EnvironmentMetrics {
    * Wind lull in m/s
    */
   optional float wind_lull = 17;
+
+  /*
+  * Radiation in µR/h
+  */
+  optional float radiation = 18;
+
+  /*
+  * Rainfall in the last hour in mm
+  */
+  optional float rainfall_1h = 19;
+
+    /*
+  * Rainfall in the last 24 hours in mm
+  */
+  optional float rainfall_24h = 20;
+
 }
 
 /*
@@ -525,6 +541,22 @@ enum TelemetrySensorType {
    * SCD40/SCD41 CO2, humidity, temperature sensor
    */
   SCD4X = 32;
+
+  /*
+   * ClimateGuard RadSens, radiation, Geiger-Muller Tube
+   */
+  RADSENS = 33;
+  
+  /*
+   * High accuracy current and voltage
+   */
+  INA226 = 34;
+
+  /*
+   * DFRobot Gravity tipping bucket rain gauge
+   */
+  DFROBOT_RAIN = 35;
+
 }
 
 /*

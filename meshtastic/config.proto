@@ -99,6 +99,15 @@ message Config {
        *    Uses position module configuration to determine TAK PLI broadcast interval.
        */
       TAK_TRACKER = 10;
+
+      /*
+       * Description: Will always rebroadcast packets, but will do so after all other modes.
+       * Technical Details: Used for router nodes that are intended to provide additional coverage
+       *    in areas not already covered by other routers, or to bridge around problematic terrain,
+       *    but should not be given priority over other routers in order to avoid unnecessaraily
+       *    consuming hops.
+       */
+      ROUTER_LATE = 11;
     }
 
     /*
@@ -506,6 +515,26 @@ message Config {
      * rsyslog Server and Port
      */
     string rsyslog_server = 9;
+
+    /*
+     * Flags for enabling/disabling network protocols
+     */
+    uint32 enabled_protocols = 10;
+
+    /*
+     * Available flags auxiliary network protocols
+     */
+    enum ProtocolFlags {
+      /*
+       * Do not broadcast packets over any network protocol
+       */
+      NO_BROADCAST = 0x0000;
+
+      /*
+       * Enable broadcasting packets via UDP over the local network
+       */
+      UDP_BROADCAST = 0x0001;
+    }
   }
 
   /*
@@ -714,6 +743,12 @@ message Config {
      * Indicates how to rotate or invert the compass output to accurate display on the display.
      */
     CompassOrientation compass_orientation = 11;
+
+    /*
+     * If false (default), the device will display the time in 24-hour format on screen.
+     * If true, the device will display the time in 12-hour format on screen.
+     */
+    bool use_12h_clock = 12;
   }
 
   /*

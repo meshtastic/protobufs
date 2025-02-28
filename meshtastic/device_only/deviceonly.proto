@@ -2,11 +2,11 @@ syntax = "proto3";
 
 package meshtastic;
 
-import "channel.proto";
-import "localonly.proto";
-import "mesh.proto";
-import "telemetry.proto";
-import "config.proto";
+import "meshtastic/channel.proto";
+import "meshtastic/mesh.proto";
+import "meshtastic/telemetry.proto";
+import "meshtastic/config.proto";
+import "meshtastic/localonly.proto";
 import "nanopb.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
@@ -139,7 +139,7 @@ message NodeInfoLite {
   bool via_mqtt = 8;
 
   /*
-   * Number of hops away from us this node is (0 if adjacent)
+   * Number of hops away from us this node is (0 if direct neighbor)
    */
   optional uint32 hops_away = 9;
 
@@ -148,6 +148,17 @@ message NodeInfoLite {
    * Persists between NodeDB internal clean ups
    */
   bool is_favorite = 10;
+
+  /*
+   * True if node is in our ignored list
+   * Persists between NodeDB internal clean ups
+   */
+  bool is_ignored = 11;
+
+  /*
+   * Last byte of the node number of the node that should be used as the next hop to reach this node. 
+   */
+  uint32 next_hop = 12;
 }
 
 /*
@@ -195,9 +206,10 @@ message DeviceState {
   bool no_save = 9 [deprecated = true];
 
   /*
-   * Some GPS receivers seem to have bogus settings from the factory, so we always do one factory reset.
+   * Previously used to manage GPS factory resets.
+   * Deprecated in 2.5.23
    */
-  bool did_gps_reset = 11;
+  bool did_gps_reset = 11 [deprecated = true];
 
   /*
    * We keep the last received waypoint stored in the device flash,
@@ -210,11 +222,20 @@ message DeviceState {
    * The mesh's nodes with their available gpio pins for RemoteHardware module
    */
   repeated NodeRemoteHardwarePin node_remote_hardware_pins = 13;
+}
+
+message NodeDatabase {
+  /*
+   * A version integer used to invalidate old save files when we make
+   * incompatible changes This integer is set at build time and is private to
+   * NodeDB.cpp in the device code.
+   */
+  uint32 version = 1;
 
   /*
    * New lite version of NodeDB to decrease memory footprint
    */
-  repeated NodeInfoLite node_db_lite = 14 [(nanopb).callback_datatype = "std::vector<meshtastic_NodeInfoLite>"];
+  repeated NodeInfoLite nodes = 2 [(nanopb).callback_datatype = "std::vector<meshtastic_NodeInfoLite>"];
 }
 
 /*
@@ -232,4 +253,39 @@ message ChannelFile {
    * NodeDB.cpp in the device code.
    */
   uint32 version = 2;
+}
+
+/*
+ * The on-disk backup of the node's preferences
+ */
+ message BackupPreferences {
+  /*
+   * The version of the backup
+   */
+  uint32 version = 1;
+
+  /*
+   * The timestamp of the backup (if node has time)
+   */
+  fixed32 timestamp = 2;
+
+  /*
+   * The node's configuration
+   */
+  LocalConfig config = 3;
+
+  /*
+   * The node's module configuration
+   */
+  LocalModuleConfig module_config = 4;
+
+  /*
+   * The node's channels
+   */
+  ChannelFile channels = 5;
+
+  /*
+   * The node's user (owner) information
+   */
+  User owner = 6;
 }

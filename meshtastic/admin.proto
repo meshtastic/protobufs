@@ -154,6 +154,18 @@ message AdminMessage {
     PAXCOUNTER_CONFIG = 12;
   }
 
+  enum BackupLocation {
+    /*
+     * Backup to the internal flash
+     */
+    FLASH = 0;
+
+    /*
+     * Backup to the SD card
+     */
+    SD = 1;
+  }
+
   /*
    * TODO: REPLACE
    */
@@ -271,6 +283,20 @@ message AdminMessage {
     uint32 set_scale = 23;
 
     /*
+     * Backup the node's preferences
+     */
+    BackupLocation backup_preferences = 24;
+
+    /*
+     * Restore the node's preferences
+     */
+    BackupLocation restore_preferences = 25;
+
+    /*
+     * Remove backups of the node's preferences
+     */
+    BackupLocation remove_backup_preferences = 26;
+    /*
      * Set the owner for this node
      */
     User set_owner = 32;
@@ -349,6 +375,16 @@ message AdminMessage {
      * Tell the node to store UI data persistently.
      */
     DeviceUIConfig store_ui_config = 46;
+
+    /*
+     * Set specified node-num to be ignored on the NodeDB on the device
+     */
+    uint32 set_ignored_node = 47;
+
+    /*
+     * Set specified node-num to be un-ignored on the NodeDB on the device
+     */
+    uint32 remove_ignored_node = 48;
 
     /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes
