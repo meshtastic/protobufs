@@ -603,7 +603,7 @@ message ModuleConfig {
   }
 
   /*
-   * TODO: REPLACE
+   * Canned Messages Module Config
    */
   message CannedMessageConfig {
     /*
