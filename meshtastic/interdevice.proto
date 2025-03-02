@@ -10,11 +10,6 @@ option swift_prefix = "";
 
 // encapsulate up to 1k of NMEA string data
 
-message NmeaString {
-  // The NMEA string
-  string nmea = 1;
-}
-
 enum MessageType {
   ACK = 0;
   COLLECT_INTERVAL = 160;  // in ms
@@ -43,7 +38,7 @@ message SensorData {
 message InterdeviceMessage {
   // The message data
   oneof data {
-    NmeaString nmea = 1;
+    string nmea = 1;
     SensorData sensor = 2;
   }
 }
