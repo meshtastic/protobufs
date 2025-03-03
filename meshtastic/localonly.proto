@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package meshtastic;
 
-import "meshtastic/config.proto";
-import "meshtastic/module_config.proto";
+import "config.proto";
+import "module_config.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
