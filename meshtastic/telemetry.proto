@@ -557,6 +557,10 @@ enum TelemetrySensorType {
    */
   DFROBOT_RAIN = 35;
 
+  /*
+   * Infineon DPS310 High accuracy pressure and temperature
+   */
+  DPS310 = 36;
 }
 
 /*
