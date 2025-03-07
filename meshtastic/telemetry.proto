@@ -561,6 +561,11 @@ enum TelemetrySensorType {
    * Infineon DPS310 High accuracy pressure and temperature
    */
   DPS310 = 36;
+  
+  /*
+   * RAKWireless RAK12035 Soil Moisture Sensor Module
+   */
+  DPS310 = 37;
 }
 
 /*
