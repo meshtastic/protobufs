@@ -143,7 +143,16 @@ message EnvironmentMetrics {
   * Rainfall in the last 24 hours in mm
   */
   optional float rainfall_24h = 20;
-
+  
+ /*
+   * Soil moisture measured (% 1-100)
+   */
+  optional uint32 soil_moisture = 21;
+  
+  /*
+   * Soil temperature measured (*C)
+   */
+  optional float soil_temperature = 22;
 }
 
 /*
@@ -565,7 +574,7 @@ enum TelemetrySensorType {
   /*
    * RAKWireless RAK12035 Soil Moisture Sensor Module
    */
-  DPS310 = 37;
+  RAK12035 = 37;
 }
 
 /*
