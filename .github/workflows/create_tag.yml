@@ -56,16 +56,3 @@ jobs:
           tag: ${{ steps.version.outputs.NEW_VERSION }}
           generateReleaseNotes: true
           token: ${{ github.token }}
-
-      - name: Setup Buf
-        uses: bufbuild/buf-setup-action@v1.30.0
-        with:
-          github_token: ${{ github.token }}
-
-      - name: Push to schema registry
-        # uses: bufbuild/buf-push-action@v1
-        # with:
-        #   buf_token: ${{ secrets.BUF_TOKEN }}
-        run: |
-          export BUF_TOKEN=${{ secrets.BUF_TOKEN }}
-          buf push --tag ${{ steps.version.outputs.NEW_VERSION }}
