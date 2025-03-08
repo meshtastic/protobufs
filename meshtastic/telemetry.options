@@ -3,6 +3,7 @@
 
 *EnvironmentMetrics.iaq int_size:16
 *EnvironmentMetrics.wind_direction int_size:16
+*EnvironmentMetrics.soil_moisture int_size:8
 
 *LocalStats.num_online_nodes int_size:16
 *LocalStats.num_total_nodes int_size:16
