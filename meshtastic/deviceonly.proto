@@ -156,7 +156,7 @@ message NodeInfoLite {
   bool is_ignored = 11;
 
   /*
-   * Last byte of the node number of the node that should be used as the next hop to reach this node. 
+   * Last byte of the node number of the node that should be used as the next hop to reach this node.
    */
   uint32 next_hop = 12;
 }

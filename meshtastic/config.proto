@@ -41,7 +41,7 @@ message Config {
        * Description: Combination of both ROUTER and CLIENT. Not for mobile devices.
        * Deprecated in v2.3.15 because improper usage is impacting public meshes: Use ROUTER or CLIENT instead.
        */
-      
+
       ROUTER_CLIENT = 3 [deprecated = true];
 
       /*
@@ -207,7 +207,7 @@ message Config {
     string tzdef = 11;
 
     /*
-     * If true, disable the default blinking LED (LED_PIN) behavior on the device 
+     * If true, disable the default blinking LED (LED_PIN) behavior on the device
      */
     bool led_heartbeat_disabled = 12;
   }
@@ -380,7 +380,7 @@ message Config {
    */
   message PowerConfig {
     /*
-     * Description: Will sleep everything as much as possible, for the tracker and sensor role this will also include the lora radio. 
+     * Description: Will sleep everything as much as possible, for the tracker and sensor role this will also include the lora radio.
      * Don't use this setting if you want to use your device with the phone apps or are using a device without a user button.
      * Technical Details: Works for ESP32 devices and NRF52 devices in the Sensor or Tracker roles
      */
@@ -434,7 +434,7 @@ message Config {
      * If non-zero, we want powermon log outputs.  With the particular (bitfield) sources enabled.
      * Note: we picked an ID of 32 so that lower more efficient IDs can be used for more frequently used options.
      */
-     uint64 powermon_enables = 32;    
+     uint64 powermon_enables = 32;
   }
 
   /*
@@ -850,17 +850,17 @@ message Config {
        * Singapore 923mhz
        */
       SG_923 = 18;
-      
+
       /*
        * Philippines 433mhz
        */
       PH_433 = 19;
-      
+
       /*
        * Philippines 868mhz
        */
       PH_868 = 20;
-      
+
       /*
        * Philippines 915mhz
        */
