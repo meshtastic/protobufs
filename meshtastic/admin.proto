@@ -74,7 +74,7 @@ message AdminMessage {
     SECURITY_CONFIG = 7;
 
     /*
-     *
+     * Session key config
      */
     SESSIONKEY_CONFIG = 8;
 
