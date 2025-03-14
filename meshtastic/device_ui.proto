@@ -273,6 +273,11 @@ enum Language {
    */
   SLOVENIAN = 15;
 
+  /*
+   * Ukrainian
+   */
+  UKRAINIAN = 16;
+
    /*
    * Simplified Chinese (experimental)
    */
