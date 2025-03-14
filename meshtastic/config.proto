@@ -492,7 +492,7 @@ message Config {
     string wifi_psk = 4;
 
     /*
-     * NTP server to use if WiFi is conneced, defaults to `0.pool.ntp.org`
+     * NTP server to use if WiFi is conneced, defaults to `meshtastic.pool.ntp.org`
      */
     string ntp_server = 5;
 
