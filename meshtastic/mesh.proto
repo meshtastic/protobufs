@@ -680,6 +680,19 @@ enum HardwareModel {
    * Seeed XIAO nRF52840 + Wio SX1262 kit
    */
   XIAO_NRF52_KIT = 88;
+  
+  /*
+   * Elecrow ThinkNode M1 & M2
+   * https://www.elecrow.com/wiki/ThinkNode-M1_Transceiver_Device(Meshtastic)_Power_By_nRF52840.html
+   * https://www.elecrow.com/wiki/ThinkNode-M2_Transceiver_Device(Meshtastic)_Power_By_NRF52840.html (this actually uses ESP32-S3)
+   */
+  THINKNODE_M1 = 89;
+  THINKNODE_M2 = 90;
+
+  /*
+   * Lilygo T-ETH-Elite
+   */
+  T-ETH-ELITE = 91;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
