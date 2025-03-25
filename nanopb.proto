@@ -9,6 +9,7 @@ syntax = "proto2";
 
 import "google/protobuf/descriptor.proto";
 
+option go_package = "github.com/meshtastic/go/generated";
 option java_package = "fi.kapsi.koti.jpa.nanopb";
 
 enum FieldType {
