@@ -2037,6 +2037,11 @@ enum ExcludedModules {
    * Paxcounter module
    */
   PAXCOUNTER_CONFIG = 0x1000;
+
+  /* 
+   * Bluetooth module
+   */
+  BLUETOOTH_CONFIG = 0x2000;
 }
 
 /*
