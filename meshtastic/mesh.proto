@@ -2039,9 +2039,14 @@ enum ExcludedModules {
   PAXCOUNTER_CONFIG = 0x1000;
 
   /* 
-   * Bluetooth module
+   * Bluetooth config (not technically a module, but used to indicate bluetooth capabilities)
    */
   BLUETOOTH_CONFIG = 0x2000;
+
+  /*
+   * Network config (not technically a module, but used to indicate network capabilities)
+   */
+  NETWORK_CONFIG = 0x4000;
 }
 
 /*
