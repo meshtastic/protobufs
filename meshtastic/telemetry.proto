@@ -255,7 +255,7 @@ message AirQualityMetrics {
   optional uint32 particles_100um = 12;
 
   /*
-   * 10.0um Particle Count
+   * CO2 concentration in ppm
    */
   optional uint32 co2 = 13;
 }
