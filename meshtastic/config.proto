@@ -603,17 +603,17 @@ message Config {
      */
     enum OledType {
       /*
-       * Default / Auto
+       * Default / Autodetect
        */
       OLED_AUTO = 0;
 
       /*
-       * Default / Auto
+       * Default / Autodetect
        */
       OLED_SSD1306 = 1;
 
       /*
-       * Default / Auto
+       * Default / Autodetect
        */
       OLED_SH1106 = 2;
 
@@ -621,6 +621,11 @@ message Config {
        * Can not be auto detected but set by proto. Used for 128x128 screens
        */
       OLED_SH1107 = 3;
+
+      /*
+       * Can not be auto detected but set by proto. Used for 128x64 screens
+       */
+      OLED_SH1107_128_64 = 4;
     }
 
     /*
