@@ -703,6 +703,11 @@ enum HardwareModel {
    * Reserved Fried Chicken ID for future use
    */
   RESERVED_FRIED_CHICKEN = 93;
+  
+  /*
+   * Heltec Magnetic Power Bank with Meshtastic compatible
+   */
+  HELTEC_MESH_POCKET = 94;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
