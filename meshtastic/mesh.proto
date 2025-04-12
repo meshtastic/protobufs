@@ -708,6 +708,7 @@ enum HardwareModel {
    * Heltec Magnetic Power Bank with Meshtastic compatible
    */
   HELTEC_MESH_POCKET = 94;
+  
   /*
    * RAK_killer Breakout PCB - Promicro nRF52840 and Heltec HT-RA62
    */
