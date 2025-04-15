@@ -710,7 +710,7 @@ enum HardwareModel {
   HELTEC_MESH_POCKET = 94;
 
   /*
-   * Heltec Magnetic Power Bank with Meshtastic compatible
+   * Seeed Solar Node
    */
   SEEED_SOLAR_NODE = 95;
 
