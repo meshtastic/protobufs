@@ -710,6 +710,11 @@ enum HardwareModel {
   HELTEC_MESH_POCKET = 94;
 
   /*
+   * Seeed Solar Node
+   */
+  SEEED_SOLAR_NODE = 95;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
