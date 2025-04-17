@@ -715,6 +715,16 @@ enum HardwareModel {
   SEEED_SOLAR_NODE = 95;
 
   /*
+   * NomadStar Meteor Pro https://nomadstar.ch/
+   */
+  NOMADSTAR_METEOR_PRO = 96;
+
+  /*
+   * Elecrow CrowPanel Advance models, ESP32-S3 and TFT with SX1262 radio plugin
+   */
+  CROWPANEL = 97;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
