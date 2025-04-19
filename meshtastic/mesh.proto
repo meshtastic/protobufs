@@ -134,7 +134,7 @@ message Position {
    * Horizontal, Vertical and Position Dilution of Precision, in 1/100 units
    * - PDOP is sufficient for most cases
    * - for higher precision scenarios, HDOP and VDOP can be used instead,
-   *   in which case PDOP becomes redundant (PDOP=sqrt(HDOP^2 + VDOP^2))
+   * in which case PDOP becomes redundant (PDOP=sqrt(HDOP^2 + VDOP^2))
    * TODO: REMOVE/INTEGRATE
    */
   uint32 PDOP = 11;
@@ -195,13 +195,13 @@ message Position {
    * Estimated/expected time (in seconds) until next update:
    * - if we update at fixed intervals of X seconds, use X
    * - if we update at dynamic intervals (based on relative movement etc),
-   *   but "AT LEAST every Y seconds", use Y
+   * but "AT LEAST every Y seconds", use Y
    */
   uint32 next_update = 21;
 
   /*
    * A sequence number, incremented with each Position message to help
-   *   detect lost updates if needed
+   * detect lost updates if needed
    */
   uint32 seq_number = 22;
 
