@@ -785,7 +785,7 @@ message User {
   /*
    * Whether or not the node is attended by a User
    */
-  optional bool is_attended = 9;
+  bool is_unmessagable = 9;
 }
 
 /*
