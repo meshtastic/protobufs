@@ -575,6 +575,11 @@ enum TelemetrySensorType {
    * RAKWireless RAK12035 Soil Moisture Sensor Module
    */
   RAK12035 = 37;
+
+  /*
+   * MAX17261 lipo battery gauge
+   */
+  MAX17261 = 38;
 }
 
 /*
