@@ -400,7 +400,7 @@ message AdminMessage {
     /*
      * Add a contact (User) to the nodedb
      */
-    Contact add_contact = 66;
+    SharedContact add_contact = 66;
 
     /*
      * Tell the node to factory reset config everything; all device state and configuration will be returned to factory defaults and BLE bonds will be cleared.
@@ -478,7 +478,7 @@ message NodeRemoteHardwarePinsResponse {
   repeated NodeRemoteHardwarePin node_remote_hardware_pins = 1;
 }
 
-message Contact {
+message SharedContact {
   /*
    * The node number of the contact
    */
