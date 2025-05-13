@@ -398,6 +398,11 @@ message AdminMessage {
     bool commit_edit_settings = 65;
 
     /*
+     * Add a contact (User) to the nodedb
+     */
+    Contact add_contact = 66;
+
+    /*
      * Tell the node to factory reset config everything; all device state and configuration will be returned to factory defaults and BLE bonds will be cleared.
      */
     int32 factory_reset_device = 94;
@@ -471,4 +476,16 @@ message NodeRemoteHardwarePinsResponse {
    * Nodes and their respective remote hardware GPIO pins
    */
   repeated NodeRemoteHardwarePin node_remote_hardware_pins = 1;
+}
+
+message Contact {
+  /*
+   * The node number of the contact
+   */
+  uint32 node_num = 1;
+
+  /*
+   * The User of the contact
+   */
+  User user = 2;
 }
