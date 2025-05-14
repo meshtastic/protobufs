@@ -806,6 +806,11 @@ message User {
    * This is sent out to other nodes on the mesh to allow them to compute a shared secret key.
    */
   bytes public_key = 8;
+
+  /*
+   * Whether or not the node can be messaged
+   */
+  bool is_unmessagable = 9;
 }
 
 /*
