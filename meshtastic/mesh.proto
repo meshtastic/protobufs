@@ -783,7 +783,7 @@ message User {
   bytes public_key = 8;
 
   /*
-   * Whether or not the node is attended by a User
+   * Whether or not the node can be messaged
    */
   bool is_unmessagable = 9;
 }
