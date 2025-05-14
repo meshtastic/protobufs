@@ -370,17 +370,17 @@ message HostMetrics {
   optional uint64 diskfree3_bytes = 5;
 
   /*
-   * Host system one minute load
+   * Host system one minute load in 1/100ths
    */
   uint32 load1 = 6;
 
   /*
-   * Host system five minute load
+   * Host system five minute load  in 1/100ths
    */
   uint32 load5 = 7;
 
   /*
-   * Host system fifteen minute load
+   * Host system fifteen minute load  in 1/100ths
    */
   uint32 load15 = 8;
 }

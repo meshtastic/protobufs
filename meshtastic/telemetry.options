@@ -10,3 +10,7 @@
 
 *HealthMetrics.heart_bpm int_size:8
 *HealthMetrics.spO2 int_size:8
+
+*HostMetrics.load1 int_size:16
+*HostMetrics.load5 int_size:16
+*HostMetrics.load15 int_size:16
