@@ -97,7 +97,7 @@ message ModuleConfig {
     uint32 position_precision = 2;
 
     /*
-     * Whether we should report our location to the map
+     * Whether we have opted-in to report our location to the map
      */
     bool should_report_location = 3;
   }
