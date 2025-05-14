@@ -106,6 +106,7 @@ message MapReport {
 
   /*
    * User has opted in to share their location (map report) with the mqtt server
+   * Controlled by map_report.should_report_location
    */
   bool has_opted_in = 14;
 }
