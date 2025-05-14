@@ -341,6 +341,52 @@ message LocalStats {
 }
 
 /*
+ * Linux host metrics
+ */
+message HostMetrics {
+  /*
+   * Host system uptime
+   */
+  uint32 uptime_seconds = 1;
+
+  /*
+   * Host system free memory
+   */
+  uint64 freemem_bytes = 2;
+
+  /*
+   * Host system disk space free for /
+   */
+  uint64 diskfree1_bytes = 3;
+
+  /*
+   * Secondary system disk space free
+   */
+  optional uint64 diskfree2_bytes = 4;
+
+  /*
+   * Tertiary disk space free
+   */
+  optional uint64 diskfree3_bytes = 5;
+
+  /*
+   * Host system one minute load
+   */
+  uint32 load1 = 6;
+
+  /*
+   * Host system five minute load
+   */
+  uint32 load5 = 7;
+
+  /*
+   * Host system fifteen minute load
+   */
+  uint32 load15 = 8;
+}
+
+
+/*
  * Types of Measurements the telemetry module is equipped to handle
  */
 message Telemetry {
@@ -379,6 +425,11 @@ message Telemetry {
      * Health telemetry metrics
      */
     HealthMetrics health_metrics = 7;
+
+    /*
+     * Linux host metrics
+     */
+    HostMetrics host_metrics = 8;
   }
 }
 
