@@ -810,7 +810,7 @@ message User {
   /*
    * Whether or not the node can be messaged
    */
-  bool is_unmessagable = 9;
+  optional bool is_unmessagable = 9;
 }
 
 /*
