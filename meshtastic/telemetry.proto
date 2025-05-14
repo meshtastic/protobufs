@@ -318,6 +318,12 @@ message LocalStats {
    * This will always be zero for ROUTERs/REPEATERs. If this number is high, some other node(s) is/are relaying faster than you.
    */
   uint32 num_tx_relay_canceled = 11;
+
+  /*
+    * Percent of memory utilization (0-100)
+    * This is based on the native heap free / totals in the SDK
+   */
+  uint32 percent_memory_utilization = 12;
 }
 
 /*

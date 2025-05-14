@@ -7,6 +7,7 @@
 
 *LocalStats.num_online_nodes int_size:16
 *LocalStats.num_total_nodes int_size:16
+*LocalStats.percent_memory_utilization int_size:8
 
 *HealthMetrics.heart_bpm int_size:8
 *HealthMetrics.spO2 int_size:8
