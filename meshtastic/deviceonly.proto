@@ -94,11 +94,6 @@ message UserLite {
    * This is sent out to other nodes on the mesh to allow them to compute a shared secret key.
    */
   bytes public_key = 7;
-
-  /*
-   * Whether or not the node is attended by a User
-   */
-  optional bool is_attended = 8;
 }
 
 message NodeInfoLite {
