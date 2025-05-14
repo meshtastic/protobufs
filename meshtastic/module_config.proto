@@ -99,7 +99,7 @@ message ModuleConfig {
     /*
      * Whether we should report our location to the map
      */
-    optional bool should_report_location = 3;
+    bool should_report_location = 3;
   }
 
   /*
