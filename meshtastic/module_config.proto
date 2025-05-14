@@ -95,6 +95,11 @@ message ModuleConfig {
      * Bits of precision for the location sent (default of 32 is full precision).
      */
     uint32 position_precision = 2;
+
+    /*
+     * Whether we should report our location to the map
+     */
+    optional bool should_report_location = 3;
   }
 
   /*
