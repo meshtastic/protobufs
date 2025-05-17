@@ -139,9 +139,14 @@ message NodeInfoLite {
   uint32 channel = 7;
 
   /*
-   * True if we witnessed the node over MQTT instead of LoRA transport
+   * Bitfield to contain 8 1-bit boolean values.
+   * 0 - via_mqtt: True if we witnessed the node over MQTT instead of LoRA transport
+   * 1 - is_favorite: True if node is in our favorites list
+   *        Persists between NodeDB internal clean ups
+   * 2 - is_ignored: True if node is in our ignored list
+   *        Persists between NodeDB internal clean ups
    */
-  bool via_mqtt = 8;
+  uint32 bitfield = 8;
 
   /*
    * Number of hops away from us this node is (0 if direct neighbor)
@@ -149,21 +154,9 @@ message NodeInfoLite {
   optional uint32 hops_away = 9;
 
   /*
-   * True if node is in our favorites list
-   * Persists between NodeDB internal clean ups
-   */
-  bool is_favorite = 10;
-
-  /*
-   * True if node is in our ignored list
-   * Persists between NodeDB internal clean ups
-   */
-  bool is_ignored = 11;
-
-  /*
    * Last byte of the node number of the node that should be used as the next hop to reach this node.
    */
-  uint32 next_hop = 12;
+  uint32 next_hop = 10;
 }
 
 /*
