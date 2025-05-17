@@ -14,3 +14,4 @@
 *HostMetrics.load1 int_size:16
 *HostMetrics.load5 int_size:16
 *HostMetrics.load15 int_size:16
+*HostMetrics.user_string max_size:200
