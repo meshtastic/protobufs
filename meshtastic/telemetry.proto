@@ -383,6 +383,12 @@ message HostMetrics {
    * Host system fifteen minute load  in 1/100ths
    */
   uint32 load15 = 8;
+
+  /*
+   * Optional User-provided string for arbitrary host system information
+   * that doesn't make sense as a dedicated entry.
+   */
+  optional string user_string = 9;
 }
 
 
