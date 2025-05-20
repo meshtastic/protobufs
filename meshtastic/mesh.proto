@@ -1459,6 +1459,13 @@ message NodeInfo {
    * Persists between NodeDB internal clean ups
    */
   bool is_ignored = 11;
+
+  /*
+   * True if node public key has been validated.
+   * Persists between NodeDB internal clean ups
+   * LSB 0 of the bitfield
+   */
+  bool is_manually_validated = 12;
 }
 
 /*
