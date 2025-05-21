@@ -1465,7 +1465,7 @@ message NodeInfo {
    * Persists between NodeDB internal clean ups
    * LSB 0 of the bitfield
    */
-  bool is_manually_validated = 12;
+  bool is_key_manually_verified = 12;
 }
 
 /*
