@@ -498,7 +498,7 @@ message SharedContact {
   /*
    * This message is used by a client to initiate or complete a key verification
    */
-message KeyVerification {
+message KeyVerificationAdmin {
   /*
    * Three stages of this request.
    */
