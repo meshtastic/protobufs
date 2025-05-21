@@ -1793,7 +1793,7 @@ message FromRadio {
     /*
      * Key Verification Message
      */
-    KeyVerificationRequest keyverificationrequest = 18;
+    KeyVerificationRequest keyVerificationRequest = 18;
   }
 }
 
@@ -1827,7 +1827,7 @@ message ClientNotification {
 /*
  * This is the messages the node uses to inform a client of a key verification process
  */
-message keyverificationrequest {
+message KeyVerificationRequest {
 
   /*
    * Tracks the phase of connection
