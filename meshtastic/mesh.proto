@@ -1012,6 +1012,23 @@ message Data {
 }
 
 /*
+ * The actual over-the-mesh message doing KeyVerification
+ */
+message KeyVerification {
+
+  /*
+   * random value Selected by the requesting node
+   */
+  uint64 nonce = 1;
+
+  /*
+   * Will be omitted on the initial request, and included on the response
+   */
+  optional uint32 security_number = 2;
+
+}
+
+/*
  * Waypoint message, used to share arbitrary locations across the mesh
  */
 message Waypoint {
@@ -1772,6 +1789,11 @@ message FromRadio {
      * Persistent data for device-ui
      */
     DeviceUIConfig deviceuiConfig = 17;
+
+    /*
+     * Key Verification Message
+     */
+    KeyVerificationRequest keyverificationrequest = 18;
   }
 }
 
@@ -1800,6 +1822,59 @@ message ClientNotification {
    * The message body of the notification
    */
   string message = 4;
+}
+
+/*
+ * This is the messages the node uses to inform a client of a key verification process
+ */
+message keyverificationrequest {
+
+  /*
+   * Tracks the phase of connection
+   */
+  enum MessageType {
+    /*
+     * First response sent to the local client, requests the security number
+     */
+    number_request = 0;
+
+    /*
+     * Message containing the hash to compare and the security number
+     * Indicates this is the node that is receiving the verification request
+     */
+    final_receiver = 1;
+
+    /*
+     * Message containing the hash to compare and the security number
+     * Indicates this is the node that is sending the verification request
+     */
+    final_sender = 2;
+  }
+
+  /*
+   * Phase of connection
+   */
+  MessageType message_type = 1;
+
+  /*
+   * Display the remote node to the local user
+   */
+  string remote_longname = 2;
+
+  /*
+   * To be displayed on the final verification screen on both ends
+   */
+  optional uint32 security_number = 3;
+
+  /*
+   * The actual 6 character hash to be compared
+   */
+  string verification_characters = 4;
+
+  /*
+   * The nonce, used to track the connection state
+   */
+  uint64 nonce = 5;
 }
 
 /*
