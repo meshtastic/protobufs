@@ -522,6 +522,11 @@ message Config {
     uint32 enabled_protocols = 10;
 
     /*
+     * Enable/Disable ipv6 support
+     */
+    bool ipv6_enabled = 11;
+
+    /*
      * Available flags auxiliary network protocols
      */
     enum ProtocolFlags {
