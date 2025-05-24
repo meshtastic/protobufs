@@ -318,6 +318,16 @@ message LocalStats {
    * This will always be zero for ROUTERs/REPEATERs. If this number is high, some other node(s) is/are relaying faster than you.
    */
   uint32 num_tx_relay_canceled = 11;
+
+  /*
+   * Number of bytes used in the heap
+   */
+  uint32 heap_total_bytes = 12;
+
+  /*
+   * Number of bytes free in the heap
+   */
+  uint32 heap_free_bytes = 13;
 }
 
 /*
