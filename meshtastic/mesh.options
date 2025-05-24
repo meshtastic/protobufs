@@ -58,6 +58,9 @@
 
 *ClientNotification.message max_size:400
 
+*KeyVerificationRequest.remote_longname max_size:40
+*KeyVerificationRequest.verification_characters max_size:10
+
 # MyMessage.name         max_size:40 
 # or fixed_length or fixed_count, or max_count
 
