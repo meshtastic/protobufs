@@ -405,7 +405,7 @@ message AdminMessage {
     /*
      * Initiate or respond to a key verification request
      */
-    KeyVerification key_verification = 67;
+    KeyVerificationAdmin key_verification_admin = 67;
 
     /*
      * Tell the node to factory reset config everything; all device state and configuration will be returned to factory defaults and BLE bonds will be cleared.

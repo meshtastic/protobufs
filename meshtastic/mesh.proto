@@ -1022,10 +1022,15 @@ message KeyVerification {
   uint64 nonce = 1;
 
   /*
-   * Will be omitted on the initial request, and included on the response
+   * The final authoritative hash, only to be sent by NodeA at the end of the handshake
    */
-  optional uint32 security_number = 2;
+  bytes hash1 = 2;
 
+  /*
+   * The intermediary hash (actually derived from hash1),
+   * sent from NodeB to NodeA in response to the initial message.
+   */
+  bytes hash2 = 3;
 }
 
 /*
@@ -1834,21 +1839,26 @@ message KeyVerificationRequest {
    */
   enum MessageType {
     /*
-     * First response sent to the local client, requests the security number
+     * First response sent to ClientA requests the security number
      */
     number_request = 0;
 
     /*
-     * Message containing the hash to compare and the security number
-     * Indicates this is the node that is receiving the verification request
+     * First message sent to ClientB, informs the user of the chosen security number
      */
-    final_receiver = 1;
+    number_inform = 1;
 
     /*
-     * Message containing the hash to compare and the security number
+     * Message containing the hash to compare
+     * Indicates this is the node that is receiving the verification request
+     */
+    final_receiver = 2;
+
+    /*
+     * Message containing the hash to compare
      * Indicates this is the node that is sending the verification request
      */
-    final_sender = 2;
+    final_sender = 3;
   }
 
   /*
