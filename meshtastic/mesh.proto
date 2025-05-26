@@ -1794,11 +1794,6 @@ message FromRadio {
      * Persistent data for device-ui
      */
     DeviceUIConfig deviceuiConfig = 17;
-
-    /*
-     * Key Verification Message
-     */
-    KeyVerificationRequest keyVerificationRequest = 18;
   }
 }
 
@@ -1827,64 +1822,28 @@ message ClientNotification {
    * The message body of the notification
    */
   string message = 4;
+
+  oneof payload_variant {
+    KeyVerificationNumberInform key_verification_number_inform = 11;
+    KeyVerificationNumberRequest key_verification_number_request = 12;
+    KeyVerificationFinal key_verification_final = 13;
+  }
 }
 
-/*
- * This is the messages the node uses to inform a client of a key verification process
- */
-message KeyVerificationRequest {
-
-  /*
-   * Tracks the phase of connection
-   */
-  enum MessageType {
-    /*
-     * First response sent to ClientA requests the security number
-     */
-    number_request = 0;
-
-    /*
-     * First message sent to ClientB, informs the user of the chosen security number
-     */
-    number_inform = 1;
-
-    /*
-     * Message containing the hash to compare
-     * Indicates this is the node that is receiving the verification request
-     */
-    final_receiver = 2;
-
-    /*
-     * Message containing the hash to compare
-     * Indicates this is the node that is sending the verification request
-     */
-    final_sender = 3;
-  }
-
-  /*
-   * Phase of connection
-   */
-  MessageType message_type = 1;
-
-  /*
-   * Display the remote node to the local user
-   */
+message KeyVerificationNumberInform {
+  uint64 nonce = 1;
   string remote_longname = 2;
-
-  /*
-   * To be displayed on the final verification screen on both ends
-   */
-  optional uint32 security_number = 3;
-
-  /*
-   * The actual 6 character hash to be compared
-   */
+  uint32 security_number = 3;
+}
+message KeyVerificationNumberRequest {
+  uint64 nonce = 1;
+  string remote_longname = 2;
+}
+message KeyVerificationFinal {
+  uint64 nonce = 1;
+  string remote_longname = 2;
+  bool isSender = 3;
   string verification_characters = 4;
-
-  /*
-   * The nonce, used to track the connection state
-   */
-  uint64 nonce = 5;
 }
 
 /*
