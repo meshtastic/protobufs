@@ -724,17 +724,17 @@ enum HardwareModel {
    */
   CROWPANEL = 97;
 
-  /*
+  /**
    * "Lilygo" LINK32 board with sensors
    */
   LINK_32 = 98;
 
-  /*
+  /**
    * Seeed Tracker L1
    */
   SEEED_TRACKER_L1 = 99;
 
-  /*
+  /**
    * Seeed Tracker L1 EINK driver
    */
   SEEED_TRACKER_L1_EINK = 100;
