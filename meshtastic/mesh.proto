@@ -724,6 +724,26 @@ enum HardwareModel {
    */
   CROWPANEL = 97;
 
+  /**
+   * Lilygo LINK32 board with sensors
+   */
+  LINK_32 = 98;
+
+  /**
+   * Seeed Tracker L1
+   */
+  SEEED_TRACKER_L1 = 99;
+
+  /**
+   * Seeed Tracker L1 EINK driver
+   */
+  SEEED_TRACKER_L1_EINK = 100;
+
+  /*
+   * Reserved ID for future and past use
+   */
+  QWANTZ_TINY_ARMS = 101;
+  
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
