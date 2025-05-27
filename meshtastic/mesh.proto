@@ -725,7 +725,7 @@ enum HardwareModel {
   CROWPANEL = 97;
 
   /**
-   * "Lilygo" LINK32 board with sensors
+   * Lilygo LINK32 board with sensors
    */
   LINK_32 = 98;
 
