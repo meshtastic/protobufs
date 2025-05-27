@@ -1012,6 +1012,28 @@ message Data {
 }
 
 /*
+ * The actual over-the-mesh message doing KeyVerification
+ */
+message KeyVerification {
+
+  /*
+   * random value Selected by the requesting node
+   */
+  uint64 nonce = 1;
+
+  /*
+   * The final authoritative hash, only to be sent by NodeA at the end of the handshake
+   */
+  bytes hash1 = 2;
+
+  /*
+   * The intermediary hash (actually derived from hash1),
+   * sent from NodeB to NodeA in response to the initial message.
+   */
+  bytes hash2 = 3;
+}
+
+/*
  * Waypoint message, used to share arbitrary locations across the mesh
  */
 message Waypoint {
@@ -1800,6 +1822,28 @@ message ClientNotification {
    * The message body of the notification
    */
   string message = 4;
+
+  oneof payload_variant {
+    KeyVerificationNumberInform key_verification_number_inform = 11;
+    KeyVerificationNumberRequest key_verification_number_request = 12;
+    KeyVerificationFinal key_verification_final = 13;
+  }
+}
+
+message KeyVerificationNumberInform {
+  uint64 nonce = 1;
+  string remote_longname = 2;
+  uint32 security_number = 3;
+}
+message KeyVerificationNumberRequest {
+  uint64 nonce = 1;
+  string remote_longname = 2;
+}
+message KeyVerificationFinal {
+  uint64 nonce = 1;
+  string remote_longname = 2;
+  bool isSender = 3;
+  string verification_characters = 4;
 }
 
 /*
