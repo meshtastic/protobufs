@@ -738,6 +738,11 @@ enum HardwareModel {
    * Seeed Tracker L1 EINK driver
    */
   SEEED_TRACKER_L1_EINK = 100;
+
+  /*
+   * Reserved ID for future and past use
+   */
+  QWANTZ_TINY_ARMS = 101;
   
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
