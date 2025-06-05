@@ -278,6 +278,11 @@ enum Language {
    */
   UKRAINIAN = 16;
 
+  /*
+   * Bulgarian
+   */
+  BULGARIAN = 17;
+
    /*
    * Simplified Chinese (experimental)
    */
