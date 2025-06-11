@@ -2,9 +2,9 @@
 
 *AdminMessage.session_passkey max_size:8
 
-*InputEvent.event_code max_size:8
+*AdminMessage.InputEvent.event_code max_size:8
 *AdminMessage.InputEvent.kb_char max_size:8
-*InputEvent.touch_x max_size:16
+*AdminMessage.InputEvent.touch_x max_size:16
 *AdminMessage.InputEvent.touch_y max_size:16
 
 *AdminMessage.set_canned_message_module_messages max_size:201
