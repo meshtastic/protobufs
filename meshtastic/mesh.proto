@@ -1862,6 +1862,8 @@ message ClientNotification {
     KeyVerificationNumberInform key_verification_number_inform = 11;
     KeyVerificationNumberRequest key_verification_number_request = 12;
     KeyVerificationFinal key_verification_final = 13;
+    DuplicatedPublicKey duplicated_public_key = 14;
+    LowEntropyKey low_entropy_key = 15;
   }
 }
 
@@ -1880,7 +1882,8 @@ message KeyVerificationFinal {
   bool isSender = 3;
   string verification_characters = 4;
 }
-
+message DuplicatedPublicKey {}
+message LowEntropyKey {}
 /*
  * Individual File info for the device
  */
