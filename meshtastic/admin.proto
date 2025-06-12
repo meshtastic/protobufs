@@ -167,6 +167,28 @@ message AdminMessage {
   }
 
   /*
+   * Input event message to be sent to the node.
+   */
+  message InputEvent {
+    /*
+     * The input event code
+     */
+    uint32 event_code = 1;
+    /*
+     * Keyboard character code
+     */
+    uint32 kb_char = 2;
+    /*
+     * The touch X coordinate
+     */
+    uint32 touch_x = 3;
+    /*
+     * The touch Y coordinate
+     */
+    uint32 touch_y = 4;
+  }
+
+  /*
    * TODO: REPLACE
    */
   oneof payload_variant {
@@ -296,6 +318,13 @@ message AdminMessage {
      * Remove backups of the node's preferences
      */
     BackupLocation remove_backup_preferences = 26;
+
+    /*
+     * Send an input event to the node.
+     * This is used to trigger physical input events like button presses, touch events, etc.
+     */
+    InputEvent send_input_event = 27;
+
     /*
      * Set the owner for this node
      */
