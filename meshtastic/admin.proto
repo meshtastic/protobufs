@@ -321,7 +321,7 @@ message AdminMessage {
 
     /*
      * Send an input event to the node.
-     * This is used to trigger phyiscal input events like button presses, touch events, etc.
+     * This is used to trigger physical input events like button presses, touch events, etc.
      */
     InputEvent send_input_event = 27;
 
