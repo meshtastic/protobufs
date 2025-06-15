@@ -522,6 +522,11 @@ message SharedContact {
    * The User of the contact
    */
   User user = 2;
+
+  /*
+   * Add this contact to the blocked / ignored list
+   */
+  bool should_ignore = 3;
 }
 
   /*
