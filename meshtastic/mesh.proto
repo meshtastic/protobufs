@@ -759,6 +759,11 @@ enum HardwareModel {
    */
   GAT562_MESH_TRIAL_TRACKER = 104;
 
+  /**
+   * Retia.io Nibble Connect
+   */
+  NIBBLE_CONNECT = 106;
+
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
