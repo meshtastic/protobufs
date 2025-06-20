@@ -471,6 +471,143 @@ message Config {
      * Note: we picked an ID of 32 so that lower more efficient IDs can be used for more frequently used options.
      */
      uint64 powermon_enables = 32;
+
+    /*
+     * Enhanced Power Management - Granular power profiles for different power sources
+     * When enabled, provides fine-grained control over power management behavior
+     */
+    bool use_granular_power_management = 10;
+
+    /*
+     * Power profile selection override
+     */
+    enum ProfileOverride {
+      /*
+       * Automatic profile selection based on power source (USB vs battery)
+       */
+      PROFILE_AUTO = 0;
+
+      /*
+       * Always use the plugged-in profile regardless of power source
+       * Useful when using battery packs that appear as USB power
+       */
+      PROFILE_ALWAYS_PLUGGED = 1;
+
+      /*
+       * Always use the battery profile regardless of power source
+       * Useful for maximum power savings even when plugged in
+       */
+      PROFILE_ALWAYS_BATTERY = 2;
+    }
+
+    /*
+     * Override automatic profile selection
+     */
+    ProfileOverride force_profile = 11;
+
+    /*
+     * Power profile for when device is connected to external power (USB/DC)
+     */
+    PowerProfile plugged_in_profile = 12;
+
+    /*
+     * Power profile for when device is running on battery power
+     */
+    PowerProfile battery_profile = 13;
+
+    /*
+     * Individual power profile definition
+     */
+    message PowerProfile {
+      /*
+       * Allow the device to enter Super Deep Sleep (SDS) where LoRa radio is turned off
+       * When false, device will never turn off LoRa radio, maintaining mesh connectivity
+       */
+      bool allow_deep_sleep = 1;
+
+      /*
+       * Allow the device to enter Light Sleep where CPU is suspended but LoRa stays on
+       * When false, CPU remains active for immediate mesh response
+       */
+      bool allow_light_sleep = 2;
+
+      /*
+       * Keep Bluetooth enabled in power saving states
+       * When false, Bluetooth is turned off to save power
+       */
+      bool bluetooth_enabled = 3;
+
+      /*
+       * Keep WiFi enabled in power saving states (if WiFi is configured)
+       * When false, WiFi is turned off to save power
+       */
+      bool wifi_enabled = 4;
+
+      /*
+       * Allow screen to wake up when packets arrive (messages, node updates, etc.)
+       * When false, screen stays off for incoming packets, saving power
+       */
+      bool screen_stays_responsive = 5;
+
+      /*
+       * Keep GPS enabled in power saving states
+       * When false, GPS may be turned off between position updates
+       */
+      bool gps_enabled = 6;
+
+      /*
+       * Screen timeout in seconds before turning off display
+       * 0 uses system default, UINT32_MAX keeps screen always on
+       */
+      uint32 screen_timeout_secs = 7;
+
+      /*
+       * Bluetooth timeout in seconds before turning off BT in power saving states
+       * 0 uses system default
+       */
+      uint32 bluetooth_timeout_secs = 8;
+
+      /*
+       * Minimum wake time in seconds after LoRa activity before entering light sleep
+       * 0 uses system default
+       */
+      uint32 min_wake_secs = 9;
+
+      /*
+       * Maximum power state to enter
+       */
+      enum MaxPowerState {
+        /*
+         * Allow all power states including SDS (LoRa radio off)
+         */
+        MAX_SDS = 0;
+
+        /*
+         * Maximum state is Light Sleep (LoRa radio stays on)
+         */
+        MAX_LIGHT_SLEEP = 1;
+
+        /*
+         * Maximum state is No Bluetooth (screen off, BT off, LoRa on, CPU active)
+         */
+        MAX_NO_BLUETOOTH = 2;
+
+        /*
+         * Maximum state is Dark (screen off, BT on, LoRa on, CPU active)
+         */
+        MAX_DARK = 3;
+
+        /*
+         * Stay in ON/POWER state (no power saving)
+         */
+        MAX_ON = 4;
+      }
+
+      /*
+       * Maximum power saving state this profile is allowed to enter
+       */
+      MaxPowerState max_power_state = 10;
+    }
   }
 
   /*
