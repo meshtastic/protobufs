@@ -607,6 +607,47 @@ message Config {
        * Maximum power saving state this profile is allowed to enter
        */
       MaxPowerState max_power_state = 10;
+
+      /*
+       * LED behavior configuration for this power profile
+       */
+      message LedConfig {
+        /*
+         * LED behavior mode
+         */
+        enum LedMode {
+          /*
+           * LED is completely disabled
+           */
+          DISABLED = 0;
+
+          /*
+           * LED shows heartbeat (power/charging status indication)
+           */
+          HEARTBEAT = 1;
+
+          /*
+           * LED shows message indicator (message notifications)
+           */
+          MESSAGE_INDICATOR = 2;
+        }
+
+        /*
+         * LED behavior mode for this power profile
+         */
+        LedMode mode = 1;
+
+        /*
+         * Brightness level (0-255, 0 = off, 255 = full brightness)
+         * Allows dimming LED on battery to save power
+         */
+        uint32 brightness = 2;
+      }
+
+      /*
+       * LED behavior configuration for this power profile
+       */
+      LedConfig led_config = 11;
     }
   }
 
