@@ -188,6 +188,11 @@ message PowerMetrics {
    * Current (Ch3)
    */
   optional float ch3_current = 6;
+
+  /*
+   * Voltage (Ch4)
+   */
+  optional float ch4_voltage = 7;
 }
 
 /*
@@ -652,6 +657,11 @@ enum TelemetrySensorType {
    * PCT2075 Temperature Sensor
    */
   PCT2075 = 39;
+
+  /*
+   * ADS1X15 ADC
+   */
+  ADS1X15 = 40;
 }
 
 /*
