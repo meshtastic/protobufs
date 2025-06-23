@@ -648,6 +648,37 @@ message Config {
        * LED behavior configuration for this power profile
        */
       LedConfig led_config = 11;
+
+      /*
+       * Bluetooth wake behavior configuration
+       */
+      enum BleWakeMode {
+        /*
+         * Default behavior - BLE wakes on packet reception (current behavior)
+         * Device wakes from light sleep on packet → BLE starts → Phone can connect
+         */
+        BLE_WAKE_AUTO = 0;
+
+        /*
+         * BLE only wakes on button press (power saving mode)
+         * Device wakes from light sleep on packet → processes packet → stays in light sleep (BLE off)
+         * BLE only starts when user presses button, eliminating reconnection data dumps
+         */
+        BLE_WAKE_BUTTON_ONLY = 1;
+      }
+
+      /*
+       * Controls when Bluetooth becomes active in power saving modes
+       * Defaults to BLE_WAKE_AUTO for backward compatibility
+       */
+      BleWakeMode ble_wake_mode = 12;
+
+      /*
+       * How long (in seconds) BLE stays active after button press in BLE_WAKE_BUTTON_ONLY mode
+       * 0 uses system default (300 seconds / 5 minutes)
+       * UINT32_MAX keeps BLE active until manually turned off
+       */
+      uint32 ble_button_timeout_secs = 13;
     }
   }
 
