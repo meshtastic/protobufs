@@ -58,6 +58,15 @@
 
 *ClientNotification.message max_size:400
 
+*KeyVerificationNumberInform.remote_longname max_size:40
+*KeyVerificationNumberRequest.remote_longname max_size:40
+*KeyVerificationFinal.remote_longname max_size:40
+*KeyVerificationFinal.verification_characters max_size:10
+
+*KeyVerification.hash1 max_size:32
+*KeyVerification.hash2 max_size:32
+
+
 # MyMessage.name         max_size:40 
 # or fixed_length or fixed_count, or max_count
 

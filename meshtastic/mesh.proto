@@ -675,7 +675,89 @@ enum HardwareModel {
    * https://www.loraitalia.it
    */
   MESHLINK = 87;
+
+  /*
+   * Seeed XIAO nRF52840 + Wio SX1262 kit
+   */
+  XIAO_NRF52_KIT = 88;
   
+  /*
+   * Elecrow ThinkNode M1 & M2
+   * https://www.elecrow.com/wiki/ThinkNode-M1_Transceiver_Device(Meshtastic)_Power_By_nRF52840.html
+   * https://www.elecrow.com/wiki/ThinkNode-M2_Transceiver_Device(Meshtastic)_Power_By_NRF52840.html (this actually uses ESP32-S3)
+   */
+  THINKNODE_M1 = 89;
+  THINKNODE_M2 = 90;
+
+  /*
+   * Lilygo T-ETH-Elite
+   */
+  T_ETH_ELITE = 91;
+  
+  /*
+   * Heltec HRI-3621 industrial probe
+   */
+  HELTEC_SENSOR_HUB = 92;
+
+  /*
+   * Reserved Fried Chicken ID for future use
+   */
+  RESERVED_FRIED_CHICKEN = 93;
+  
+  /*
+   * Heltec Magnetic Power Bank with Meshtastic compatible
+   */
+  HELTEC_MESH_POCKET = 94;
+
+  /*
+   * Seeed Solar Node
+   */
+  SEEED_SOLAR_NODE = 95;
+
+  /*
+   * NomadStar Meteor Pro https://nomadstar.ch/
+   */
+  NOMADSTAR_METEOR_PRO = 96;
+
+  /*
+   * Elecrow CrowPanel Advance models, ESP32-S3 and TFT with SX1262 radio plugin
+   */
+  CROWPANEL = 97;
+
+  /**
+   * Lilygo LINK32 board with sensors
+   */
+  LINK_32 = 98;
+
+  /**
+   * Seeed Tracker L1
+   */
+  SEEED_WIO_TRACKER_L1 = 99;
+
+  /**
+   * Seeed Tracker L1 EINK driver
+   */
+  SEEED_WIO_TRACKER_L1_EINK = 100;
+
+  /*
+   * Reserved ID for future and past use
+   */
+  QWANTZ_TINY_ARMS = 101;
+  
+  /**
+   * Lilygo T-Deck Pro
+   */
+  T_DECK_PRO = 102;
+
+  /**
+   * Lilygo TLora Pager
+   */
+  T_LORA_PAGER = 103;
+
+  /**
+   * GAT562 Mesh Trial Tracker
+   */
+  GAT562_MESH_TRIAL_TRACKER = 104;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
@@ -759,6 +841,11 @@ message User {
    * This is sent out to other nodes on the mesh to allow them to compute a shared secret key.
    */
   bytes public_key = 8;
+
+  /*
+   * Whether or not the node can be messaged
+   */
+  optional bool is_unmessagable = 9;
 }
 
 /*
@@ -960,6 +1047,28 @@ message Data {
 }
 
 /*
+ * The actual over-the-mesh message doing KeyVerification
+ */
+message KeyVerification {
+
+  /*
+   * random value Selected by the requesting node
+   */
+  uint64 nonce = 1;
+
+  /*
+   * The final authoritative hash, only to be sent by NodeA at the end of the handshake
+   */
+  bytes hash1 = 2;
+
+  /*
+   * The intermediary hash (actually derived from hash1),
+   * sent from NodeB to NodeA in response to the initial message.
+   */
+  bytes hash2 = 3;
+}
+
+/*
  * Waypoint message, used to share arbitrary locations across the mesh
  */
 message Waypoint {
@@ -1102,7 +1211,7 @@ message MeshPacket {
 
     /*
      * Higher priority alert message used for critical alerts which take priority over other reliable packets.
-     */ 
+     */
     ALERT = 110;
 
     /*
@@ -1267,7 +1376,7 @@ message MeshPacket {
   bool pki_encrypted = 17;
 
   /*
-   * Last byte of the node number of the node that should be used as the next hop in routing. 
+   * Last byte of the node number of the node that should be used as the next hop in routing.
    * Set by the firmware internally, clients are not supposed to set this.
    */
   uint32 next_hop = 18;
@@ -1407,6 +1516,13 @@ message NodeInfo {
    * Persists between NodeDB internal clean ups
    */
   bool is_ignored = 11;
+
+  /*
+   * True if node public key has been verified.
+   * Persists between NodeDB internal clean ups
+   * LSB 0 of the bitfield
+   */
+  bool is_key_manually_verified = 12;
 }
 
 /*
@@ -1741,8 +1857,33 @@ message ClientNotification {
    * The message body of the notification
    */
   string message = 4;
+
+  oneof payload_variant {
+    KeyVerificationNumberInform key_verification_number_inform = 11;
+    KeyVerificationNumberRequest key_verification_number_request = 12;
+    KeyVerificationFinal key_verification_final = 13;
+    DuplicatedPublicKey duplicated_public_key = 14;
+    LowEntropyKey low_entropy_key = 15;
+  }
 }
 
+message KeyVerificationNumberInform {
+  uint64 nonce = 1;
+  string remote_longname = 2;
+  uint32 security_number = 3;
+}
+message KeyVerificationNumberRequest {
+  uint64 nonce = 1;
+  string remote_longname = 2;
+}
+message KeyVerificationFinal {
+  uint64 nonce = 1;
+  string remote_longname = 2;
+  bool isSender = 3;
+  string verification_characters = 4;
+}
+message DuplicatedPublicKey {}
+message LowEntropyKey {}
 /*
  * Individual File info for the device
  */
@@ -2015,6 +2156,16 @@ enum ExcludedModules {
    * Paxcounter module
    */
   PAXCOUNTER_CONFIG = 0x1000;
+
+  /* 
+   * Bluetooth config (not technically a module, but used to indicate bluetooth capabilities)
+   */
+  BLUETOOTH_CONFIG = 0x2000;
+
+  /*
+   * Network config (not technically a module, but used to indicate network capabilities)
+   */
+  NETWORK_CONFIG = 0x4000;
 }
 
 /*

@@ -94,6 +94,11 @@ message UserLite {
    * This is sent out to other nodes on the mesh to allow them to compute a shared secret key.
    */
   bytes public_key = 7;
+
+  /*
+   * Whether or not the node can be messaged
+   */
+  optional bool is_unmessagable = 9;
 }
 
 message NodeInfoLite {
@@ -156,9 +161,15 @@ message NodeInfoLite {
   bool is_ignored = 11;
 
   /*
-   * Last byte of the node number of the node that should be used as the next hop to reach this node. 
+   * Last byte of the node number of the node that should be used as the next hop to reach this node.
    */
   uint32 next_hop = 12;
+
+  /*
+   * Bitfield for storing booleans.
+   * LSB 0 is_key_manually_verified
+   */
+  uint32 bitfield = 13;
 }
 
 /*

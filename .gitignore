@@ -3,3 +3,4 @@ packages/rust/src/generated/*
 packages/rust/target
 packages/c/*
 !.gitkeep
+.DS_Store
