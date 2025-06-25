@@ -193,6 +193,51 @@ message PowerMetrics {
    * Voltage (Ch4)
    */
   optional float ch4_voltage = 7;
+
+  /*
+   * Current (Ch4)
+   */
+  optional float ch4_current = 8;
+
+  /*
+   * Voltage (Ch5)
+   */
+  optional float ch5_voltage = 9;
+
+  /*
+   * Current (Ch5)
+   */
+  optional float ch5_current = 10;
+
+  /*
+   * Voltage (Ch6)
+   */
+  optional float ch6_voltage = 11;
+
+  /*
+   * Current (Ch6)
+   */
+  optional float ch6_current = 12;
+
+  /*
+   * Voltage (Ch7)
+   */
+  optional float ch7_voltage = 13;
+
+  /*
+   * Current (Ch7)
+   */
+  optional float ch7_current = 14;
+
+  /*
+   * Voltage (Ch8)
+   */
+  optional float ch8_voltage = 15;
+
+  /*
+   * Current (Ch8)
+   */
+  optional float ch8_current = 16;
 }
 
 /*
