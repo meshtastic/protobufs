@@ -2,13 +2,13 @@ syntax = "proto3";
 
 package meshtastic;
 
-import "meshtastic/channel.proto";
-import "meshtastic/config.proto";
-import "meshtastic/module_config.proto";
-import "meshtastic/portnums.proto";
-import "meshtastic/telemetry.proto";
-import "meshtastic/xmodem.proto";
-import "meshtastic/device_ui.proto";
+import "channel.proto";
+import "config.proto";
+import "module_config.proto";
+import "portnums.proto";
+import "telemetry.proto";
+import "xmodem.proto";
+import "device_ui.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";

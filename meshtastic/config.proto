@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package meshtastic;
 
-import "meshtastic/device_ui.proto";
+import "device_ui.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
