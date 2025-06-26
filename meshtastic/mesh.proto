@@ -758,6 +758,18 @@ enum HardwareModel {
    * GAT562 Mesh Trial Tracker
    */
   GAT562_MESH_TRIAL_TRACKER = 104;
+  
+  /**
+  * RAKwireless WisMesh Tag 
+  */
+  WISMESH_TAG = 105;
+
+  /**
+  * RAKwireless WisBlock Core RAK3312 https://docs.rakwireless.com/product-categories/wisduo/rak3112-module/overview/
+  */
+  RAK3312 = 106;
+
+
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
