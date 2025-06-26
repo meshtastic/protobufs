@@ -758,11 +758,6 @@ enum HardwareModel {
    * GAT562 Mesh Trial Tracker
    */
   GAT562_MESH_TRIAL_TRACKER = 104;
-
-  /**
-  * Retia.io Nibble Connect
-  */
-  NIBBLE_CONNECT = 106;
   
   /**
   * RAKwireless WisMesh Tag 
