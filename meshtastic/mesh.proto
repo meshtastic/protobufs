@@ -770,9 +770,9 @@ enum HardwareModel {
   WISMESH_TAG = 107;
 
   /**
-  * RAKwireless RAK3112 https://docs.rakwireless.com/product-categories/wisduo/rak3112-module/overview/
+  * RAKwireless WisBlock Core RAK3312 https://docs.rakwireless.com/product-categories/wisduo/rak3112-module/overview/
   */
-  RAK3112 = 108;
+  RAK3312 = 108;
 
 
 
