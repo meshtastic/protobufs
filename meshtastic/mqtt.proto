@@ -103,4 +103,10 @@ message MapReport {
    * Number of online nodes (heard in the last 2 hours) this node has in its list that were received locally (not via MQTT)
    */
   uint32 num_online_local_nodes = 13;
+
+  /*
+   * User has opted in to share their location (map report) with the mqtt server
+   * Controlled by map_report.should_report_location
+   */
+  bool has_opted_report_location = 14;
 }

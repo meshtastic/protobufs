@@ -72,7 +72,7 @@ message EnvironmentMetrics {
    */
   optional float current = 6;
 
-  /* 
+  /*
    * relative scale IAQ value as measured by Bosch BME680 . value 0-500.
    * Belongs to Air Quality but is not particle but VOC measurement. Other VOC values can also be put in here.
    */
@@ -144,6 +144,15 @@ message EnvironmentMetrics {
   */
   optional float rainfall_24h = 20;
 
+ /*
+   * Soil moisture measured (% 1-100)
+   */
+  optional uint32 soil_moisture = 21;
+
+  /*
+   * Soil temperature measured (*C)
+   */
+  optional float soil_temperature = 22;
 }
 
 /*
@@ -179,6 +188,56 @@ message PowerMetrics {
    * Current (Ch3)
    */
   optional float ch3_current = 6;
+
+  /*
+   * Voltage (Ch4)
+   */
+  optional float ch4_voltage = 7;
+
+  /*
+   * Current (Ch4)
+   */
+  optional float ch4_current = 8;
+
+  /*
+   * Voltage (Ch5)
+   */
+  optional float ch5_voltage = 9;
+
+  /*
+   * Current (Ch5)
+   */
+  optional float ch5_current = 10;
+
+  /*
+   * Voltage (Ch6)
+   */
+  optional float ch6_voltage = 11;
+
+  /*
+   * Current (Ch6)
+   */
+  optional float ch6_current = 12;
+
+  /*
+   * Voltage (Ch7)
+   */
+  optional float ch7_voltage = 13;
+
+  /*
+   * Current (Ch7)
+   */
+  optional float ch7_current = 14;
+
+  /*
+   * Voltage (Ch8)
+   */
+  optional float ch8_voltage = 15;
+
+  /*
+   * Current (Ch8)
+   */
+  optional float ch8_current = 16;
 }
 
 /*
@@ -244,11 +303,21 @@ message AirQualityMetrics {
    * 10.0um Particle Count
    */
   optional uint32 particles_100um = 12;
-  
+
   /*
-   * 10.0um Particle Count
+   * CO2 concentration in ppm
    */
   optional uint32 co2 = 13;
+
+  /*
+   * CO2 sensor temperature in degC
+   */
+  optional float co2_temperature = 14;
+
+  /*
+   * CO2 sensor relative humidity in %
+   */
+  optional float co2_humidity = 15;
 }
 
 /*
@@ -272,7 +341,7 @@ message LocalStats {
    * Number of packets sent
    */
   uint32 num_packets_tx = 4;
-  
+
   /*
    * Number of packets received (both good and bad)
    */
@@ -309,6 +378,16 @@ message LocalStats {
    * This will always be zero for ROUTERs/REPEATERs. If this number is high, some other node(s) is/are relaying faster than you.
    */
   uint32 num_tx_relay_canceled = 11;
+
+  /*
+   * Number of bytes used in the heap
+   */
+  uint32 heap_total_bytes = 12;
+
+  /*
+   * Number of bytes free in the heap
+   */
+  uint32 heap_free_bytes = 13;
 }
 
 /*
@@ -330,6 +409,58 @@ message LocalStats {
    */
   optional float temperature = 3;
 }
+
+/*
+ * Linux host metrics
+ */
+message HostMetrics {
+  /*
+   * Host system uptime
+   */
+  uint32 uptime_seconds = 1;
+
+  /*
+   * Host system free memory
+   */
+  uint64 freemem_bytes = 2;
+
+  /*
+   * Host system disk space free for /
+   */
+  uint64 diskfree1_bytes = 3;
+
+  /*
+   * Secondary system disk space free
+   */
+  optional uint64 diskfree2_bytes = 4;
+
+  /*
+   * Tertiary disk space free
+   */
+  optional uint64 diskfree3_bytes = 5;
+
+  /*
+   * Host system one minute load in 1/100ths
+   */
+  uint32 load1 = 6;
+
+  /*
+   * Host system five minute load  in 1/100ths
+   */
+  uint32 load5 = 7;
+
+  /*
+   * Host system fifteen minute load  in 1/100ths
+   */
+  uint32 load15 = 8;
+
+  /*
+   * Optional User-provided string for arbitrary host system information
+   * that doesn't make sense as a dedicated entry.
+   */
+  optional string user_string = 9;
+}
+
 
 /*
  * Types of Measurements the telemetry module is equipped to handle
@@ -370,6 +501,11 @@ message Telemetry {
      * Health telemetry metrics
      */
     HealthMetrics health_metrics = 7;
+
+    /*
+     * Linux host metrics
+     */
+    HostMetrics host_metrics = 8;
   }
 }
 
@@ -491,17 +627,17 @@ enum TelemetrySensorType {
    * AMS TSL25911FN RGB Light Sensor
    */
   TSL25911FN = 22;
-  
+
   /*
    * AHT10 Integrated temperature and humidity sensor
    */
   AHT10 = 23;
 
   /*
-   * DFRobot Lark Weather station (temperature, humidity, pressure, wind speed and direction) 
+   * DFRobot Lark Weather station (temperature, humidity, pressure, wind speed and direction)
    */
   DFROBOT_LARK = 24;
-  
+
   /*
    * NAU7802 Scale Chip or compatible
    */
@@ -528,15 +664,15 @@ enum TelemetrySensorType {
   CUSTOM_SENSOR = 29;
 
   /*
-   * MAX30102 Pulse Oximeter and Heart-Rate Sensor 
+   * MAX30102 Pulse Oximeter and Heart-Rate Sensor
    */
   MAX30102 = 30;
-  
+
   /*
    * MLX90614 non-contact IR temperature sensor
    */
   MLX90614 = 31;
-  
+
   /*
    * SCD40/SCD41 CO2, humidity, temperature sensor
    */
@@ -546,7 +682,7 @@ enum TelemetrySensorType {
    * ClimateGuard RadSens, radiation, Geiger-Muller Tube
    */
   RADSENS = 33;
-  
+
   /*
    * High accuracy current and voltage
    */
@@ -557,6 +693,30 @@ enum TelemetrySensorType {
    */
   DFROBOT_RAIN = 35;
 
+  /*
+   * Infineon DPS310 High accuracy pressure and temperature
+   */
+  DPS310 = 36;
+
+  /*
+   * RAKWireless RAK12035 Soil Moisture Sensor Module
+   */
+  RAK12035 = 37;
+
+  /*
+   * MAX17261 lipo battery gauge
+   */
+  MAX17261 = 38;
+
+  /*
+   * PCT2075 Temperature Sensor
+   */
+  PCT2075 = 39;
+
+  /*
+   * ADS1X15 ADC
+   */
+  ADS1X15 = 40;
 }
 
 /*
