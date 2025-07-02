@@ -14,7 +14,7 @@
 
 ### New Hardware Model Acceptance Policy
 
-Due to limited availability and ongoing support, new Hardware Models will only be accepted by [Meshtastic Backers and Partners](https://meshtastic.com/). The Meshtastic team reserves the right to make exceptions to this policy.
+Due to limited availability and ongoing support, new Hardware Models will only be accepted from [Meshtastic Backers and Partners](https://meshtastic.com/). The Meshtastic team reserves the right to make exceptions to this policy.
 
 #### Alternative for Community Contributors
 
