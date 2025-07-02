@@ -308,6 +308,16 @@ message AirQualityMetrics {
    * CO2 concentration in ppm
    */
   optional uint32 co2 = 13;
+
+  /*
+   * CO2 sensor temperature in degC
+   */
+  optional float co2_temperature = 14;
+
+  /*
+   * CO2 sensor relative humidity in %
+   */
+  optional float co2_humidity = 15;
 }
 
 /*
