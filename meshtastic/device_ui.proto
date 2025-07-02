@@ -71,6 +71,23 @@ message DeviceUIConfig {
    * Map related data
    */
   Map map_data = 15;
+
+  /*
+   * Compass mode
+   */
+  CompassMode compass_mode = 16;
+
+  /*
+   * RGB color for BaseUI
+   * 0xRRGGBB format, e.g. 0xFF0000 for red
+   */
+  uint32 screen_rgb_color = 17;
+
+  /*
+   * Clockface analog style
+   * true for analog clockface, false for digital clockface
+   */
+  bool is_clockface_analog = 18;
 }
 
 
@@ -172,6 +189,23 @@ message Map {
    * Map scroll follows GPS
    */
   bool follow_gps = 3;
+}
+
+enum CompassMode {
+  /*
+   * Compass with dynamic ring and heading
+   */
+  DYNAMIC = 0;
+
+  /*
+   * Compass with fixed ring and heading
+   */
+  FIXED_RING = 1;
+
+  /*
+   * Compass with heading and freeze option
+   */
+  FREEZE_HEADING = 2;
 }
 
 enum Theme {
