@@ -8,37 +8,36 @@ option java_outer_classname = "InterdeviceProtos";
 option java_package = "com.geeksville.mesh";
 option swift_prefix = "";
 
-// encapsulate up to 1k of NMEA string data
-
-enum MessageType {
-  ACK = 0;
-  COLLECT_INTERVAL = 160;  // in ms
-  BEEP_ON = 161;           // duration ms
-  BEEP_OFF = 162;          // cancel prematurely
-  SHUTDOWN = 163;
-  POWER_ON = 164;
-  SCD41_TEMP = 176;
-  SCD41_HUMIDITY = 177;
-  SCD41_CO2 = 178;
-  AHT20_TEMP = 179;
-  AHT20_HUMIDITY = 180;
-  TVOC_INDEX = 181;
-}
-
-message SensorData {
-  // The message type
-  MessageType type = 1;
-  // The sensor data, either as a float or an uint32
-  oneof data {
-    float float_value = 2;
-    uint32 uint32_value = 3;
+message I2CCommand {
+  enum Operation {
+    START = 0;
+    STOP = 1;
+    WRITE = 2;
+    READ = 3;
   }
+  Operation op = 1;
+  uint32 addr = 2;
+  uint32 data = 3;
+  bool ack = 4;
 }
 
+message I2CResponse {
+  enum Status {
+    OK = 0;
+    NACK = 1;
+    ERROR = 2;
+  }
+  Status status = 1;
+  uint32 data = 2;
+}
+
+// Main message for interdevice communication
 message InterdeviceMessage {
   // The message data
   oneof data {
     string nmea = 1;
-    SensorData sensor = 2;
+    I2CCommand i2c_command = 2;
+    I2CResponse i2c_response = 3;
+    uint32 beep = 4;
   }
 }
