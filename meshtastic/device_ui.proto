@@ -88,6 +88,12 @@ message DeviceUIConfig {
    * true for analog clockface, false for digital clockface
    */
   bool is_clockface_analog = 18;
+
+  /*
+   * If true (default), the screen will automatically turn on when a message is received.
+   * If false, the screen will only turn on via button press or other manual input.
+   */
+  bool wake_on_received_message = 19;
 }
 
 
