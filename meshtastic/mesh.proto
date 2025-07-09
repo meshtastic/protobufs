@@ -762,7 +762,7 @@ enum HardwareModel {
   /**
    * EoRa HUB X00TB LR1121 (433MHz/868MHz-915MHz & 2.4GHz)
    */
-  EoRa-HUB-X00TB = 105;
+  EoRa_HUB_X00TB = 105;
 
   /**
    * Retia.io Nibble Connect
