@@ -769,6 +769,11 @@ enum HardwareModel {
   */
   RAK3312 = 106;
 
+  /**
+  * Elecrow ThinkNode M5 https://www.elecrow.com/wiki/ThinkNode_M5_Meshtastic_LoRa_Signal_Transceiver_ESP32-S3.html
+  */
+  THINKNODE_M5 = 107;
+
 
 
   /*
