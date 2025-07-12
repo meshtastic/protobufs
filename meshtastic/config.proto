@@ -178,6 +178,13 @@ message Config {
        * Buzzer is enabled only for non-notification tones such as button presses, startup, shutdown, but not for alerts.
        */
       SYSTEM_ONLY = 3;
+
+      /*
+       * Direct Message notifications only.
+       * Buzzer is enabled only for direct messages and alerts, but not for button presses.
+       * External notification config determines the specifics of the notification behavior.
+       */
+      DIRECT_MSG_ONLY = 4;
     }
 
     /*
