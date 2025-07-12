@@ -148,7 +148,6 @@ message ModuleConfig {
    * Detection Sensor Module Config
    */
   message DetectionSensorConfig {
-
     enum TriggerType {
       // Event is triggered if pin is low
       LOGIC_LOW = 0;
@@ -294,7 +293,6 @@ message ModuleConfig {
      * BLE RSSI threshold. Defaults to -80
      */
     int32 ble_threshold = 4;
-
   }
 
   /*

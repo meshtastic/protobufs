@@ -189,7 +189,7 @@ message Config {
      * Disabling this will disable the SerialConsole by not initilizing the StreamAPI
      * Moved to SecurityConfig
      */
-    bool serial_enabled = 2[deprecated = true];
+    bool serial_enabled = 2 [deprecated = true];
 
     /*
      * For boards without a hard wired button, this is the pin number that will be used
@@ -224,7 +224,7 @@ message Config {
      * Clients should then limit available configuration and administrative options inside the user interface
      * Moved to SecurityConfig
      */
-    bool is_managed = 9[deprecated = true];
+    bool is_managed = 9 [deprecated = true];
 
     /*
      * Disables the triple-press of user button to enable or disable GPS
@@ -470,7 +470,7 @@ message Config {
      * If non-zero, we want powermon log outputs.  With the particular (bitfield) sources enabled.
      * Note: we picked an ID of 32 so that lower more efficient IDs can be used for more frequently used options.
      */
-     uint64 powermon_enables = 32;
+    uint64 powermon_enables = 32;
   }
 
   /*
@@ -783,7 +783,7 @@ message Config {
        * Rotate the compass by 270 degrees and invert.
        */
       DEGREES_270_INVERTED = 7;
-      }
+    }
 
     /*
      * Indicates how to rotate or invert the compass output to accurate display on the display.
@@ -923,7 +923,6 @@ message Config {
        * Kazakhstan 863MHz
        */
       KZ_863 = 24;
-
     }
 
     /*
@@ -1137,17 +1136,16 @@ message Config {
   }
 
   message SecurityConfig {
-
-  /*
-   * The public key of the user's device.
-   * Sent out to other nodes on the mesh to allow them to compute a shared secret key.
-   */
+    /*
+     * The public key of the user's device.
+     * Sent out to other nodes on the mesh to allow them to compute a shared secret key.
+     */
     bytes public_key = 1;
 
-  /*
-   * The private key of the device.
-   * Used to create a shared key with a remote device.
-   */
+    /*
+     * The private key of the device.
+     * Used to create a shared key with a remote device.
+     */
     bytes private_key = 2;
 
     /*
