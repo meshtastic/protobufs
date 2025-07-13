@@ -90,7 +90,6 @@ message DeviceUIConfig {
   bool is_clockface_analog = 18;
 }
 
-
 message NodeFilter {
   /*
    * Filter unknown nodes
@@ -126,7 +125,6 @@ message NodeFilter {
    * Filter based on channel
    */
   int32 channel = 7;
-
 }
 
 message NodeHighlight {
@@ -154,7 +152,6 @@ message NodeHighlight {
    * Highlight nodes by matching name string
    */
   string node_name = 5;
-
 }
 
 message GeoPoint {
@@ -163,14 +160,14 @@ message GeoPoint {
    */
   int32 zoom = 1;
 
-   /*
-    * Coordinate: latitude
-    */
+  /*
+   * Coordinate: latitude
+   */
   int32 latitude = 2;
 
-   /*
-    * Coordinate: longitude
-    */
+  /*
+   * Coordinate: longitude
+   */
   int32 longitude = 3;
 }
 
@@ -317,7 +314,7 @@ enum Language {
    */
   BULGARIAN = 17;
 
-   /*
+  /*
    * Simplified Chinese (experimental)
    */
   SIMPLIFIED_CHINESE = 30;
@@ -326,4 +323,4 @@ enum Language {
    * Traditional Chinese (experimental)
    */
   TRADITIONAL_CHINESE = 31;
-  }
+}

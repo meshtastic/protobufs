@@ -4,11 +4,11 @@ package meshtastic;
 
 import "meshtastic/channel.proto";
 import "meshtastic/config.proto";
+import "meshtastic/device_ui.proto";
 import "meshtastic/module_config.proto";
 import "meshtastic/portnums.proto";
 import "meshtastic/telemetry.proto";
 import "meshtastic/xmodem.proto";
-import "meshtastic/device_ui.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -564,22 +564,22 @@ enum HardwareModel {
    */
   HELTEC_CAPSULE_SENSOR_V3 = 65;
 
-   /*
+  /*
    * Heltec Vision Master T190 with ESP32-S3 CPU, and a 1.90 inch TFT display
    */
   HELTEC_VISION_MASTER_T190 = 66;
 
-   /*
+  /*
    * Heltec Vision Master E213 with ESP32-S3 CPU, and a 2.13 inch E-Ink display
    */
   HELTEC_VISION_MASTER_E213 = 67;
 
-   /*
+  /*
    * Heltec Vision Master E290 with ESP32-S3 CPU, and a 2.9 inch E-Ink display
    */
   HELTEC_VISION_MASTER_E290 = 68;
 
-   /*
+  /*
    * Heltec Mesh Node T114 board with nRF52840 CPU, and a 1.14 inch TFT display, Ultimate low-power design,
    * specifically adapted for the Meshtatic project
    */
@@ -590,7 +590,7 @@ enum HardwareModel {
    */
   SENSECAP_INDICATOR = 70;
 
-   /*
+  /*
    * Seeed studio T1000-E tracker card. NRF52840 w/ LR1110 radio, GPS, button, buzzer, and sensors.
    */
   TRACKER_T1000_E = 71;
@@ -611,7 +611,7 @@ enum HardwareModel {
    */
   RADIOMASTER_900_BANDIT = 74;
 
-   /*
+  /*
    * Minewsemi ME25LS01 (ME25LE01_V1.0). NRF52840 w/ LR1110 radio, buttons and leds and pins.
    */
   ME25LS01_4Y10TD = 75;
@@ -640,7 +640,7 @@ enum HardwareModel {
   /* Seeed XIAO S3 DK*/
   SEEED_XIAO_S3 = 81;
 
-   /*
+  /*
    * Nordic nRF52840+Semtech SX1262 LoRa BLE Combo Module. nRF52840+SX1262 MS24SF1
    */
   MS24SF1 = 82;
@@ -680,7 +680,7 @@ enum HardwareModel {
    * Seeed XIAO nRF52840 + Wio SX1262 kit
    */
   XIAO_NRF52_KIT = 88;
-  
+
   /*
    * Elecrow ThinkNode M1 & M2
    * https://www.elecrow.com/wiki/ThinkNode-M1_Transceiver_Device(Meshtastic)_Power_By_nRF52840.html
@@ -693,7 +693,7 @@ enum HardwareModel {
    * Lilygo T-ETH-Elite
    */
   T_ETH_ELITE = 91;
-  
+
   /*
    * Heltec HRI-3621 industrial probe
    */
@@ -703,7 +703,7 @@ enum HardwareModel {
    * Reserved Fried Chicken ID for future use
    */
   RESERVED_FRIED_CHICKEN = 93;
-  
+
   /*
    * Heltec Magnetic Power Bank with Meshtastic compatible
    */
@@ -724,17 +724,17 @@ enum HardwareModel {
    */
   CROWPANEL = 97;
 
-  /**
+  /*
    * Lilygo LINK32 board with sensors
    */
   LINK_32 = 98;
 
-  /**
+  /*
    * Seeed Tracker L1
    */
   SEEED_WIO_TRACKER_L1 = 99;
 
-  /**
+  /*
    * Seeed Tracker L1 EINK driver
    */
   SEEED_WIO_TRACKER_L1_EINK = 100;
@@ -743,38 +743,36 @@ enum HardwareModel {
    * Reserved ID for future and past use
    */
   QWANTZ_TINY_ARMS = 101;
-  
-  /**
+
+  /*
    * Lilygo T-Deck Pro
    */
   T_DECK_PRO = 102;
 
-  /**
+  /*
    * Lilygo TLora Pager
    */
   T_LORA_PAGER = 103;
 
-  /**
+  /*
    * GAT562 Mesh Trial Tracker
    */
   GAT562_MESH_TRIAL_TRACKER = 104;
-  
-  /**
-  * RAKwireless WisMesh Tag 
-  */
+
+  /*
+   * RAKwireless WisMesh Tag
+   */
   WISMESH_TAG = 105;
 
-  /**
-  * RAKwireless WisBlock Core RAK3312 https://docs.rakwireless.com/product-categories/wisduo/rak3112-module/overview/
-  */
+  /*
+   * RAKwireless WisBlock Core RAK3312 https://docs.rakwireless.com/product-categories/wisduo/rak3112-module/overview/
+   */
   RAK3312 = 106;
 
-  /**
-  * Elecrow ThinkNode M5 https://www.elecrow.com/wiki/ThinkNode_M5_Meshtastic_LoRa_Signal_Transceiver_ESP32-S3.html
-  */
+  /*
+   * Elecrow ThinkNode M5 https://www.elecrow.com/wiki/ThinkNode_M5_Meshtastic_LoRa_Signal_Transceiver_ESP32-S3.html
+   */
   THINKNODE_M5 = 107;
-
-
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
@@ -1067,7 +1065,6 @@ message Data {
  * The actual over-the-mesh message doing KeyVerification
  */
 message KeyVerification {
-
   /*
    * random value Selected by the requesting node
    */
@@ -1901,6 +1898,7 @@ message KeyVerificationFinal {
 }
 message DuplicatedPublicKey {}
 message LowEntropyKey {}
+
 /*
  * Individual File info for the device
  */
@@ -2174,7 +2172,7 @@ enum ExcludedModules {
    */
   PAXCOUNTER_CONFIG = 0x1000;
 
-  /* 
+  /*
    * Bluetooth config (not technically a module, but used to indicate bluetooth capabilities)
    */
   BLUETOOTH_CONFIG = 0x2000;
@@ -2232,7 +2230,7 @@ message ChunkedPayload {
  * Wrapper message for broken repeated oneof support
  */
 message resend_chunks {
-    repeated uint32 chunks = 1;
+  repeated uint32 chunks = 1;
 }
 
 /*
