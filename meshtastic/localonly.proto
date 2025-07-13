@@ -63,6 +63,18 @@ message LocalConfig {
    * The part of the config that is specific to Security settings
    */
   Config.SecurityConfig security = 9;
+
+  /*
+   * Set when the firmware has been compiled with event mode support
+   */
+  bool event_mode_enabled = 10;
+
+  /*
+   * Title for event mode firmware
+   * Ex: "burningmesh2025"
+   * Set at compile time, consumed by clients to modify UI behavior
+   */
+  string event_mode_title = 11;
 }
 
 message LocalModuleConfig {
