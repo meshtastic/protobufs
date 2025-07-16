@@ -1,19 +1,32 @@
 syntax = "proto3";
 package meshtastic;
 
-// A TreeGuard event: battery + SOC + classification
+// A TreeGuard event: battery voltage, state‑of‑charge, and the
+// vibration classification result.
 message TreeGuardEvent {
+  // Battery voltage in volts (e.g. 3.7)
   float battery_voltage = 1;
+
+  // State‑of‑charge percentage (0.0–100.0)
   float battery_soc     = 2;
 
   enum EventType {
+    // No classification could be made
     UNCLASSIFIED      = 0;
+    // High‑confidence machete strike detected
     LIKELY_MACHETE    = 1;
+    // High‑confidence chainsaw vibration detected
     LIKELY_CHAINSAW   = 2;
+    // No event—just background vibration
     LIKELY_NON_EVENT  = 3;
+    // Low‑confidence machete strike
     POSSIBLE_MACHETE  = 4;
+    // Low‑confidence chainsaw vibration
     POSSIBLE_CHAINSAW = 5;
+    // Some vibration seen, but ambiguous between types
     AMBIGUOUS         = 6;
   }
+
+  // Which event type this sample fell into
   EventType event = 3;
 }
