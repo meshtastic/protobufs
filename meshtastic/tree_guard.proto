@@ -1,0 +1,19 @@
+syntax = "proto3";
+package meshtastic;
+
+// A TreeGuard event: battery + SOC + classification
+message TreeGuardEvent {
+  float battery_voltage = 1;
+  float battery_soc     = 2;
+
+  enum EventType {
+    UNCLASSIFIED      = 0;
+    LIKELY_MACHETE    = 1;
+    LIKELY_CHAINSAW   = 2;
+    LIKELY_NON_EVENT  = 3;
+    POSSIBLE_MACHETE  = 4;
+    POSSIBLE_CHAINSAW = 5;
+    AMBIGUOUS         = 6;
+  }
+  EventType event = 3;
+}
