@@ -930,6 +930,14 @@ message Config {
        * Kazakhstan 863MHz
        */
       KZ_863 = 24;
+      /*
+       * Vietnam 433Mhz
+       */
+      VN_433 = 25;
+      /*
+       * Vietnam 923Mhz
+       */
+      VN_923 = 26; 
     }
 
     /*
