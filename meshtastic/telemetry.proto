@@ -722,6 +722,11 @@ enum TelemetrySensorType {
    * ADS1X15 ADC_ALT
    */
   ADS1X15_ALT = 41;
+
+  /*
+   * SEN5X PM SENSORS
+   */
+  SEN5X = 42;
 }
 
 /*
