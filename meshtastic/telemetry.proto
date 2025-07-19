@@ -323,10 +323,12 @@ message AirQualityMetrics {
    * Formaldehyde sensor formaldehyde concentration in ppb
    */
   optional float form_formaldehyde = 16;
+
   /*
    * Formaldehyde sensor relative humidity in %RH
    */
   optional float form_humidity = 17;
+
   /*
    * Formaldehyde sensor temperature in degrees Celsius
    */
