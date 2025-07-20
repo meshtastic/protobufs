@@ -978,6 +978,12 @@ message Routing {
      * Admin packet sent using PKC, but not from a public key on the admin key list
      */
     ADMIN_PUBLIC_KEY_UNAUTHORIZED = 37;
+
+    /*
+     * Airtime fairness rate limit exceeded for a packet
+     * This typically enforced per portnum and is used to prevent a single node from monopolizing airtime
+     */
+    RATE_LIMIT_EXCEEDED = 38;
   }
 
   oneof variant {
