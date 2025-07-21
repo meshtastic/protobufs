@@ -275,32 +275,32 @@ message AirQualityMetrics {
   optional uint32 pm100_environmental = 6;
 
   /*
-   * 0.3um Particle Count in #/01.l
+   * 0.3um Particle Count in #/0.1l
    */
   optional uint32 particles_03um = 7;
 
   /*
-   * 0.5um Particle Count in #/01.l
+   * 0.5um Particle Count in #/0.1l
    */
   optional uint32 particles_05um = 8;
 
   /*
-   * 1.0um Particle Count in #/01.l
+   * 1.0um Particle Count in #/0.1l
    */
   optional uint32 particles_10um = 9;
 
   /*
-   * 2.5um Particle Count in #/01.l
+   * 2.5um Particle Count in #/0.1l
    */
   optional uint32 particles_25um = 10;
 
   /*
-   * 5.0um Particle Count in #/01.l
+   * 5.0um Particle Count in #/0.1l
    */
   optional uint32 particles_50um = 11;
 
   /*
-   * 10.0um Particle Count in #/01.l
+   * 10.0um Particle Count in #/0.1l
    */
   optional uint32 particles_100um = 12;
 
@@ -340,7 +340,7 @@ message AirQualityMetrics {
   optional uint32 pm40_standard = 19;
 
   /*
-   * 4.0um Particle Count in #/01.l
+   * 4.0um Particle Count in #/0.1l
    */
   optional uint32 particles_40um = 20;
 
