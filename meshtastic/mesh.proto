@@ -1639,12 +1639,12 @@ enum EventFirmwareIndicator {
   /*
    * Open Sauce, the maker conference held yearly in CA
    */
-   OPEN_SAUCE = 1;
+  OPEN_SAUCE = 1;
 
   /*
    * DEFCON, the yearly hacker conference
    */
-   DEFCON = 2;
+  DEFCON = 2;
 
   /*
    * Burning Man, the yearly hippie gathering in the desert

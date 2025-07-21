@@ -333,7 +333,7 @@ message AirQualityMetrics {
    * Formaldehyde sensor temperature in degrees Celsius
    */
   optional float form_temperature = 18;
-  
+
   /*
    * Concentration Units Standard PM4.0 in ug/m3
    */
