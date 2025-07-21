@@ -1628,33 +1628,46 @@ enum CriticalErrorCode {
 }
 
 /*
- * Enum to indicate to clients whether this firmware is an event firmware build.
+ * Enum to indicate to clients whether this firmware is a special firmware build, like an event.
+ * The first 16 values are reserved for non-event special firmwares, like the Smart Citizen use case.
  */
-enum EventFirmwareIndicator {
+enum FirmwareEdition {
   /*
    * Vanilla firmware
    */
   VANILLA = 0;
 
   /*
+   * Firmware for use in the Smart Citizen environmental monitoring network
+   */
+  SMART_CITIZEN = 1;
+
+  /*
    * Open Sauce, the maker conference held yearly in CA
    */
-  OPEN_SAUCE = 1;
+  OPEN_SAUCE = 16;
 
   /*
    * DEFCON, the yearly hacker conference
    */
-  DEFCON = 2;
+  DEFCON = 17;
 
   /*
    * Burning Man, the yearly hippie gathering in the desert
    */
-  BURNING_MAN = 3;
+  BURNING_MAN = 18;
 
   /*
    * Hamvention, the Dayton amateur radio convention
    */
-  HAMVENTION = 4;
+  HAMVENTION = 19;
+
+
+
+  /*
+   * Placeholder for DIY and unofficial events
+   */
+  DIY_EDITION = 127;
 }
 
 /*
@@ -1694,7 +1707,7 @@ message MyNodeInfo {
   /*
    * The indicator for whether this device is running event firmware and which
    */
-  EventFirmwareIndicator event_firmware = 14;
+  FirmwareEdition firmware_edition = 14;
 }
 
 /*
