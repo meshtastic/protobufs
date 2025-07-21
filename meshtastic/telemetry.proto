@@ -320,54 +320,54 @@ message AirQualityMetrics {
   optional float co2_humidity = 15;
 
   /*
-   * Concentration Units Standard PM4.0 in ug/m3
-   */
-  optional uint32 pm40_standard = 16;
-
-  /*
-   * 4.0um Particle Count in #/01.l
-   */
-  optional uint32 particles_40um = 17;
-
-  /*
-   * PM Sensor Temperature
-   */
-  optional float pm_temperature = 18;
-
-  /*
-   * PM Sensor humidity
-   */
-  optional float pm_humidity = 19;
-
-  /*
-   * PM Sensor VOC Index
-   */
-  optional float pm_voc_idx = 20;
-
-  /*
-   * PM Sensor NOx Index
-   */
-  optional float pm_nox_idx = 21;
-
-  /*
-   * Typical Particle Size in um
-   */
-  optional float particles_tps = 22;
-
-  /*
    * Formaldehyde sensor formaldehyde concentration in ppb
    */
-  optional float form_formaldehyde = 23;
+  optional float form_formaldehyde = 16;
 
   /*
    * Formaldehyde sensor relative humidity in %RH
    */
-  optional float form_humidity = 24;
+  optional float form_humidity = 17;
 
   /*
    * Formaldehyde sensor temperature in degrees Celsius
    */
-  optional float form_temperature = 25;
+  optional float form_temperature = 18;
+  
+  /*
+   * Concentration Units Standard PM4.0 in ug/m3
+   */
+  optional uint32 pm40_standard = 19;
+
+  /*
+   * 4.0um Particle Count in #/01.l
+   */
+  optional uint32 particles_40um = 20;
+
+  /*
+   * PM Sensor Temperature
+   */
+  optional float pm_temperature = 21;
+
+  /*
+   * PM Sensor humidity
+   */
+  optional float pm_humidity = 22;
+
+  /*
+   * PM Sensor VOC Index
+   */
+  optional float pm_voc_idx = 23;
+
+  /*
+   * PM Sensor NOx Index
+   */
+  optional float pm_nox_idx = 24;
+
+  /*
+   * Typical Particle Size in um
+   */
+  optional float particles_tps = 25;
 }
 
 /*
