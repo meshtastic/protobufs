@@ -919,22 +919,31 @@ message Config {
        * Philippines 915mhz
        */
       PH_915 = 21;
+      
       /*
        * Australia / New Zealand 433MHz
        */
       ANZ_433 = 22;
+      
       /*
        * Kazakhstan 433MHz
        */
       KZ_433 = 23;
+      
       /*
        * Kazakhstan 863MHz
        */
       KZ_863 = 24;
+      
+      /*
+       * Nepal 865MHz
+       */
+      NP_865 = 25;
+      
       /*
        * Brazil 902MHz
        */
-      BR_902 = 25;
+      BR_902 = 26;
     }
 
     /*
