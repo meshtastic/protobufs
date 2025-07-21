@@ -178,6 +178,13 @@ message Config {
        * Buzzer is enabled only for non-notification tones such as button presses, startup, shutdown, but not for alerts.
        */
       SYSTEM_ONLY = 3;
+
+      /*
+       * Direct Message notifications only.
+       * Buzzer is enabled only for direct messages and alerts, but not for button presses.
+       * External notification config determines the specifics of the notification behavior.
+       */
+      DIRECT_MSG_ONLY = 4;
     }
 
     /*
@@ -189,7 +196,7 @@ message Config {
      * Disabling this will disable the SerialConsole by not initilizing the StreamAPI
      * Moved to SecurityConfig
      */
-    bool serial_enabled = 2[deprecated = true];
+    bool serial_enabled = 2 [deprecated = true];
 
     /*
      * For boards without a hard wired button, this is the pin number that will be used
@@ -224,7 +231,7 @@ message Config {
      * Clients should then limit available configuration and administrative options inside the user interface
      * Moved to SecurityConfig
      */
-    bool is_managed = 9[deprecated = true];
+    bool is_managed = 9 [deprecated = true];
 
     /*
      * Disables the triple-press of user button to enable or disable GPS
@@ -470,7 +477,7 @@ message Config {
      * If non-zero, we want powermon log outputs.  With the particular (bitfield) sources enabled.
      * Note: we picked an ID of 32 so that lower more efficient IDs can be used for more frequently used options.
      */
-     uint64 powermon_enables = 32;
+    uint64 powermon_enables = 32;
   }
 
   /*
@@ -676,9 +683,10 @@ message Config {
     uint32 screen_on_secs = 1;
 
     /*
+     * Deprecated in 2.7.4: Unused
      * How the GPS coordinates are formatted on the OLED screen.
      */
-    GpsCoordinateFormat gps_format = 2;
+    GpsCoordinateFormat gps_format = 2 [deprecated = true];
 
     /*
      * Automatically toggles to the next page on the screen like a carousel, based the specified interval in seconds.
@@ -783,7 +791,7 @@ message Config {
        * Rotate the compass by 270 degrees and invert.
        */
       DEGREES_270_INVERTED = 7;
-      }
+    }
 
     /*
      * Indicates how to rotate or invert the compass output to accurate display on the display.
@@ -911,19 +919,31 @@ message Config {
        * Philippines 915mhz
        */
       PH_915 = 21;
+      
       /*
        * Australia / New Zealand 433MHz
        */
       ANZ_433 = 22;
+      
       /*
        * Kazakhstan 433MHz
        */
       KZ_433 = 23;
+      
       /*
        * Kazakhstan 863MHz
        */
       KZ_863 = 24;
-
+      
+      /*
+       * Nepal 865MHz
+       */
+      NP_865 = 25;
+      
+      /*
+       * Brazil 902MHz
+       */
+      BR_902 = 26;
     }
 
     /*
@@ -1137,17 +1157,16 @@ message Config {
   }
 
   message SecurityConfig {
-
-  /*
-   * The public key of the user's device.
-   * Sent out to other nodes on the mesh to allow them to compute a shared secret key.
-   */
+    /*
+     * The public key of the user's device.
+     * Sent out to other nodes on the mesh to allow them to compute a shared secret key.
+     */
     bytes public_key = 1;
 
-  /*
-   * The private key of the device.
-   * Used to create a shared key with a remote device.
-   */
+    /*
+     * The private key of the device.
+     * Used to create a shared key with a remote device.
+     */
     bytes private_key = 2;
 
     /*

@@ -130,21 +130,21 @@ message EnvironmentMetrics {
   optional float wind_lull = 17;
 
   /*
-  * Radiation in µR/h
-  */
+   * Radiation in µR/h
+   */
   optional float radiation = 18;
 
   /*
-  * Rainfall in the last hour in mm
-  */
+   * Rainfall in the last hour in mm
+   */
   optional float rainfall_1h = 19;
 
-    /*
-  * Rainfall in the last 24 hours in mm
-  */
+  /*
+   * Rainfall in the last 24 hours in mm
+   */
   optional float rainfall_24h = 20;
 
- /*
+  /*
    * Soil moisture measured (% 1-100)
    */
   optional uint32 soil_moisture = 21;
@@ -353,6 +353,21 @@ message AirQualityMetrics {
    * Typical Particle Size in um
    */
   optional float particles_tps = 22;
+
+  /*
+   * Formaldehyde sensor formaldehyde concentration in ppb
+   */
+  optional float form_formaldehyde = 23;
+
+  /*
+   * Formaldehyde sensor relative humidity in %RH
+   */
+  optional float form_humidity = 24;
+
+  /*
+   * Formaldehyde sensor temperature in degrees Celsius
+   */
+  optional float form_temperature = 25;
 }
 
 /*
@@ -428,7 +443,7 @@ message LocalStats {
 /*
  * Health telemetry metrics
  */
- message HealthMetrics {
+message HealthMetrics {
   /*
    * Heart rate (beats per minute)
    */
@@ -495,7 +510,6 @@ message HostMetrics {
    */
   optional string user_string = 9;
 }
-
 
 /*
  * Types of Measurements the telemetry module is equipped to handle
@@ -759,9 +773,14 @@ enum TelemetrySensorType {
   ADS1X15_ALT = 41;
 
   /*
+   * Sensirion SFA30 Formaldehyde sensor
+   */
+  SFA30 = 42;
+
+  /*
    * SEN5X PM SENSORS
    */
-  SEN5X = 42;
+  SEN5X = 43;
 }
 
 /*
