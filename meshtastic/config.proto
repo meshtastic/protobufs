@@ -931,6 +931,10 @@ message Config {
        * Kazakhstan 863MHz
        */
       KZ_863 = 24;
+      /*
+       * Nepal 865MHz
+       */
+      NP_865 = 25;
     }
 
     /*
