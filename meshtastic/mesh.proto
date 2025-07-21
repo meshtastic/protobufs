@@ -1628,6 +1628,31 @@ enum CriticalErrorCode {
 }
 
 /*
+ * Enum to indicate to clients whether this firmware is an event firmware build.
+ */
+enum EventFirmwareIndicator {
+  /*
+   * Vanilla firmware
+   */
+  VANILLA = 0;
+
+  /*
+   * Open Sauce, the maker conference held yearly in CA
+   */
+   OPEN_SAUCE = 1;
+
+  /*
+   * DEFCON, the yearly hacker conference
+   */
+   DEFCON = 2;
+
+  /*
+   * Burning Man, the yearly hippie gathering in the desert
+   */
+  BURNING_MAN = 3;
+}
+
+/*
  * Unique local debugging info for this node
  * Note: we don't include position or the user info, because that will come in the
  * Sent to the phone in response to WantNodes.
@@ -1660,6 +1685,11 @@ message MyNodeInfo {
    * The PlatformIO environment used to build this firmware
    */
   string pio_env = 13;
+
+  /*
+   * The indicator for whether this device is running event firmware and which
+   */
+  EventFirmwareIndicator event_firmware = 14;
 }
 
 /*
