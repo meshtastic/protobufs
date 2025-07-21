@@ -1650,6 +1650,11 @@ enum EventFirmwareIndicator {
    * Burning Man, the yearly hippie gathering in the desert
    */
   BURNING_MAN = 3;
+
+  /*
+   * Hamvention, the Dayton amateur radio convention
+   */
+  HAMVENTION = 4;
 }
 
 /*
