@@ -944,6 +944,16 @@ message Config {
        * Brazil 902MHz
        */
       BR_902 = 26;
+
+      /*
+       * Viet Nam 433MHz
+       */
+      VN_433 = 27;
+
+      /*
+       * Viet Nam 923MHz
+       */
+      VN_923 = 28;
     }
 
     /*
