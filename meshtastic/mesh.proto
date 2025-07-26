@@ -1706,6 +1706,12 @@ message MyNodeInfo {
    * The indicator for whether this device is running event firmware and which
    */
   FirmwareEdition firmware_edition = 14;
+
+  /*
+   * The number of nodes in the nodedb.
+   * This is used by the phone to know how many NodeInfo packets to expect on want_config
+   */
+  uint32 nodedb_count = 15;
 }
 
 /*
