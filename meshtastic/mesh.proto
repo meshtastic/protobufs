@@ -775,6 +775,12 @@ enum HardwareModel {
   THINKNODE_M5 = 107;
 
   /*
+   * MeshSolar is an integrated power management and communication solution designed for outdoor low-power devices.
+   * https://heltec.org/project/meshsolar/
+   */
+  HELTEC_MESH_SOLAR = 108;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------

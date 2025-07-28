@@ -337,6 +337,9 @@ message ModuleConfig {
       // VE.Direct is a serial protocol used by Victron Energy products
       // https://beta.ivc.no/wiki/index.php/Victron_VE_Direct_DIY_Cable
       VE_DIRECT = 7;
+      //Used to configure and view some parameters of MeshSolar.
+      //https://heltec.org/project/meshsolar/
+      MS_CONFIG = 8;
     }
 
     /*
