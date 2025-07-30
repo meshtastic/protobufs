@@ -1273,6 +1273,51 @@ message MeshPacket {
   }
 
   /*
+   * Enum to identify which transport mechanism this packet arrived over
+   */
+  enum TransportMechanism {
+    /*
+     * The default case is that the node generated a packet itself
+     */
+    TRANSPORT_INTERNAL = 0;
+
+    /*
+     * Arrived via the primary LoRa radio
+     */
+    TRANSPORT_LORA = 1;
+
+    /*
+     * Arrived via a secondary LoRa radio
+     */
+    TRANSPORT_LORA_ALT1 = 2;
+
+    /*
+     * Arrived via a tertiary LoRa radio
+     */
+    TRANSPORT_LORA_ALT2 = 3;
+
+    /*
+     * Arrived via a quaternary LoRa radio
+     */
+    TRANSPORT_LORA_ALT3 = 4;
+
+    /*
+     * Arrived via an MQTT connection
+     */
+    TRANSPORT_MQTT = 5;
+
+    /*
+     * Arrived via Multicast UDP
+     */
+    TRANSPORT_MULTICAST_UDP = 6;
+
+    /*
+     * Arrived via API connection
+     */
+    TRANSPORT_API = 7;
+  }
+
+  /*
    * The sending node number.
    * Note: Our crypto implementation uses this field as well.
    * See [crypto](/docs/overview/encryption) for details.
@@ -1419,6 +1464,11 @@ message MeshPacket {
    * Set by the firmware internally, clients are not supposed to set this.
    */
   uint32 tx_after = 20;
+
+  /*
+   * Indicates which transport mechanism this packet arrived over
+   */
+  TransportMechanism transport_mechanism = 21;
 }
 
 /*
