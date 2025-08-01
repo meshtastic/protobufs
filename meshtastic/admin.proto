@@ -583,12 +583,12 @@ message KeyVerificationAdmin {
 
 message SensorConfig {
   /*
-    * SCDXX CO2 Sensor configuration
+    * SCD4X CO2 Sensor configuration
     */
-  SCDXX_config scdxx_config = 1;
+  SCD4X_config scd4x_config = 1;
 }
 
-message SCDXX_config {
+message SCD4X_config {
   /*
     * Set Automatic self-calibration enabled
     */
@@ -618,4 +618,9 @@ message SCDXX_config {
     * Perform a factory reset of the sensor
     */
   optional bool factory_reset = 7;
+
+  /*
+    * Low Power mode for sensor
+    */
+  optional bool low_power = 8;
 }
