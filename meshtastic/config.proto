@@ -345,7 +345,7 @@ message Config {
        */
       NOT_PRESENT = 2;
     }
-    
+
     /*
      * A plain language label that users of GPS select based on their intended activity.
      * We use this to make selections from the variety of GPS Settings, including:
@@ -362,8 +362,8 @@ message Config {
       MANUAL = 0;
 
       /*
-       * This node does not move. 
-       * We automatically apply this to all routers, router_lates, 
+       * This node does not move.
+       * We automatically apply this to all routers, router_lates,
        * and any node with manually set lat/lon.
        */
       FIXED_POSITION = 1;
@@ -372,7 +372,7 @@ message Config {
        * Hikers, runners, walkers.
        */
       PEDESTRIAN = 2;
-      
+
       /*
        * Cars, motorbikes.
        */
