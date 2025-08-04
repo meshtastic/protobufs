@@ -597,22 +597,22 @@ message SCD4X_config {
   /*
     * Recalibration target CO2 concentration in ppm (FRC or ASC)
     */
-  optional uint32 target_co2_conc = 2;
+  optional uint32 set_target_co2_conc = 2;
 
   /*
     * Reference temperature in degC
     */
-  optional float temperature = 4;
+  optional float set_temperature = 4;
 
   /*
     * Altitude of sensor in meters above sea level. 0 - 3000m (overrides ambient pressure)
     */
-  optional uint32 altitude = 5;
+  optional uint32 set_altitude = 5;
 
   /*
     * Sensor ambient pressure in Pa. 70000 - 120000 Pa (overrides altitude)
     */
-  optional uint32 ambient_pressure = 6;
+  optional uint32 set_ambient_pressure = 6;
 
   /*
     * Perform a factory reset of the sensor
@@ -620,7 +620,7 @@ message SCD4X_config {
   optional bool factory_reset = 7;
 
   /*
-    * Low Power mode for sensor
+    * Power mode for sensor (true for low power, false for normal)
     */
-  optional bool low_power = 8;
+  optional bool set_power_mode = 8;
 }
