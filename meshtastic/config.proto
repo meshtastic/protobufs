@@ -698,7 +698,7 @@ message Config {
      * If this is set, the displayed compass will always point north. if unset, the old behaviour
      * (top of display is heading direction) is used.
      */
-    bool compass_north_top = 4;
+    bool compass_north_top = 4 [deprecated = true];
 
     /*
      * Flip screen vertically, for cases that mount the screen upside down
@@ -919,27 +919,27 @@ message Config {
        * Philippines 915mhz
        */
       PH_915 = 21;
-      
+
       /*
        * Australia / New Zealand 433MHz
        */
       ANZ_433 = 22;
-      
+
       /*
        * Kazakhstan 433MHz
        */
       KZ_433 = 23;
-      
+
       /*
        * Kazakhstan 863MHz
        */
       KZ_863 = 24;
-      
+
       /*
        * Nepal 865MHz
        */
       NP_865 = 25;
-      
+
       /*
        * Brazil 902MHz
        */

@@ -775,6 +775,12 @@ enum HardwareModel {
   THINKNODE_M5 = 107;
 
   /*
+   * MeshSolar is an integrated power management and communication solution designed for outdoor low-power devices.
+   * https://heltec.org/project/meshsolar/
+   */
+  HELTEC_MESH_SOLAR = 108;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
@@ -1628,6 +1634,47 @@ enum CriticalErrorCode {
 }
 
 /*
+ * Enum to indicate to clients whether this firmware is a special firmware build, like an event.
+ * The first 16 values are reserved for non-event special firmwares, like the Smart Citizen use case.
+ */
+enum FirmwareEdition {
+  /*
+   * Vanilla firmware
+   */
+  VANILLA = 0;
+
+  /*
+   * Firmware for use in the Smart Citizen environmental monitoring network
+   */
+  SMART_CITIZEN = 1;
+
+  /*
+   * Open Sauce, the maker conference held yearly in CA
+   */
+  OPEN_SAUCE = 16;
+
+  /*
+   * DEFCON, the yearly hacker conference
+   */
+  DEFCON = 17;
+
+  /*
+   * Burning Man, the yearly hippie gathering in the desert
+   */
+  BURNING_MAN = 18;
+
+  /*
+   * Hamvention, the Dayton amateur radio convention
+   */
+  HAMVENTION = 19;
+
+  /*
+   * Placeholder for DIY and unofficial events
+   */
+  DIY_EDITION = 127;
+}
+
+/*
  * Unique local debugging info for this node
  * Note: we don't include position or the user info, because that will come in the
  * Sent to the phone in response to WantNodes.
@@ -1660,6 +1707,17 @@ message MyNodeInfo {
    * The PlatformIO environment used to build this firmware
    */
   string pio_env = 13;
+
+  /*
+   * The indicator for whether this device is running event firmware and which
+   */
+  FirmwareEdition firmware_edition = 14;
+
+  /*
+   * The number of nodes in the nodedb.
+   * This is used by the phone to know how many NodeInfo packets to expect on want_config
+   */
+  uint32 nodedb_count = 15;
 }
 
 /*
