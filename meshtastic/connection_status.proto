@@ -27,6 +27,11 @@ message DeviceConnectionStatus {
    * Serial Status
    */
   optional SerialConnectionStatus serial = 4;
+
+  /*
+   * LTE Status
+   */
+  optional LTEModemStatus lte = 5;
 }
 
 /*
@@ -117,4 +122,48 @@ message SerialConnectionStatus {
    * Whether the device has an active connection or not
    */
   bool is_connected = 2;
+}
+
+/*
+ * LTE modem status
+ */
+message LTEModemStatus {
+
+
+  /*
+   * Whether the LTE modem is enabled
+   */
+  bool sim_ready = 1;
+  /*
+   * Whether the LTE modem is connected
+   */
+  bool connected = 2;
+  /*
+   * Signal strength (RSSI)
+   */
+  int32 rssi = 3;
+  /*
+   * IP address assigned to the LTE modem
+   */
+  string ip_address = 4;
+  /*
+   * Error message if any
+   */
+  string error = 5;
+  /*
+   * LTE band selection
+   */
+  string band = 6;
+  /*
+  * available operators
+  */
+  repeated string operators = 7;
+  /*
+   * Connection status
+   */
+  NetworkConnectionStatus status = 8;
+  /*
+   * phone number
+   */
+  string phone_number = 9;
 }
