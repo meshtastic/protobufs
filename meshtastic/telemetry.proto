@@ -797,3 +797,18 @@ message Nau7802Config {
    */
   float calibrationFactor = 2;
 }
+
+/*
+ * SEN5X State, for saving to flash
+ */
+message SEN5XState {
+  /*
+   * Last cleaning time for SEN5X
+   */
+  int32 last_cleaning_time = 1;
+
+  /*
+   * Last cleaning time for SEN5X - valid flag
+   */
+  bool last_cleaning_valid = 2;
+}
