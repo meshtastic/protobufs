@@ -805,7 +805,7 @@ message SEN5XState {
   /*
    * Last cleaning time for SEN5X
    */
-  int32 last_cleaning_time = 1;
+  uint32 last_cleaning_time = 1;
 
   /*
    * Last cleaning time for SEN5X - valid flag
