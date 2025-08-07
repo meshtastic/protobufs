@@ -811,4 +811,19 @@ message SEN5XState {
    * Last cleaning time for SEN5X - valid flag
    */
   bool last_cleaning_valid = 2;
+
+  /*
+   * VOC state time for SEN5X
+   */
+  optional fixed64 voc_state = 3;
+
+  /*
+   * Last VOC state time for SEN5X
+   */
+  optional uint32 voc_time = 4;
+
+  /*
+   * Last VOC state validity flag for SEN5X
+   */
+  bool voc_valid = 5;
 }
