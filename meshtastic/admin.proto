@@ -586,6 +586,11 @@ message SensorConfig {
     * SCD4X CO2 Sensor configuration
     */
   SCD4X_config scd4x_config = 1;
+
+  /*
+    * SEN5X PM Sensor configuration
+    */
+  SEN5X_config sen5x_config = 2;
 }
 
 message SCD4X_config {
@@ -623,4 +628,11 @@ message SCD4X_config {
     * Power mode for sensor (true for low power, false for normal)
     */
   optional bool set_power_mode = 7;
+}
+
+message SEN5X_config {
+  /*
+    * Reference temperature in degC
+    */
+  optional float set_temperature = 1;
 }
