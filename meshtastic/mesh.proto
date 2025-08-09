@@ -2251,7 +2251,12 @@ enum ExcludedModules {
  * A heartbeat message is sent to the node from the client to keep the connection alive.
  * This is currently only needed to keep serial connections alive, but can be used by any PhoneAPI.
  */
-message Heartbeat {}
+message Heartbeat {
+  /*
+   * The nonce of the heartbeat message
+   */
+  uint32 nonce = 1;
+}
 
 /*
  * RemoteHardwarePins associated with a node
