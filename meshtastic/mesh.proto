@@ -1075,7 +1075,7 @@ message Data {
   /*
    * XEdDSA signature for the payload
    */
-  optional bytes xeddsa_signature = 10;
+  bytes xeddsa_signature = 10;
 }
 
 /*
