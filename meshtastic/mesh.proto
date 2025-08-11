@@ -1609,6 +1609,13 @@ message NodeInfo {
    * LSB 0 of the bitfield
    */
   bool is_key_manually_verified = 12;
+
+  /*
+   * True if node is signing its packets via XEdDSA
+   * Persists between NodeDB internal clean ups
+   * LSB 1 of the bitfield
+   */
+  bool has_xeddsa_signed = 13;
 }
 
 /*
