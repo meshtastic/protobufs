@@ -1071,6 +1071,11 @@ message Data {
    * Bitfield for extra flags. First use is to indicate that user approves the packet being uploaded to MQTT.
    */
   optional uint32 bitfield = 9;
+
+  /*
+   * XEdDSA signature for the payload
+   */
+  optional bytes xeddsa_signature = 10;
 }
 
 /*
@@ -1469,6 +1474,11 @@ message MeshPacket {
    * Indicates which transport mechanism this packet arrived over
    */
   TransportMechanism transport_mechanism = 21;
+
+  /*
+   * Indicates whether the packet has a valid signature
+   */
+  bool xeddsa_signed = 22;
 }
 
 /*
