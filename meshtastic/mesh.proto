@@ -779,6 +779,11 @@ enum HardwareModel {
    * https://heltec.org/project/meshsolar/
    */
   HELTEC_MESH_SOLAR = 108;
+  
+  /*
+   * Lilygo T-Echo Lite
+   */
+  T_ECHO_LITE = 109;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
