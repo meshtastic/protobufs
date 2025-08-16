@@ -944,6 +944,11 @@ message Config {
        * Brazil 902MHz
        */
       BR_902 = 26;
+
+      /*
+       * Israel 917MHz
+       */
+      IL_917 = 27;
     }
 
     /*
