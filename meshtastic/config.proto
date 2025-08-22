@@ -1213,16 +1213,16 @@ message Config {
    * LTE Config
    */
   // Access Point Name for LTE network
-  string apn = 2;
+  string apn = 1;
 
   // SIM card PIN code (if required)
-  string sim_pin = 3;
+  string sim_pin = 2;
 
   // Username for APN authentication (optional)
-  string apn_username = 5;
+  string apn_username = 3;
 
   // Password for APN authentication (optional)
-  string apn_password = 6;
+  string apn_password = 4;
 
 }
 
