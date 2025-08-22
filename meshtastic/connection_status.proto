@@ -128,8 +128,6 @@ message SerialConnectionStatus {
  * LTE modem status
  */
 message LTEModemStatus {
-
-
   /*
    * Whether the LTE modem is enabled
    */
@@ -155,8 +153,8 @@ message LTEModemStatus {
    */
   string band = 6;
   /*
-  * available operators
-  */
+   * available operators
+   */
   repeated string operators = 7;
   /*
    * Connection status

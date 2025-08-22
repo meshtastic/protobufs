@@ -63,6 +63,7 @@ message LocalConfig {
    * The part of the config that is specific to Security settings
    */
   Config.SecurityConfig security = 9;
+
   /*
    * The part of the config that is specific to the LTE modem
    * This is used for LTE modem configuration and status
