@@ -786,6 +786,13 @@ enum HardwareModel {
   T_ECHO_LITE = 109;
 
   /*
+   * Exploitee.rs Hacker Pager
+   * https://hackerpager.net
+   * https://github.com/exploiteers/Meshtastic-Exploiteers-Hacker-Pager
+   */
+  EXPLOITEERS_PAGER = 110;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
