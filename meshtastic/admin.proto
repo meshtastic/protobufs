@@ -635,4 +635,9 @@ message SEN5X_config {
     * Reference temperature in degC
     */
   optional float set_temperature = 1;
+
+  /*
+    * One-shot mode (true for low power - one-shot mode, false for normal - contionuous mode)
+    */
+  optional bool set_one_shot_mode = 2;
 }

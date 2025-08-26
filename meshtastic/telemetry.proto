@@ -826,4 +826,9 @@ message SEN5XState {
    * Last VOC state validity flag for SEN5X
    */
   bool voc_valid = 5;
+
+  /*
+   * Config flag for one-shot mode (see admin.proto)
+   */
+  bool one_shot_mode = 6;
 }
