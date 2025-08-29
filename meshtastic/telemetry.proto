@@ -813,22 +813,22 @@ message SEN5XState {
   bool last_cleaning_valid = 2;
 
   /*
-   * VOC state time for SEN5X
-   */
-  optional fixed64 voc_state = 3;
-
-  /*
-   * Last VOC state time for SEN5X
-   */
-  optional uint32 voc_time = 4;
-
-  /*
-   * Last VOC state validity flag for SEN5X
-   */
-  bool voc_valid = 5;
-
-  /*
    * Config flag for one-shot mode (see admin.proto)
    */
-  bool one_shot_mode = 6;
+  bool one_shot_mode = 3;
+
+  /*
+   * Last VOC state time for SEN55
+   */
+  optional uint32 voc_state_time = 4;
+
+  /*
+   * Last VOC state validity flag for SEN55
+   */
+  optional bool voc_state_valid = 5;
+
+  /*
+   * VOC state array (8x uint8t) for SEN55
+   */
+  optional fixed64 voc_state_array = 6;
 }
