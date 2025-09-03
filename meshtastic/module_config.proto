@@ -535,7 +535,7 @@ message ModuleConfig {
      * Bool indicating that the node should cleanup / destroy it's RangeTest.csv file.
      * ESP32 Only
      */
-    bool clear = 4;
+    bool clear_on_reboot = 4;
   }
 
   /*
