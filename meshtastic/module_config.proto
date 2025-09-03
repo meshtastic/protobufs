@@ -148,7 +148,6 @@ message ModuleConfig {
    * Detection Sensor Module Config
    */
   message DetectionSensorConfig {
-
     enum TriggerType {
       // Event is triggered if pin is low
       LOGIC_LOW = 0;
@@ -294,7 +293,6 @@ message ModuleConfig {
      * BLE RSSI threshold. Defaults to -80
      */
     int32 ble_threshold = 4;
-
   }
 
   /*
@@ -339,6 +337,9 @@ message ModuleConfig {
       // VE.Direct is a serial protocol used by Victron Energy products
       // https://beta.ivc.no/wiki/index.php/Victron_VE_Direct_DIY_Cable
       VE_DIRECT = 7;
+      //Used to configure and view some parameters of MeshSolar.
+      //https://heltec.org/project/meshsolar/
+      MS_CONFIG = 8;
     }
 
     /*
@@ -529,6 +530,12 @@ message ModuleConfig {
      * ESP32 Only
      */
     bool save = 3;
+
+    /*
+     * Bool indicating that the node should cleanup / destroy it's RangeTest.csv file.
+     * ESP32 Only
+     */
+    bool clear_on_reboot = 4;
   }
 
   /*
@@ -702,13 +709,13 @@ message ModuleConfig {
     /*
      * Enable/disable CannedMessageModule.
      */
-    bool enabled = 9;
+    bool enabled = 9 [deprecated = true];
 
     /*
      * Input event origin accepted by the canned message module.
      * Can be e.g. "rotEnc1", "upDownEnc1", "scanAndSelect", "cardkb", "serialkb", or keyword "_any"
      */
-    string allow_input_source = 10;
+    string allow_input_source = 10 [deprecated = true];
 
     /*
      * CannedMessageModule also sends a bell character with the messages.

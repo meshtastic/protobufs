@@ -31,6 +31,9 @@
 *MyNodeInfo.air_period_tx       max_count:8
 *MyNodeInfo.air_period_rx       max_count:8
 
+*MyNodeInfo.firmware_edition int_size:8
+*MyNodeInfo.nodedb_count int_size:16
+
 # Note: the actual limit (because of header bytes) on the size of encrypted payloads is 251 bytes, but I use 256
 # here because we might need to fill with zeros for padding to encryption block size (16 bytes per block)
 *MeshPacket.encrypted max_size:256

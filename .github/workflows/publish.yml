@@ -17,14 +17,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Buf
-        uses: bufbuild/buf-setup-action@v1.30.0
+        uses: bufbuild/buf-action@v1.2.0
         with:
           github_token: ${{ github.token }}
+          token: ${{ secrets.BUF_TOKEN }}
+          setup_only: true
 
       - name: Push to schema registry
-        # uses: bufbuild/buf-push-action@v1
-        # with:
-        #   buf_token: ${{ secrets.BUF_TOKEN }}
+        env:
+          BUF_TOKEN: ${{ secrets.BUF_TOKEN }}
         run: |
-          export BUF_TOKEN=${{ secrets.BUF_TOKEN }}
           buf push --tag ${{ github.ref_name }}

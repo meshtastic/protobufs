@@ -2,6 +2,7 @@ name: pull-request
 
 permissions:
   contents: read
+  pull-requests: write
 
 on: pull_request
 jobs:
@@ -12,17 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Buf
-        uses: bufbuild/buf-setup-action@v1.30.0
+      - name: Buf PR Checks
+        uses: bufbuild/buf-action@v1.2.0
         with:
           github_token: ${{ github.token }}
-
-      - name: Lint
-        uses: bufbuild/buf-lint-action@v1.1.1
-
-      - name: Push to schema registry
-        uses: bufbuild/buf-push-action@v1.2.0
-        if: ${{ github.event_name != 'pull_request_target' && github.event_name != 'pull_request' }}
-        with:
-          buf_token: ${{ secrets.BUF_TOKEN }}
-          draft: ${{ github.ref_name != 'master'}}
+          token: ${{ secrets.BUF_TOKEN }}
+          format: true
+          lint: true
+          breaking: true
