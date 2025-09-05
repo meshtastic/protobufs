@@ -786,11 +786,16 @@ enum HardwareModel {
   T_ECHO_LITE = 109;
 
   /*
+   * New Heltec LoRA32 with ESP32-S3 CPU
+   */
+  HELTEC_V4 = 110;
+
+  /*
    * Exploitee.rs Hacker Pager
    * https://hackerpager.net
    * https://github.com/exploiteers/Meshtastic-Exploiteers-Hacker-Pager
    */
-  EXPLOITEERS_PAGER = 110;
+  EXPLOITEERS_PAGER = 111;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
