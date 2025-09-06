@@ -14,12 +14,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: debug
-        run: cat packages/ts/deno.json && cat packages/rust/Cargo.toml
+        run: cat packages/ts/deno.json && cat packages/rust/Cargo.toml && cat packages/ts/package.json
       - name: Set Package Versions to current tag
         # run: sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/ts/deno.json \
+        #   && sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/ts/package.json \
         #   && sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/rust/Cargo.toml
         run: |
           sed -i "s/__PACKAGE_VERSION__/2.7.0/g" packages/ts/deno.json
+          sed -i "s/__PACKAGE_VERSION__/2.7.0/g" packages/ts/package.json
           sed -i "s/__PACKAGE_VERSION__/2.7.0/g" packages/rust/Cargo.toml
       - name: Setup Buf
         uses: bufbuild/buf-setup-action@main
@@ -66,6 +68,30 @@ jobs:
           deno-version: rc
       - name: Publish to JSR
         run: deno publish --unstable-sloppy-imports
+
+  publish-npm:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download TypeScript code
+        uses: actions/download-artifact@v4
+        with:
+          name: ts_code
+      - name: Install Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+          registry-url: https://registry.npmjs.org/
+      - name: Install NPM dependencies
+        run: npm install
+      - name: Build JavaScript module
+        run: npm run build
+      - name: Publish NPM package
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
   publish-cargo:
     runs-on: ubuntu-24.04
