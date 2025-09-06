@@ -71,6 +71,7 @@ jobs:
 
   publish-npm:
     runs-on: ubuntu-24.04
+    needs: codegen
     permissions:
       contents: read
       id-token: write
