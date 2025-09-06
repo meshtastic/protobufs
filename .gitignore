@@ -1,4 +1,6 @@
 packages/ts/lib/*
+packages/ts/node_modules/
+packages/ts/package-lock.json
 packages/rust/src/generated/*
 packages/rust/target
 packages/c/*
