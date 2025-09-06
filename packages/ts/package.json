@@ -1,5 +1,6 @@
 {
-  "name": "@jsr/meshtastic__protobufs",
+  "name": "@meshtastic/protobufs",
+  "description": "Protobuf definitions for the Meshtastic project",
   "version": "__PACKAGE_VERSION__",
   "homepage": "https://github.com/meshtastic/protobufs",
   "license": "GPLV3",
