@@ -1,4 +1,4 @@
-name: Publish to Cargo & JSR
+name: Publish to Cargo, JSR, & NPM
 
 on:
   push:
