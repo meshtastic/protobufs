@@ -315,6 +315,11 @@ enum Language {
   BULGARIAN = 17;
 
   /*
+   * Czech
+   */
+  CZECH = 18;
+
+  /*
    * Simplified Chinese (experimental)
    */
   SIMPLIFIED_CHINESE = 30;
