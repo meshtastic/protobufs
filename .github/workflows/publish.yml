@@ -1,4 +1,4 @@
-name: Publish to Cargo & JSR
+name: Publish to Cargo, JSR, & NPM
 
 on:
   push:
@@ -62,6 +62,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ts_code
+      - name: Remove package.json
+        run: rm package.json
       - name: Set up Deno
         uses: denoland/setup-deno@main
         with:
@@ -71,6 +73,7 @@ jobs:
 
   publish-npm:
     runs-on: ubuntu-24.04
+    needs: codegen
     permissions:
       contents: read
       id-token: write
