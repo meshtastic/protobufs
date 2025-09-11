@@ -92,9 +92,9 @@ jobs:
       - name: Build JavaScript module
         run: npm run build
       - name: Publish NPM package
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
 
   publish-cargo:
     runs-on: ubuntu-24.04
