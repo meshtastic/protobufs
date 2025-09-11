@@ -1,30 +1,115 @@
-name: Push new version to schema registry
-
-permissions:
-  contents: read
+name: Publish to Cargo, JSR, & NPM
 
 on:
   push:
-    tags:
-      - "**"
+    # tags:
+    #   - "**"
+
+permissions: write-all
 
 jobs:
-  push_to_registry:
-    runs-on: ubuntu-latest
-
+  codegen:
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+      - name: debug
+        run: cat packages/ts/deno.json && cat packages/rust/Cargo.toml && cat packages/ts/package.json
+      - name: Set Package Versions to current tag
+        # run: sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/ts/deno.json \
+        #   && sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/ts/package.json \
+        #   && sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/rust/Cargo.toml
+        run: |
+          sed -i "s/__PACKAGE_VERSION__/2.7.8/g" packages/ts/deno.json
+          sed -i "s/__PACKAGE_VERSION__/2.7.8/g" packages/ts/package.json
+          sed -i "s/__PACKAGE_VERSION__/2.7.8/g" packages/rust/Cargo.toml
       - name: Setup Buf
-        uses: bufbuild/buf-action@v1.2.0
+        uses: bufbuild/buf-setup-action@main
         with:
           github_token: ${{ github.token }}
-          token: ${{ secrets.BUF_TOKEN }}
-          setup_only: true
-
-      - name: Push to schema registry
-        env:
-          BUF_TOKEN: ${{ secrets.BUF_TOKEN }}
+      - name: Generate code
+        run: buf generate
+      - name: Copy license & README
         run: |
-          buf push --tag ${{ github.ref_name }}
+          cp LICENSE packages/ts
+          cp LICENSE packages/rust
+          cp README.md packages/ts
+          cp README.md packages/rust
+      - name: Upload Rust code
+        uses: actions/upload-artifact@v4
+        with:
+          name: rust_code
+          path: packages/rust
+      - name: Upload TypeScript code
+        uses: actions/upload-artifact@v4
+        with:
+          name: ts_code
+          path: packages/ts
+      - name: Upload C code
+        uses: actions/upload-artifact@v4
+        with:
+          name: c_code
+          path: packages/c
+
+  publish-jsr:
+    runs-on: ubuntu-24.04
+    needs: codegen
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download TypeScript code
+        uses: actions/download-artifact@v4
+        with:
+          name: ts_code
+      - name: Remove package.json
+        run: rm package.json
+      - name: Set up Deno
+        uses: denoland/setup-deno@main
+        with:
+          deno-version: rc
+      - name: Publish to JSR
+        run: deno publish --unstable-sloppy-imports
+
+  publish-npm:
+    runs-on: ubuntu-24.04
+    needs: codegen
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download TypeScript code
+        uses: actions/download-artifact@v4
+        with:
+          name: ts_code
+      - name: Install Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+          registry-url: https://registry.npmjs.org/
+      - name: Install NPM dependencies
+        run: npm install
+      - name: Build JavaScript module
+        run: npm run build
+      - name: Publish NPM package
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+
+  publish-cargo:
+    runs-on: ubuntu-24.04
+    needs: codegen
+    steps:
+      - name: Download Rust code
+        uses: actions/download-artifact@v4
+        with:
+          name: rust_code
+      - name: Set up Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Check Library
+        run: cargo check
+      - name: Publish to crates.io
+        uses: katyo/publish-crates@v2
+        with:
+          registry-token: ${{ secrets.CARGO_TOKEN }}
+          ignore-unpublished-changes: true

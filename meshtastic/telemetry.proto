@@ -130,21 +130,21 @@ message EnvironmentMetrics {
   optional float wind_lull = 17;
 
   /*
-   * Radiation in µR/h
-   */
+  * Radiation in µR/h
+  */
   optional float radiation = 18;
 
   /*
-   * Rainfall in the last hour in mm
-   */
+  * Rainfall in the last hour in mm
+  */
   optional float rainfall_1h = 19;
 
-  /*
-   * Rainfall in the last 24 hours in mm
-   */
+    /*
+  * Rainfall in the last 24 hours in mm
+  */
   optional float rainfall_24h = 20;
 
-  /*
+ /*
    * Soil moisture measured (% 1-100)
    */
   optional uint32 soil_moisture = 21;
@@ -188,56 +188,6 @@ message PowerMetrics {
    * Current (Ch3)
    */
   optional float ch3_current = 6;
-
-  /*
-   * Voltage (Ch4)
-   */
-  optional float ch4_voltage = 7;
-
-  /*
-   * Current (Ch4)
-   */
-  optional float ch4_current = 8;
-
-  /*
-   * Voltage (Ch5)
-   */
-  optional float ch5_voltage = 9;
-
-  /*
-   * Current (Ch5)
-   */
-  optional float ch5_current = 10;
-
-  /*
-   * Voltage (Ch6)
-   */
-  optional float ch6_voltage = 11;
-
-  /*
-   * Current (Ch6)
-   */
-  optional float ch6_current = 12;
-
-  /*
-   * Voltage (Ch7)
-   */
-  optional float ch7_voltage = 13;
-
-  /*
-   * Current (Ch7)
-   */
-  optional float ch7_current = 14;
-
-  /*
-   * Voltage (Ch8)
-   */
-  optional float ch8_voltage = 15;
-
-  /*
-   * Current (Ch8)
-   */
-  optional float ch8_current = 16;
 }
 
 /*
@@ -245,62 +195,62 @@ message PowerMetrics {
  */
 message AirQualityMetrics {
   /*
-   * Concentration Units Standard PM1.0 in ug/m3
+   * Concentration Units Standard PM1.0
    */
   optional uint32 pm10_standard = 1;
 
   /*
-   * Concentration Units Standard PM2.5 in ug/m3
+   * Concentration Units Standard PM2.5
    */
   optional uint32 pm25_standard = 2;
 
   /*
-   * Concentration Units Standard PM10.0 in ug/m3
+   * Concentration Units Standard PM10.0
    */
   optional uint32 pm100_standard = 3;
 
   /*
-   * Concentration Units Environmental PM1.0 in ug/m3
+   * Concentration Units Environmental PM1.0
    */
   optional uint32 pm10_environmental = 4;
 
   /*
-   * Concentration Units Environmental PM2.5 in ug/m3
+   * Concentration Units Environmental PM2.5
    */
   optional uint32 pm25_environmental = 5;
 
   /*
-   * Concentration Units Environmental PM10.0 in ug/m3
+   * Concentration Units Environmental PM10.0
    */
   optional uint32 pm100_environmental = 6;
 
   /*
-   * 0.3um Particle Count in #/0.1l
+   * 0.3um Particle Count
    */
   optional uint32 particles_03um = 7;
 
   /*
-   * 0.5um Particle Count in #/0.1l
+   * 0.5um Particle Count
    */
   optional uint32 particles_05um = 8;
 
   /*
-   * 1.0um Particle Count in #/0.1l
+   * 1.0um Particle Count
    */
   optional uint32 particles_10um = 9;
 
   /*
-   * 2.5um Particle Count in #/0.1l
+   * 2.5um Particle Count
    */
   optional uint32 particles_25um = 10;
 
   /*
-   * 5.0um Particle Count in #/0.1l
+   * 5.0um Particle Count
    */
   optional uint32 particles_50um = 11;
 
   /*
-   * 10.0um Particle Count in #/0.1l
+   * 10.0um Particle Count
    */
   optional uint32 particles_100um = 12;
 
@@ -308,66 +258,6 @@ message AirQualityMetrics {
    * CO2 concentration in ppm
    */
   optional uint32 co2 = 13;
-
-  /*
-   * CO2 sensor temperature in degC
-   */
-  optional float co2_temperature = 14;
-
-  /*
-   * CO2 sensor relative humidity in %
-   */
-  optional float co2_humidity = 15;
-
-  /*
-   * Formaldehyde sensor formaldehyde concentration in ppb
-   */
-  optional float form_formaldehyde = 16;
-
-  /*
-   * Formaldehyde sensor relative humidity in %RH
-   */
-  optional float form_humidity = 17;
-
-  /*
-   * Formaldehyde sensor temperature in degrees Celsius
-   */
-  optional float form_temperature = 18;
-
-  /*
-   * Concentration Units Standard PM4.0 in ug/m3
-   */
-  optional uint32 pm40_standard = 19;
-
-  /*
-   * 4.0um Particle Count in #/0.1l
-   */
-  optional uint32 particles_40um = 20;
-
-  /*
-   * PM Sensor Temperature
-   */
-  optional float pm_temperature = 21;
-
-  /*
-   * PM Sensor humidity
-   */
-  optional float pm_humidity = 22;
-
-  /*
-   * PM Sensor VOC Index
-   */
-  optional float pm_voc_idx = 23;
-
-  /*
-   * PM Sensor NOx Index
-   */
-  optional float pm_nox_idx = 24;
-
-  /*
-   * Typical Particle Size in um
-   */
-  optional float particles_tps = 25;
 }
 
 /*
@@ -443,7 +333,7 @@ message LocalStats {
 /*
  * Health telemetry metrics
  */
-message HealthMetrics {
+ message HealthMetrics {
   /*
    * Heart rate (beats per minute)
    */
@@ -510,6 +400,7 @@ message HostMetrics {
    */
   optional string user_string = 9;
 }
+
 
 /*
  * Types of Measurements the telemetry module is equipped to handle
@@ -761,30 +652,6 @@ enum TelemetrySensorType {
    * PCT2075 Temperature Sensor
    */
   PCT2075 = 39;
-
-  /*
-   * ADS1X15 ADC
-   */
-  ADS1X15 = 40;
-
-  /*
-   * ADS1X15 ADC_ALT
-   */
-  ADS1X15_ALT = 41;
-
-  /*
-   * Sensirion SFA30 Formaldehyde sensor
-   */
-  SFA30 = 42;
-
-  /*
-   * SEN5X PM SENSORS
-   */
-  SEN5X = 43;
-  /*
-   * TSL2561 light sensor
-   */
-  TSL2561 = 44;
 }
 
 /*

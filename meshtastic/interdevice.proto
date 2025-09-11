@@ -12,9 +12,9 @@ option swift_prefix = "";
 
 enum MessageType {
   ACK = 0;
-  COLLECT_INTERVAL = 160; // in ms
-  BEEP_ON = 161; // duration ms
-  BEEP_OFF = 162; // cancel prematurely
+  COLLECT_INTERVAL = 160;  // in ms
+  BEEP_ON = 161;           // duration ms
+  BEEP_OFF = 162;          // cancel prematurely
   SHUTDOWN = 163;
   POWER_ON = 164;
   SCD41_TEMP = 176;
