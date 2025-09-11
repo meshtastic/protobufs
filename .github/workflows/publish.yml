@@ -20,9 +20,9 @@ jobs:
         #   && sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/ts/package.json \
         #   && sed -i "s/__PACKAGE_VERSION__/$(echo $GITHUB_REF | cut -d '/' -f 3)/g" packages/rust/Cargo.toml
         run: |
-          sed -i "s/__PACKAGE_VERSION__/2.7.0/g" packages/ts/deno.json
-          sed -i "s/__PACKAGE_VERSION__/2.7.0/g" packages/ts/package.json
-          sed -i "s/__PACKAGE_VERSION__/2.7.0/g" packages/rust/Cargo.toml
+          sed -i "s/__PACKAGE_VERSION__/2.7.8/g" packages/ts/deno.json
+          sed -i "s/__PACKAGE_VERSION__/2.7.8/g" packages/ts/package.json
+          sed -i "s/__PACKAGE_VERSION__/2.7.8/g" packages/rust/Cargo.toml
       - name: Setup Buf
         uses: bufbuild/buf-setup-action@main
         with:
