@@ -415,6 +415,16 @@ message AdminMessage {
     uint32 remove_ignored_node = 48;
 
     /*
+     * Set specified node-num to be muted
+     */
+    uint32 set_muted_node = 49;
+
+    /*
+     * Set specified node-num to be heard / not-muted
+     */
+    uint32 remove_muted_node = 50;
+
+    /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes
      * This will delay the standard *implicit* save to the file system and subsequent reboot behavior until committed (commit_edit_settings)
      */
