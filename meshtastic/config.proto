@@ -639,7 +639,7 @@ message Config {
       OSGR = 5;
 
       /*
-       Maidenhead Locator System
+       * Maidenhead Locator System
        * Described here: https://en.wikipedia.org/wiki/Maidenhead_Locator_System
        */
       MAIDENHEAD = 6;
