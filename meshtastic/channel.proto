@@ -86,6 +86,13 @@ message ChannelSettings {
    * Per-channel module settings.
    */
   ModuleSettings module_settings = 7;
+
+  /*
+   * Whether or not we should receive notifactions / alerts through this channel
+   * Note: This is NOT the same as module_settings.is_client_mute which pertains 
+   * to the device role.
+   */
+  bool mute = 8;
 }
 
 /*
