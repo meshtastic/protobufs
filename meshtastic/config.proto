@@ -637,6 +637,12 @@ message Config {
        * E is the easting, N is the northing
        */
       OSGR = 5;
+
+      /*
+       Maidenhead Locator System
+       * Described here: https://en.wikipedia.org/wiki/Maidenhead_Locator_System
+       */
+      MAIDENHEAD = 6;
     }
 
     /*
