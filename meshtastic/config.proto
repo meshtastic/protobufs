@@ -642,7 +642,7 @@ message Config {
        * Maidenhead Locator System
        * Described here: https://en.wikipedia.org/wiki/Maidenhead_Locator_System
        */
-      MAIDENHEAD = 6;
+      MLS = 6;
     }
 
     /*
