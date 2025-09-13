@@ -86,11 +86,6 @@ message ChannelSettings {
    * Per-channel module settings.
    */
   ModuleSettings module_settings = 7;
-
-  /*
-   * Whether or not we should receive notifactions / alerts from this channel
-   */
-  bool mute = 8;
 }
 
 /*
