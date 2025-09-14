@@ -781,6 +781,10 @@ enum TelemetrySensorType {
    * SEN5X PM SENSORS
    */
   SEN5X = 43;
+  /*
+   * TSL2561 light sensor
+   */
+  TSL2561 = 44;
 }
 
 /*
