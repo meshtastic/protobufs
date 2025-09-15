@@ -755,7 +755,7 @@ enum HardwareModel {
   T_LORA_PAGER = 103;
 
   /*
-   * GAT562 Mesh Trial Tracker
+   * M5Stack 6cl
    */
   M5STACK_UNITC6L = 0x68;
 
