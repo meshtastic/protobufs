@@ -615,6 +615,12 @@ message ModuleConfig {
      * Enable/Disable the health telemetry module on-device display
      */
     bool health_screen_enabled = 13;
+
+    /*
+     * Temperature offset in Celsius to apply to sensor readings
+     * Positive values increase reported temperature, negative values decrease it
+     */
+    float environment_temperature_offset = 14;
   }
 
   /*
