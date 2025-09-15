@@ -755,9 +755,9 @@ enum HardwareModel {
   T_LORA_PAGER = 103;
 
   /*
-   * M5Stack 6cl
+   * M5Stack Reserved
    */
-  M5STACK_UNITC6L = 0x68;
+  M5STACK_RESERVED = 104; // 0x68
 
   /*
    * RAKwireless WisMesh Tag
@@ -789,6 +789,11 @@ enum HardwareModel {
    * New Heltec LoRA32 with ESP32-S3 CPU
    */
   HELTEC_V4 = 110;
+
+    /*
+   * M5Stack C6L
+   */
+  M5STACK_C6L = 111;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
