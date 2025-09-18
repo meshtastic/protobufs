@@ -598,6 +598,13 @@ message Config {
    */
   message DisplayConfig {
     /*
+     * Deprecated in 2.7.4: Unused
+     */
+    enum DeprecatedGpsCoordinateFormat {
+
+    }
+    
+    /*
      * Unit display preference
      */
     enum DisplayUnits {
@@ -652,7 +659,7 @@ message Config {
      * Deprecated in 2.7.4: Unused
      * How the GPS coordinates are formatted on the OLED screen.
      */
-    GpsCoordinateFormat gps_format = 2 [deprecated = true];
+    DeprecatedGpsCoordinateFormat gps_format = 2 [deprecated = true];
 
     /*
      * Automatically toggles to the next page on the screen like a carousel, based the specified interval in seconds.
