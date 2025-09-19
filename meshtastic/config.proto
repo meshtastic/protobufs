@@ -601,7 +601,7 @@ message Config {
      * Deprecated in 2.7.4: Unused
      */
     enum DeprecatedGpsCoordinateFormat {
-
+      UNUSED = 0;
     }
     
     /*
