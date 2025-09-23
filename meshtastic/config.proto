@@ -108,6 +108,14 @@ message Config {
        *    consuming hops.
        */
       ROUTER_LATE = 11;
+
+      /*
+       * Description: Treats packets from or to favorited nodes as ROUTER, and all other packets as CLIENT.
+       * Technical Details: Used for stronger attic/roof nodes to distribute messages more widely
+       *    from weaker, indoor, or less-well-positioned nodes. Recommended for users with multiple nodes
+       *    where one CLIENT_BASE acts as a more powerful base station, such as an attic/roof node.
+       */
+      CLIENT_BASE = 12;
     }
 
     /*
@@ -590,47 +598,12 @@ message Config {
    */
   message DisplayConfig {
     /*
-     * How the GPS coordinates are displayed on the OLED screen.
+     * Deprecated in 2.7.4: Unused
      */
-    enum GpsCoordinateFormat {
-      /*
-       * GPS coordinates are displayed in the normal decimal degrees format:
-       * DD.DDDDDD DDD.DDDDDD
-       */
-      DEC = 0;
-
-      /*
-       * GPS coordinates are displayed in the degrees minutes seconds format:
-       * DD°MM'SS"C DDD°MM'SS"C, where C is the compass point representing the locations quadrant
-       */
-      DMS = 1;
-
-      /*
-       * Universal Transverse Mercator format:
-       * ZZB EEEEEE NNNNNNN, where Z is zone, B is band, E is easting, N is northing
-       */
-      UTM = 2;
-
-      /*
-       * Military Grid Reference System format:
-       * ZZB CD EEEEE NNNNN, where Z is zone, B is band, C is the east 100k square, D is the north 100k square,
-       * E is easting, N is northing
-       */
-      MGRS = 3;
-
-      /*
-       * Open Location Code (aka Plus Codes).
-       */
-      OLC = 4;
-
-      /*
-       * Ordnance Survey Grid Reference (the National Grid System of the UK).
-       * Format: AB EEEEE NNNNN, where A is the east 100k square, B is the north 100k square,
-       * E is the easting, N is the northing
-       */
-      OSGR = 5;
+    enum DeprecatedGpsCoordinateFormat {
+      UNUSED = 0;
     }
-
+    
     /*
      * Unit display preference
      */
@@ -686,7 +659,7 @@ message Config {
      * Deprecated in 2.7.4: Unused
      * How the GPS coordinates are formatted on the OLED screen.
      */
-    GpsCoordinateFormat gps_format = 2 [deprecated = true];
+    DeprecatedGpsCoordinateFormat gps_format = 2 [deprecated = true];
 
     /*
      * Automatically toggles to the next page on the screen like a carousel, based the specified interval in seconds.
@@ -803,6 +776,12 @@ message Config {
      * If true, the device will display the time in 12-hour format on screen.
      */
     bool use_12h_clock = 12;
+
+    /*
+     * If false (default), the device will use short names for various display screens.
+     * If true, node names will show in long format
+     */
+    bool use_long_node_name = 13;
   }
 
   /*

@@ -88,6 +88,59 @@ message DeviceUIConfig {
    * true for analog clockface, false for digital clockface
    */
   bool is_clockface_analog = 18;
+     
+  /*
+   * How the GPS coordinates are formatted on the OLED screen.
+   */
+  GpsCoordinateFormat gps_format = 19;
+
+  /*   
+   * How the GPS coordinates are displayed on the OLED screen.
+   */
+  enum GpsCoordinateFormat {
+    /*
+     * GPS coordinates are displayed in the normal decimal degrees format:
+     * DD.DDDDDD DDD.DDDDDD
+     */
+    DEC = 0;
+     
+    /* 
+     * GPS coordinates are displayed in the degrees minutes seconds format:
+     * DD°MM'SS"C DDD°MM'SS"C, where C is the compass point representing the locations quadrant
+     */
+    DMS = 1;   
+       
+    /*
+     * Universal Transverse Mercator format:
+     * ZZB EEEEEE NNNNNNN, where Z is zone, B is band, E is easting, N is northing
+     */
+    UTM = 2;
+     
+    /*
+     * Military Grid Reference System format:
+     * ZZB CD EEEEE NNNNN, where Z is zone, B is band, C is the east 100k square, D is the north 100k square,
+     * E is easting, N is northing
+     */
+    MGRS = 3;
+      
+    /*
+     * Open Location Code (aka Plus Codes).
+     */
+    OLC = 4;
+      
+    /*
+     * Ordnance Survey Grid Reference (the National Grid System of the UK).
+     * Format: AB EEEEE NNNNN, where A is the east 100k square, B is the north 100k square,
+     * E is the easting, N is the northing
+     */
+    OSGR = 5;
+       
+    /*
+     * Maidenhead Locator System
+     * Described here: https://en.wikipedia.org/wiki/Maidenhead_Locator_System
+     */
+    MLS = 6;
+  }
 }
 
 message NodeFilter {
@@ -313,6 +366,11 @@ enum Language {
    * Bulgarian
    */
   BULGARIAN = 17;
+
+  /*
+   * Czech
+   */
+  CZECH = 18;
 
   /*
    * Simplified Chinese (experimental)

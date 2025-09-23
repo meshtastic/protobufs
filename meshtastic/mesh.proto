@@ -755,9 +755,9 @@ enum HardwareModel {
   T_LORA_PAGER = 103;
 
   /*
-   * GAT562 Mesh Trial Tracker
+   * M5Stack Reserved
    */
-  GAT562_MESH_TRIAL_TRACKER = 104;
+  M5STACK_RESERVED = 104; // 0x68
 
   /*
    * RAKwireless WisMesh Tag
@@ -784,6 +784,21 @@ enum HardwareModel {
    * Lilygo T-Echo Lite
    */
   T_ECHO_LITE = 109;
+
+  /*
+   * New Heltec LoRA32 with ESP32-S3 CPU
+   */
+  HELTEC_V4 = 110;
+
+  /*
+   * M5Stack C6L
+   */
+  M5STACK_C6L = 111;
+
+  /*
+   * M5Stack Cardputer Adv
+   */
+  M5STACK_CARDPUTER_ADV = 112;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------

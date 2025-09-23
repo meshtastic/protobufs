@@ -530,6 +530,12 @@ message ModuleConfig {
      * ESP32 Only
      */
     bool save = 3;
+
+    /*
+     * Bool indicating that the node should cleanup / destroy it's RangeTest.csv file.
+     * ESP32 Only
+     */
+    bool clear_on_reboot = 4;
   }
 
   /*
@@ -609,6 +615,12 @@ message ModuleConfig {
      * Enable/Disable the health telemetry module on-device display
      */
     bool health_screen_enabled = 13;
+
+    /*
+     * Enable/Disable the device telemetry module to send metrics to the mesh
+     * Note: We will still send telemtry to the connected phone / client every minute over the API
+     */
+    bool device_telemetry_enabled = 14;
   }
 
   /*
