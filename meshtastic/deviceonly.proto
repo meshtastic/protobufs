@@ -160,15 +160,21 @@ message NodeInfoLite {
   bool is_ignored = 11;
 
   /*
+   * True if node has been muted
+   * Persists between NodeDB internal clean ups
+   */
+  bool is_muted = 12;
+
+  /*
    * Last byte of the node number of the node that should be used as the next hop to reach this node.
    */
-  uint32 next_hop = 12;
+  uint32 next_hop = 13;
 
   /*
    * Bitfield for storing booleans.
    * LSB 0 is_key_manually_verified
    */
-  uint32 bitfield = 13;
+  uint32 bitfield = 14;
 }
 
 /*
