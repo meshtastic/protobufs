@@ -603,7 +603,7 @@ message Config {
     enum DeprecatedGpsCoordinateFormat {
       UNUSED = 0;
     }
-    
+
     /*
      * Unit display preference
      */
