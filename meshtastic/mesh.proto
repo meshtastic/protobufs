@@ -801,6 +801,11 @@ enum HardwareModel {
   M5STACK_CARDPUTER_ADV = 112;
 
   /*
+   * ESP32S3 main controller with GPS and TFT screen.
+   */
+  HELTEC_WIRELESS_TRACKER_V2 = 113;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
