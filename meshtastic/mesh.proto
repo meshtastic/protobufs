@@ -740,9 +740,9 @@ enum HardwareModel {
   SEEED_WIO_TRACKER_L1_EINK = 100;
 
   /*
-   * Reserved ID for future and past use
+   * Muzi Works R1 Neo
    */
-  QWANTZ_TINY_ARMS = 101;
+  MUZI_R1_NEO = 101;
 
   /*
    * Lilygo T-Deck Pro
