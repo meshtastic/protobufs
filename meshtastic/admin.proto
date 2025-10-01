@@ -526,6 +526,11 @@ message SharedContact {
    * Add this contact to the blocked / ignored list
    */
   bool should_ignore = 3;
+
+  /*
+   * Set the IS_KEY_MANUALLY_VERIFIED bit
+   */
+  bool manually_verified = 4;
 }
 
 /*
