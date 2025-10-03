@@ -373,6 +373,11 @@ enum Language {
   CZECH = 18;
 
   /*
+   * Danish
+   */
+  DANISH = 19;
+
+  /*
    * Simplified Chinese (experimental)
    */
   SIMPLIFIED_CHINESE = 30;
