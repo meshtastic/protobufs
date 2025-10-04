@@ -438,6 +438,11 @@ message LocalStats {
    * Number of bytes free in the heap
    */
   uint32 heap_free_bytes = 13;
+
+  /*
+   * Number of packets that were dropped because the transmit queue was full.
+   */
+  uint32 num_tx_dropped = 14;
 }
 
 /*
