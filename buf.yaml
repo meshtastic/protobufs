@@ -6,6 +6,8 @@ build:
 breaking:
   use:
     - FILE
+  ignore:
+    - FILE_OPTION_CHANGED
 lint:
   ignore_only:
     PACKAGE_DEFINED:
