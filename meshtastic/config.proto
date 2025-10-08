@@ -377,6 +377,11 @@ message Config {
        * Cars, motorbikes.
        */
       VEHICLE = 3;
+
+      /*
+       * Planes, balloons, drones.
+       */
+      AIRBORNE = 4;
     }
 
     /*
