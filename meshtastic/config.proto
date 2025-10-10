@@ -262,6 +262,11 @@ message Config {
      * Defaults to ENABLED
      */
     BuzzerMode buzzer_mode = 13;
+
+    /*
+     * When true, favourited nodes are persisted through NodeDB resets.
+     */
+    bool preserve_favourites = 14;
   }
 
   /*
