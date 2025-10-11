@@ -266,7 +266,7 @@ message Config {
     /*
      * When true, favourited nodes are persisted through NodeDB resets.
      */
-    bool preserve_favourites = 14;
+    bool preserve_favorites = 14;
   }
 
   /*
