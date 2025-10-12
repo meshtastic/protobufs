@@ -2022,6 +2022,8 @@ message ClientNotification {
     KeyVerificationFinal key_verification_final = 13;
     DuplicatedPublicKey duplicated_public_key = 14;
     LowEntropyKey low_entropy_key = 15;
+    DifferentPublicKey different_public_key = 16;
+    PKIDecryptionFailed pki_decryption_failed = 17;
   }
 }
 
@@ -2042,6 +2044,32 @@ message KeyVerificationFinal {
 }
 message DuplicatedPublicKey {}
 message LowEntropyKey {}
+
+/* 
+ * Client notifcation message for when a different public key than the currently stored one of a remote node has been received.
+ */
+message DifferentPublicKey {
+  /*
+   * Node number of the remote node we received a different public key from.
+   */ 
+  uint32 node_num = 1;
+
+  /*
+   * The different public key we received from the remote node.
+   */ 
+  bytes public_key = 2;
+}
+
+/*
+ * Client notification message for when we receive a PKI-encrypted packet from a remote node we couldn't decrypt,
+ * while we did have a public key for the node.
+ */ 
+message PKIDecryptionFailed {
+  /*
+   * Node number of the remote node we received an undecryptable PKI packet from.
+   */ 
+  uint32 node_num = 1;
+}
 
 /*
  * Individual File info for the device
