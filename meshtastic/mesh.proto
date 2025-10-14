@@ -1499,6 +1499,11 @@ message MeshPacket {
    * Indicates which transport mechanism this packet arrived over
    */
   TransportMechanism transport_mechanism = 21;
+
+  /*
+   * Contains the float value returned by lora.getFrequencyError()
+   */
+  float rx_frequency_error = 22;
 }
 
 /*
