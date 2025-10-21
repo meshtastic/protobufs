@@ -469,8 +469,9 @@ message AdminMessage {
 
     /*
      * Tell the node to reset the nodedb.
+     * When true, favorites are preserved through reset.
      */
-    int32 nodedb_reset = 100;
+    bool nodedb_reset = 100;
   }
 }
 
