@@ -1106,6 +1106,11 @@ message Data {
    * Bitfield for extra flags. First use is to indicate that user approves the packet being uploaded to MQTT.
    */
   optional uint32 bitfield = 9;
+
+  /*
+   * Magic number used to verify that a decoded packet is actually supposed to be unencrypted
+   */
+  uint32 tx_unencrypted = 11;
 }
 
 /*
