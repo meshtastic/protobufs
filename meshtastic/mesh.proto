@@ -2565,3 +2565,91 @@ message ChunkedPayloadResponse {
     resend_chunks resend_chunks = 4;
   }
 }
+
+message RoutingStats {
+  /*
+   * Number of seconds these stats cover
+   */
+  uint32 window_secs = 1;
+
+  /*
+   * Current channel util (0-100)
+   */
+  uint32 channel_util_pct = 2;
+
+  /*
+   * Current TX duty (0-100)
+   */
+  uint32 tx_duty_pct = 3;
+
+  /*
+   * Total number of packets transmitted
+   */
+  uint32 tx_total = 4;
+
+  /*
+   * Total transmission time in milliseconds
+   */
+  uint32 tx_total_ms = 5;
+
+  /*
+   * Number of packets we originated
+   */
+  uint32 tx_mine = 6;
+
+  /*
+   * Number of zero-hop packets we originated
+   */
+  uint32 tx_zero = 7;
+
+  /*
+   * Number of transmitted packets that we didn't originate
+   */
+  uint32 tx_relayed = 8;
+
+  /*
+   * Number of packets dropped from the TX queue without being sent
+   */
+  uint32 tx_dropped = 9;
+
+  /*
+   * Number of packets deferred to the late contention window
+   */
+  uint32 tx_deferred = 10;
+
+  /*
+   * Maximum number of packets in the TX queue
+   */
+  uint32 tx_hwm = 11;
+
+  /*
+   * Total number of packets received
+   */
+  uint32 rx_total = 12;
+
+  /*
+   * Total receive time in milliseconds
+   */
+  uint32 rx_total_ms = 13;
+
+  /*
+   * Number of packets we failed to successfully receive
+   */
+  uint32 rx_bad = 14;
+
+  /*
+   * Number of packets we received directly from the original sender (excludes zero-hop)
+   */
+  uint32 rx_direct = 15;
+
+  /*
+   * Number of packets we received that were sent zero-hop
+   */
+  uint32 rx_zero = 16;
+
+  /*
+   * Number of packets we received with hop_limit=0 (excludes zero-hop)
+   */
+  uint32 rx_eol = 17;
+
+}
