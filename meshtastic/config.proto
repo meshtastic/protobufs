@@ -924,6 +924,15 @@ message Config {
        * Brazil 902MHz
        */
       BR_902 = 26;
+
+      /*
+       * European Union 433mhz
+       * When originally defined, the EU_433 frequency band definition was off
+       * by a small amount. This is a transitional entry communities can use
+       * to coordinate their switch to the correct values.
+       */
+      EU_433_V2 = 27;
+
     }
 
     /*
