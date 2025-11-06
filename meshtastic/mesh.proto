@@ -13,7 +13,7 @@ import "meshtastic/xmodem.proto";
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "MeshProtos";
-option java_package = "com.geeksville.mesh";
+option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
 /*
@@ -740,9 +740,9 @@ enum HardwareModel {
   SEEED_WIO_TRACKER_L1_EINK = 100;
 
   /*
-   * Reserved ID for future and past use
+   * Muzi Works R1 Neo
    */
-  QWANTZ_TINY_ARMS = 101;
+  MUZI_R1_NEO = 101;
 
   /*
    * Lilygo T-Deck Pro
@@ -799,6 +799,31 @@ enum HardwareModel {
    * M5Stack Cardputer Adv
    */
   M5STACK_CARDPUTER_ADV = 112;
+
+  /*
+   * ESP32S3 main controller with GPS and TFT screen.
+   */
+  HELTEC_WIRELESS_TRACKER_V2 = 113;
+
+  /*
+   * LilyGo T-Watch Ultra
+   */
+  T_WATCH_ULTRA = 114;
+
+  /*
+   * Elecrow ThinkNode M3
+   */
+  THINKNODE_M3 = 115;
+
+  /*
+   * RAK WISMESH_TAP_V2 with ESP32-S3 CPU
+   */
+  WISMESH_TAP_V2 = 116;
+
+  /*
+   * RAK3401
+   */
+  RAK3401 = 117;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
