@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package meshtastic;
+
+option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "TreeGuardProtos";
+option java_package = "com.geeksville.mesh";
+option swift_prefix = "";
+
+/*
+ * TreeGuard sensor metrics for tree health monitoring
+ * Captures vibration analysis and environmental data for detecting tree stress
+ */
+message TreeGuardMetrics {
+  /*
+   * Time since boot in milliseconds
+   */
+  uint64 timestamp_ms = 1;
+
+  /*
+   * Number of time-domain peaks detected (vibration events)
+   */
+  uint32 strike_count = 2;
+
+  /*
+   * Average X-Y axis offset from vibration analysis
+   */
+  float offset_x_y = 3;
+
+  /*
+   * Average Y-Z axis offset from vibration analysis
+   */
+  float offset_y_z = 4;
+
+  /*
+   * Maximum absolute Y magnitude from accelerometer
+   */
+  float max_y = 5;
+
+  /*
+   * Maximum absolute Z magnitude from accelerometer
+   */
+  float max_z = 6;
+
+  /*
+   * Low-frequency ratio (0-25 Hz range) from FFT analysis
+   * Indicates low-frequency vibrations
+   */
+  float fft_low_ratio = 7;
+
+  /*
+   * Mid-high frequency ratio (125-200 Hz range) from FFT analysis
+   * Indicates higher-frequency vibrations
+   */
+  float fft_high_ratio = 8;
+
+  /*
+   * High-frequency energy ratio from FFT analysis
+   * Overall high-frequency energy content
+   */
+  float hf_energy_ratio = 9;
+
+  /*
+   * Battery state of charge percentage (0-100%)
+   */
+  float battery_soc_percent = 10;
+}
