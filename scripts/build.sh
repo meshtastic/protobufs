@@ -47,5 +47,7 @@ node "$SCRIPT_DIR/version_replace.cjs" "$VERSION" "$BUILD_DIR"
 echo "Generating artifacts with buf (via npx)..."
 (cd "$REPO_DIR" && npx -y @bufbuild/buf generate)
 
+(cd "$BUILD_DIR/ts" && npm install && npm run build)
+
 echo "Build artifacts are available under $BUILD_DIR"
 
