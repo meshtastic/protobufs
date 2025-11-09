@@ -9,7 +9,6 @@ import "meshtastic/device_ui.proto";
 import "meshtastic/mesh.proto";
 import "meshtastic/module_config.proto";
 import "nanopb.proto";
-import "google/protobuf/descriptor.proto";
 import "validate/validate.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
@@ -24,6 +23,8 @@ option swift_prefix = "";
  * (Prior to 1.2 these operations were done via special ToRadio operations)
  */
 message AdminMessage {
+  option (nanopb_msgopt).anonymous_oneof = true;
+
   /*
    * The node generates this key and sends it with any get_x_response packets.
    * The client MUST include the same key with any set_x commands. Key expires after 300 seconds.
@@ -260,7 +261,6 @@ message AdminMessage {
      */
     string get_canned_message_module_messages_response = 11 [
       (nanopb).max_size = 201,
-      (nanopb).anonymous_oneof = true,
       (validate.rules).string = {max_len: 201}
     ];
 
@@ -284,7 +284,6 @@ message AdminMessage {
      */
     string get_ringtone_response = 15 [
       (nanopb).max_size = 231,
-      (nanopb).anonymous_oneof = true,
       (validate.rules).string = {max_len: 231}
     ];
 
@@ -324,7 +323,6 @@ message AdminMessage {
      */
     string delete_file_request = 22 [
       (nanopb).max_size = 201,
-      (nanopb).anonymous_oneof = true,
       (validate.rules).string = {max_len: 201}
     ];
 
@@ -383,7 +381,6 @@ message AdminMessage {
      */
     string set_canned_message_module_messages = 36 [
       (nanopb).max_size = 201,
-      (nanopb).anonymous_oneof = true,
       (validate.rules).string = {max_len: 201}
     ];
 
@@ -392,7 +389,6 @@ message AdminMessage {
      */
     string set_ringtone_message = 37 [
       (nanopb).max_size = 231,
-      (nanopb).anonymous_oneof = true,
       (validate.rules).string = {max_len: 231}
     ];
 

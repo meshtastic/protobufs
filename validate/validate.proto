@@ -9,6 +9,11 @@ message UInt32Rules {
   uint64 lte = 3;
 }
 
+message Int32Rules {
+  sint64 gte = 2;
+  sint64 lte = 3;
+}
+
 message StringRules {
   uint64 max_len = 2;
 }
@@ -22,12 +27,11 @@ message RepeatedRules {
 }
 
 message FieldRules {
-  oneof type {
-    UInt32Rules uint32 = 5;
-    StringRules string = 6;
-    BytesRules bytes = 7;
-    RepeatedRules repeated = 8;
-  }
+  UInt32Rules uint32 = 5;
+  Int32Rules int32 = 6;
+  StringRules string = 7;
+  BytesRules bytes = 8;
+  RepeatedRules repeated = 9;
 }
 
 extend google.protobuf.FieldOptions {

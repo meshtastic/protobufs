@@ -2,6 +2,9 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "nanopb.proto";
+import "validate/validate.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "RTTTLConfigProtos";
@@ -15,5 +18,8 @@ message RTTTLConfig {
   /*
    * Ringtone for PWM Buzzer in RTTTL Format.
    */
-  string ringtone = 1;
+  string ringtone = 1 [
+    (nanopb).max_size = 231,
+    (validate.rules).string = {max_len: 231}
+  ];
 }

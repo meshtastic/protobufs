@@ -2,6 +2,9 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "nanopb.proto";
+import "validate/validate.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "DeviceUIProtos";
@@ -21,12 +24,18 @@ message DeviceUIConfig {
   /*
    * TFT display brightness 1..255
    */
-  uint32 screen_brightness = 2;
+  uint32 screen_brightness = 2 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).uint32 = {gte: 0, lte: 255}
+  ];
 
   /*
    * Screen timeout 0..900
    */
-  uint32 screen_timeout = 3;
+  uint32 screen_timeout = 3 [
+    (nanopb).int_size = IS_16,
+    (validate.rules).uint32 = {gte: 0, lte: 65535}
+  ];
 
   /*
    * Screen/Settings lock enabled
@@ -45,7 +54,10 @@ message DeviceUIConfig {
    */
   bool alert_enabled = 8;
   bool banner_enabled = 9;
-  uint32 ring_tone_id = 10;
+  uint32 ring_tone_id = 10 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).uint32 = {gte: 0, lte: 255}
+  ];
 
   /*
    * Localization
@@ -65,7 +77,10 @@ message DeviceUIConfig {
   /*
    * 8 integers for screen calibration data
    */
-  bytes calibration_data = 14;
+  bytes calibration_data = 14 [
+    (nanopb).max_size = 16,
+    (validate.rules).bytes = {max_len: 16}
+  ];
 
   /*
    * Map related data
@@ -75,7 +90,10 @@ message DeviceUIConfig {
   /*
    * Compass mode
    */
-  CompassMode compass_mode = 16;
+  CompassMode compass_mode = 16 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).uint32 = {gte: 0, lte: 255}
+  ];
 
   /*
    * RGB color for BaseUI
@@ -92,7 +110,10 @@ message DeviceUIConfig {
   /*
    * How the GPS coordinates are formatted on the OLED screen.
    */
-  GpsCoordinateFormat gps_format = 19;
+  GpsCoordinateFormat gps_format = 19 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).uint32 = {gte: 0, lte: 255}
+  ];
 
   /*
    * How the GPS coordinates are displayed on the OLED screen.
@@ -162,7 +183,7 @@ message NodeFilter {
   /*
    * Filter based on hops away
    */
-  int32 hops_away = 4;
+  int32 hops_away = 4 [(nanopb).int_size = IS_8];
 
   /*
    * Filter nodes w/o position
@@ -172,12 +193,15 @@ message NodeFilter {
   /*
    * Filter nodes by matching name string
    */
-  string node_name = 6;
+  string node_name = 6 [
+    (nanopb).max_size = 16,
+    (validate.rules).string = {max_len: 16}
+  ];
 
   /*
    * Filter based on channel
    */
-  int32 channel = 7;
+  int32 channel = 7 [(nanopb).int_size = IS_8];
 }
 
 message NodeHighlight {
@@ -204,14 +228,17 @@ message NodeHighlight {
   /*
    * Highlight nodes by matching name string
    */
-  string node_name = 5;
+  string node_name = 5 [
+    (nanopb).max_size = 16,
+    (validate.rules).string = {max_len: 16}
+  ];
 }
 
 message GeoPoint {
   /*
    * Zoom level
    */
-  int32 zoom = 1;
+  int32 zoom = 1 [(nanopb).int_size = IS_8];
 
   /*
    * Coordinate: latitude
@@ -233,7 +260,10 @@ message Map {
   /*
    * Map tile style
    */
-  string style = 2;
+  string style = 2 [
+    (nanopb).max_size = 20,
+    (validate.rules).string = {max_len: 20}
+  ];
 
   /*
    * Map scroll follows GPS
