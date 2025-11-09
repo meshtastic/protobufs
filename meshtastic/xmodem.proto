@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "nanopb.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "XmodemProtos";
@@ -21,7 +23,7 @@ message XModem {
   }
 
   Control control = 1;
-  uint32 seq = 2;
-  uint32 crc16 = 3;
-  bytes buffer = 4;
+  uint32 seq = 2 [(nanopb).int_size = IS_16];
+  uint32 crc16 = 3 [(nanopb).int_size = IS_16];
+  bytes buffer = 4 [(nanopb).max_size = 128];
 }

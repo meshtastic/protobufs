@@ -1,5 +1,5 @@
 .DS_Store
 build
-generated
+generated*
 nanopb* 
 node_modules

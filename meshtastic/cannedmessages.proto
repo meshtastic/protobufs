@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "nanopb.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "CannedMessageConfigProtos";
@@ -15,5 +17,5 @@ message CannedMessageModuleConfig {
   /*
    * Predefined messages for canned message module separated by '|' characters.
    */
-  string messages = 1;
+  string messages = 1 [(nanopb).max_size = 201];
 }

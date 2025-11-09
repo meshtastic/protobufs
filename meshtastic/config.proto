@@ -3,6 +3,7 @@ syntax = "proto3";
 package meshtastic;
 
 import "meshtastic/device_ui.proto";
+import "nanopb.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -250,7 +251,7 @@ message Config {
     /*
      * POSIX Timezone definition string from https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv.
      */
-    string tzdef = 11;
+    string tzdef = 11 [(nanopb).max_size = 65];
 
     /*
      * If true, disable the default blinking LED (LED_PIN) behavior on the device
@@ -261,7 +262,7 @@ message Config {
      * Controls buzzer behavior for audio feedback
      * Defaults to ENABLED
      */
-    BuzzerMode buzzer_mode = 13;
+    BuzzerMode buzzer_mode = 13 [(nanopb).int_size = IS_8];
   }
 
   /*
@@ -480,7 +481,7 @@ message Config {
     /*
      * I2C address of INA_2XX to use for reading device battery voltage
      */
-    uint32 device_battery_ina_address = 9;
+    uint32 device_battery_ina_address = 9 [(nanopb).int_size = IS_8];
 
     /*
      * If non-zero, we want powermon log outputs.  With the particular (bitfield) sources enabled.
@@ -536,17 +537,17 @@ message Config {
      * If set, this node will try to join the specified wifi network and
      * acquire an address via DHCP
      */
-    string wifi_ssid = 3;
+    string wifi_ssid = 3 [(nanopb).max_size = 33];
 
     /*
      * If set, will be use to authenticate to the named wifi
      */
-    string wifi_psk = 4;
+    string wifi_psk = 4 [(nanopb).max_size = 65];
 
     /*
      * NTP server to use if WiFi is conneced, defaults to `meshtastic.pool.ntp.org`
      */
-    string ntp_server = 5;
+    string ntp_server = 5 [(nanopb).max_size = 33];
 
     /*
      * Enable Ethernet
@@ -566,7 +567,7 @@ message Config {
     /*
      * rsyslog Server and Port
      */
-    string rsyslog_server = 9;
+    string rsyslog_server = 9 [(nanopb).max_size = 33];
 
     /*
      * Flags for enabling/disabling network protocols
@@ -1000,7 +1001,7 @@ message Config {
      * Certain bandwidth numbers are 'special' and will be converted to the
      * appropriate floating point value: 31 -> 31.25MHz
      */
-    uint32 bandwidth = 3;
+    uint32 bandwidth = 3 [(nanopb).int_size = IS_16];
 
     /*
      * A number from 7 to 12.
@@ -1012,7 +1013,7 @@ message Config {
      * The denominator of the coding rate.
      * ie for 4/5, the value is 5. 4/8 the value is 8.
      */
-    uint32 coding_rate = 5;
+    uint32 coding_rate = 5 [(nanopb).int_size = IS_8];
 
     /*
      * This parameter is for advanced users with advanced test equipment, we do not recommend most users use it.
@@ -1045,7 +1046,7 @@ message Config {
      * In most cases you should use zero here.
      * Units are in dBm.
      */
-    int32 tx_power = 10;
+    int32 tx_power = 10 [(nanopb).int_size = IS_8];
 
     /*
      * This controls the actual hardware frequency the radio transmits on.
@@ -1056,7 +1057,7 @@ message Config {
      * If using the hash algorithm the channel number will be: hash(channel_name) %
      * NUM_CHANNELS (Where num channels depends on the regulatory region).
      */
-    uint32 channel_num = 11;
+    uint32 channel_num = 11 [(nanopb).int_size = IS_16];
 
     /*
      * If true, duty cycle limits will be exceeded and thus you're possibly not following
@@ -1089,7 +1090,7 @@ message Config {
      * particular other nodes (simulating radio out of range). All nodenums listed
      * in ignore_incoming will have packets they send dropped on receive (by router.cpp)
      */
-    repeated uint32 ignore_incoming = 103;
+    repeated uint32 ignore_incoming = 103 [(nanopb).max_count = 3];
 
     /*
      * If true, the device will not process any packets received via LoRa that passed via MQTT anywhere on the path towards it.
@@ -1141,18 +1142,18 @@ message Config {
      * The public key of the user's device.
      * Sent out to other nodes on the mesh to allow them to compute a shared secret key.
      */
-    bytes public_key = 1;
+    bytes public_key = 1 [(nanopb).max_size = 32];
 
     /*
      * The private key of the device.
      * Used to create a shared key with a remote device.
      */
-    bytes private_key = 2;
+    bytes private_key = 2 [(nanopb).max_size = 32];
 
     /*
      * The public key authorized to send admin messages to this node.
      */
-    repeated bytes admin_key = 3;
+    repeated bytes admin_key = 3 [(nanopb).max_size = 32, (nanopb).max_count = 3];
 
     /*
      * If true, device is considered to be "managed" by a mesh administrator via admin messages

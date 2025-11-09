@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "nanopb.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "TelemetryProtos";
@@ -76,7 +78,7 @@ message EnvironmentMetrics {
    * relative scale IAQ value as measured by Bosch BME680 . value 0-500.
    * Belongs to Air Quality but is not particle but VOC measurement. Other VOC values can also be put in here.
    */
-  optional uint32 iaq = 7;
+  optional uint32 iaq = 7 [(nanopb).int_size = IS_16];
 
   /*
    * RCWL9620 Doppler Radar Distance Sensor, used for water level detection. Float value in mm.
@@ -107,7 +109,7 @@ message EnvironmentMetrics {
    * Wind direction in degrees
    * 0 degrees = North, 90 = East, etc...
    */
-  optional uint32 wind_direction = 13;
+  optional uint32 wind_direction = 13 [(nanopb).int_size = IS_16];
 
   /*
    * Wind speed in m/s
@@ -147,7 +149,7 @@ message EnvironmentMetrics {
   /*
    * Soil moisture measured (% 1-100)
    */
-  optional uint32 soil_moisture = 21;
+  optional uint32 soil_moisture = 21 [(nanopb).int_size = IS_8];
 
   /*
    * Soil temperature measured (*C)
@@ -405,12 +407,12 @@ message LocalStats {
   /*
    * Number of nodes online (in the past 2 hours)
    */
-  uint32 num_online_nodes = 7;
+  uint32 num_online_nodes = 7 [(nanopb).int_size = IS_16];
 
   /*
    * Number of nodes total
    */
-  uint32 num_total_nodes = 8;
+  uint32 num_total_nodes = 8 [(nanopb).int_size = IS_16];
 
   /*
    * Number of received packets that were duplicates (due to multiple nodes relaying).
@@ -442,7 +444,7 @@ message LocalStats {
   /*
    * Number of packets that were dropped because the transmit queue was full.
    */
-  uint32 num_tx_dropped = 14;
+  uint32 num_tx_dropped = 14 [(nanopb).int_size = IS_16];
 }
 
 /*
@@ -452,12 +454,12 @@ message HealthMetrics {
   /*
    * Heart rate (beats per minute)
    */
-  optional uint32 heart_bpm = 1;
+  optional uint32 heart_bpm = 1 [(nanopb).int_size = IS_8];
 
   /*
    * SpO2 (blood oxygen saturation) level
    */
-  optional uint32 spO2 = 2;
+  optional uint32 spO2 = 2 [(nanopb).int_size = IS_8];
 
   /*
    * Body temperature in degrees Celsius
@@ -497,23 +499,23 @@ message HostMetrics {
   /*
    * Host system one minute load in 1/100ths
    */
-  uint32 load1 = 6;
+  uint32 load1 = 6 [(nanopb).int_size = IS_16];
 
   /*
    * Host system five minute load  in 1/100ths
    */
-  uint32 load5 = 7;
+  uint32 load5 = 7 [(nanopb).int_size = IS_16];
 
   /*
    * Host system fifteen minute load  in 1/100ths
    */
-  uint32 load15 = 8;
+  uint32 load15 = 8 [(nanopb).int_size = IS_16];
 
   /*
    * Optional User-provided string for arbitrary host system information
    * that doesn't make sense as a dedicated entry.
    */
-  optional string user_string = 9;
+  optional string user_string = 9 [(nanopb).max_size = 200];
 }
 
 /*

@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "nanopb.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "StoreAndForwardProtos";
@@ -213,6 +215,6 @@ message StoreAndForward {
     /*
      * Text from history message.
      */
-    bytes text = 5;
+    bytes text = 5 [(nanopb).max_size = 233];
   }
 }

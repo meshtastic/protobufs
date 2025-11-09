@@ -4,6 +4,7 @@ package meshtastic;
 
 import "meshtastic/localonly.proto";
 import "meshtastic/mesh.proto";
+import "nanopb.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -19,12 +20,12 @@ message DeviceProfile {
   /*
    * Long name for the node
    */
-  optional string long_name = 1;
+  optional string long_name = 1 [(nanopb).max_size = 40];
 
   /*
    * Short name of the node
    */
-  optional string short_name = 2;
+  optional string short_name = 2 [(nanopb).max_size = 5];
 
   /*
    * The url of the channels from our node
@@ -49,10 +50,10 @@ message DeviceProfile {
   /*
    * Ringtone for ExternalNotification
    */
-  optional string ringtone = 7;
+  optional string ringtone = 7 [(nanopb).max_size = 231];
 
   /*
    * Predefined messages for CannedMessage
    */
-  optional string canned_messages = 8;
+  optional string canned_messages = 8 [(nanopb).max_size = 201];
 }

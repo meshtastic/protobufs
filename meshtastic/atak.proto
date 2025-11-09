@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "nanopb.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "ATAKProtos";
@@ -45,7 +47,7 @@ message TAKPacket {
      * Generic CoT detail XML
      * May be compressed / truncated by the sender (EUD)
      */
-    bytes detail = 7;
+    bytes detail = 7 [(nanopb).max_size = 220];
   }
 }
 
@@ -56,17 +58,17 @@ message GeoChat {
   /*
    * The text message
    */
-  string message = 1;
+  string message = 1 [(nanopb).max_size = 200];
 
   /*
    * Uid recipient of the message
    */
-  optional string to = 2;
+  optional string to = 2 [(nanopb).max_size = 120];
 
   /*
    * Callsign of the recipient for the message
    */
-  optional string to_callsign = 3;
+  optional string to_callsign = 3 [(nanopb).max_size = 120];
 }
 
 /*
@@ -198,7 +200,7 @@ message Status {
   /*
    * Battery level
    */
-  uint32 battery = 1;
+  uint32 battery = 1 [(nanopb).int_size = IS_8];
 }
 
 /*
@@ -209,12 +211,12 @@ message Contact {
   /*
    * Callsign
    */
-  string callsign = 1;
+  string callsign = 1 [(nanopb).max_size = 120];
 
   /*
    * Device callsign
    */
-  string device_callsign = 2;
+  string device_callsign = 2 [(nanopb).max_size = 120];
   /*
    * IP address of endpoint in integer form (0.0.0.0 default)
    */
@@ -259,5 +261,5 @@ message PLI {
   /*
    * Course in degrees
    */
-  uint32 course = 5;
+  uint32 course = 5 [(nanopb).int_size = IS_16];
 }
