@@ -10,4 +10,6 @@ plugins:
   #   opt: no_features
   - remote: buf.build/community/nanopb:v0.4.9
     out: .build/c
-    opt: -S.cpp
+    opt:
+      - -S.cpp
+      - experimental_allow_proto3_optional

@@ -15,10 +15,11 @@
     "@bufbuild/protobuf": "^2.2.3"
   },
   "devDependencies": {
-    "tsdown": "^0.13.4",
+    "tsdown": "^0.16.1",
     "typescript": "^5.8.3"
   },
   "scripts": {
+    "dev": "tsdown --watch",
     "build": "tsdown"
   },
   "tsdown": {
