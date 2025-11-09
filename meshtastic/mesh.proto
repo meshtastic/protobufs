@@ -9,6 +9,7 @@ import "meshtastic/module_config.proto";
 import "meshtastic/portnums.proto";
 import "meshtastic/telemetry.proto";
 import "meshtastic/xmodem.proto";
+import "nanopb.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -862,25 +863,25 @@ message User {
    * Note: app developers are encouraged to also use the following standard
    * node IDs "^all" (for broadcast), "^local" (for the locally connected node)
    */
-  string id = 1;
+  string id = 1 [(nanopb).max_size = 16];
 
   /*
    * A full name for this user, i.e. "Kevin Hester"
    */
-  string long_name = 2;
+  string long_name = 2 [(nanopb).max_size = 40];
 
   /*
    * A VERY short name, ideally two characters.
    * Suitable for a tiny OLED screen
    */
-  string short_name = 3;
+  string short_name = 3 [(nanopb).max_size = 5];
 
   /*
    * Deprecated in Meshtastic 2.1.x
    * This is the addr of the radio.
    * Not populated by the phone, but added by the esp32 when broadcasting
    */
-  bytes macaddr = 4 [deprecated = true];
+  bytes macaddr = 4 [deprecated = true, (nanopb).max_size = 6, (nanopb).fixed_length = true];
 
   /*
    * TBEAM, HELTEC, etc...
@@ -906,7 +907,7 @@ message User {
    * The public key of the user's device.
    * This is sent out to other nodes on the mesh to allow them to compute a shared secret key.
    */
-  bytes public_key = 8;
+  bytes public_key = 8 [(nanopb).max_size = 32];
 
   /*
    * Whether or not the node can be messaged
@@ -921,22 +922,22 @@ message RouteDiscovery {
   /*
    * The list of nodenums this packet has visited so far to the destination.
    */
-  repeated fixed32 route = 1;
+  repeated fixed32 route = 1 [(nanopb).max_count = 8];
 
   /*
    * The list of SNRs (in dB, scaled by 4) in the route towards the destination.
    */
-  repeated int32 snr_towards = 2;
+  repeated int32 snr_towards = 2 [(nanopb).max_count = 8, (nanopb).int_size = IS_8];
 
   /*
    * The list of nodenums the packet has visited on the way back from the destination.
    */
-  repeated fixed32 route_back = 3;
+  repeated fixed32 route_back = 3 [(nanopb).max_count = 8];
 
   /*
    * The list of SNRs (in dB, scaled by 4) in the route back from the destination.
    */
-  repeated int32 snr_back = 4;
+  repeated int32 snr_back = 4 [(nanopb).max_count = 8, (nanopb).int_size = IS_8];
 }
 
 /*
@@ -1041,18 +1042,18 @@ message Routing {
     /*
      * A route request going from the requester
      */
-    RouteDiscovery route_request = 1;
+    RouteDiscovery route_request = 1 [(nanopb).anonymous_oneof = true];
 
     /*
      * A route reply
      */
-    RouteDiscovery route_reply = 2;
+    RouteDiscovery route_reply = 2 [(nanopb).anonymous_oneof = true];
 
     /*
      * A failure in delivering a message (usually used for routing control messages, but might be provided
      * in addition to ack.fail_id to provide details on the type of failure).
      */
-    Error error_reason = 3;
+    Error error_reason = 3 [(nanopb).anonymous_oneof = true];
   }
 }
 
@@ -1070,7 +1071,7 @@ message Data {
   /*
    * TODO: REPLACE
    */
-  bytes payload = 2;
+  bytes payload = 2 [(nanopb).max_size = 233];
 
   /*
    * Not normally used, but for testing a sender can request that recipient
@@ -1115,7 +1116,7 @@ message Data {
   /*
    * Bitfield for extra flags. First use is to indicate that user approves the packet being uploaded to MQTT.
    */
-  optional uint32 bitfield = 9;
+  optional uint32 bitfield = 9 [(nanopb).int_size = IS_8];
 }
 
 /*
@@ -1130,13 +1131,13 @@ message KeyVerification {
   /*
    * The final authoritative hash, only to be sent by NodeA at the end of the handshake
    */
-  bytes hash1 = 2;
+  bytes hash1 = 2 [(nanopb).max_size = 32];
 
   /*
    * The intermediary hash (actually derived from hash1),
    * sent from NodeB to NodeA in response to the initial message.
    */
-  bytes hash2 = 3;
+  bytes hash2 = 3 [(nanopb).max_size = 32];
 }
 
 /*
@@ -1172,12 +1173,12 @@ message Waypoint {
   /*
    * Name of the waypoint - max 30 chars
    */
-  string name = 6;
+  string name = 6 [(nanopb).max_size = 30];
 
   /*
    * Description of the waypoint - max 100 chars
    */
-  string description = 7;
+  string description = 7 [(nanopb).max_size = 100];
 
   /*
    * Designator icon for the waypoint in the form of a unicode emoji
@@ -1192,7 +1193,7 @@ message MqttClientProxyMessage {
   /*
    * The MQTT topic this message will be sent /received on
    */
-  string topic = 1;
+  string topic = 1 [(nanopb).max_size = 60];
 
   /*
    * The actual service envelope payload or text for mqtt pub / sub
@@ -1201,12 +1202,12 @@ message MqttClientProxyMessage {
     /*
      * Bytes
      */
-    bytes data = 2;
+    bytes data = 2 [(nanopb).max_size = 435, (nanopb).anonymous_oneof = true];
 
     /*
      * Text
      */
-    string text = 3;
+    string text = 3 [(nanopb).max_size = 435, (nanopb).anonymous_oneof = true];
   }
 
   /*
@@ -1383,7 +1384,7 @@ message MeshPacket {
    * contains the 'channel hash' instead of the index.
    * This 'trick' is only used while the payload_variant is an 'encrypted'.
    */
-  uint32 channel = 3;
+  uint32 channel = 3 [(nanopb).int_size = IS_8];
 
   /*
    * Internally to the mesh radios we will route SubPackets encrypted per [this](docs/developers/firmware/encryption).
@@ -1398,12 +1399,12 @@ message MeshPacket {
     /*
      * TODO: REPLACE
      */
-    Data decoded = 4;
+    Data decoded = 4 [(nanopb).anonymous_oneof = true];
 
     /*
      * TODO: REPLACE
      */
-    bytes encrypted = 5;
+    bytes encrypted = 5 [(nanopb).max_size = 256, (nanopb).anonymous_oneof = true];
   }
 
   /*
@@ -1439,7 +1440,7 @@ message MeshPacket {
    * For our usecase real world topologies probably have a max of about 3.
    * This field is normally placed into a few of bits in the header.
    */
-  uint32 hop_limit = 9;
+  uint32 hop_limit = 9 [(nanopb).int_size = IS_8];
 
   /*
    * This packet is being sent as a reliable message, we would prefer it to arrive at the destination.
@@ -1479,7 +1480,7 @@ message MeshPacket {
    * Hop limit with which the original packet started. Sent via LoRa using three bits in the unencrypted header.
    * When receiving a packet, the difference between hop_start and hop_limit gives how many hops it traveled.
    */
-  uint32 hop_start = 15;
+  uint32 hop_start = 15 [(nanopb).int_size = IS_8];
 
   /*
    * Records the public key the packet was encrypted with, if applicable.
@@ -1495,13 +1496,13 @@ message MeshPacket {
    * Last byte of the node number of the node that should be used as the next hop in routing.
    * Set by the firmware internally, clients are not supposed to set this.
    */
-  uint32 next_hop = 18;
+  uint32 next_hop = 18 [(nanopb).int_size = IS_8];
 
   /*
    * Last byte of the node number of the node that will relay/relayed this packet.
    * Set by the firmware internally, clients are not supposed to set this.
    */
-  uint32 relay_node = 19;
+  uint32 relay_node = 19 [(nanopb).int_size = IS_8];
 
   /*
    * *Never* sent over the radio links.
@@ -1614,7 +1615,7 @@ message NodeInfo {
   /*
    * local channel index we heard that node on. Only populated if its not the default channel.
    */
-  uint32 channel = 7;
+  uint32 channel = 7 [(nanopb).int_size = IS_8];
 
   /*
    * True if we witnessed the node over MQTT instead of LoRA transport
@@ -1624,7 +1625,7 @@ message NodeInfo {
   /*
    * Number of hops away from us this node is (0 if direct neighbor)
    */
-  optional uint32 hops_away = 9;
+  optional uint32 hops_away = 9 [(nanopb).int_size = IS_8];
 
   /*
    * True if node is in our favorites list
@@ -1796,23 +1797,23 @@ message MyNodeInfo {
   /*
    * Unique hardware identifier for this device
    */
-  bytes device_id = 12;
+  bytes device_id = 12 [(nanopb).max_size = 16];
 
   /*
    * The PlatformIO environment used to build this firmware
    */
-  string pio_env = 13;
+  string pio_env = 13 [(nanopb).max_size = 40];
 
   /*
    * The indicator for whether this device is running event firmware and which
    */
-  FirmwareEdition firmware_edition = 14;
+  FirmwareEdition firmware_edition = 14 [(nanopb).int_size = IS_8];
 
   /*
    * The number of nodes in the nodedb.
    * This is used by the phone to know how many NodeInfo packets to expect on want_config
    */
-  uint32 nodedb_count = 15;
+  uint32 nodedb_count = 15 [(nanopb).int_size = IS_16];
 }
 
 /*
@@ -1866,7 +1867,7 @@ message LogRecord {
   /*
    * Log levels, chosen to match python logging conventions.
    */
-  string message = 1;
+  string message = 1 [(nanopb).max_size = 384];
 
   /*
    * Seconds since 1970 - or 0 for unknown/unset
@@ -1876,7 +1877,7 @@ message LogRecord {
   /*
    * Usually based on thread name - if known
    */
-  string source = 3;
+  string source = 3 [(nanopb).max_size = 32];
 
   /*
    * Not yet set
@@ -1886,13 +1887,13 @@ message LogRecord {
 
 message QueueStatus {
   /* Last attempt to queue status, ErrorCode */
-  int32 res = 1;
+  int32 res = 1 [(nanopb).int_size = IS_8];
 
   /* Free entries in the outgoing queue */
-  uint32 free = 2;
+  uint32 free = 2 [(nanopb).int_size = IS_8];
 
   /* Maximum entries in the outgoing queue */
-  uint32 maxlen = 3;
+  uint32 maxlen = 3 [(nanopb).int_size = IS_8];
 
   /* What was mesh packet id that generated this response? */
   uint32 mesh_packet_id = 4;
@@ -1918,29 +1919,29 @@ message FromRadio {
     /*
      * Log levels, chosen to match python logging conventions.
      */
-    MeshPacket packet = 2;
+    MeshPacket packet = 2 [(nanopb).anonymous_oneof = true];
 
     /*
      * Tells the phone what our node number is, can be -1 if we've not yet joined a mesh.
      * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
      */
-    MyNodeInfo my_info = 3;
+    MyNodeInfo my_info = 3 [(nanopb).anonymous_oneof = true];
 
     /*
      * One packet is sent for each node in the on radio DB
      * starts over with the first node in our DB
      */
-    NodeInfo node_info = 4;
+    NodeInfo node_info = 4 [(nanopb).anonymous_oneof = true];
 
     /*
      * Include a part of the config (was: RadioConfig radio)
      */
-    Config config = 5;
+    Config config = 5 [(nanopb).anonymous_oneof = true];
 
     /*
      * Set to send debug console output over our protobuf stream
      */
-    LogRecord log_record = 6;
+    LogRecord log_record = 6 [(nanopb).anonymous_oneof = true];
 
     /*
      * Sent as true once the device has finished sending all of the responses to want_config
@@ -1948,7 +1949,7 @@ message FromRadio {
      * not, it means your config responses haven't started yet.
      * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
      */
-    uint32 config_complete_id = 7;
+    uint32 config_complete_id = 7 [(nanopb).anonymous_oneof = true];
 
     /*
      * Sent to tell clients the radio has just rebooted.
@@ -1956,52 +1957,52 @@ message FromRadio {
      * Not used on all transports, currently just used for the serial console.
      * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
      */
-    bool rebooted = 8;
+    bool rebooted = 8 [(nanopb).anonymous_oneof = true];
 
     /*
      * Include module config
      */
-    ModuleConfig moduleConfig = 9;
+    ModuleConfig moduleConfig = 9 [(nanopb).anonymous_oneof = true];
 
     /*
      * One packet is sent for each channel
      */
-    Channel channel = 10;
+    Channel channel = 10 [(nanopb).anonymous_oneof = true];
 
     /*
      * Queue status info
      */
-    QueueStatus queueStatus = 11;
+    QueueStatus queueStatus = 11 [(nanopb).anonymous_oneof = true];
 
     /*
      * File Transfer Chunk
      */
-    XModem xmodemPacket = 12;
+    XModem xmodemPacket = 12 [(nanopb).anonymous_oneof = true];
 
     /*
      * Device metadata message
      */
-    DeviceMetadata metadata = 13;
+    DeviceMetadata metadata = 13 [(nanopb).anonymous_oneof = true];
 
     /*
      * MQTT Client Proxy Message (device sending to client / phone for publishing to MQTT)
      */
-    MqttClientProxyMessage mqttClientProxyMessage = 14;
+    MqttClientProxyMessage mqttClientProxyMessage = 14 [(nanopb).anonymous_oneof = true];
 
     /*
      * File system manifest messages
      */
-    FileInfo fileInfo = 15;
+    FileInfo fileInfo = 15 [(nanopb).anonymous_oneof = true];
 
     /*
      * Notification message to the client
      */
-    ClientNotification clientNotification = 16;
+    ClientNotification clientNotification = 16 [(nanopb).anonymous_oneof = true];
 
     /*
      * Persistent data for device-ui
      */
-    DeviceUIConfig deviceuiConfig = 17;
+    DeviceUIConfig deviceuiConfig = 17 [(nanopb).anonymous_oneof = true];
   }
 }
 
@@ -2029,7 +2030,7 @@ message ClientNotification {
   /*
    * The message body of the notification
    */
-  string message = 4;
+  string message = 4 [(nanopb).max_size = 400];
 
   oneof payload_variant {
     KeyVerificationNumberInform key_verification_number_inform = 11;
@@ -2042,18 +2043,18 @@ message ClientNotification {
 
 message KeyVerificationNumberInform {
   uint64 nonce = 1;
-  string remote_longname = 2;
+  string remote_longname = 2 [(nanopb).max_size = 40];
   uint32 security_number = 3;
 }
 message KeyVerificationNumberRequest {
   uint64 nonce = 1;
-  string remote_longname = 2;
+  string remote_longname = 2 [(nanopb).max_size = 40];
 }
 message KeyVerificationFinal {
   uint64 nonce = 1;
-  string remote_longname = 2;
+  string remote_longname = 2 [(nanopb).max_size = 40];
   bool isSender = 3;
-  string verification_characters = 4;
+  string verification_characters = 4 [(nanopb).max_size = 10];
 }
 message DuplicatedPublicKey {}
 message LowEntropyKey {}
@@ -2065,7 +2066,7 @@ message FileInfo {
   /*
    * The fully qualified path of the file
    */
-  string file_name = 1;
+  string file_name = 1 [(nanopb).max_size = 228];
 
   /*
    * The size of the file in bytes
@@ -2085,7 +2086,7 @@ message ToRadio {
     /*
      * Send this packet on the mesh
      */
-    MeshPacket packet = 1;
+    MeshPacket packet = 1 [(nanopb).anonymous_oneof = true];
 
     /*
      * Phone wants radio to send full node db to the phone, This is
@@ -2097,30 +2098,30 @@ message ToRadio {
      * config_complete_id response this allows clients to never be confused by
      * a stale old partially sent config.
      */
-    uint32 want_config_id = 3;
+    uint32 want_config_id = 3 [(nanopb).anonymous_oneof = true];
 
     /*
      * Tell API server we are disconnecting now.
      * This is useful for serial links where there is no hardware/protocol based notification that the client has dropped the link.
      * (Sending this message is optional for clients)
      */
-    bool disconnect = 4;
+    bool disconnect = 4 [(nanopb).anonymous_oneof = true];
 
     /*
      * File Transfer Chunk
      */
 
-    XModem xmodemPacket = 5;
+    XModem xmodemPacket = 5 [(nanopb).anonymous_oneof = true];
 
     /*
      * MQTT Client Proxy Message (for client / phone subscribed to MQTT sending to device)
      */
-    MqttClientProxyMessage mqttClientProxyMessage = 6;
+    MqttClientProxyMessage mqttClientProxyMessage = 6 [(nanopb).anonymous_oneof = true];
 
     /*
      * Heartbeat message (used to keep the device connection awake on serial)
      */
-    Heartbeat heartbeat = 7;
+    Heartbeat heartbeat = 7 [(nanopb).anonymous_oneof = true];
   }
 }
 
@@ -2136,7 +2137,7 @@ message Compressed {
   /*
    * Compressed data.
    */
-  bytes data = 2;
+  bytes data = 2 [(nanopb).max_size = 233];
 }
 
 /*
@@ -2159,7 +2160,7 @@ message NeighborInfo {
   /*
    * The list of out edges from this node
    */
-  repeated Neighbor neighbors = 4;
+  repeated Neighbor neighbors = 4 [(nanopb).max_count = 10];
 }
 
 /*
@@ -2196,7 +2197,7 @@ message DeviceMetadata {
   /*
    * Device firmware version string
    */
-  string firmware_version = 1;
+  string firmware_version = 1 [(nanopb).max_size = 18];
 
   /*
    * Device state version
@@ -2377,17 +2378,17 @@ message ChunkedPayload {
   /*
    * The total number of chunks in the payload
    */
-  uint32 chunk_count = 2;
+  uint32 chunk_count = 2 [(nanopb).int_size = IS_16];
 
   /*
    * The current chunk index in the total
    */
-  uint32 chunk_index = 3;
+  uint32 chunk_index = 3 [(nanopb).int_size = IS_16];
 
   /*
    * The binary data of the current chunk
    */
-  bytes payload_chunk = 4;
+  bytes payload_chunk = 4 [(nanopb).max_size = 228];
 }
 
 /*

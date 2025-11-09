@@ -8,6 +8,9 @@ import "meshtastic/connection_status.proto";
 import "meshtastic/device_ui.proto";
 import "meshtastic/mesh.proto";
 import "meshtastic/module_config.proto";
+import "nanopb.proto";
+import "google/protobuf/descriptor.proto";
+import "validate/validate.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -26,7 +29,10 @@ message AdminMessage {
    * The client MUST include the same key with any set_x commands. Key expires after 300 seconds.
    * Prevents replay attacks for admin messages.
    */
-  bytes session_passkey = 101;
+  bytes session_passkey = 101 [
+    (nanopb).max_size = 8,
+    (validate.rules).bytes = {max_len: 8}
+  ];
 
   /*
    * TODO: REPLACE
@@ -172,19 +178,31 @@ message AdminMessage {
     /*
      * The input event code
      */
-    uint32 event_code = 1;
+    uint32 event_code = 1 [
+      (nanopb).int_size = IS_8,
+      (validate.rules).uint32 = {gte: 0, lte: 255}
+    ];
     /*
      * Keyboard character code
      */
-    uint32 kb_char = 2;
+    uint32 kb_char = 2 [
+      (nanopb).int_size = IS_8,
+      (validate.rules).uint32 = {gte: 0, lte: 255}
+    ];
     /*
      * The touch X coordinate
      */
-    uint32 touch_x = 3;
+    uint32 touch_x = 3 [
+      (nanopb).int_size = IS_16,
+      (validate.rules).uint32 = {gte: 0, lte: 65535}
+    ];
     /*
      * The touch Y coordinate
      */
-    uint32 touch_y = 4;
+    uint32 touch_y = 4 [
+      (nanopb).int_size = IS_16,
+      (validate.rules).uint32 = {gte: 0, lte: 65535}
+    ];
   }
 
   /*
@@ -195,139 +213,151 @@ message AdminMessage {
      * Send the specified channel in the response to this message
      * NOTE: This field is sent with the channel index + 1 (to ensure we never try to send 'zero' - which protobufs treats as not present)
      */
-    uint32 get_channel_request = 1;
+    uint32 get_channel_request = 1 [(nanopb).anonymous_oneof = true];
 
     /*
      * TODO: REPLACE
      */
-    Channel get_channel_response = 2;
+    Channel get_channel_response = 2 [(nanopb).anonymous_oneof = true];
 
     /*
      * Send the current owner data in the response to this message.
      */
-    bool get_owner_request = 3;
+    bool get_owner_request = 3 [(nanopb).anonymous_oneof = true];
 
     /*
      * TODO: REPLACE
      */
-    User get_owner_response = 4;
+    User get_owner_response = 4 [(nanopb).anonymous_oneof = true];
 
     /*
      * Ask for the following config data to be sent
      */
-    ConfigType get_config_request = 5;
+    ConfigType get_config_request = 5 [(nanopb).anonymous_oneof = true];
 
     /*
      * Send the current Config in the response to this message.
      */
-    Config get_config_response = 6;
+    Config get_config_response = 6 [(nanopb).anonymous_oneof = true];
 
     /*
      * Ask for the following config data to be sent
      */
-    ModuleConfigType get_module_config_request = 7;
+    ModuleConfigType get_module_config_request = 7 [(nanopb).anonymous_oneof = true];
 
     /*
      * Send the current Config in the response to this message.
      */
-    ModuleConfig get_module_config_response = 8;
+    ModuleConfig get_module_config_response = 8 [(nanopb).anonymous_oneof = true];
 
     /*
      * Get the Canned Message Module messages in the response to this message.
      */
-    bool get_canned_message_module_messages_request = 10;
+    bool get_canned_message_module_messages_request = 10 [(nanopb).anonymous_oneof = true];
 
     /*
      * Get the Canned Message Module messages in the response to this message.
      */
-    string get_canned_message_module_messages_response = 11;
+    string get_canned_message_module_messages_response = 11 [
+      (nanopb).max_size = 201,
+      (nanopb).anonymous_oneof = true,
+      (validate.rules).string = {max_len: 201}
+    ];
 
     /*
      * Request the node to send device metadata (firmware, protobuf version, etc)
      */
-    bool get_device_metadata_request = 12;
+    bool get_device_metadata_request = 12 [(nanopb).anonymous_oneof = true];
 
     /*
      * Device metadata response
      */
-    DeviceMetadata get_device_metadata_response = 13;
+    DeviceMetadata get_device_metadata_response = 13 [(nanopb).anonymous_oneof = true];
 
     /*
      * Get the Ringtone in the response to this message.
      */
-    bool get_ringtone_request = 14;
+    bool get_ringtone_request = 14 [(nanopb).anonymous_oneof = true];
 
     /*
      * Get the Ringtone in the response to this message.
      */
-    string get_ringtone_response = 15;
+    string get_ringtone_response = 15 [
+      (nanopb).max_size = 231,
+      (nanopb).anonymous_oneof = true,
+      (validate.rules).string = {max_len: 231}
+    ];
 
     /*
      * Request the node to send it's connection status
      */
-    bool get_device_connection_status_request = 16;
+    bool get_device_connection_status_request = 16 [(nanopb).anonymous_oneof = true];
 
     /*
      * Device connection status response
      */
-    DeviceConnectionStatus get_device_connection_status_response = 17;
+    DeviceConnectionStatus get_device_connection_status_response = 17 [(nanopb).anonymous_oneof = true];
 
     /*
      * Setup a node for licensed amateur (ham) radio operation
      */
-    HamParameters set_ham_mode = 18;
+    HamParameters set_ham_mode = 18 [(nanopb).anonymous_oneof = true];
 
     /*
      * Get the mesh's nodes with their available gpio pins for RemoteHardware module use
      */
-    bool get_node_remote_hardware_pins_request = 19;
+    bool get_node_remote_hardware_pins_request = 19 [(nanopb).anonymous_oneof = true];
 
     /*
      * Respond with the mesh's nodes with their available gpio pins for RemoteHardware module use
      */
-    NodeRemoteHardwarePinsResponse get_node_remote_hardware_pins_response = 20;
+    NodeRemoteHardwarePinsResponse get_node_remote_hardware_pins_response = 20 [(nanopb).anonymous_oneof = true];
 
     /*
      * Enter (UF2) DFU mode
      * Only implemented on NRF52 currently
      */
-    bool enter_dfu_mode_request = 21;
+    bool enter_dfu_mode_request = 21 [(nanopb).anonymous_oneof = true];
 
     /*
      * Delete the file by the specified path from the device
      */
-    string delete_file_request = 22;
+    string delete_file_request = 22 [
+      (nanopb).max_size = 201,
+      (nanopb).anonymous_oneof = true,
+      (validate.rules).string = {max_len: 201}
+    ];
 
     /*
      * Set zero and offset for scale chips
      */
-    uint32 set_scale = 23;
+    uint32 set_scale = 23 [(nanopb).anonymous_oneof = true];
 
     /*
      * Backup the node's preferences
      */
-    BackupLocation backup_preferences = 24;
+    BackupLocation backup_preferences = 24 [(nanopb).anonymous_oneof = true];
 
     /*
      * Restore the node's preferences
      */
-    BackupLocation restore_preferences = 25;
+    BackupLocation restore_preferences = 25 [(nanopb).anonymous_oneof = true];
 
     /*
      * Remove backups of the node's preferences
      */
-    BackupLocation remove_backup_preferences = 26;
+    BackupLocation remove_backup_preferences = 26 [(nanopb).anonymous_oneof = true];
 
     /*
      * Send an input event to the node.
      * This is used to trigger physical input events like button presses, touch events, etc.
      */
-    InputEvent send_input_event = 27;
+    InputEvent send_input_event = 27 [(nanopb).anonymous_oneof = true];
 
     /*
      * Set the owner for this node
      */
-    User set_owner = 32;
+    User set_owner = 32 [(nanopb).anonymous_oneof = true];
 
     /*
      * Set channels (using the new API).
@@ -336,142 +366,150 @@ message AdminMessage {
      * Note: only one channel can be marked as primary.
      * If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically.
      */
-    Channel set_channel = 33;
+    Channel set_channel = 33 [(nanopb).anonymous_oneof = true];
 
     /*
      * Set the current Config
      */
-    Config set_config = 34;
+    Config set_config = 34 [(nanopb).anonymous_oneof = true];
 
     /*
      * Set the current Config
      */
-    ModuleConfig set_module_config = 35;
+    ModuleConfig set_module_config = 35 [(nanopb).anonymous_oneof = true];
 
     /*
      * Set the Canned Message Module messages text.
      */
-    string set_canned_message_module_messages = 36;
+    string set_canned_message_module_messages = 36 [
+      (nanopb).max_size = 201,
+      (nanopb).anonymous_oneof = true,
+      (validate.rules).string = {max_len: 201}
+    ];
 
     /*
      * Set the ringtone for ExternalNotification.
      */
-    string set_ringtone_message = 37;
+    string set_ringtone_message = 37 [
+      (nanopb).max_size = 231,
+      (nanopb).anonymous_oneof = true,
+      (validate.rules).string = {max_len: 231}
+    ];
 
     /*
      * Remove the node by the specified node-num from the NodeDB on the device
      */
-    uint32 remove_by_nodenum = 38;
+    uint32 remove_by_nodenum = 38 [(nanopb).anonymous_oneof = true];
 
     /*
      * Set specified node-num to be favorited on the NodeDB on the device
      */
-    uint32 set_favorite_node = 39;
+    uint32 set_favorite_node = 39 [(nanopb).anonymous_oneof = true];
 
     /*
      * Set specified node-num to be un-favorited on the NodeDB on the device
      */
-    uint32 remove_favorite_node = 40;
+    uint32 remove_favorite_node = 40 [(nanopb).anonymous_oneof = true];
 
     /*
      * Set fixed position data on the node and then set the position.fixed_position = true
      */
-    Position set_fixed_position = 41;
+    Position set_fixed_position = 41 [(nanopb).anonymous_oneof = true];
 
     /*
      * Clear fixed position coordinates and then set position.fixed_position = false
      */
-    bool remove_fixed_position = 42;
+    bool remove_fixed_position = 42 [(nanopb).anonymous_oneof = true];
 
     /*
      * Set time only on the node
      * Convenience method to set the time on the node (as Net quality) without any other position data
      */
-    fixed32 set_time_only = 43;
+    fixed32 set_time_only = 43 [(nanopb).anonymous_oneof = true];
 
     /*
      * Tell the node to send the stored ui data.
      */
-    bool get_ui_config_request = 44;
+    bool get_ui_config_request = 44 [(nanopb).anonymous_oneof = true];
 
     /*
      * Reply stored device ui data.
      */
-    DeviceUIConfig get_ui_config_response = 45;
+    DeviceUIConfig get_ui_config_response = 45 [(nanopb).anonymous_oneof = true];
 
     /*
      * Tell the node to store UI data persistently.
      */
-    DeviceUIConfig store_ui_config = 46;
+    DeviceUIConfig store_ui_config = 46 [(nanopb).anonymous_oneof = true];
 
     /*
      * Set specified node-num to be ignored on the NodeDB on the device
      */
-    uint32 set_ignored_node = 47;
+    uint32 set_ignored_node = 47 [(nanopb).anonymous_oneof = true];
 
     /*
      * Set specified node-num to be un-ignored on the NodeDB on the device
      */
-    uint32 remove_ignored_node = 48;
+    uint32 remove_ignored_node = 48 [(nanopb).anonymous_oneof = true];
 
     /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes
      * This will delay the standard *implicit* save to the file system and subsequent reboot behavior until committed (commit_edit_settings)
      */
-    bool begin_edit_settings = 64;
+    bool begin_edit_settings = 64 [(nanopb).anonymous_oneof = true];
 
     /*
      * Commits an open transaction for any edits made to config, module config, owner, and channel settings
      */
-    bool commit_edit_settings = 65;
+    bool commit_edit_settings = 65 [(nanopb).anonymous_oneof = true];
 
     /*
      * Add a contact (User) to the nodedb
      */
-    SharedContact add_contact = 66;
+    SharedContact add_contact = 66 [(nanopb).anonymous_oneof = true];
 
     /*
      * Initiate or respond to a key verification request
      */
-    KeyVerificationAdmin key_verification = 67;
+    KeyVerificationAdmin key_verification = 67 [(nanopb).anonymous_oneof = true];
 
     /*
      * Tell the node to factory reset config everything; all device state and configuration will be returned to factory defaults and BLE bonds will be cleared.
      */
-    int32 factory_reset_device = 94;
+    int32 factory_reset_device = 94 [(nanopb).anonymous_oneof = true];
 
     /*
      * Tell the node to reboot into the OTA Firmware in this many seconds (or <0 to cancel reboot)
      * Only Implemented for ESP32 Devices. This needs to be issued to send a new main firmware via bluetooth.
      */
-    int32 reboot_ota_seconds = 95;
+    int32 reboot_ota_seconds = 95 [(nanopb).anonymous_oneof = true];
 
     /*
      * This message is only supported for the simulator Portduino build.
      * If received the simulator will exit successfully.
      */
-    bool exit_simulator = 96;
+    bool exit_simulator = 96 [(nanopb).anonymous_oneof = true];
 
     /*
      * Tell the node to reboot in this many seconds (or <0 to cancel reboot)
      */
-    int32 reboot_seconds = 97;
+    int32 reboot_seconds = 97 [(nanopb).anonymous_oneof = true];
 
     /*
      * Tell the node to shutdown in this many seconds (or <0 to cancel shutdown)
      */
-    int32 shutdown_seconds = 98;
+    int32 shutdown_seconds = 98 [(nanopb).anonymous_oneof = true];
 
     /*
      * Tell the node to factory reset config; all device state and configuration will be returned to factory defaults; BLE bonds will be preserved.
      */
-    int32 factory_reset_config = 99;
+    int32 factory_reset_config = 99 [(nanopb).anonymous_oneof = true];
 
     /*
      * Tell the node to reset the nodedb.
      * When true, favorites are preserved through reset.
      */
-    bool nodedb_reset = 100;
+    bool nodedb_reset = 100 [(nanopb).anonymous_oneof = true];
   }
 }
 
@@ -482,7 +520,10 @@ message HamParameters {
   /*
    * Amateur radio call sign, eg. KD2ABC
    */
-  string call_sign = 1;
+  string call_sign = 1 [
+    (nanopb).max_size = 8,
+    (validate.rules).string = {max_len: 8}
+  ];
 
   /*
    * Transmit power in dBm at the LoRA transceiver, not including any amplification
@@ -499,7 +540,10 @@ message HamParameters {
   /*
    * Optional short name of user
    */
-  string short_name = 4;
+  string short_name = 4 [
+    (nanopb).max_size = 5,
+    (validate.rules).string = {max_len: 5}
+  ];
 }
 
 /*
@@ -509,7 +553,10 @@ message NodeRemoteHardwarePinsResponse {
   /*
    * Nodes and their respective remote hardware GPIO pins
    */
-  repeated NodeRemoteHardwarePin node_remote_hardware_pins = 1;
+  repeated NodeRemoteHardwarePin node_remote_hardware_pins = 1 [
+    (nanopb).max_count = 16,
+    (validate.rules).repeated = {max_items: 16}
+  ];
 }
 
 message SharedContact {

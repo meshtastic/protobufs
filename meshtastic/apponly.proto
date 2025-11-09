@@ -4,6 +4,8 @@ package meshtastic;
 
 import "meshtastic/channel.proto";
 import "meshtastic/config.proto";
+import "nanopb.proto";
+import "validate/validate.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -22,7 +24,10 @@ message ChannelSet {
   /*
    * Channel list with settings
    */
-  repeated ChannelSettings settings = 1;
+  repeated ChannelSettings settings = 1 [
+    (nanopb).max_count = 8,
+    (validate.rules).repeated = {max_items: 8}
+  ];
 
   /*
    * LoRa config
