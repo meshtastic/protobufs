@@ -1,9 +1,10 @@
 version: v2
 modules:
-  - path: meshtastic
+  - path: .
     name: buf.build/meshtastic/protobufs
     excludes:
       - meshtastic/device_only/
+      - .build/
     lint:
       use:
         - MINIMAL
