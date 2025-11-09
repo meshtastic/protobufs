@@ -3,6 +3,8 @@
     "module": "esnext",
     "target": "es2022",
     "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "skipLibCheck": true,
     "strict": true,
     "verbatimModuleSyntax": true
