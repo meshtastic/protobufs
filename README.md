@@ -13,7 +13,7 @@ The [Protobuf](https://developers.google.com/protocol-buffers) message definitio
 
 ## Local Builds
 
-Use `scripts/build.sh` to generate TypeScript and nanopb C artifacts in `build/ts` and `build/c` without touching the repository source files. Rust crate sources are copied from `packages/rust`; enabling Buf-based regeneration requires uncommenting the relevant plugins in `buf.gen.yaml`.
+Use `scripts/build.sh` to generate C, Rust, and TypeScript artifacts via Buf (nanopb plugin) in `build/c`, `build/rust`, `build/ts`.
 
 - Prerequisites: `node` (including `npm`/`npx`) and `git` (used to infer the latest tag when `VERSION` is not supplied). `buf` is fetched via `npx @bufbuild/buf`.
 - Optional environment variables:
