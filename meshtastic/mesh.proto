@@ -940,22 +940,38 @@ message RouteDiscovery {
   /*
    * The list of nodenums this packet has visited so far to the destination.
    */
-  repeated fixed32 route = 1 [(nanopb).max_count = 8];
+  repeated fixed32 route = 1 [
+    (nanopb).max_count = 8,
+    (validate.rules).repeated = {max_items: 8}
+  ];
 
   /*
    * The list of SNRs (in dB, scaled by 4) in the route towards the destination.
    */
-  repeated int32 snr_towards = 2 [(nanopb).max_count = 8, (nanopb).int_size = IS_8];
+  repeated int32 snr_towards = 2 [
+    (nanopb).max_count = 8,
+    (nanopb).int_size = IS_8,
+    (validate.rules).repeated = {max_items: 8},
+    (validate.rules).int32 = {gte: -128, lte: 127}
+  ];
 
   /*
    * The list of nodenums the packet has visited on the way back from the destination.
    */
-  repeated fixed32 route_back = 3 [(nanopb).max_count = 8];
+  repeated fixed32 route_back = 3 [
+    (nanopb).max_count = 8,
+    (validate.rules).repeated = {max_items: 8}
+  ];
 
   /*
    * The list of SNRs (in dB, scaled by 4) in the route back from the destination.
    */
-  repeated int32 snr_back = 4 [(nanopb).max_count = 8, (nanopb).int_size = IS_8];
+  repeated int32 snr_back = 4 [
+    (nanopb).max_count = 8,
+    (nanopb).int_size = IS_8,
+    (validate.rules).repeated = {max_items: 8},
+    (validate.rules).int32 = {gte: -128, lte: 127}
+  ];
 }
 
 /*
@@ -1138,7 +1154,10 @@ message Data {
   /*
    * Bitfield for extra flags. First use is to indicate that user approves the packet being uploaded to MQTT.
    */
-  optional uint32 bitfield = 9 [(nanopb).int_size = IS_8];
+  optional uint32 bitfield = 9 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).uint32 = {gte: 0, lte: 255}
+  ];
 }
 
 /*
@@ -1428,7 +1447,10 @@ message MeshPacket {
    * contains the 'channel hash' instead of the index.
    * This 'trick' is only used while the payload_variant is an 'encrypted'.
    */
-  uint32 channel = 3 [(nanopb).int_size = IS_8];
+  uint32 channel = 3 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).uint32 = {gte: 0, lte: 255}
+  ];
 
   /*
    * Internally to the mesh radios we will route SubPackets encrypted per [this](docs/developers/firmware/encryption).
@@ -1487,7 +1509,10 @@ message MeshPacket {
    * For our usecase real world topologies probably have a max of about 3.
    * This field is normally placed into a few of bits in the header.
    */
-  uint32 hop_limit = 9 [(nanopb).int_size = IS_8];
+  uint32 hop_limit = 9 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).uint32 = {gte: 0, lte: 255}
+  ];
 
   /*
    * This packet is being sent as a reliable message, we would prefer it to arrive at the destination.
@@ -1527,7 +1552,10 @@ message MeshPacket {
    * Hop limit with which the original packet started. Sent via LoRa using three bits in the unencrypted header.
    * When receiving a packet, the difference between hop_start and hop_limit gives how many hops it traveled.
    */
-  uint32 hop_start = 15 [(nanopb).int_size = IS_8];
+  uint32 hop_start = 15 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).uint32 = {gte: 0, lte: 255}
+  ];
 
   /*
    * Records the public key the packet was encrypted with, if applicable.
@@ -1546,13 +1574,19 @@ message MeshPacket {
    * Last byte of the node number of the node that should be used as the next hop in routing.
    * Set by the firmware internally, clients are not supposed to set this.
    */
-  uint32 next_hop = 18 [(nanopb).int_size = IS_8];
+  uint32 next_hop = 18 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).uint32 = {gte: 0, lte: 255}
+  ];
 
   /*
    * Last byte of the node number of the node that will relay/relayed this packet.
    * Set by the firmware internally, clients are not supposed to set this.
    */
-  uint32 relay_node = 19 [(nanopb).int_size = IS_8];
+  uint32 relay_node = 19 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).uint32 = {gte: 0, lte: 255}
+  ];
 
   /*
    * *Never* sent over the radio links.
@@ -1665,7 +1699,10 @@ message NodeInfo {
   /*
    * local channel index we heard that node on. Only populated if its not the default channel.
    */
-  uint32 channel = 7 [(nanopb).int_size = IS_8];
+  uint32 channel = 7 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).uint32 = {gte: 0, lte: 255}
+  ];
 
   /*
    * True if we witnessed the node over MQTT instead of LoRA transport
@@ -1675,7 +1712,10 @@ message NodeInfo {
   /*
    * Number of hops away from us this node is (0 if direct neighbor)
    */
-  optional uint32 hops_away = 9 [(nanopb).int_size = IS_8];
+  optional uint32 hops_away = 9 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).uint32 = {gte: 0, lte: 255}
+  ];
 
   /*
    * True if node is in our favorites list
@@ -1863,13 +1903,19 @@ message MyNodeInfo {
   /*
    * The indicator for whether this device is running event firmware and which
    */
-  FirmwareEdition firmware_edition = 14 [(nanopb).int_size = IS_8];
+  FirmwareEdition firmware_edition = 14 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).uint32 = {gte: 0, lte: 255}
+  ];
 
   /*
    * The number of nodes in the nodedb.
    * This is used by the phone to know how many NodeInfo packets to expect on want_config
    */
-  uint32 nodedb_count = 15 [(nanopb).int_size = IS_16];
+  uint32 nodedb_count = 15 [
+    (nanopb).int_size = IS_16,
+    (validate.rules).uint32 = {gte: 0, lte: 65535}
+  ];
 }
 
 /*
@@ -1949,13 +1995,22 @@ message LogRecord {
 
 message QueueStatus {
   /* Last attempt to queue status, ErrorCode */
-  int32 res = 1 [(nanopb).int_size = IS_8];
+  int32 res = 1 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).int32 = {gte: -128, lte: 127}
+  ];
 
   /* Free entries in the outgoing queue */
-  uint32 free = 2 [(nanopb).int_size = IS_8];
+  uint32 free = 2 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).uint32 = {gte: 0, lte: 255}
+  ];
 
   /* Maximum entries in the outgoing queue */
-  uint32 maxlen = 3 [(nanopb).int_size = IS_8];
+  uint32 maxlen = 3 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).uint32 = {gte: 0, lte: 255}
+  ];
 
   /* What was mesh packet id that generated this response? */
   uint32 mesh_packet_id = 4;
@@ -2245,7 +2300,10 @@ message NeighborInfo {
   /*
    * The list of out edges from this node
    */
-  repeated Neighbor neighbors = 4 [(nanopb).max_count = 10];
+  repeated Neighbor neighbors = 4 [
+    (nanopb).max_count = 10,
+    (validate.rules).repeated = {max_items: 10}
+  ];
 }
 
 /*
@@ -2466,12 +2524,18 @@ message ChunkedPayload {
   /*
    * The total number of chunks in the payload
    */
-  uint32 chunk_count = 2 [(nanopb).int_size = IS_16];
+  uint32 chunk_count = 2 [
+    (nanopb).int_size = IS_16,
+    (validate.rules).uint32 = {gte: 0, lte: 65535}
+  ];
 
   /*
    * The current chunk index in the total
    */
-  uint32 chunk_index = 3 [(nanopb).int_size = IS_16];
+  uint32 chunk_index = 3 [
+    (nanopb).int_size = IS_16,
+    (validate.rules).uint32 = {gte: 0, lte: 65535}
+  ];
 
   /*
    * The binary data of the current chunk

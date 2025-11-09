@@ -151,7 +151,10 @@ message Channel {
    * (Someday - not currently implemented) An index of -1 could be used to mean "set by name",
    * in which case the target node will find and set the channel by settings.name.
    */
-  int32 index = 1 [(nanopb).int_size = IS_8];
+  int32 index = 1 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).int32 = {gte: -128, lte: 127}
+  ];
 
   /*
    * The new settings, or NULL to disable that channel
