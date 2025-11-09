@@ -1,0 +1,33 @@
+{
+  "name": "@meshtastic/protobufs",
+  "description": "Protobuf definitions for the Meshtastic project",
+  "version": "2.7.13",
+  "homepage": "https://github.com/meshtastic/protobufs",
+  "license": "GPLV3",
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./dist/mod.js",
+  "module": "./dist/mod.js",
+  "types": "./dist/mod.d.ts",
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.2.3"
+  },
+  "devDependencies": {
+    "tsdown": "^0.16.1",
+    "typescript": "^5.8.3"
+  },
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsdown"
+  },
+  "tsdown": {
+    "entry": "mod.ts",
+    "dts": true,
+    "format": [
+      "esm"
+    ],
+    "splitting": false
+  }
+}
