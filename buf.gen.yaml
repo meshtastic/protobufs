@@ -1,7 +1,7 @@
 version: v2
 plugins:
   - remote: buf.build/bufbuild/es:v2.1.0
-    out: .build/ts/lib
+    out: build/ts/lib
     opt: target=ts
   # - remote: buf.build/community/neoeinstein-prost:v0.4.0
   #   out: packages/rust/src/generated
@@ -9,7 +9,7 @@ plugins:
   #   out: packages/rust/src/generated
   #   opt: no_features
   - remote: buf.build/community/nanopb:v0.4.9
-    out: .build/c
+    out: build/c
     opt:
       - -S.cpp
       - experimental_allow_proto3_optional

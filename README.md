@@ -13,15 +13,13 @@ The [Protobuf](https://developers.google.com/protocol-buffers) message definitio
 
 ## Local Builds
 
-Use `scripts/build.sh` to generate TypeScript, Rust, and (optionally) nanopb C artifacts in `.build/ts`, `.build/rust`, and `.build/c` without touching the repository source files.
+Use `scripts/build.sh` to generate TypeScript and nanopb C artifacts in `build/ts` and `build/c` without touching the repository source files. Rust crate sources are copied from `packages/rust`; enabling Buf-based regeneration requires uncommenting the relevant plugins in `buf.gen.yaml`.
 
-- Prerequisites: `node` (providing `npx`) and `git` (used to infer the latest tag when `VERSION` is not supplied). `buf` is fetched via `npx @bufbuild/buf`.
+- Prerequisites: `node` (including `npm`/`npx`) and `git` (used to infer the latest tag when `VERSION` is not supplied). `buf` is fetched via `npx @bufbuild/buf`.
 - Optional environment variables:
   - `VERSION`: override the auto-detected tag (a leading `v` is stripped automatically).
-  - `ENABLE_PROST_CRATE=1`: re-enable the `neoeinstein-prost-crate` plugin if you need its outputs.
-  - `NANOPB_PROTOC`: path to the nanopb `protoc` wrapper; if unset, nanopb codegen is skipped unless a local `nanopb-*/generator-bin/protoc` is found.
 - Run: `./scripts/build.sh`
-- Result: generated code and packaging metadata are copied into `.build/*`, with `__PACKAGE_VERSION__` placeholders replaced across the copied packages tree. The script writes Buf outputs directly into `.build`, copies `LICENSE`/`README.md`, and (when configured) produces nanopb C sources.
+- Result: the script wipes any previous `build` directory, copies the packages tree, replaces `__PACKAGE_VERSION__` placeholders, invokes Buf via `npx @bufbuild/buf generate`, and then runs `npm install` followed by `npm run build` inside `build/ts`. Outputs land under `build/ts` and `build/c` along with the copied package metadata.
 
 ## Stats
 

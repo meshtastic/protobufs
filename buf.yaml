@@ -4,7 +4,8 @@ modules:
     name: buf.build/meshtastic/protobufs
     excludes:
       - meshtastic/device_only/
-      - .build/
+      - build/
+      - nanopb/
     lint:
       use:
         - MINIMAL

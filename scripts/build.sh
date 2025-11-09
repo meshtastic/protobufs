@@ -4,7 +4,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-BUILD_DIR="$REPO_DIR/.build"
+BUILD_DIR="$REPO_DIR/build"
 VERSION="${VERSION:-__PACKAGE_VERSION__}"
 
 require_cmd() {
