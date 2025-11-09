@@ -3,6 +3,7 @@ syntax = "proto3";
 package meshtastic;
 
 import "nanopb.proto";
+import "validate/validate.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -28,21 +29,30 @@ message ModuleConfig {
      * The server to use for our MQTT global message gateway feature.
      * If not set, the default server will be used
      */
-    string address = 2 [(nanopb).max_size = 64];
+    string address = 2 [
+      (nanopb).max_size = 64,
+      (validate.rules).string = {max_len: 64}
+    ];
 
     /*
      * MQTT username to use (most useful for a custom MQTT server).
      * If using a custom server, this will be honoured even if empty.
      * If using the default server, this will only be honoured if set, otherwise the device will use the default username
      */
-    string username = 3 [(nanopb).max_size = 64];
+    string username = 3 [
+      (nanopb).max_size = 64,
+      (validate.rules).string = {max_len: 64}
+    ];
 
     /*
      * MQTT password to use (most useful for a custom MQTT server).
      * If using a custom server, this will be honoured even if empty.
      * If using the default server, this will only be honoured if set, otherwise the device will use the default password
      */
-    string password = 4 [(nanopb).max_size = 32];
+    string password = 4 [
+      (nanopb).max_size = 32,
+      (validate.rules).string = {max_len: 32}
+    ];
 
     /*
      * Whether to send encrypted or decrypted packets to MQTT.
@@ -66,7 +76,10 @@ message ModuleConfig {
      * The root topic to use for MQTT messages. Default is "msh".
      * This is useful if you want to use a single MQTT server for multiple meshtastic networks and separate them via ACLs
      */
-    string root = 8 [(nanopb).max_size = 32];
+    string root = 8 [
+      (nanopb).max_size = 32,
+      (validate.rules).string = {max_len: 32}
+    ];
 
     /*
      * If true, we can use the connected phone / client to proxy messages to MQTT instead of a direct connection
@@ -121,7 +134,10 @@ message ModuleConfig {
     /*
      * Exposes the available pins to the mesh for reading and writing
      */
-    repeated RemoteHardwarePin available_pins = 3 [(nanopb).max_count = 4];
+    repeated RemoteHardwarePin available_pins = 3 [
+      (nanopb).max_count = 4,
+      (validate.rules).repeated = {max_items: 4}
+    ];
   }
 
   /*
@@ -196,12 +212,18 @@ message ModuleConfig {
      * Example: A name "Motion" would result in a message "Motion detected"
      * Maximum length of 20 characters
      */
-    string name = 5 [(nanopb).max_size = 20];
+    string name = 5 [
+      (nanopb).max_size = 20,
+      (validate.rules).string = {max_len: 20}
+    ];
 
     /*
      * GPIO pin to monitor for state changes
      */
-    uint32 monitor_pin = 6 [(nanopb).int_size = IS_8];
+    uint32 monitor_pin = 6 [
+      (nanopb).int_size = IS_8,
+      (validate.rules).uint32 = {gte: 0, lte: 255}
+    ];
 
     /*
      * The type of trigger event to be used
@@ -242,7 +264,10 @@ message ModuleConfig {
     /*
      * PTT Pin
      */
-    uint32 ptt_pin = 2 [(nanopb).int_size = IS_8];
+    uint32 ptt_pin = 2 [
+      (nanopb).int_size = IS_8,
+      (validate.rules).uint32 = {gte: 0, lte: 255}
+    ];
 
     /*
      * The audio sample rate to use for codec2
@@ -252,22 +277,34 @@ message ModuleConfig {
     /*
      * I2S Word Select
      */
-    uint32 i2s_ws = 4 [(nanopb).int_size = IS_8];
+    uint32 i2s_ws = 4 [
+      (nanopb).int_size = IS_8,
+      (validate.rules).uint32 = {gte: 0, lte: 255}
+    ];
 
     /*
      * I2S Data IN
      */
-    uint32 i2s_sd = 5 [(nanopb).int_size = IS_8];
+    uint32 i2s_sd = 5 [
+      (nanopb).int_size = IS_8,
+      (validate.rules).uint32 = {gte: 0, lte: 255}
+    ];
 
     /*
      * I2S Data OUT
      */
-    uint32 i2s_din = 6 [(nanopb).int_size = IS_8];
+    uint32 i2s_din = 6 [
+      (nanopb).int_size = IS_8,
+      (validate.rules).uint32 = {gte: 0, lte: 255}
+    ];
 
     /*
      * I2S Clock
      */
-    uint32 i2s_sck = 7 [(nanopb).int_size = IS_8];
+    uint32 i2s_sck = 7 [
+      (nanopb).int_size = IS_8,
+      (validate.rules).uint32 = {gte: 0, lte: 255}
+    ];
   }
 
   /*
@@ -413,13 +450,19 @@ message ModuleConfig {
      * Optional: Define a secondary output pin for a vibra motor
      * This is used in standalone devices to match the UI.
      */
-    uint32 output_vibra = 8 [(nanopb).int_size = IS_8];
+    uint32 output_vibra = 8 [
+      (nanopb).int_size = IS_8,
+      (validate.rules).uint32 = {gte: 0, lte: 255}
+    ];
 
     /*
      * Optional: Define a tertiary output pin for an active buzzer
      * This is used in standalone devices to to match the UI.
      */
-    uint32 output_buzzer = 9 [(nanopb).int_size = IS_8];
+    uint32 output_buzzer = 9 [
+      (nanopb).int_size = IS_8,
+      (validate.rules).uint32 = {gte: 0, lte: 255}
+    ];
 
     /*
      * IF this is true, the 'output' Pin will be pulled active high, false
@@ -469,7 +512,10 @@ message ModuleConfig {
      * Default is 0 which means don't repeat at all. 60 would mean blink
      * and/or beep for 60 seconds
      */
-    uint32 nag_timeout = 14 [(nanopb).int_size = IS_16];
+    uint32 nag_timeout = 14 [
+      (nanopb).int_size = IS_16,
+      (validate.rules).uint32 = {gte: 0, lte: 65535}
+    ];
 
     /*
      * When true, enables devices with native I2S audio output to use the RTTTL over speaker like a buzzer
@@ -723,7 +769,11 @@ message ModuleConfig {
      * Input event origin accepted by the canned message module.
      * Can be e.g. "rotEnc1", "upDownEnc1", "scanAndSelect", "cardkb", "serialkb", or keyword "_any"
      */
-    string allow_input_source = 10 [deprecated = true, (nanopb).max_size = 16];
+    string allow_input_source = 10 [
+      deprecated = true,
+      (nanopb).max_size = 16,
+      (validate.rules).string = {max_len: 16}
+    ];
 
     /*
      * CannedMessageModule also sends a bell character with the messages.
@@ -745,22 +795,34 @@ message ModuleConfig {
     /*
      * Sets the current for the LED output. Default is 10.
      */
-    uint32 current = 2 [(nanopb).int_size = IS_8];
+    uint32 current = 2 [
+      (nanopb).int_size = IS_8,
+      (validate.rules).uint32 = {gte: 0, lte: 255}
+    ];
 
     /*
      * Sets the red LED level. Values are 0-255.
      */
-    uint32 red = 3 [(nanopb).int_size = IS_8];
+    uint32 red = 3 [
+      (nanopb).int_size = IS_8,
+      (validate.rules).uint32 = {gte: 0, lte: 255}
+    ];
 
     /*
      * Sets the green LED level. Values are 0-255.
      */
-    uint32 green = 4 [(nanopb).int_size = IS_8];
+    uint32 green = 4 [
+      (nanopb).int_size = IS_8,
+      (validate.rules).uint32 = {gte: 0, lte: 255}
+    ];
 
     /*
      * Sets the blue LED level. Values are 0-255.
      */
-    uint32 blue = 5 [(nanopb).int_size = IS_8];
+    uint32 blue = 5 [
+      (nanopb).int_size = IS_8,
+      (validate.rules).uint32 = {gte: 0, lte: 255}
+    ];
   }
 
   /*
@@ -841,12 +903,18 @@ message RemoteHardwarePin {
   /*
    * GPIO Pin number (must match Arduino)
    */
-  uint32 gpio_pin = 1 [(nanopb).int_size = IS_8];
+  uint32 gpio_pin = 1 [
+    (nanopb).int_size = IS_8,
+    (validate.rules).uint32 = {gte: 0, lte: 255}
+  ];
 
   /*
    * Name for the GPIO pin (i.e. Front gate, mailbox, etc)
    */
-  string name = 2 [(nanopb).max_size = 15];
+  string name = 2 [
+    (nanopb).max_size = 15,
+    (validate.rules).string = {max_len: 15}
+  ];
 
   /*
    * Type of GPIO access available to consumers on the mesh

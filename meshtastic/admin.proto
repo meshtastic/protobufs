@@ -9,6 +9,7 @@ import "meshtastic/device_ui.proto";
 import "meshtastic/mesh.proto";
 import "meshtastic/module_config.proto";
 import "nanopb.proto";
+import "validate/validate.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -29,7 +30,10 @@ message AdminMessage {
    * The client MUST include the same key with any set_x commands. Key expires after 300 seconds.
    * Prevents replay attacks for admin messages.
    */
-  bytes session_passkey = 101 [(nanopb).max_size = 8];
+  bytes session_passkey = 101 [
+    (nanopb).max_size = 8,
+    (validate.rules).bytes = {max_len: 8}
+  ];
 
   /*
    * TODO: REPLACE
@@ -175,19 +179,31 @@ message AdminMessage {
     /*
      * The input event code
      */
-    uint32 event_code = 1 [(nanopb).int_size = IS_8];
+    uint32 event_code = 1 [
+      (nanopb).int_size = IS_8,
+      (validate.rules).uint32 = {gte: 0, lte: 255}
+    ];
     /*
      * Keyboard character code
      */
-    uint32 kb_char = 2 [(nanopb).int_size = IS_8];
+    uint32 kb_char = 2 [
+      (nanopb).int_size = IS_8,
+      (validate.rules).uint32 = {gte: 0, lte: 255}
+    ];
     /*
      * The touch X coordinate
      */
-    uint32 touch_x = 3 [(nanopb).int_size = IS_16];
+    uint32 touch_x = 3 [
+      (nanopb).int_size = IS_16,
+      (validate.rules).uint32 = {gte: 0, lte: 65535}
+    ];
     /*
      * The touch Y coordinate
      */
-    uint32 touch_y = 4 [(nanopb).int_size = IS_16];
+    uint32 touch_y = 4 [
+      (nanopb).int_size = IS_16,
+      (validate.rules).uint32 = {gte: 0, lte: 65535}
+    ];
   }
 
   /*
@@ -243,7 +259,10 @@ message AdminMessage {
     /*
      * Get the Canned Message Module messages in the response to this message.
      */
-    string get_canned_message_module_messages_response = 11 [(nanopb).max_size = 201];
+    string get_canned_message_module_messages_response = 11 [
+      (nanopb).max_size = 201,
+      (validate.rules).string = {max_len: 201}
+    ];
 
     /*
      * Request the node to send device metadata (firmware, protobuf version, etc)
@@ -263,7 +282,10 @@ message AdminMessage {
     /*
      * Get the Ringtone in the response to this message.
      */
-    string get_ringtone_response = 15 [(nanopb).max_size = 231];
+    string get_ringtone_response = 15 [
+      (nanopb).max_size = 231,
+      (validate.rules).string = {max_len: 231}
+    ];
 
     /*
      * Request the node to send it's connection status
@@ -299,7 +321,10 @@ message AdminMessage {
     /*
      * Delete the file by the specified path from the device
      */
-    string delete_file_request = 22 [(nanopb).max_size = 201];
+    string delete_file_request = 22 [
+      (nanopb).max_size = 201,
+      (validate.rules).string = {max_len: 201}
+    ];
 
     /*
      * Set zero and offset for scale chips
@@ -354,12 +379,18 @@ message AdminMessage {
     /*
      * Set the Canned Message Module messages text.
      */
-    string set_canned_message_module_messages = 36 [(nanopb).max_size = 201];
+    string set_canned_message_module_messages = 36 [
+      (nanopb).max_size = 201,
+      (validate.rules).string = {max_len: 201}
+    ];
 
     /*
      * Set the ringtone for ExternalNotification.
      */
-    string set_ringtone_message = 37 [(nanopb).max_size = 231];
+    string set_ringtone_message = 37 [
+      (nanopb).max_size = 231,
+      (validate.rules).string = {max_len: 231}
+    ];
 
     /*
      * Remove the node by the specified node-num from the NodeDB on the device
@@ -485,7 +516,10 @@ message HamParameters {
   /*
    * Amateur radio call sign, eg. KD2ABC
    */
-  string call_sign = 1 [(nanopb).max_size = 8];
+  string call_sign = 1 [
+    (nanopb).max_size = 8,
+    (validate.rules).string = {max_len: 8}
+  ];
 
   /*
    * Transmit power in dBm at the LoRA transceiver, not including any amplification
@@ -502,7 +536,10 @@ message HamParameters {
   /*
    * Optional short name of user
    */
-  string short_name = 4 [(nanopb).max_size = 5];
+  string short_name = 4 [
+    (nanopb).max_size = 5,
+    (validate.rules).string = {max_len: 5}
+  ];
 }
 
 /*
@@ -512,7 +549,10 @@ message NodeRemoteHardwarePinsResponse {
   /*
    * Nodes and their respective remote hardware GPIO pins
    */
-  repeated NodeRemoteHardwarePin node_remote_hardware_pins = 1 [(nanopb).max_count = 16];
+  repeated NodeRemoteHardwarePin node_remote_hardware_pins = 1 [
+    (nanopb).max_count = 16,
+    (validate.rules).repeated = {max_items: 16}
+  ];
 }
 
 message SharedContact {

@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package validate;
+
+import "google/protobuf/descriptor.proto";
+
+message UInt32Rules {
+  uint64 gte = 2;
+  uint64 lte = 3;
+}
+
+message StringRules {
+  uint64 max_len = 2;
+}
+
+message BytesRules {
+  uint64 max_len = 2;
+}
+
+message RepeatedRules {
+  uint64 max_items = 2;
+}
+
+message FieldRules {
+  UInt32Rules uint32 = 5;
+  StringRules string = 6;
+  BytesRules bytes = 7;
+  RepeatedRules repeated = 8;
+}
+
+extend google.protobuf.FieldOptions {
+  FieldRules rules = 1071;
+}
+

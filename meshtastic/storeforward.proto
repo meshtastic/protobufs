@@ -3,6 +3,7 @@ syntax = "proto3";
 package meshtastic;
 
 import "nanopb.proto";
+import "validate/validate.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -215,6 +216,9 @@ message StoreAndForward {
     /*
      * Text from history message.
      */
-    bytes text = 5 [(nanopb).max_size = 233];
+    bytes text = 5 [
+      (nanopb).max_size = 233,
+      (validate.rules).bytes = {max_len: 233}
+    ];
   }
 }

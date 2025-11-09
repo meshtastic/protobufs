@@ -3,6 +3,7 @@ syntax = "proto3";
 package meshtastic;
 
 import "nanopb.proto";
+import "validate/validate.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -40,7 +41,10 @@ message SensorData {
 message InterdeviceMessage {
   // The message data
   oneof data {
-    string nmea = 1 [(nanopb).max_size = 1024];
+    string nmea = 1 [
+      (nanopb).max_size = 1024,
+      (validate.rules).string = {max_len: 1024}
+    ];
     SensorData sensor = 2;
   }
 }

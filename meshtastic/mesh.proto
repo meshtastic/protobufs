@@ -10,6 +10,7 @@ import "meshtastic/portnums.proto";
 import "meshtastic/telemetry.proto";
 import "meshtastic/xmodem.proto";
 import "nanopb.proto";
+import "validate/validate.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -863,25 +864,39 @@ message User {
    * Note: app developers are encouraged to also use the following standard
    * node IDs "^all" (for broadcast), "^local" (for the locally connected node)
    */
-  string id = 1 [(nanopb).max_size = 16];
+  string id = 1 [
+    (nanopb).max_size = 16,
+    (validate.rules).string = {max_len: 16}
+  ];
 
   /*
    * A full name for this user, i.e. "Kevin Hester"
    */
-  string long_name = 2 [(nanopb).max_size = 40];
+  string long_name = 2 [
+    (nanopb).max_size = 40,
+    (validate.rules).string = {max_len: 40}
+  ];
 
   /*
    * A VERY short name, ideally two characters.
    * Suitable for a tiny OLED screen
    */
-  string short_name = 3 [(nanopb).max_size = 5];
+  string short_name = 3 [
+    (nanopb).max_size = 5,
+    (validate.rules).string = {max_len: 5}
+  ];
 
   /*
    * Deprecated in Meshtastic 2.1.x
    * This is the addr of the radio.
    * Not populated by the phone, but added by the esp32 when broadcasting
    */
-  bytes macaddr = 4 [deprecated = true, (nanopb).max_size = 6, (nanopb).fixed_length = true];
+  bytes macaddr = 4 [
+    deprecated = true,
+    (nanopb).max_size = 6,
+    (nanopb).fixed_length = true,
+    (validate.rules).bytes = {max_len: 6}
+  ];
 
   /*
    * TBEAM, HELTEC, etc...
@@ -907,7 +922,10 @@ message User {
    * The public key of the user's device.
    * This is sent out to other nodes on the mesh to allow them to compute a shared secret key.
    */
-  bytes public_key = 8 [(nanopb).max_size = 32];
+  bytes public_key = 8 [
+    (nanopb).max_size = 32,
+    (validate.rules).bytes = {max_len: 32}
+  ];
 
   /*
    * Whether or not the node can be messaged
@@ -1072,7 +1090,10 @@ message Data {
   /*
    * TODO: REPLACE
    */
-  bytes payload = 2 [(nanopb).max_size = 233];
+  bytes payload = 2 [
+    (nanopb).max_size = 233,
+    (validate.rules).bytes = {max_len: 233}
+  ];
 
   /*
    * Not normally used, but for testing a sender can request that recipient
@@ -1132,13 +1153,19 @@ message KeyVerification {
   /*
    * The final authoritative hash, only to be sent by NodeA at the end of the handshake
    */
-  bytes hash1 = 2 [(nanopb).max_size = 32];
+  bytes hash1 = 2 [
+    (nanopb).max_size = 32,
+    (validate.rules).bytes = {max_len: 32}
+  ];
 
   /*
    * The intermediary hash (actually derived from hash1),
    * sent from NodeB to NodeA in response to the initial message.
    */
-  bytes hash2 = 3 [(nanopb).max_size = 32];
+  bytes hash2 = 3 [
+    (nanopb).max_size = 32,
+    (validate.rules).bytes = {max_len: 32}
+  ];
 }
 
 /*
@@ -1174,12 +1201,18 @@ message Waypoint {
   /*
    * Name of the waypoint - max 30 chars
    */
-  string name = 6 [(nanopb).max_size = 30];
+  string name = 6 [
+    (nanopb).max_size = 30,
+    (validate.rules).string = {max_len: 30}
+  ];
 
   /*
    * Description of the waypoint - max 100 chars
    */
-  string description = 7 [(nanopb).max_size = 100];
+  string description = 7 [
+    (nanopb).max_size = 100,
+    (validate.rules).string = {max_len: 100}
+  ];
 
   /*
    * Designator icon for the waypoint in the form of a unicode emoji
@@ -1194,7 +1227,10 @@ message MqttClientProxyMessage {
   /*
    * The MQTT topic this message will be sent /received on
    */
-  string topic = 1 [(nanopb).max_size = 60];
+  string topic = 1 [
+    (nanopb).max_size = 60,
+    (validate.rules).string = {max_len: 60}
+  ];
 
   /*
    * The actual service envelope payload or text for mqtt pub / sub
@@ -1203,12 +1239,18 @@ message MqttClientProxyMessage {
     /*
      * Bytes
      */
-    bytes data = 2 [(nanopb).max_size = 435];
+    bytes data = 2 [
+      (nanopb).max_size = 435,
+      (validate.rules).bytes = {max_len: 435}
+    ];
 
     /*
      * Text
      */
-    string text = 3 [(nanopb).max_size = 435];
+    string text = 3 [
+      (nanopb).max_size = 435,
+      (validate.rules).string = {max_len: 435}
+    ];
   }
 
   /*
@@ -1406,7 +1448,10 @@ message MeshPacket {
     /*
      * TODO: REPLACE
      */
-    bytes encrypted = 5 [(nanopb).max_size = 256];
+    bytes encrypted = 5 [
+      (nanopb).max_size = 256,
+      (validate.rules).bytes = {max_len: 256}
+    ];
   }
 
   /*
@@ -1487,7 +1532,10 @@ message MeshPacket {
   /*
    * Records the public key the packet was encrypted with, if applicable.
    */
-  bytes public_key = 16 [(nanopb).max_size = 32];
+  bytes public_key = 16 [
+    (nanopb).max_size = 32,
+    (validate.rules).bytes = {max_len: 32}
+  ];
 
   /*
    * Indicates whether the packet was en/decrypted using PKI
@@ -1799,12 +1847,18 @@ message MyNodeInfo {
   /*
    * Unique hardware identifier for this device
    */
-  bytes device_id = 12 [(nanopb).max_size = 16];
+  bytes device_id = 12 [
+    (nanopb).max_size = 16,
+    (validate.rules).bytes = {max_len: 16}
+  ];
 
   /*
    * The PlatformIO environment used to build this firmware
    */
-  string pio_env = 13 [(nanopb).max_size = 40];
+  string pio_env = 13 [
+    (nanopb).max_size = 40,
+    (validate.rules).string = {max_len: 40}
+  ];
 
   /*
    * The indicator for whether this device is running event firmware and which
@@ -1869,7 +1923,10 @@ message LogRecord {
   /*
    * Log levels, chosen to match python logging conventions.
    */
-  string message = 1 [(nanopb).max_size = 384];
+  string message = 1 [
+    (nanopb).max_size = 384,
+    (validate.rules).string = {max_len: 384}
+  ];
 
   /*
    * Seconds since 1970 - or 0 for unknown/unset
@@ -1879,7 +1936,10 @@ message LogRecord {
   /*
    * Usually based on thread name - if known
    */
-  string source = 3 [(nanopb).max_size = 32];
+  string source = 3 [
+    (nanopb).max_size = 32,
+    (validate.rules).string = {max_len: 32}
+  ];
 
   /*
    * Not yet set
@@ -2033,7 +2093,10 @@ message ClientNotification {
   /*
    * The message body of the notification
    */
-  string message = 4 [(nanopb).max_size = 400];
+  string message = 4 [
+    (nanopb).max_size = 400,
+    (validate.rules).string = {max_len: 400}
+  ];
 
   oneof payload_variant {
     KeyVerificationNumberInform key_verification_number_inform = 11;
@@ -2046,18 +2109,30 @@ message ClientNotification {
 
 message KeyVerificationNumberInform {
   uint64 nonce = 1;
-  string remote_longname = 2 [(nanopb).max_size = 40];
+  string remote_longname = 2 [
+    (nanopb).max_size = 40,
+    (validate.rules).string = {max_len: 40}
+  ];
   uint32 security_number = 3;
 }
 message KeyVerificationNumberRequest {
   uint64 nonce = 1;
-  string remote_longname = 2 [(nanopb).max_size = 40];
+  string remote_longname = 2 [
+    (nanopb).max_size = 40,
+    (validate.rules).string = {max_len: 40}
+  ];
 }
 message KeyVerificationFinal {
   uint64 nonce = 1;
-  string remote_longname = 2 [(nanopb).max_size = 40];
+  string remote_longname = 2 [
+    (nanopb).max_size = 40,
+    (validate.rules).string = {max_len: 40}
+  ];
   bool isSender = 3;
-  string verification_characters = 4 [(nanopb).max_size = 10];
+  string verification_characters = 4 [
+    (nanopb).max_size = 10,
+    (validate.rules).string = {max_len: 10}
+  ];
 }
 message DuplicatedPublicKey {}
 message LowEntropyKey {}
@@ -2069,7 +2144,10 @@ message FileInfo {
   /*
    * The fully qualified path of the file
    */
-  string file_name = 1 [(nanopb).max_size = 228];
+  string file_name = 1 [
+    (nanopb).max_size = 228,
+    (validate.rules).string = {max_len: 228}
+  ];
 
   /*
    * The size of the file in bytes
@@ -2141,7 +2219,10 @@ message Compressed {
   /*
    * Compressed data.
    */
-  bytes data = 2 [(nanopb).max_size = 233];
+  bytes data = 2 [
+    (nanopb).max_size = 233,
+    (validate.rules).bytes = {max_len: 233}
+  ];
 }
 
 /*
@@ -2201,7 +2282,10 @@ message DeviceMetadata {
   /*
    * Device firmware version string
    */
-  string firmware_version = 1 [(nanopb).max_size = 18];
+  string firmware_version = 1 [
+    (nanopb).max_size = 18,
+    (validate.rules).string = {max_len: 18}
+  ];
 
   /*
    * Device state version
@@ -2392,7 +2476,10 @@ message ChunkedPayload {
   /*
    * The binary data of the current chunk
    */
-  bytes payload_chunk = 4 [(nanopb).max_size = 228];
+  bytes payload_chunk = 4 [
+    (nanopb).max_size = 228,
+    (validate.rules).bytes = {max_len: 228}
+  ];
 }
 
 /*

@@ -3,6 +3,7 @@ syntax = "proto3";
 package meshtastic;
 
 import "nanopb.proto";
+import "validate/validate.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -23,7 +24,16 @@ message XModem {
   }
 
   Control control = 1;
-  uint32 seq = 2 [(nanopb).int_size = IS_16];
-  uint32 crc16 = 3 [(nanopb).int_size = IS_16];
-  bytes buffer = 4 [(nanopb).max_size = 128];
+  uint32 seq = 2 [
+    (nanopb).int_size = IS_16,
+    (validate.rules).uint32 = {gte: 0, lte: 65535}
+  ];
+  uint32 crc16 = 3 [
+    (nanopb).int_size = IS_16,
+    (validate.rules).uint32 = {gte: 0, lte: 65535}
+  ];
+  bytes buffer = 4 [
+    (nanopb).max_size = 128,
+    (validate.rules).bytes = {max_len: 128}
+  ];
 }

@@ -3,6 +3,7 @@ syntax = "proto3";
 package meshtastic;
 
 import "nanopb.proto";
+import "validate/validate.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -43,7 +44,10 @@ message WifiConnectionStatus {
   /*
    * WiFi access point SSID
    */
-  string ssid = 2 [(nanopb).max_size = 33];
+  string ssid = 2 [
+    (nanopb).max_size = 33,
+    (validate.rules).string = {max_len: 33}
+  ];
 
   /*
    * RSSI of wireless connection

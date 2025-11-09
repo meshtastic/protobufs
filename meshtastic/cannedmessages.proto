@@ -3,6 +3,7 @@ syntax = "proto3";
 package meshtastic;
 
 import "nanopb.proto";
+import "validate/validate.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -17,5 +18,8 @@ message CannedMessageModuleConfig {
   /*
    * Predefined messages for canned message module separated by '|' characters.
    */
-  string messages = 1 [(nanopb).max_size = 201];
+  string messages = 1 [
+    (nanopb).max_size = 201,
+    (validate.rules).string = {max_len: 201}
+  ];
 }

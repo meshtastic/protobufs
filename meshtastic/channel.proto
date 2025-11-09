@@ -3,6 +3,7 @@ syntax = "proto3";
 package meshtastic;
 
 import "nanopb.proto";
+import "validate/validate.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -45,7 +46,10 @@ message ChannelSettings {
    * `2` through 10 = The default channel key, except with 1 through 9 added to the last byte.
    * Shown to user as simple1 through 10
    */
-  bytes psk = 2 [(nanopb).max_size = 32];
+  bytes psk = 2 [
+    (nanopb).max_size = 32,
+    (validate.rules).bytes = {max_len: 32}
+  ];
 
   /*
    * A SHORT name that will be packed into the URL.
@@ -57,7 +61,10 @@ message ChannelSettings {
    * For channel_num hashing empty string will be treated as "X".
    * Where "X" is selected based on the English words listed above for ModemPreset
    */
-  string name = 3 [(nanopb).max_size = 12];
+  string name = 3 [
+    (nanopb).max_size = 12,
+    (validate.rules).string = {max_len: 12}
+  ];
 
   /*
    * Used to construct a globally unique channel ID.
