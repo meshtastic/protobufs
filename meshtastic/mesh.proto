@@ -1077,18 +1077,18 @@ message Routing {
     /*
      * A route request going from the requester
      */
-    RouteDiscovery route_request = 1 [(nanopb).anonymous_oneof = true];
+    RouteDiscovery route_request = 1;
 
     /*
      * A route reply
      */
-    RouteDiscovery route_reply = 2 [(nanopb).anonymous_oneof = true];
+    RouteDiscovery route_reply = 2;
 
     /*
      * A failure in delivering a message (usually used for routing control messages, but might be provided
      * in addition to ack.fail_id to provide details on the type of failure).
      */
-    Error error_reason = 3 [(nanopb).anonymous_oneof = true];
+    Error error_reason = 3;
   }
 }
 
@@ -1465,7 +1465,7 @@ message MeshPacket {
     /*
      * TODO: REPLACE
      */
-    Data decoded = 4 [(nanopb).anonymous_oneof = true];
+    Data decoded = 4;
 
     /*
      * TODO: REPLACE
@@ -2037,29 +2037,29 @@ message FromRadio {
     /*
      * Log levels, chosen to match python logging conventions.
      */
-    MeshPacket packet = 2 [(nanopb).anonymous_oneof = true];
+    MeshPacket packet = 2;
 
     /*
      * Tells the phone what our node number is, can be -1 if we've not yet joined a mesh.
      * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
      */
-    MyNodeInfo my_info = 3 [(nanopb).anonymous_oneof = true];
+    MyNodeInfo my_info = 3;
 
     /*
      * One packet is sent for each node in the on radio DB
      * starts over with the first node in our DB
      */
-    NodeInfo node_info = 4 [(nanopb).anonymous_oneof = true];
+    NodeInfo node_info = 4;
 
     /*
      * Include a part of the config (was: RadioConfig radio)
      */
-    Config config = 5 [(nanopb).anonymous_oneof = true];
+    Config config = 5;
 
     /*
      * Set to send debug console output over our protobuf stream
      */
-    LogRecord log_record = 6 [(nanopb).anonymous_oneof = true];
+    LogRecord log_record = 6;
 
     /*
      * Sent as true once the device has finished sending all of the responses to want_config
@@ -2067,7 +2067,7 @@ message FromRadio {
      * not, it means your config responses haven't started yet.
      * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
      */
-    uint32 config_complete_id = 7 [(nanopb).anonymous_oneof = true];
+    uint32 config_complete_id = 7;
 
     /*
      * Sent to tell clients the radio has just rebooted.
@@ -2075,52 +2075,52 @@ message FromRadio {
      * Not used on all transports, currently just used for the serial console.
      * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
      */
-    bool rebooted = 8 [(nanopb).anonymous_oneof = true];
+    bool rebooted = 8;
 
     /*
      * Include module config
      */
-    ModuleConfig moduleConfig = 9 [(nanopb).anonymous_oneof = true];
+    ModuleConfig moduleConfig = 9;
 
     /*
      * One packet is sent for each channel
      */
-    Channel channel = 10 [(nanopb).anonymous_oneof = true];
+    Channel channel = 10;
 
     /*
      * Queue status info
      */
-    QueueStatus queueStatus = 11 [(nanopb).anonymous_oneof = true];
+    QueueStatus queueStatus = 11;
 
     /*
      * File Transfer Chunk
      */
-    XModem xmodemPacket = 12 [(nanopb).anonymous_oneof = true];
+    XModem xmodemPacket = 12;
 
     /*
      * Device metadata message
      */
-    DeviceMetadata metadata = 13 [(nanopb).anonymous_oneof = true];
+    DeviceMetadata metadata = 13;
 
     /*
      * MQTT Client Proxy Message (device sending to client / phone for publishing to MQTT)
      */
-    MqttClientProxyMessage mqttClientProxyMessage = 14 [(nanopb).anonymous_oneof = true];
+    MqttClientProxyMessage mqttClientProxyMessage = 14;
 
     /*
      * File system manifest messages
      */
-    FileInfo fileInfo = 15 [(nanopb).anonymous_oneof = true];
+    FileInfo fileInfo = 15;
 
     /*
      * Notification message to the client
      */
-    ClientNotification clientNotification = 16 [(nanopb).anonymous_oneof = true];
+    ClientNotification clientNotification = 16;
 
     /*
      * Persistent data for device-ui
      */
-    DeviceUIConfig deviceuiConfig = 17 [(nanopb).anonymous_oneof = true];
+    DeviceUIConfig deviceuiConfig = 17;
   }
 }
 
@@ -2223,7 +2223,7 @@ message ToRadio {
     /*
      * Send this packet on the mesh
      */
-    MeshPacket packet = 1 [(nanopb).anonymous_oneof = true];
+    MeshPacket packet = 1;
 
     /*
      * Phone wants radio to send full node db to the phone, This is
@@ -2235,30 +2235,30 @@ message ToRadio {
      * config_complete_id response this allows clients to never be confused by
      * a stale old partially sent config.
      */
-    uint32 want_config_id = 3 [(nanopb).anonymous_oneof = true];
+    uint32 want_config_id = 3;
 
     /*
      * Tell API server we are disconnecting now.
      * This is useful for serial links where there is no hardware/protocol based notification that the client has dropped the link.
      * (Sending this message is optional for clients)
      */
-    bool disconnect = 4 [(nanopb).anonymous_oneof = true];
+    bool disconnect = 4;
 
     /*
      * File Transfer Chunk
      */
 
-    XModem xmodemPacket = 5 [(nanopb).anonymous_oneof = true];
+    XModem xmodemPacket = 5;
 
     /*
      * MQTT Client Proxy Message (for client / phone subscribed to MQTT sending to device)
      */
-    MqttClientProxyMessage mqttClientProxyMessage = 6 [(nanopb).anonymous_oneof = true];
+    MqttClientProxyMessage mqttClientProxyMessage = 6;
 
     /*
      * Heartbeat message (used to keep the device connection awake on serial)
      */
-    Heartbeat heartbeat = 7 [(nanopb).anonymous_oneof = true];
+    Heartbeat heartbeat = 7;
   }
 }
 
