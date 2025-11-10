@@ -1,0 +1,11 @@
+{
+  "name": "@meshtastic/protobufs-monorepo",
+  "private": true,
+  "scripts": {
+    "build": "./scripts/build.sh",
+    "dev": "pnpm build && chokidar '**/*.proto' -c 'pnpm build'"
+  },
+  "devDependencies": {
+    "chokidar-cli": "^3.0.0"
+  }
+}
