@@ -828,6 +828,16 @@ message ModuleConfig {
   /*
    * TODO: REPLACE
    */
+  message ScriptingConfig {
+    /*
+     * TODO: REPLACE
+     */
+    bool enabled = 1;
+  }
+
+  /*
+   * TODO: REPLACE
+   */
   oneof payload_variant {
     /*
      * TODO: REPLACE
@@ -893,6 +903,11 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     PaxcounterConfig paxcounter = 13;
+
+    /*
+     * TODO: REPLACE
+     */
+    ScriptingConfig scripting = 14;
   }
 }
 

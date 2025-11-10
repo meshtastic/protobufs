@@ -2487,6 +2487,11 @@ enum ExcludedModules {
    * Network config (not technically a module, but used to indicate network capabilities)
    */
   NETWORK_CONFIG = 0x4000;
+
+  /*
+   * Scripting module
+   */
+  SCRIPTING_CONFIG = 0x8000;
 }
 
 /*
