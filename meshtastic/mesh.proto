@@ -1371,6 +1371,10 @@ message MeshPacket {
 
   /*
    * The (immediate) destination for this packet
+   * If the value is 4,294,967,295 (maximum value of an unsigned 32bit integer), this indicates that the packet was
+   * not destined for a specific node, but for a channel as indicated by the value of `channel` below.
+   * If the value is another, this indicates that the packet was destined for a specific
+   * node (i.e. a kind of "Direct Message" to this node) and not broadcast on a channel.
    */
   fixed32 to = 2;
 
