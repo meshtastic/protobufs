@@ -924,6 +924,11 @@ message Config {
        * Brazil 902MHz
        */
       BR_902 = 26;
+
+      /*
+       * EU 866MHz RFID band (ETSI EN 302 208)
+       */
+      EU_866 = 27;
     }
 
     /*
@@ -978,6 +983,13 @@ message Config {
        * It is not legal to use in all regions due to this wider bandwidth.
        */
       SHORT_TURBO = 8;
+
+      /*
+       * Lite Fast
+       * Medium range preset optimized for EU 866MHz RFID band with 125kHz bandwidth.
+       * Comparable link budget to MEDIUM_FAST but compliant with ETSI EN 302 208.
+       */
+      LITE_FAST = 9;
     }
 
     /*
