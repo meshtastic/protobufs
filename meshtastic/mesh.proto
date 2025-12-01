@@ -1770,6 +1770,16 @@ message NodeInfo {
    * Persistes between NodeDB internal clean ups
    */
   bool is_muted = 13;
+
+  /*
+   * Neighbor links for signal-based routing
+   */
+  repeated NeighborLink neighbors = 20;
+
+  /*
+   * Whether this node supports signal-based routing
+   */
+  bool signal_based_capable = 30;
 }
 
 /*
@@ -2285,34 +2295,19 @@ message NeighborInfo {
   /*
    * The list of out edges from this node
    */
-  repeated Neighbor neighbors = 4;
+  repeated NeighborLink neighbors = 4;
 }
 
 /*
  * A single edge in the mesh
  */
-message Neighbor {
-  /*
-   * Node ID of neighbor
-   */
-  uint32 node_id = 1;
-
-  /*
-   * SNR of last heard message
-   */
-  float snr = 2;
-
-  /*
-   * Reception time (in secs since 1970) of last message that was last sent by this ID.
-   * Note: this is for local storage only and will not be sent out over the mesh.
-   */
-  fixed32 last_rx_time = 3;
-
-  /*
-   * Broadcast interval of this neighbor (in seconds).
-   * Note: this is for local storage only and will not be sent out over the mesh.
-   */
-  uint32 node_broadcast_interval_secs = 4;
+message NeighborLink {
+  fixed32 node_id = 1;
+  sint32 rssi = 2;
+  sint32 snr = 3;
+  uint32 last_rx_time = 4;
+  uint32 position_variance = 5;
+  bool signal_based_capable = 6;
 }
 
 /*
