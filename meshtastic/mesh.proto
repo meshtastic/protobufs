@@ -854,6 +854,48 @@ enum HardwareModel {
 }
 
 /*
+ * A neighbor link for signal-based routing.
+ * Contains signal quality metrics for a directly heard neighbor.
+ */
+message NeighborLink {
+  /*
+   * The node ID of the neighbor
+   */
+  fixed32 node_id = 1;
+
+  /*
+   * RSSI of received packets from this neighbor (in dBm, typically negative)
+   */
+  sint32 rssi = 2;
+
+  /*
+   * SNR of received packets from this neighbor (in dB, can be negative)
+   */
+  sint32 snr = 3;
+
+  /*
+   * Unix timestamp of last packet received from this neighbor
+   */
+  fixed32 last_rx_time = 4;
+
+  /*
+   * Position variance/uncertainty (reserved for future use)
+   */
+  uint32 position_variance = 5;
+
+  /*
+   * Whether this neighbor supports signal-based routing
+   */
+  bool signal_based_capable = 6;
+
+  /*
+   * Broadcast interval of this neighbor (in seconds).
+   * Used for neighbor cleanup timing.
+   */
+  uint32 node_broadcast_interval_secs = 7;
+}
+
+/*
  * Broadcast when a newly powered mesh node wants to find a node num it can use
  * Sent from the phone over bluetooth to set the user id for the owner of this node.
  * Also sent from nodes to each other when a new node signs on (so all clients can have this info)
@@ -1764,22 +1806,6 @@ message NodeInfo {
    * LSB 0 of the bitfield
    */
   bool is_key_manually_verified = 12;
-
-  /*
-   * True if node has been muted
-   * Persistes between NodeDB internal clean ups
-   */
-  bool is_muted = 13;
-
-  /*
-   * Neighbor links for signal-based routing
-   */
-  repeated NeighborLink neighbors = 20;
-
-  /*
-   * Whether this node supports signal-based routing
-   */
-  bool signal_based_capable = 30;
 }
 
 /*
@@ -2299,15 +2325,32 @@ message NeighborInfo {
 }
 
 /*
- * A single edge in the mesh
+ * Signal-based routing information exchanged between nodes.
+ * Used for building a network graph and calculating optimal routes.
+ * Sent on SIGNAL_ROUTING_APP port (75).
  */
-message NeighborLink {
+message SignalRoutingInfo {
+  /*
+   * The node ID of the node sending this routing info
+   */
   fixed32 node_id = 1;
-  sint32 rssi = 2;
-  sint32 snr = 3;
-  uint32 last_rx_time = 4;
-  uint32 position_variance = 5;
-  bool signal_based_capable = 6;
+
+  /*
+   * Whether this node supports signal-based routing
+   */
+  bool signal_based_capable = 2;
+
+  /*
+   * List of directly heard neighbors with signal quality metrics.
+   * Can include up to 10 neighbors since this is a dedicated message.
+   */
+  repeated NeighborLink neighbors = 3;
+
+  /*
+   * Firmware version indicator for routing protocol compatibility.
+   * Allows future protocol upgrades while maintaining backward compatibility.
+   */
+  uint32 routing_version = 4;
 }
 
 /*
