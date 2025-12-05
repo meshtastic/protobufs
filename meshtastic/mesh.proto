@@ -700,9 +700,9 @@ enum HardwareModel {
   HELTEC_SENSOR_HUB = 92;
 
   /*
-   * Reserved Fried Chicken ID for future use
+   * Muzi Works Muzi-Base device
    */
-  RESERVED_FRIED_CHICKEN = 93;
+  MUZI_BASE = 93;
 
   /*
    * Heltec Magnetic Power Bank with Meshtastic compatible
