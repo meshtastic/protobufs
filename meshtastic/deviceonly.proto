@@ -172,6 +172,63 @@ message NodeInfoLite {
 }
 
 /*
+ * Flattened node representation used for the compact NodeDB rewrite.
+ * Uses integer scaling where possible and a single flags bitfield for booleans.
+ */
+message NodeDetail {
+  /* The node number */
+  uint32 num = 1;
+
+  /* 48-bit hardware identifier copied from the radio */
+  bytes macaddr = 2;
+
+  /* Cached long display name */
+  string long_name = 3;
+
+  /* Cached short display name */
+  string short_name = 4;
+
+  /* Hardware model reported by the node */
+  HardwareModel hw_model = 5;
+
+  /* Role assigned to the node */
+  Config.DeviceConfig.Role role = 6;
+
+  /* Public key broadcast by the node */
+  bytes public_key = 7;
+
+  /* Position data flattened from PositionLite */
+  sfixed32 latitude_i = 8;
+  sfixed32 longitude_i = 9;
+  int32 altitude = 10;
+  fixed32 position_time = 11;
+  Position.LocSource position_source = 12;
+
+  /* Radio performance metrics */
+  float snr = 13;
+
+  /* Last packet timestamp */
+  fixed32 last_heard = 14;
+
+  /* Mesh routing metadata */
+  uint32 channel = 15;
+  uint32 hops_away = 16;
+  uint32 next_hop = 17;
+
+  /* Device metrics cached using integer scaling */
+  uint32 battery_level = 18;
+  uint32 uptime_seconds = 19;
+  uint32 channel_utilization_permille = 20;
+  uint32 air_util_tx_permille = 21;
+  uint32 voltage_millivolts = 22;
+
+  /* Bitset storing boolean flags and presence markers.
+   * See NodeDetailFlag shifts for decoded meaning.
+   */
+  uint32 flags = 23;
+}
+
+/*
  * This message is never sent over the wire, but it is used for serializing DB
  * state to flash in the device code
  * FIXME, since we write this each time we enter deep sleep (and have infinite
@@ -245,7 +302,7 @@ message NodeDatabase {
   /*
    * New lite version of NodeDB to decrease memory footprint
    */
-  repeated NodeInfoLite nodes = 2 [(nanopb).callback_datatype = "std::vector<meshtastic_NodeInfoLite>"];
+  repeated NodeDetail nodes = 2 [(nanopb).callback_datatype = "std::vector<meshtastic_NodeDetail>"];
 }
 
 /*

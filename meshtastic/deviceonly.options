@@ -16,3 +16,14 @@
 *UserLite.short_name max_size:5
 *UserLite.public_key max_size:32 # public key
 *UserLite.macaddr max_size:6 fixed_length:true
+*NodeDetail.macaddr max_size:6 fixed_length:true
+*NodeDetail.long_name max_size:40
+*NodeDetail.short_name max_size:5
+*NodeDetail.public_key max_size:32
+*NodeDetail.channel int_size:8
+*NodeDetail.hops_away int_size:8
+*NodeDetail.next_hop int_size:8
+*NodeDetail.battery_level int_size:8
+*NodeDetail.channel_utilization_permille int_size:16
+*NodeDetail.air_util_tx_permille int_size:16
+*NodeDetail.voltage_millivolts int_size:16
