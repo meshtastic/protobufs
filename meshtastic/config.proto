@@ -978,6 +978,12 @@ message Config {
        * It is not legal to use in all regions due to this wider bandwidth.
        */
       SHORT_TURBO = 8;
+
+      /*
+       * Long Range - Turbo
+       * This preset performs similarly to LongFast, but with 500Khz bandwidth.
+       */
+      LONG_TURBO = 9;
     }
 
     /*
