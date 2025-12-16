@@ -69,6 +69,7 @@
 *KeyVerification.hash1 max_size:32
 *KeyVerification.hash2 max_size:32
 
+*DifferentPublicKey.public_key max_size:32
 
 # MyMessage.name         max_size:40 
 # or fixed_length or fixed_count, or max_count
