@@ -340,6 +340,8 @@ message ModuleConfig {
       //Used to configure and view some parameters of MeshSolar.
       //https://heltec.org/project/meshsolar/
       MS_CONFIG = 8;
+      // Text messages from detection sensor app port only
+      DETECTION_SENSOR_APP_TEXTMSG = 9;
     }
 
     /*
