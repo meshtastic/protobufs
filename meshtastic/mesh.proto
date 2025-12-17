@@ -1155,6 +1155,91 @@ message KeyVerification {
 }
 
 /*
+ * The actual over-the-mesh message doing store and forward++
+ */
+message StoreForwardPlusPlus {
+  /*
+   * Enum of message types
+   */
+  enum SFPP_message_type {
+    /*
+     * Send an announcement of the canonical tip of a chain
+     */
+    CANON_ANNOUNCE = 0;
+
+    /*
+     * Query whether a specific link is on the chain
+     */
+    CHAIN_QUERY = 1;
+
+    /*
+     * Request the next link in the chain
+     */
+    LINK_REQUEST = 3;
+
+    /*
+     * Provide a link to add to the chain
+     */
+    LINK_PROVIDE = 4;
+
+    /*
+     * If we must fragment, send the first half
+     */
+    LINK_PROVIDE_FIRSTHALF = 5;
+
+    /*
+     * If we must fragment, send the second half
+     */
+    LINK_PROVIDE_SECONDHALF = 6;
+  }
+
+  /*
+   * Which message type is this
+   */
+  SFPP_message_type sfpp_message_type = 1;
+
+  /*
+   * The hash of the specific message
+   */
+  bytes message_hash = 2;
+
+  /*
+   * The hash of a link on a chain
+   */
+  bytes commit_hash = 3;
+
+  /*
+   * the root hash of a chain
+   */
+  bytes root_hash = 4;
+
+  /*
+   * The encrypted bytes from a message
+   */
+  bytes message = 5;
+
+  /*
+   * Message ID of the contained message
+   */
+  uint32 encapsulated_id = 6;
+
+  /*
+   * Destination of the contained message
+   */
+  uint32 encapsulated_to = 7;
+
+  /*
+   * Sender of the contained message
+   */
+  uint32 encapsulated_from = 8;
+
+  /*
+   * The receive time of the message in question
+   */
+  uint32 encapsulated_rxtime = 9;
+}
+
+/*
  * Waypoint message, used to share arbitrary locations across the mesh
  */
 message Waypoint {
