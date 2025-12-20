@@ -448,8 +448,9 @@ message AdminMessage {
     /*
      * Tell the node to reboot into the OTA Firmware in this many seconds (or <0 to cancel reboot)
      * Only Implemented for ESP32 Devices. This needs to be issued to send a new main firmware via bluetooth.
+     * Deprecated in favor of reboot_ota_mode in 2.7.17
      */
-    int32 reboot_ota_seconds = 95;
+    int32 reboot_ota_seconds = 95 [deprecated = true];
 
     /*
      * This message is only supported for the simulator Portduino build.
