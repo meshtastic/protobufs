@@ -924,6 +924,21 @@ message Config {
        * Brazil 902MHz
        */
       BR_902 = 26;
+      
+      /*
+       * EU 866MHz RFID band (ETSI EN 302 208)
+       */
+      EU_866 = 27;
+
+      /*
+       * EU 866MHz RFID band (ETSI EN 302 208)
+       */
+      NARROW_868 = 28;
+
+      /*
+       * EU 866MHz RFID band (ETSI EN 302 208)
+       */
+      HAM_US433 = 29;
     }
 
     /*
@@ -985,6 +1000,43 @@ message Config {
        * This preset performs similarly to LongFast, but with 500Khz bandwidth.
        */
       LONG_TURBO = 9;
+
+      /*
+       * Lite Fast
+       * Medium range preset optimized for EU 866MHz RFID band with 125kHz bandwidth.
+       * Comparable link budget to MEDIUM_FAST but compliant with ETSI EN 302 208.
+       */
+      LITE_FAST = 10;
+
+      /*
+       * Lite Slow
+       * Medium-to-moderate range preset optimized for EU 866MHz RFID band with 125kHz bandwidth.
+       * Comparable link budget to LONG_FAST but compliant with ETSI EN 302 208.
+       */
+      LITE_SLOW = 11;
+
+      /*
+       * Narrow Fast
+       * Medium-to-moderate range preset optimized for EU 868MHz band with 62.5kHz bandwidth.
+       * Comparable link budget to SHORT_SLOW, but with half the data rate.
+       * Intended to avoid interference with other devices.
+       */
+      NARROW_FAST = 12;
+
+      /*
+       * Narrow Slow
+       * Moderate range preset optimized for EU 868MHz band with 62.5kHz bandwidth.
+       * Comparable link budget and data rate to LONG_FAST.
+       */
+      NARROW_SLOW = 13;
+
+      /*
+       * Ham Fast
+       * Short range preset optimized for 433MHz band with wide bandwidth.
+       * Intended for use in amateur radio bands.
+       */
+      HAM_FAST = 14;
+
     }
 
     /*
