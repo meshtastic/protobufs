@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package meshtastic;
 
+/* trunk-ignore(buf-lint/COMPILE) */
 import "meshtastic/channel.proto";
 import "meshtastic/config.proto";
 import "meshtastic/connection_status.proto";
@@ -436,6 +437,11 @@ message AdminMessage {
     KeyVerificationAdmin key_verification = 67;
 
     /*
+     * Tell the node to reboot into OTA mode for firmware update via BLE or WiFi (ESP32 only for now)
+     */
+    OTAMode reboot_ota_mode = 68;
+
+    /*
      * Tell the node to factory reset config everything; all device state and configuration will be returned to factory defaults and BLE bonds will be cleared.
      */
     int32 factory_reset_device = 94;
@@ -443,8 +449,9 @@ message AdminMessage {
     /*
      * Tell the node to reboot into the OTA Firmware in this many seconds (or <0 to cancel reboot)
      * Only Implemented for ESP32 Devices. This needs to be issued to send a new main firmware via bluetooth.
+     * Deprecated in favor of reboot_ota_mode in 2.7.17
      */
-    int32 reboot_ota_seconds = 95;
+    int32 reboot_ota_seconds = 95 [deprecated = true];
 
     /*
      * This message is only supported for the simulator Portduino build.
@@ -473,6 +480,26 @@ message AdminMessage {
      */
     bool nodedb_reset = 100;
   }
+}
+
+/*
+ * Firmware update mode for OTA updates
+ */
+enum OTAMode {
+  /*
+   * Do not reboot into OTA mode
+   */
+  NO_REBOOT_OTA = 0;
+
+  /*
+   * Reboot into OTA mode for BLE firmware update
+   */
+  OTA_BLE = 1;
+
+  /*
+   * Reboot into OTA mode for WiFi firmware update
+   */
+  OTA_WIFI = 2;
 }
 
 /*
