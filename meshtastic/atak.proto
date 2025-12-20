@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+/* trunk-ignore(buf-lint/PACKAGE_DIRECTORY_MATCH) */
 package meshtastic;
 
 option csharp_namespace = "Meshtastic.Protobufs";
