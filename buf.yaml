@@ -10,6 +10,9 @@ modules:
         - MINIMAL
       except:
         - PACKAGE_NO_IMPORT_CYCLE
+      ignore_only:
+        PACKAGE_DEFINED:
+          - nanopb.proto
       disallow_comment_ignores: true
     breaking:
       use:
