@@ -8,7 +8,11 @@
 *User.long_name max_size:40
 *User.short_name max_size:5
 
-*SignalRoutingInfo.neighbors max_count:10
+# SignalNeighbor optimized for size: int8 for rssi/snr/variance to fit 14 neighbors
+*SignalNeighbor.rssi int_size:8
+*SignalNeighbor.snr int_size:8
+*SignalNeighbor.position_variance int_size:8
+*SignalRoutingInfo.neighbors max_count:14
 
 *RouteDiscovery.route max_count:8
 *RouteDiscovery.snr_towards max_count:8
