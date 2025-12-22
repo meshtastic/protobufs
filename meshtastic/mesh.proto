@@ -854,48 +854,6 @@ enum HardwareModel {
 }
 
 /*
- * A neighbor link for NeighborInfo module.
- * Contains signal quality metrics for a directly heard neighbor.
- */
-message NeighborLink {
-  /*
-   * The node ID of the neighbor
-   */
-  fixed32 node_id = 1;
-
-  /*
-   * RSSI of received packets from this neighbor (in dBm, typically negative)
-   */
-  sint32 rssi = 2;
-
-  /*
-   * SNR of received packets from this neighbor (in dB, can be negative)
-   */
-  sint32 snr = 3;
-
-  /*
-   * Unix timestamp of last packet received from this neighbor
-   */
-  fixed32 last_rx_time = 4;
-
-  /*
-   * Position variance/uncertainty (reserved for future use)
-   */
-  uint32 position_variance = 5;
-
-  /*
-   * Whether this neighbor supports signal-based routing
-   */
-  bool signal_based_capable = 6;
-
-  /*
-   * Broadcast interval of this neighbor (in seconds).
-   * Used for neighbor cleanup timing.
-   */
-  uint32 node_broadcast_interval_secs = 7;
-}
-
-/*
  * A compact neighbor link for signal-based routing.
  * Optimized for size: ~15 bytes per neighbor to fit 14 neighbors in 233 byte payload.
  */
@@ -2356,7 +2314,34 @@ message NeighborInfo {
   /*
    * The list of out edges from this node
    */
-  repeated NeighborLink neighbors = 4;
+  repeated Neighbor neighbors = 4;
+}
+
+/*
+ * A single edge in the mesh (stock Meshtastic)
+ */
+message Neighbor {
+  /*
+   * Node ID of neighbor
+   */
+  uint32 node_id = 1;
+
+  /*
+   * SNR of last heard message
+   */
+  float snr = 2;
+
+  /*
+   * Reception time (in secs since 1970) of last message that was last sent by this ID.
+   * Note: this is for local storage only and will not be sent out over the mesh.
+   */
+  fixed32 last_rx_time = 3;
+
+  /*
+   * Broadcast interval of this neighbor (in seconds).
+   * Note: this is for local storage only and will not be sent out over the mesh.
+   */
+  uint32 node_broadcast_interval_secs = 4;
 }
 
 /*
