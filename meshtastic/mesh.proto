@@ -854,7 +854,7 @@ enum HardwareModel {
 }
 
 /*
- * A neighbor link for signal-based routing.
+ * A neighbor link for NeighborInfo module.
  * Contains signal quality metrics for a directly heard neighbor.
  */
 message NeighborLink {
@@ -893,6 +893,41 @@ message NeighborLink {
    * Used for neighbor cleanup timing.
    */
   uint32 node_broadcast_interval_secs = 7;
+}
+
+/*
+ * A compact neighbor link for signal-based routing.
+ * Optimized for size: ~15 bytes per neighbor to fit 14 neighbors in 233 byte payload.
+ */
+message SignalNeighbor {
+  /*
+   * The node ID of the neighbor
+   */
+  fixed32 node_id = 1;
+
+  /*
+   * RSSI of received packets from this neighbor (in dBm, typically -128 to 0)
+   * Stored as int8 via nanopb int_size:8 option.
+   */
+  sint32 rssi = 2;
+
+  /*
+   * SNR of received packets from this neighbor (in dB, typically -20 to +30)
+   * Stored as int8 via nanopb int_size:8 option.
+   */
+  sint32 snr = 3;
+
+  /*
+   * Position variance/uncertainty scaled to fit uint8 (0-255 representing 0-3000m).
+   * Higher values indicate more mobile/unreliable nodes.
+   * Stored as uint8 via nanopb int_size:8 option.
+   */
+  uint32 position_variance = 4;
+
+  /*
+   * Whether this neighbor supports signal-based routing
+   */
+  bool signal_based_capable = 5;
 }
 
 /*
@@ -2331,26 +2366,27 @@ message NeighborInfo {
  */
 message SignalRoutingInfo {
   /*
+   * Routing protocol version indicator for compatibility checking.
+   * Placed first to allow early rejection of incompatible versions.
+   * Allows future protocol upgrades while maintaining backward compatibility.
+   */
+  uint32 routing_version = 1;
+
+  /*
    * The node ID of the node sending this routing info
    */
-  fixed32 node_id = 1;
+  fixed32 node_id = 2;
 
   /*
    * Whether this node supports signal-based routing
    */
-  bool signal_based_capable = 2;
+  bool signal_based_capable = 3;
 
   /*
    * List of directly heard neighbors with signal quality metrics.
-   * Can include up to 10 neighbors since this is a dedicated message.
+   * Optimized to fit up to 14 neighbors in 233 byte payload.
    */
-  repeated NeighborLink neighbors = 3;
-
-  /*
-   * Firmware version indicator for routing protocol compatibility.
-   * Allows future protocol upgrades while maintaining backward compatibility.
-   */
-  uint32 routing_version = 4;
+  repeated SignalNeighbor neighbors = 4;
 }
 
 /*
