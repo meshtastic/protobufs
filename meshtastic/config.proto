@@ -931,12 +931,12 @@ message Config {
       EU_866 = 27;
 
       /*
-       * EU 866MHz RFID band (ETSI EN 302 208)
+       * EU 868MHz band, with narrow presets
        */
       NARROW_868 = 28;
 
       /*
-       * EU 866MHz RFID band (ETSI EN 302 208)
+       * US 433MHz Amateur Use band
        */
       HAM_US433 = 29;
     }
