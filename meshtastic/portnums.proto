@@ -75,13 +75,15 @@ enum PortNum {
   ADMIN_APP = 6;
 
   /*
-   * Compressed TEXT_MESSAGE payloads.
-   * ENCODING: UTF-8 Plaintext (?) with Unishox2 Compression
-   * NOTE: The Device Firmware converts a TEXT_MESSAGE_APP to TEXT_MESSAGE_COMPRESSED_APP if the compressed
-   * payload is shorter. There's no need for app developers to do this themselves. Also the firmware will decompress
-   * any incoming TEXT_MESSAGE_COMPRESSED_APP payload and convert to TEXT_MESSAGE_APP.
+   * Store and Forward++ module included in the firmware
+   * ENCODING: protobuf
+   * This module is specifically for Native Linux nodes, and provides a Git-style
+   * chain of messages.
+   *
+   * NOTE: This is re-purposing the old compressed text messages portnum.
+   * Nothing is being done with this portnum, and it's still considered a core portnum
    */
-  TEXT_MESSAGE_COMPRESSED_APP = 7;
+  STORE_FORWARD_PLUSPLUS_APP = 7;
 
   /*
    * Waypoint payloads.
@@ -133,14 +135,6 @@ enum PortNum {
    * ENCODING: protobuf
    */
   PAXCOUNTER_APP = 34;
-
-  /*
-   * Store and Forward++ module included in the firmware
-   * ENCODING: protobuf
-   * This module is specifically for Native Linux nodes, and provides a Git-style
-   * chain of messages.
-   */
-  STORE_FORWARD_PLUSPLUS_APP = 35;
 
   /*
    * Provides a hardware serial interface to send and receive from the Meshtastic network.
