@@ -479,6 +479,12 @@ message AdminMessage {
      * When true, favorites are preserved through reset.
      */
     bool nodedb_reset = 100;
+
+    /*
+     * A 32 byte hash of the OTA firmware.
+     * Used to verify the integrity of the firmware before applying an update.
+     */
+     bytes ota_hash = 102;
   }
 }
 

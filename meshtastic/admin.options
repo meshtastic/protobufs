@@ -1,6 +1,7 @@
 *AdminMessage.payload_variant anonymous_oneof:true
 
 *AdminMessage.session_passkey max_size:8
+*AdminMessage.ota_hash max_size:32
 
 *AdminMessage.InputEvent.event_code int_size:8
 *AdminMessage.InputEvent.kb_char int_size:8
