@@ -1237,6 +1237,11 @@ message StoreForwardPlusPlus {
    * The receive time of the message in question
    */
   uint32 encapsulated_rxtime = 9;
+
+  /*
+   * Used in a LINK_REQUEST to specify the message X spots back from head
+   */
+  uint32 chain_count = 10;
 }
 
 /*
