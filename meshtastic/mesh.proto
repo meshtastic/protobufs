@@ -841,6 +841,11 @@ enum HardwareModel {
   THINKNODE_M6 = 120;
 
   /*
+   * Minimesh Lite
+   */
+  MINIMESH_LITE = 212;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
