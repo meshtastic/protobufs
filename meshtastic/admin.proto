@@ -189,6 +189,23 @@ message AdminMessage {
   }
 
   /*
+   * User is requesting an over the air update.
+   * Node will reboot into the OTA loader
+   */
+  message OTAEvent {
+    /*
+     * Tell the node to reboot into OTA mode for firmware update via BLE or WiFi (ESP32 only for now)
+     */
+    OTAMode reboot_ota_mode = 1;
+
+    /*
+     * A 32 byte hash of the OTA firmware.
+     * Used to verify the integrity of the firmware before applying an update.
+     */
+    bytes ota_hash = 2;
+  }
+
+  /*
    * TODO: REPLACE
    */
   oneof payload_variant {
@@ -437,11 +454,6 @@ message AdminMessage {
     KeyVerificationAdmin key_verification = 67;
 
     /*
-     * Tell the node to reboot into OTA mode for firmware update via BLE or WiFi (ESP32 only for now)
-     */
-    OTAMode reboot_ota_mode = 68;
-
-    /*
      * Tell the node to factory reset config everything; all device state and configuration will be returned to factory defaults and BLE bonds will be cleared.
      */
     int32 factory_reset_device = 94;
@@ -479,6 +491,11 @@ message AdminMessage {
      * When true, favorites are preserved through reset.
      */
     bool nodedb_reset = 100;
+
+    /*
+     * Tell the node to reset into the OTA Loader
+     */
+    OTAEvent ota_request = 102;
   }
 }
 
