@@ -193,7 +193,7 @@ message AdminMessage {
    * Node will reboot into the OTA loader
    */
   message OTAEvent {
-     /*
+    /*
      * Tell the node to reboot into OTA mode for firmware update via BLE or WiFi (ESP32 only for now)
      */
     OTAMode reboot_ota_mode = 1;
@@ -202,7 +202,7 @@ message AdminMessage {
      * A 32 byte hash of the OTA firmware.
      * Used to verify the integrity of the firmware before applying an update.
      */
-     bytes ota_hash = 2;
+    bytes ota_hash = 2;
   }
 
   /*
@@ -497,7 +497,6 @@ message AdminMessage {
      */
     OTAEvent ota_request = 102;
   }
-
 }
 
 /*
