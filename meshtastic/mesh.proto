@@ -388,9 +388,9 @@ enum HardwareModel {
   LORA_RELAY_V1 = 32;
 
   /*
-   * TODO: REPLACE
+   * T-Echo Plus device from LilyGo
    */
-  NRF52840DK = 33;
+  T_ECHO_PLUS = 33;
 
   /*
    * TODO: REPLACE
