@@ -1050,6 +1050,12 @@ message Routing {
      * This typically enforced per portnum and is used to prevent a single node from monopolizing airtime
      */
     RATE_LIMIT_EXCEEDED = 38;
+
+    /*
+     * PKI encryption failed, due to no public key for the remote node
+     * This is different from PKI_UNKNOWN_PUBKEY which indicates a failure upon receiving a packet
+     */
+    PKI_SEND_FAIL_PUBLIC_KEY = 39;
   }
 
   oneof variant {
