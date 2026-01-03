@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package meshtastic;
 
+/* trunk-ignore(buf-lint/COMPILE) */
 import "meshtastic/channel.proto";
 import "meshtastic/config.proto";
 import "meshtastic/connection_status.proto";
@@ -185,6 +186,23 @@ message AdminMessage {
      * The touch Y coordinate
      */
     uint32 touch_y = 4;
+  }
+
+  /*
+   * User is requesting an over the air update.
+   * Node will reboot into the OTA loader
+   */
+  message OTAEvent {
+    /*
+     * Tell the node to reboot into OTA mode for firmware update via BLE or WiFi (ESP32 only for now)
+     */
+    OTAMode reboot_ota_mode = 1;
+
+    /*
+     * A 32 byte hash of the OTA firmware.
+     * Used to verify the integrity of the firmware before applying an update.
+     */
+    bytes ota_hash = 2;
   }
 
   /*
@@ -443,8 +461,9 @@ message AdminMessage {
     /*
      * Tell the node to reboot into the OTA Firmware in this many seconds (or <0 to cancel reboot)
      * Only Implemented for ESP32 Devices. This needs to be issued to send a new main firmware via bluetooth.
+     * Deprecated in favor of reboot_ota_mode in 2.7.17
      */
-    int32 reboot_ota_seconds = 95;
+    int32 reboot_ota_seconds = 95 [deprecated = true];
 
     /*
      * This message is only supported for the simulator Portduino build.
@@ -472,7 +491,32 @@ message AdminMessage {
      * When true, favorites are preserved through reset.
      */
     bool nodedb_reset = 100;
+
+    /*
+     * Tell the node to reset into the OTA Loader
+     */
+    OTAEvent ota_request = 102;
   }
+}
+
+/*
+ * Firmware update mode for OTA updates
+ */
+enum OTAMode {
+  /*
+   * Do not reboot into OTA mode
+   */
+  NO_REBOOT_OTA = 0;
+
+  /*
+   * Reboot into OTA mode for BLE firmware update
+   */
+  OTA_BLE = 1;
+
+  /*
+   * Reboot into OTA mode for WiFi firmware update
+   */
+  OTA_WIFI = 2;
 }
 
 /*

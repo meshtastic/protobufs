@@ -388,9 +388,9 @@ enum HardwareModel {
   LORA_RELAY_V1 = 32;
 
   /*
-   * TODO: REPLACE
+   * T-Echo Plus device from LilyGo
    */
-  NRF52840DK = 33;
+  T_ECHO_PLUS = 33;
 
   /*
    * TODO: REPLACE
@@ -839,7 +839,7 @@ enum HardwareModel {
    * Elecrow ThinkNode M6
    */
   THINKNODE_M6 = 120;
-  
+
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
@@ -1050,6 +1050,12 @@ message Routing {
      * This typically enforced per portnum and is used to prevent a single node from monopolizing airtime
      */
     RATE_LIMIT_EXCEEDED = 38;
+
+    /*
+     * PKI encryption failed, due to no public key for the remote node
+     * This is different from PKI_UNKNOWN_PUBKEY which indicates a failure upon receiving a packet
+     */
+    PKI_SEND_FAIL_PUBLIC_KEY = 39;
   }
 
   oneof variant {
@@ -1237,6 +1243,11 @@ message StoreForwardPlusPlus {
    * The receive time of the message in question
    */
   uint32 encapsulated_rxtime = 9;
+
+  /*
+   * Used in a LINK_REQUEST to specify the message X spots back from head
+   */
+  uint32 chain_count = 10;
 }
 
 /*

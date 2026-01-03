@@ -1,14 +1,18 @@
 version: v2
 modules:
-  - path: meshtastic
+  - path: .
     name: buf.build/meshtastic/protobufs
     excludes:
+      - .trunk/
       - meshtastic/device_only/
     lint:
       use:
         - MINIMAL
       except:
         - PACKAGE_NO_IMPORT_CYCLE
+      ignore_only:
+        PACKAGE_DEFINED:
+          - nanopb.proto
       disallow_comment_ignores: true
     breaking:
       use:
