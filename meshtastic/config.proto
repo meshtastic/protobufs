@@ -1029,14 +1029,6 @@ message Config {
        * Comparable link budget and data rate to LONG_FAST.
        */
       NARROW_SLOW = 13;
-
-      /*
-       * Ham Fast
-       * Short range preset optimized for 433MHz band with wide bandwidth.
-       * Intended for use in amateur radio bands.
-       */
-      HAM_FAST = 14;
-
     }
 
     /*
