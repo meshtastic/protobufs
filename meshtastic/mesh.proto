@@ -1297,6 +1297,13 @@ message Waypoint {
 }
 
 /*
+ * Message for node status
+ */
+message StatusMessage {
+  string status = 1;
+}
+
+/*
  * This message will be proxied over the PhoneAPI for the client to deliver to the MQTT server
  */
 message MqttClientProxyMessage {
