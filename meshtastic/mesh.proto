@@ -2358,6 +2358,12 @@ message SignalRoutingInfo {
   uint32 routing_version = 1;
 
   /*
+   * Topology snapshot version (monotonic timestamp).
+   * Ensures receivers process topology updates in order and avoid mixing old/new data.
+   */
+  uint32 topology_version = 5;
+
+  /*
    * The node ID of the node sending this routing info
    */
   fixed32 node_id = 2;
@@ -2369,7 +2375,7 @@ message SignalRoutingInfo {
 
   /*
    * List of directly heard neighbors with signal quality metrics.
-   * Optimized to fit up to 14 neighbors in 233 byte payload.
+   * Limited to 14 neighbors for single-packet broadcasts.
    */
   repeated SignalNeighbor neighbors = 4;
 }
