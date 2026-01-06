@@ -883,9 +883,9 @@ message SignalNeighbor {
   uint32 position_variance = 4;
 
   /*
-   * Whether this neighbor supports signal-based routing
+   * Whether this neighbor is actively participating in signal-based routing
    */
-  bool signal_based_capable = 5;
+  bool signal_routing_active = 5;
 }
 
 /*
@@ -2358,26 +2358,21 @@ message SignalRoutingInfo {
   uint32 routing_version = 1;
 
   /*
-   * Topology snapshot version (monotonic timestamp).
-   * Ensures receivers process topology updates in order and avoid mixing old/new data.
+   * Whether this node is actively participating in signal-based routing
    */
-  uint32 topology_version = 5;
-
-  /*
-   * The node ID of the node sending this routing info
-   */
-  fixed32 node_id = 2;
-
-  /*
-   * Whether this node supports signal-based routing
-   */
-  bool signal_based_capable = 3;
+  bool signal_routing_active = 2;
 
   /*
    * List of directly heard neighbors with signal quality metrics.
    * Limited to 14 neighbors for single-packet broadcasts.
    */
-  repeated SignalNeighbor neighbors = 4;
+  repeated SignalNeighbor neighbors = 3;
+
+  /*
+   * Topology snapshot version (monotonic timestamp).
+   * Ensures receivers process topology updates in order and avoid mixing old/new data.
+   */
+  uint32 topology_version = 4;
 }
 
 /*
