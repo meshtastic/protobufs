@@ -13,6 +13,7 @@
 *SignalNeighbor.snr int_size:8
 *SignalNeighbor.position_variance int_size:8
 *SignalRoutingInfo.neighbors max_count:14
+*SignalRoutingInfo.topology_version int_size:8
 
 *RouteDiscovery.route max_count:8
 *RouteDiscovery.snr_towards max_count:8
