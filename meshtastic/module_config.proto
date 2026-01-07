@@ -615,6 +615,11 @@ message ModuleConfig {
      * Enable/Disable the health telemetry module on-device display
      */
     bool health_screen_enabled = 13;
+
+    /*
+     * Enable/Disable the air quality telemetry measurement module on-device display
+     */
+    bool air_quality_screen_enabled = 14;
   }
 
   /*
