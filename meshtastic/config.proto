@@ -938,8 +938,9 @@ message Config {
 
       /*
        * Long Range - Slow
+       * Deprecated in 2.7: Unpopular slow preset.
        */
-      LONG_SLOW = 1;
+      LONG_SLOW = 1 [deprecated = true];
 
       /*
        * Very Long Range - Slow
@@ -978,6 +979,12 @@ message Config {
        * It is not legal to use in all regions due to this wider bandwidth.
        */
       SHORT_TURBO = 8;
+
+      /*
+       * Long Range - Turbo
+       * This preset performs similarly to LongFast, but with 500Khz bandwidth.
+       */
+      LONG_TURBO = 9;
     }
 
     /*

@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package meshtastic;
 
+/* trunk-ignore(buf-lint/COMPILE) */
 import "meshtastic/channel.proto";
 import "meshtastic/config.proto";
 import "meshtastic/localonly.proto";
