@@ -435,12 +435,7 @@ message AdminMessage {
     /*
      * Set specified node-num to be muted
      */
-    uint32 set_muted_node = 49;
-
-    /*
-     * Set specified node-num to be heard / not-muted
-     */
-    uint32 remove_muted_node = 50;
+    uint32 toggle_muted_node = 49;
 
     /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes
