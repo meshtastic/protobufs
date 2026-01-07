@@ -170,6 +170,12 @@ message NodeInfoLite {
    * LSB 0 is_key_manually_verified
    */
   uint32 bitfield = 13;
+
+  /*
+   * True if node has been muted
+   * Persists between NodeDB internal clean ups
+   */
+  bool is_muted = 14;
 }
 
 /*
