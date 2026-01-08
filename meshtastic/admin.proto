@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package meshtastic;
 
+/* trunk-ignore(buf-lint/COMPILE) */
 import "meshtastic/channel.proto";
 import "meshtastic/config.proto";
 import "meshtastic/connection_status.proto";
@@ -12,7 +13,7 @@ import "meshtastic/module_config.proto";
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "AdminProtos";
-option java_package = "com.geeksville.mesh";
+option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
 /*
@@ -185,6 +186,23 @@ message AdminMessage {
      * The touch Y coordinate
      */
     uint32 touch_y = 4;
+  }
+
+  /*
+   * User is requesting an over the air update.
+   * Node will reboot into the OTA loader
+   */
+  message OTAEvent {
+    /*
+     * Tell the node to reboot into OTA mode for firmware update via BLE or WiFi (ESP32 only for now)
+     */
+    OTAMode reboot_ota_mode = 1;
+
+    /*
+     * A 32 byte hash of the OTA firmware.
+     * Used to verify the integrity of the firmware before applying an update.
+     */
+    bytes ota_hash = 2;
   }
 
   /*
@@ -443,8 +461,9 @@ message AdminMessage {
     /*
      * Tell the node to reboot into the OTA Firmware in this many seconds (or <0 to cancel reboot)
      * Only Implemented for ESP32 Devices. This needs to be issued to send a new main firmware via bluetooth.
+     * Deprecated in favor of reboot_ota_mode in 2.7.17
      */
-    int32 reboot_ota_seconds = 95;
+    int32 reboot_ota_seconds = 95 [deprecated = true];
 
     /*
      * This message is only supported for the simulator Portduino build.
@@ -469,9 +488,35 @@ message AdminMessage {
 
     /*
      * Tell the node to reset the nodedb.
+     * When true, favorites are preserved through reset.
      */
-    int32 nodedb_reset = 100;
+    bool nodedb_reset = 100;
+
+    /*
+     * Tell the node to reset into the OTA Loader
+     */
+    OTAEvent ota_request = 102;
   }
+}
+
+/*
+ * Firmware update mode for OTA updates
+ */
+enum OTAMode {
+  /*
+   * Do not reboot into OTA mode
+   */
+  NO_REBOOT_OTA = 0;
+
+  /*
+   * Reboot into OTA mode for BLE firmware update
+   */
+  OTA_BLE = 1;
+
+  /*
+   * Reboot into OTA mode for WiFi firmware update
+   */
+  OTA_WIFI = 2;
 }
 
 /*
@@ -526,6 +571,11 @@ message SharedContact {
    * Add this contact to the blocked / ignored list
    */
   bool should_ignore = 3;
+
+  /*
+   * Set the IS_KEY_MANUALLY_VERIFIED bit
+   */
+  bool manually_verified = 4;
 }
 
 /*

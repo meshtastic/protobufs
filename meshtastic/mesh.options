@@ -69,6 +69,11 @@
 *KeyVerification.hash1 max_size:32
 *KeyVerification.hash2 max_size:32
 
+*StoreForwardPlusPlus.message_hash max_size:32
+*StoreForwardPlusPlus.commit_hash max_size:32
+*StoreForwardPlusPlus.root_hash max_size:32
+*StoreForwardPlusPlus.message max_size:240
+
 
 # MyMessage.name         max_size:40 
 # or fixed_length or fixed_count, or max_count

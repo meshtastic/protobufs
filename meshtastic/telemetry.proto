@@ -5,7 +5,7 @@ package meshtastic;
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "TelemetryProtos";
-option java_package = "com.geeksville.mesh";
+option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
 /*
@@ -438,6 +438,11 @@ message LocalStats {
    * Number of bytes free in the heap
    */
   uint32 heap_free_bytes = 13;
+
+  /*
+   * Number of packets that were dropped because the transmit queue was full.
+   */
+  uint32 num_tx_dropped = 14;
 }
 
 /*
@@ -785,6 +790,11 @@ enum TelemetrySensorType {
    * TSL2561 light sensor
    */
   TSL2561 = 44;
+
+  /*
+   * BH1750 light sensor
+   */
+  BH1750 = 45;
 }
 
 /*

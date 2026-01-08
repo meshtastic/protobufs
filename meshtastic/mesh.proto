@@ -13,7 +13,7 @@ import "meshtastic/xmodem.proto";
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "MeshProtos";
-option java_package = "com.geeksville.mesh";
+option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
 /*
@@ -388,9 +388,9 @@ enum HardwareModel {
   LORA_RELAY_V1 = 32;
 
   /*
-   * TODO: REPLACE
+   * T-Echo Plus device from LilyGo
    */
-  NRF52840DK = 33;
+  T_ECHO_PLUS = 33;
 
   /*
    * TODO: REPLACE
@@ -700,9 +700,9 @@ enum HardwareModel {
   HELTEC_SENSOR_HUB = 92;
 
   /*
-   * Reserved Fried Chicken ID for future use
+   * Muzi Works Muzi-Base device
    */
-  RESERVED_FRIED_CHICKEN = 93;
+  MUZI_BASE = 93;
 
   /*
    * Heltec Magnetic Power Bank with Meshtastic compatible
@@ -740,9 +740,9 @@ enum HardwareModel {
   SEEED_WIO_TRACKER_L1_EINK = 100;
 
   /*
-   * Reserved ID for future and past use
+   * Muzi Works R1 Neo
    */
-  QWANTZ_TINY_ARMS = 101;
+  MUZI_R1_NEO = 101;
 
   /*
    * Lilygo T-Deck Pro
@@ -755,9 +755,9 @@ enum HardwareModel {
   T_LORA_PAGER = 103;
 
   /*
-   * GAT562 Mesh Trial Tracker
+   * M5Stack Reserved
    */
-  GAT562_MESH_TRIAL_TRACKER = 104;
+  M5STACK_RESERVED = 104; // 0x68
 
   /*
    * RAKwireless WisMesh Tag
@@ -790,6 +790,61 @@ enum HardwareModel {
    */
   HELTEC_V4 = 110;
 
+  /*
+   * M5Stack C6L
+   */
+  M5STACK_C6L = 111;
+
+  /*
+   * M5Stack Cardputer Adv
+   */
+  M5STACK_CARDPUTER_ADV = 112;
+
+  /*
+   * ESP32S3 main controller with GPS and TFT screen.
+   */
+  HELTEC_WIRELESS_TRACKER_V2 = 113;
+
+  /*
+   * LilyGo T-Watch Ultra
+   */
+  T_WATCH_ULTRA = 114;
+
+  /*
+   * Elecrow ThinkNode M3
+   */
+  THINKNODE_M3 = 115;
+
+  /*
+   * RAK WISMESH_TAP_V2 with ESP32-S3 CPU
+   */
+  WISMESH_TAP_V2 = 116;
+
+  /*
+   * RAK3401
+   */
+  RAK3401 = 117;
+
+  /*
+   * RAK6421 Hat+
+   */
+  RAK6421 = 118;
+
+  /*
+   * Elecrow ThinkNode M4
+   */
+  THINKNODE_M4 = 119;
+
+  /*
+   * Elecrow ThinkNode M6
+   */
+  THINKNODE_M6 = 120;
+
+  /*
+   * Elecrow Meshstick 1262
+   */
+  MESHSTICK_1262 = 121;
+  
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
@@ -1000,6 +1055,12 @@ message Routing {
      * This typically enforced per portnum and is used to prevent a single node from monopolizing airtime
      */
     RATE_LIMIT_EXCEEDED = 38;
+
+    /*
+     * PKI encryption failed, due to no public key for the remote node
+     * This is different from PKI_UNKNOWN_PUBKEY which indicates a failure upon receiving a packet
+     */
+    PKI_SEND_FAIL_PUBLIC_KEY = 39;
   }
 
   oneof variant {
@@ -1102,6 +1163,96 @@ message KeyVerification {
    * sent from NodeB to NodeA in response to the initial message.
    */
   bytes hash2 = 3;
+}
+
+/*
+ * The actual over-the-mesh message doing store and forward++
+ */
+message StoreForwardPlusPlus {
+  /*
+   * Enum of message types
+   */
+  enum SFPP_message_type {
+    /*
+     * Send an announcement of the canonical tip of a chain
+     */
+    CANON_ANNOUNCE = 0;
+
+    /*
+     * Query whether a specific link is on the chain
+     */
+    CHAIN_QUERY = 1;
+
+    /*
+     * Request the next link in the chain
+     */
+    LINK_REQUEST = 3;
+
+    /*
+     * Provide a link to add to the chain
+     */
+    LINK_PROVIDE = 4;
+
+    /*
+     * If we must fragment, send the first half
+     */
+    LINK_PROVIDE_FIRSTHALF = 5;
+
+    /*
+     * If we must fragment, send the second half
+     */
+    LINK_PROVIDE_SECONDHALF = 6;
+  }
+
+  /*
+   * Which message type is this
+   */
+  SFPP_message_type sfpp_message_type = 1;
+
+  /*
+   * The hash of the specific message
+   */
+  bytes message_hash = 2;
+
+  /*
+   * The hash of a link on a chain
+   */
+  bytes commit_hash = 3;
+
+  /*
+   * the root hash of a chain
+   */
+  bytes root_hash = 4;
+
+  /*
+   * The encrypted bytes from a message
+   */
+  bytes message = 5;
+
+  /*
+   * Message ID of the contained message
+   */
+  uint32 encapsulated_id = 6;
+
+  /*
+   * Destination of the contained message
+   */
+  uint32 encapsulated_to = 7;
+
+  /*
+   * Sender of the contained message
+   */
+  uint32 encapsulated_from = 8;
+
+  /*
+   * The receive time of the message in question
+   */
+  uint32 encapsulated_rxtime = 9;
+
+  /*
+   * Used in a LINK_REQUEST to specify the message X spots back from head
+   */
+  uint32 chain_count = 10;
 }
 
 /*
@@ -1336,6 +1487,10 @@ message MeshPacket {
 
   /*
    * The (immediate) destination for this packet
+   * If the value is 4,294,967,295 (maximum value of an unsigned 32bit integer), this indicates that the packet was
+   * not destined for a specific node, but for a channel as indicated by the value of `channel` below.
+   * If the value is another, this indicates that the packet was destined for a specific
+   * node (i.e. a kind of "Direct Message" to this node) and not broadcast on a channel.
    */
   fixed32 to = 2;
 

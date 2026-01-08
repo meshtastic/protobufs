@@ -5,7 +5,7 @@ package meshtastic;
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "ModuleConfigProtos";
-option java_package = "com.geeksville.mesh";
+option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
 /*
@@ -617,9 +617,15 @@ message ModuleConfig {
     bool health_screen_enabled = 13;
 
     /*
+     * Enable/Disable the device telemetry module to send metrics to the mesh
+     * Note: We will still send telemtry to the connected phone / client every minute over the API
+     */
+    bool device_telemetry_enabled = 14;
+    
+    /*
      * Enable/Disable the air quality telemetry measurement module on-device display
      */
-    bool air_quality_screen_enabled = 14;
+    bool air_quality_screen_enabled = 15;
   }
 
   /*
