@@ -1764,6 +1764,12 @@ message NodeInfo {
    * LSB 0 of the bitfield
    */
   bool is_key_manually_verified = 12;
+
+  /*
+   * True if node has been muted
+   * Persistes between NodeDB internal clean ups
+   */
+  bool is_muted = 13;
 }
 
 /*
