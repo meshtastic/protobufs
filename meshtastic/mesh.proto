@@ -1142,6 +1142,11 @@ message Data {
    * Bitfield for extra flags. First use is to indicate that user approves the packet being uploaded to MQTT.
    */
   optional uint32 bitfield = 9;
+
+  /*
+   * XEdDSA signature for the payload
+   */
+  bytes xeddsa_signature = 10;
 }
 
 /*
@@ -1634,6 +1639,11 @@ message MeshPacket {
    * Indicates which transport mechanism this packet arrived over
    */
   TransportMechanism transport_mechanism = 21;
+
+  /*
+   * Indicates whether the packet has a valid signature
+   */
+  bool xeddsa_signed = 22;
 }
 
 /*
@@ -1764,6 +1774,13 @@ message NodeInfo {
    * LSB 0 of the bitfield
    */
   bool is_key_manually_verified = 12;
+
+  /*
+   * True if node is signing its packets via XEdDSA
+   * Persists between NodeDB internal clean ups
+   * LSB 1 of the bitfield
+   */
+  bool has_xeddsa_signed = 13;
 }
 
 /*
