@@ -1765,7 +1765,6 @@ message NodeInfo {
    * Persistes between NodeDB internal clean ups
    */
   bool is_muted = 13;
-
 }
 
 /*
