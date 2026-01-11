@@ -340,6 +340,9 @@ message ModuleConfig {
       //Used to configure and view some parameters of MeshSolar.
       //https://heltec.org/project/meshsolar/
       MS_CONFIG = 8;
+      //Logs mesh traffic to the serial pins, ideal for logging via openLog or similar.
+      LOG = 9; // includes other packets
+      LOGTEXT = 10; // only text (channel & DM)
     }
 
     /*
