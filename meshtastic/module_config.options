@@ -27,3 +27,5 @@
 *DetectionSensorConfig.monitor_pin int_size:8
 *DetectionSensorConfig.name max_size:20
 *DetectionSensorConfig.detection_trigger_type max_size:8
+
+*StatusMessage.node_status max_size:80
