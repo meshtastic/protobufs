@@ -845,6 +845,11 @@ enum HardwareModel {
    */
   MESHSTICK_1262 = 121;
 
+    /*
+   * LilyGo T-Beam 1W 
+   */
+  TBEAM_1_WATT = 122;
+
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
