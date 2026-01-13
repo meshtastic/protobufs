@@ -924,7 +924,7 @@ message Config {
        * Brazil 902MHz
        */
       BR_902 = 26;
-      
+
       /*
        * EU 866MHz RFID band (ETSI EN 302 208)
        */
