@@ -2,6 +2,8 @@
 
 *AdminMessage.session_passkey max_size:8
 
+*AdminMessage.OTAEvent.ota_hash max_size:32
+
 *AdminMessage.InputEvent.event_code int_size:8
 *AdminMessage.InputEvent.kb_char int_size:8
 *AdminMessage.InputEvent.touch_x int_size:16

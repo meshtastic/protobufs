@@ -1,11 +1,12 @@
 syntax = "proto3";
 
+/* trunk-ignore(buf-lint/PACKAGE_DIRECTORY_MATCH) */
 package meshtastic;
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "ATAKProtos";
-option java_package = "com.geeksville.mesh";
+option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
 /*
