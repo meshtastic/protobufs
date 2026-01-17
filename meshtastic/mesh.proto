@@ -841,6 +841,21 @@ enum HardwareModel {
   THINKNODE_M6 = 120;
 
   /*
+   * Elecrow Meshstick 1262
+   */
+  MESHSTICK_1262 = 121;
+
+  /*
+   * LilyGo T-Beam 1W 
+   */
+  TBEAM_1_WATT = 122;
+
+  /*
+   * LilyGo T5 S3 ePaper Pro (V1 and V2)
+   */
+  T5_S3_EPAPER_PRO = 123;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
@@ -1759,6 +1774,12 @@ message NodeInfo {
    * LSB 0 of the bitfield
    */
   bool is_key_manually_verified = 12;
+
+  /*
+   * True if node has been muted
+   * Persistes between NodeDB internal clean ups
+   */
+  bool is_muted = 13;
 }
 
 /*
