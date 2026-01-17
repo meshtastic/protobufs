@@ -924,6 +924,11 @@ message Config {
        * Brazil 902MHz
        */
       BR_902 = 26;
+
+      /*
+       * Belarus 433MHz
+       */
+      BY = 27;
     }
 
     /*
