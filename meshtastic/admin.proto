@@ -500,12 +500,12 @@ message AdminMessage {
     /*
      * Tell the node to reset into the OTA Loader
      */
-    OTAEvent ota_request = 101;
+    OTAEvent ota_request = 102;
 
     /*
      * Parameters and sensor configuration
      */
-    SensorConfig sensor_config = 102;
+    SensorConfig sensor_config = 103;
   }
 }
 
