@@ -926,7 +926,7 @@ message Config {
       BR_902 = 26;
 
       /*
-       * EU 866MHz RFID band (ETSI EN 302 208)
+       * EU 866MHz band (Band no. 46b of 2006/771/EC and subsequent amendments) for Non-specific short-range devices (SRD)
        */
       EU_866 = 27;
 
@@ -934,11 +934,6 @@ message Config {
        * EU 868MHz band, with narrow presets
        */
       NARROW_868 = 28;
-
-      /*
-       * US 433MHz Amateur Use band
-       */
-      HAM_US433 = 29;
     }
 
     /*
