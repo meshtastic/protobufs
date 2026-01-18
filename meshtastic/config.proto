@@ -1107,6 +1107,12 @@ message Config {
      * Sets the ok_to_mqtt bit on outgoing packets
      */
     bool config_ok_to_mqtt = 105;
+
+    /*
+     * If true, skip decrementing hop_limit when forwarding packets.
+     * This allows packets to travel further through the mesh network.
+     */
+    bool skip_hop_decrement = 106;
   }
 
   message BluetoothConfig {
