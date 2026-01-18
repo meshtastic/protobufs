@@ -152,6 +152,11 @@ message AdminMessage {
      * TODO: REPLACE
      */
     PAXCOUNTER_CONFIG = 12;
+
+    /*
+     * TODO: REPLACE
+     */
+    STATUSMESSAGE_CONFIG = 13;
   }
 
   enum BackupLocation {
