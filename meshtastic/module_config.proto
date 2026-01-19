@@ -297,7 +297,7 @@ message ModuleConfig {
 
   /*
    * Config for the Traffic Management module.
-   * Provides packet inspection and traffic shaping for mesh network optimization.
+   * Provides packet inspection and traffic shaping to help reduce channel utilization
    */
   message TrafficManagementConfig {
     /*
@@ -351,7 +351,8 @@ message ModuleConfig {
     uint32 rate_limit_max_packets = 10;
 
     /*
-     * Enable dropping of unknown/undecryptable packets from repeat offenders
+     * Enable dropping of unknown/undecryptable packets per rate_limit_window_secs
+
      */
     bool drop_unknown_enabled = 11;
 
@@ -361,12 +362,12 @@ message ModuleConfig {
     uint32 unknown_packet_threshold = 12;
 
     /*
-     * Set hop_limit to 0 for locally-originated telemetry broadcasts
+     * Set hop_limit to 0 for telemetry broadcasts
      */
     bool local_only_telemetry = 13;
 
     /*
-     * Set hop_limit to 0 for locally-originated position broadcasts
+     * Set hop_limit to 0 for position broadcasts
      */
     bool local_only_position = 14;
 
