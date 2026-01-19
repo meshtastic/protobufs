@@ -451,16 +451,47 @@ message LocalStats {
 }
 
 /*
- * Traffic management statistics
+ * Traffic management statistics for mesh network optimization
  */
 message TrafficManagementStats {
+  /*
+   * Total number of packets inspected by traffic management
+   */
   uint32 packets_inspected = 1;
+
+  /*
+   * Number of position packets dropped due to deduplication
+   */
   uint32 position_dedup_drops = 2;
+
+  /*
+   * Number of NodeInfo requests answered from cache
+   */
   uint32 nodeinfo_cache_hits = 3;
+
+  /*
+   * Number of packets dropped due to rate limiting
+   */
   uint32 rate_limit_drops = 4;
+
+  /*
+   * Number of unknown/undecryptable packets dropped
+   */
   uint32 unknown_packet_drops = 5;
+
+  /*
+   * Number of packets with hop_limit exhausted for local-only broadcast
+   */
   uint32 hop_exhausted_packets = 6;
+
+  /*
+   * Number of packets that would have been dropped in dry-run mode
+   */
   uint32 dry_run_would_drop = 7;
+
+  /*
+   * Number of times router hop preservation was applied
+   */
   uint32 router_hops_preserved = 8;
 }
 
