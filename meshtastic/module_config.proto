@@ -296,53 +296,82 @@ message ModuleConfig {
   }
 
   /*
-   * Config for the Traffic Management module
+   * Config for the Traffic Management module.
+   * Provides packet inspection and traffic shaping for mesh network optimization.
    */
   message TrafficManagementConfig {
     /*
-     * Master enable for traffic management
+     * Master enable for traffic management module
      */
     bool enabled = 1;
 
     /*
-     * Dry-run mode: log actions but don't drop/modify packets
+     * Dry-run mode: log actions but don't actually drop or modify packets
      */
     bool dry_run = 2;
 
     /*
-     * Position deduplication settings
+     * Enable position deduplication to drop redundant position broadcasts
      */
     bool position_dedup_enabled = 3;
+
+    /*
+     * Number of bits of precision for position deduplication (0-32)
+     */
     uint32 position_precision_bits = 4;
+
+    /*
+     * Minimum interval in seconds between position updates from the same node
+     */
     uint32 position_min_interval_secs = 5;
 
     /*
-     * NodeInfo direct response settings
+     * Enable direct response to NodeInfo requests from local cache
      */
     bool nodeinfo_direct_response = 6;
+
+    /*
+     * Minimum hop distance from requestor before responding to NodeInfo requests
+     */
     uint32 nodeinfo_direct_response_min_hops = 7;
 
     /*
-     * Rate limiting settings
+     * Enable per-node rate limiting to throttle chatty nodes
      */
     bool rate_limit_enabled = 8;
+
+    /*
+     * Time window in seconds for rate limiting calculations
+     */
     uint32 rate_limit_window_secs = 9;
+
+    /*
+     * Maximum packets allowed per node within the rate limit window
+     */
     uint32 rate_limit_max_packets = 10;
 
     /*
-     * Unknown/undecryptable packet handling
+     * Enable dropping of unknown/undecryptable packets from repeat offenders
      */
     bool drop_unknown_enabled = 11;
+
+    /*
+     * Number of unknown packets before dropping from a node
+     */
     uint32 unknown_packet_threshold = 12;
 
     /*
-     * Hop exhaustion for local telemetry/position
+     * Set hop_limit to 0 for locally-originated telemetry broadcasts
      */
     bool local_only_telemetry = 13;
+
+    /*
+     * Set hop_limit to 0 for locally-originated position broadcasts
+     */
     bool local_only_position = 14;
 
     /*
-     * Router hop preservation
+     * Preserve hop_limit for router-to-router traffic
      */
     bool router_preserve_hops = 15;
   }
