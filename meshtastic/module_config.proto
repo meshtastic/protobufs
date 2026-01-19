@@ -906,7 +906,7 @@ message ModuleConfig {
     StatusMessageConfig statusmessage = 14;
 
     /*
-     * TODO: REPLACE
+     * Traffic management module config for mesh network optimization
      */
     TrafficManagementConfig traffic_management = 15;
   }

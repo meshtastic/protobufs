@@ -154,7 +154,7 @@ message AdminMessage {
     PAXCOUNTER_CONFIG = 12;
 
     /*
-     * TODO: REPLACE
+     * Traffic Management module config
      */
     STATUSMESSAGE_CONFIG = 13;
 
