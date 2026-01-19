@@ -296,6 +296,58 @@ message ModuleConfig {
   }
 
   /*
+   * Config for the Traffic Management module
+   */
+  message TrafficManagementConfig {
+    /*
+     * Master enable for traffic management
+     */
+    bool enabled = 1;
+
+    /*
+     * Dry-run mode: log actions but don't drop/modify packets
+     */
+    bool dry_run = 2;
+
+    /*
+     * Position deduplication settings
+     */
+    bool position_dedup_enabled = 3;
+    uint32 position_precision_bits = 4;
+    uint32 position_min_interval_secs = 5;
+
+    /*
+     * NodeInfo direct response settings
+     */
+    bool nodeinfo_direct_response = 6;
+    uint32 nodeinfo_direct_response_min_hops = 7;
+
+    /*
+     * Rate limiting settings
+     */
+    bool rate_limit_enabled = 8;
+    uint32 rate_limit_window_secs = 9;
+    uint32 rate_limit_max_packets = 10;
+
+    /*
+     * Unknown/undecryptable packet handling
+     */
+    bool drop_unknown_enabled = 11;
+    uint32 unknown_packet_threshold = 12;
+
+    /*
+     * Hop exhaustion for local telemetry/position
+     */
+    bool local_only_telemetry = 13;
+    bool local_only_position = 14;
+
+    /*
+     * Router hop preservation
+     */
+    bool router_preserve_hops = 15;
+  }
+
+  /*
    * Serial Config
    */
   message SerialConfig {
@@ -852,6 +904,11 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     StatusMessageConfig statusmessage = 14;
+
+    /*
+     * TODO: REPLACE
+     */
+    TrafficManagementConfig traffic_management = 15;
   }
 }
 
