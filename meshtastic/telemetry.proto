@@ -447,7 +447,7 @@ message LocalStats {
   /*
    * Noise floor value measured in dBm
    */
-  float noise_floor = 15;
+  int32 noise_floor = 15;
 }
 
 /*
