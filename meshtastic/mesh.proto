@@ -2264,6 +2264,14 @@ message ToRadio {
      * Heartbeat message (used to keep the device connection awake on serial)
      */
     Heartbeat heartbeat = 7;
+    
+    /*
+     * Set or clear promiscuous capture mode for LoRa RX.
+     * If true, the device will forward all received LoRa packets to FromRadio as encrypted MeshPacket payloads,
+     * and will avoid additionally sending the decrypted copies. ToRadio will also skip overwriting the from address.
+     * This is primarily intended for virtual nodes that want to handle the packet protocol directly via serial.
+     */
+    bool set_promiscuous = 8;
   }
 }
 
