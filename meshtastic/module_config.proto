@@ -362,14 +362,14 @@ message ModuleConfig {
     uint32 unknown_packet_threshold = 12;
 
     /*
-     * Set hop_limit to 0 for telemetry broadcasts
+     * Set hop_limit to 0 for relayed telemetry broadcasts (own packets unaffected)
      */
-    bool local_only_telemetry = 13;
+    bool zero_hop_telemetry = 13;
 
     /*
-     * Set hop_limit to 0 for position broadcasts
+     * Set hop_limit to 0 for relayed position broadcasts (own packets unaffected)
      */
-    bool local_only_position = 14;
+    bool zero_hop_position = 14;
 
     /*
      * Preserve hop_limit for router-to-router traffic
