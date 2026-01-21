@@ -846,7 +846,7 @@ enum HardwareModel {
   MESHSTICK_1262 = 121;
 
   /*
-   * LilyGo T-Beam 1W 
+   * LilyGo T-Beam 1W
    */
   TBEAM_1_WATT = 122;
 
@@ -1309,6 +1309,13 @@ message Waypoint {
    * Designator icon for the waypoint in the form of a unicode emoji
    */
   fixed32 icon = 8;
+}
+
+/*
+ * Message for node status
+ */
+message StatusMessage {
+  string status = 1;
 }
 
 /*

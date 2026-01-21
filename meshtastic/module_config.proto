@@ -770,6 +770,16 @@ message ModuleConfig {
   }
 
   /*
+   * StatusMessage config - Allows setting a status message for a node to periodically rebroadcast
+   */
+  message StatusMessageConfig {
+    /*
+     * The actual status string
+     */
+    string node_status = 1;
+  }
+
+  /*
    * TODO: REPLACE
    */
   oneof payload_variant {
@@ -837,6 +847,11 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     PaxcounterConfig paxcounter = 13;
+
+    /*
+     * TODO: REPLACE
+     */
+    StatusMessageConfig statusmessage = 14;
   }
 }
 
