@@ -57,6 +57,9 @@ jobs:
       - name: Generate protobuf code
         run: buf generate
 
+      - name: Move generated files to lib root
+        run: mv packages/ts/lib/meshtastic/*_pb.ts packages/ts/lib/
+
       - name: Show generated files
         run: |
           echo "=== packages/ts contents ==="
