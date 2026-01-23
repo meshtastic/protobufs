@@ -1,4 +1,4 @@
-name: Publish to Cargo, JSR, & NPM
+name: Publish to JSR & NPM
 
 on:
   push:
@@ -61,27 +61,19 @@ jobs:
         run: |
           set -euxo pipefail
           VERSION="${{ steps.version.outputs.VERSION }}"
-          for f in packages/ts/deno.json packages/ts/package.json packages/rust/Cargo.toml; do
+          for f in packages/ts/deno.json packages/ts/package.json; do
             test -f "$f" || { echo "Missing $f" >&2; exit 1; }
             sed -i "s/__PACKAGE_VERSION__/${VERSION}/g" "$f"
           done
 
       - name: Copy license & README
-        run: |
-          cp LICENSE README.md packages/ts/
-          cp LICENSE README.md packages/rust/
+        run: cp LICENSE README.md packages/ts/
 
       - name: Upload TypeScript code
         uses: actions/upload-artifact@v4
         with:
           name: ts_code
           path: packages/ts
-
-      - name: Upload Rust code
-        uses: actions/upload-artifact@v4
-        with:
-          name: rust_code
-          path: packages/rust
 
   build-typescript:
     runs-on: ubuntu-24.04
@@ -130,41 +122,9 @@ jobs:
             LICENSE
             README.md
 
-  build-rust:
-    runs-on: ubuntu-24.04
-    needs: codegen
-    steps:
-      - name: Download Rust code
-        uses: actions/download-artifact@v4
-        with:
-          name: rust_code
-
-      - name: Setup Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-
-      - name: Build library
-        run: cargo build --release
-
-      - name: Show build output
-        run: |
-          echo "=== Build output ==="
-          ls -la
-          ls -la target/release/ || true
-
-      - name: Upload built Rust package
-        uses: actions/upload-artifact@v4
-        with:
-          name: rust_package
-          path: |
-            src/
-            Cargo.toml
-            Cargo.lock
-            LICENSE
-            README.md
-
   create-release-zips:
     runs-on: ubuntu-24.04
-    needs: [codegen, build-typescript, build-rust]
+    needs: [codegen, build-typescript]
     steps:
       - name: Download NPM package
         uses: actions/download-artifact@v4
@@ -178,17 +138,10 @@ jobs:
           name: jsr_package
           path: jsr_package
 
-      - name: Download Rust package
-        uses: actions/download-artifact@v4
-        with:
-          name: rust_package
-          path: rust_package
-
       - name: Create zip archives
         run: |
           cd npm_package && zip -r ../meshtastic-protobufs-npm.zip . && cd ..
           cd jsr_package && zip -r ../meshtastic-protobufs-jsr.zip . && cd ..
-          cd rust_package && zip -r ../meshtastic-protobufs-rust.zip . && cd ..
 
       - name: Upload release zips
         uses: actions/upload-artifact@v4
@@ -197,7 +150,6 @@ jobs:
           path: |
             meshtastic-protobufs-npm.zip
             meshtastic-protobufs-jsr.zip
-            meshtastic-protobufs-rust.zip
 
   upload-release-assets:
     runs-on: ubuntu-24.04
@@ -216,7 +168,6 @@ jobs:
           files: |
             meshtastic-protobufs-npm.zip
             meshtastic-protobufs-jsr.zip
-            meshtastic-protobufs-rust.zip
 
   push-buf-registry:
     runs-on: ubuntu-24.04
@@ -277,22 +228,3 @@ jobs:
 
       - name: Publish to JSR
         run: npx jsr publish
-
-  publish-cargo:
-    runs-on: ubuntu-24.04
-    needs: [codegen, build-rust]
-    if: ${{ !inputs.dry_run }}
-    steps:
-      - name: Download Rust package
-        uses: actions/download-artifact@v4
-        with:
-          name: rust_package
-
-      - name: Setup Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-
-      - name: Publish to crates.io
-        uses: katyo/publish-crates@v2
-        with:
-          registry-token: ${{ secrets.CARGO_TOKEN }}
-          ignore-unpublished-changes: true
