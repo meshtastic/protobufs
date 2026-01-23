@@ -57,6 +57,13 @@ jobs:
       - name: Generate protobuf code
         run: buf generate
 
+      - name: Show generated files
+        run: |
+          echo "=== packages/ts contents ==="
+          ls -la packages/ts/
+          echo "=== packages/ts/lib contents ==="
+          ls -la packages/ts/lib/ || echo "lib folder not found"
+
       - name: Set package versions
         run: |
           set -euxo pipefail
@@ -83,6 +90,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ts_code
+
+      - name: Show downloaded files
+        run: |
+          echo "=== Working directory ==="
+          pwd
+          echo "=== Contents ==="
+          ls -la
+          echo "=== lib/ contents ==="
+          ls -la lib/ || echo "lib folder not found"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
