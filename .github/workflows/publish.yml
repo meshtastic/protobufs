@@ -10,76 +10,66 @@ on:
         description: "Version to publish (e.g. v1.2.3). Used when manually dispatching."
         required: false
         type: string
+      dry_run:
+        description: "Dry run mode - generate artifacts without publishing"
+        required: false
+        type: boolean
+        default: false
 
-permissions: write-all
+permissions:
+  contents: write
+  id-token: write
 
 jobs:
   codegen:
     runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.VERSION }}
+      tag: ${{ steps.version.outputs.TAG }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  
+          fetch-depth: 0
 
-      - name: Show files exist
-        run: |
-          set -euxo pipefail
-          ls -la packages/ts || true
-          ls -la packages/rust || true
-          cat packages/ts/deno.json
-          cat packages/ts/package.json
-          cat packages/rust/Cargo.toml
-
-      - name: Determine VERSION
+      - name: Determine version
+        id: version
         run: |
           set -euo pipefail
           if [ "${{ github.ref_type }}" = "tag" ]; then
-            VERSION="${{ github.ref_name }}"
+            TAG="${{ github.ref_name }}"
           elif [ -n "${{ inputs.version || '' }}" ]; then
-            VERSION="${{ inputs.version }}"
+            TAG="${{ inputs.version }}"
           else
             echo "No tag ref and no 'version' input. Provide a tag (push a tag) or pass inputs.version." >&2
             exit 1
           fi
-          # If you don't want the leading 'v' inside files, strip it:
-          STRIPPED="${VERSION#v}"
-          echo "VERSION=$STRIPPED" >> "$GITHUB_ENV"
-          echo "Resolved VERSION=$STRIPPED"
-
-      - name: Set Package Versions to current tag
-        run: |
-          set -euxo pipefail
-          for f in \
-            packages/ts/deno.json \
-            packages/ts/package.json \
-            packages/rust/Cargo.toml
-          do
-            test -f "$f" || { echo "Missing $f" >&2; exit 1; }
-            # replace __PACKAGE_VERSION__ with env VERSION
-            sed -i "s/__PACKAGE_VERSION__/${VERSION//\//-}/g" "$f"
-          done
+          VERSION="${TAG#v}"
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Resolved VERSION=$VERSION, TAG=$TAG"
 
       - name: Setup Buf
         uses: bufbuild/buf-setup-action@main
         with:
           github_token: ${{ github.token }}
 
-      - name: Generate code
+      - name: Generate protobuf code
         run: buf generate
+
+      - name: Set package versions
+        run: |
+          set -euxo pipefail
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          for f in packages/ts/deno.json packages/ts/package.json packages/rust/Cargo.toml; do
+            test -f "$f" || { echo "Missing $f" >&2; exit 1; }
+            sed -i "s/__PACKAGE_VERSION__/${VERSION}/g" "$f"
+          done
 
       - name: Copy license & README
         run: |
-          cp LICENSE packages/ts
-          cp LICENSE packages/rust
-          cp README.md packages/ts
-          cp README.md packages/rust
-
-      - name: Upload Rust code
-        uses: actions/upload-artifact@v4
-        with:
-          name: rust_code
-          path: packages/rust
+          cp LICENSE README.md packages/ts/
+          cp LICENSE README.md packages/rust/
 
       - name: Upload TypeScript code
         uses: actions/upload-artifact@v4
@@ -87,33 +77,60 @@ jobs:
           name: ts_code
           path: packages/ts
 
-      - name: Push to schema registry
-        env:
-          BUF_TOKEN: ${{ secrets.BUF_TOKEN }}
-        run: |
-          buf push --tag ${{ github.ref_name }}
+      - name: Upload Rust code
+        uses: actions/upload-artifact@v4
+        with:
+          name: rust_code
+          path: packages/rust
 
-  publish-jsr:
+  build-typescript:
     runs-on: ubuntu-24.04
     needs: codegen
-    permissions:
-      contents: read
-      id-token: write
     steps:
       - name: Download TypeScript code
         uses: actions/download-artifact@v4
         with:
           name: ts_code
-      - name: Remove package.json (JSR doesn’t need it)
-        run: rm -f package.json
-      - name: Set up Deno
-        uses: denoland/setup-deno@main
-        with:
-          deno-version: rc
-      - name: Publish to JSR
-        run: deno publish --unstable-sloppy-imports
 
-  publish-cargo:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build with tsdown
+        run: npm run build
+
+      - name: Show build output
+        run: |
+          echo "=== Build output ==="
+          ls -la
+          ls -la dist/
+
+      - name: Upload built NPM package
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm_package
+          path: |
+            dist/
+            package.json
+            LICENSE
+            README.md
+
+      - name: Upload JSR package
+        uses: actions/upload-artifact@v4
+        with:
+          name: jsr_package
+          path: |
+            lib/
+            mod.ts
+            deno.json
+            LICENSE
+            README.md
+
+  build-rust:
     runs-on: ubuntu-24.04
     needs: codegen
     steps:
@@ -121,10 +138,159 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: rust_code
-      - name: Set up Rust
+
+      - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
-      - name: Check Library
-        run: cargo check
+
+      - name: Build library
+        run: cargo build --release
+
+      - name: Show build output
+        run: |
+          echo "=== Build output ==="
+          ls -la
+          ls -la target/release/ || true
+
+      - name: Upload built Rust package
+        uses: actions/upload-artifact@v4
+        with:
+          name: rust_package
+          path: |
+            src/
+            Cargo.toml
+            Cargo.lock
+            LICENSE
+            README.md
+
+  create-release-zips:
+    runs-on: ubuntu-24.04
+    needs: [codegen, build-typescript, build-rust]
+    steps:
+      - name: Download NPM package
+        uses: actions/download-artifact@v4
+        with:
+          name: npm_package
+          path: npm_package
+
+      - name: Download JSR package
+        uses: actions/download-artifact@v4
+        with:
+          name: jsr_package
+          path: jsr_package
+
+      - name: Download Rust package
+        uses: actions/download-artifact@v4
+        with:
+          name: rust_package
+          path: rust_package
+
+      - name: Create zip archives
+        run: |
+          cd npm_package && zip -r ../meshtastic-protobufs-npm.zip . && cd ..
+          cd jsr_package && zip -r ../meshtastic-protobufs-jsr.zip . && cd ..
+          cd rust_package && zip -r ../meshtastic-protobufs-rust.zip . && cd ..
+
+      - name: Upload release zips
+        uses: actions/upload-artifact@v4
+        with:
+          name: release_zips
+          path: |
+            meshtastic-protobufs-npm.zip
+            meshtastic-protobufs-jsr.zip
+            meshtastic-protobufs-rust.zip
+
+  upload-release-assets:
+    runs-on: ubuntu-24.04
+    needs: [codegen, create-release-zips]
+    if: ${{ !inputs.dry_run }}
+    steps:
+      - name: Download release zips
+        uses: actions/download-artifact@v4
+        with:
+          name: release_zips
+
+      - name: Upload assets to GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.codegen.outputs.tag }}
+          files: |
+            meshtastic-protobufs-npm.zip
+            meshtastic-protobufs-jsr.zip
+            meshtastic-protobufs-rust.zip
+
+  push-buf-registry:
+    runs-on: ubuntu-24.04
+    needs: codegen
+    if: ${{ !inputs.dry_run }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Buf
+        uses: bufbuild/buf-setup-action@main
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Push to schema registry
+        env:
+          BUF_TOKEN: ${{ secrets.BUF_TOKEN }}
+        run: buf push --tag ${{ needs.codegen.outputs.tag }}
+
+  publish-npm:
+    runs-on: ubuntu-24.04
+    needs: [codegen, build-typescript]
+    if: ${{ !inputs.dry_run }}
+    steps:
+      - name: Download NPM package
+        uses: actions/download-artifact@v4
+        with:
+          name: npm_package
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Publish to NPM
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-jsr:
+    runs-on: ubuntu-24.04
+    needs: [codegen, build-typescript]
+    if: ${{ !inputs.dry_run }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download JSR package
+        uses: actions/download-artifact@v4
+        with:
+          name: jsr_package
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Publish to JSR
+        run: npx jsr publish
+
+  publish-cargo:
+    runs-on: ubuntu-24.04
+    needs: [codegen, build-rust]
+    if: ${{ !inputs.dry_run }}
+    steps:
+      - name: Download Rust package
+        uses: actions/download-artifact@v4
+        with:
+          name: rust_package
+
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
       - name: Publish to crates.io
         uses: katyo/publish-crates@v2
         with:
