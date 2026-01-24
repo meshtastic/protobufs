@@ -846,7 +846,7 @@ enum HardwareModel {
   MESHSTICK_1262 = 121;
 
   /*
-   * LilyGo T-Beam 1W 
+   * LilyGo T-Beam 1W
    */
   TBEAM_1_WATT = 122;
 
