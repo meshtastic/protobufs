@@ -724,6 +724,28 @@ message Config {
     bool ipv6_enabled = 11;
 
     /*
+     * Keep WiFi up only while the node runs on external power.
+     * On battery the radio is turned off after wifi_power_loss_timeout_secs,
+     * and turned back on when external power returns. Does not change
+     * wifi_enabled: the radio comes back on its own.
+     */
+    bool wifi_on_external_power_only = 12 [(meshtastic.field_metadata) = {
+      label: "WiFi On External Power Only"
+      description: "Turn WiFi off while the node runs on battery, and back on when it is plugged in again."
+    }];
+
+    /*
+     * How long to stay on WiFi after external power is lost, so that a brief
+     * interruption does not toggle the radio. Zero means the default of 30
+     * seconds. Only used when wifi_on_external_power_only is set.
+     */
+    uint32 wifi_power_loss_timeout_secs = 13 [(meshtastic.field_metadata) = {
+      label: "WiFi Power Loss Timeout"
+      description: "Seconds on battery before WiFi is turned off. Zero uses the default of 30 seconds."
+      unit: "s"
+    }];
+
+    /*
      * Available flags auxiliary network protocols
      */
     enum ProtocolFlags {
