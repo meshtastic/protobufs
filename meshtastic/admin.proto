@@ -154,9 +154,14 @@ message AdminMessage {
     PAXCOUNTER_CONFIG = 12;
 
     /*
+     * StatusMessage Config
+     */
+    STATUSMESSAGE_CONFIG = 13;
+
+    /*
      * Traffic Management module config
      */
-    TRAFFICMANAGEMENT_CONFIG = 13;
+    TRAFFICMANAGEMENT_CONFIG = 14;
   }
 
   enum BackupLocation {

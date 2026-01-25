@@ -132,9 +132,14 @@ message LocalModuleConfig {
   ModuleConfig.PaxcounterConfig paxcounter = 14;
 
   /*
+   * StatusMessage Config
+   */
+  ModuleConfig.StatusMessageConfig statusmessage = 15;
+
+  /*
    * The part of the config that is specific to the Traffic Management module
    */
-  ModuleConfig.TrafficManagementConfig traffic_management = 15;
+  ModuleConfig.TrafficManagementConfig traffic_management = 16;
 
   /*
    * A version integer used to invalidate old save files when we make
