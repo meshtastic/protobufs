@@ -816,3 +816,38 @@ message Nau7802Config {
    */
   float calibrationFactor = 2;
 }
+
+/*
+ * SEN5X State, for saving to flash
+ */
+message SEN5XState {
+  /*
+   * Last cleaning time for SEN5X
+   */
+  uint32 last_cleaning_time = 1;
+
+  /*
+   * Last cleaning time for SEN5X - valid flag
+   */
+  bool last_cleaning_valid = 2;
+
+  /*
+   * Config flag for one-shot mode (see admin.proto)
+   */
+  bool one_shot_mode = 3;
+
+  /*
+   * Last VOC state time for SEN55
+   */
+  optional uint32 voc_state_time = 4;
+
+  /*
+   * Last VOC state validity flag for SEN55
+   */
+  optional bool voc_state_valid = 5;
+
+  /*
+   * VOC state array (8x uint8t) for SEN55
+   */
+  optional fixed64 voc_state_array = 6;
+}
