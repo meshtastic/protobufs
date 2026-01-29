@@ -228,6 +228,13 @@ enum PortNum {
   POWERSTRESS_APP = 74;
 
   /*
+   * Signal-based routing protocol for community mesh networks.
+   * Exchanges neighbor link quality information for intelligent route selection.
+   * ENCODING: Protobuf (SignalRoutingInfo)
+   */
+  SIGNAL_ROUTING_APP = 75;
+
+  /*
    * Reticulum Network Stack Tunnel App
    * ENCODING: Fragmented RNS Packet. Handled by Meshtastic RNS interface
    */

@@ -864,6 +864,41 @@ enum HardwareModel {
 }
 
 /*
+ * A compact neighbor link for signal-based routing.
+ * Optimized for size: ~15 bytes per neighbor to fit 14 neighbors in 233 byte payload.
+ */
+message SignalNeighbor {
+  /*
+   * The node ID of the neighbor
+   */
+  fixed32 node_id = 1;
+
+  /*
+   * RSSI of received packets from this neighbor (in dBm, typically -128 to 0)
+   * Stored as int8 via nanopb int_size:8 option.
+   */
+  sint32 rssi = 2;
+
+  /*
+   * SNR of received packets from this neighbor (in dB, typically -20 to +30)
+   * Stored as int8 via nanopb int_size:8 option.
+   */
+  sint32 snr = 3;
+
+  /*
+   * Position variance/uncertainty scaled to fit uint8 (0-255 representing 0-3000m).
+   * Higher values indicate more mobile/unreliable nodes.
+   * Stored as uint8 via nanopb int_size:8 option.
+   */
+  uint32 position_variance = 4;
+
+  /*
+   * Whether this neighbor is actively participating in signal-based routing
+   */
+  bool signal_routing_active = 5;
+}
+
+/*
  * Broadcast when a newly powered mesh node wants to find a node num it can use
  * Sent from the phone over bluetooth to set the user id for the owner of this node.
  * Also sent from nodes to each other when a new node signs on (so all clients can have this info)
@@ -2306,7 +2341,7 @@ message NeighborInfo {
 }
 
 /*
- * A single edge in the mesh
+ * A single edge in the mesh (stock Meshtastic)
  */
 message Neighbor {
   /*
@@ -2330,6 +2365,37 @@ message Neighbor {
    * Note: this is for local storage only and will not be sent out over the mesh.
    */
   uint32 node_broadcast_interval_secs = 4;
+}
+
+/*
+ * Signal-based routing information exchanged between nodes.
+ * Used for building a network graph and calculating optimal routes.
+ * Sent on SIGNAL_ROUTING_APP port (75).
+ */
+message SignalRoutingInfo {
+  /*
+   * Routing protocol version indicator for compatibility checking.
+   * Placed first to allow early rejection of incompatible versions.
+   * Allows future protocol upgrades while maintaining backward compatibility.
+   */
+  uint32 routing_version = 1;
+
+  /*
+   * Whether this node is actively participating in signal-based routing
+   */
+  bool signal_routing_active = 2;
+
+  /*
+   * List of directly heard neighbors with signal quality metrics.
+   * Limited to 14 neighbors for single-packet broadcasts.
+   */
+  repeated SignalNeighbor neighbors = 3;
+
+  /*
+   * Topology snapshot version (monotonic timestamp).
+   * Ensures receivers process topology updates in order and avoid mixing old/new data.
+   */
+  uint32 topology_version = 4;
 }
 
 /*

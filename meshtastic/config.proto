@@ -1185,6 +1185,16 @@ message Config {
   }
 
   /*
+   * Routing configuration
+   */
+  message RoutingConfig {
+    /*
+     * Enable signal-based routing
+     */
+    bool signal_based_routing = 1;
+  }
+
+  /*
    * Blank config request, strictly for getting the session key
    */
   message SessionkeyConfig {}
@@ -1203,5 +1213,6 @@ message Config {
     SecurityConfig security = 8;
     SessionkeyConfig sessionkey = 9;
     DeviceUIConfig device_ui = 10;
+    RoutingConfig routing = 11;
   }
 }
