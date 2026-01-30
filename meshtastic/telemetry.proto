@@ -521,6 +521,100 @@ message HostMetrics {
   optional string user_string = 9;
 }
 
+message SEN5XData {
+  /*
+   * Concentration Units Standard PM1.0 in ug/m3
+   */
+  optional uint32 pm10_standard = 1;
+
+  /*
+   * Concentration Units Standard PM2.5 in ug/m3
+   */
+  optional uint32 pm25_standard = 2;
+
+  /*
+   * Concentration Units Standard PM4.0 in ug/m3
+   */
+  optional uint32 pm40_standard = 3;
+
+  /*
+   * Concentration Units Standard PM10.0 in ug/m3
+   */
+  optional uint32 pm100_standard = 4;
+
+  /*
+   * 0.5um Particle Count in #/0.1l
+   */
+  optional uint32 particles_05um = 5;
+
+  /*
+   * 1.0um Particle Count in #/0.1l
+   */
+  optional uint32 particles_10um = 6;
+
+  /*
+   * 2.5um Particle Count in #/0.1l
+   */
+  optional uint32 particles_25um = 7;
+
+  /*
+   * 4.0um Particle Count in #/0.1l
+   */
+  optional uint32 particles_40um = 8;
+
+  /*
+   * 10.0um Particle Count in #/0.1l
+   */
+  optional uint32 particles_100um = 9;
+
+  /*
+   * PM Sensor Temperature
+   */
+  optional float pm_temperature = 10;
+
+  /*
+   * PM Sensor humidity
+   */
+  optional float pm_humidity = 11;
+
+  /*
+   * PM Sensor VOC Index
+   */
+  optional float pm_voc_idx = 12;
+
+  /*
+   * PM Sensor NOx Index
+   */
+  optional float pm_nox_idx = 13;
+
+  /*
+   * Typical Particle Size in um
+   */
+  optional float particles_tps = 14;
+}
+
+message SCD4XData {
+  /*
+   * CO2 concentration in ppm
+   */
+  optional uint32 co2 = 1;
+
+  /*
+   * CO2 sensor temperature in degC
+   */
+  optional float co2_temperature = 2;
+
+  /*
+   * CO2 sensor relative humidity in %
+   */
+  optional float co2_humidity = 3;
+}
+
+message AirQualityData {
+  optional SEN5XData sen5xdata = 1;
+  optional SCD4XData scd4xdata = 2;
+}
+
 /*
  * Types of Measurements the telemetry module is equipped to handle
  */
@@ -565,6 +659,7 @@ message Telemetry {
      * Linux host metrics
      */
     HostMetrics host_metrics = 8;
+    AirQualityData air_quality_data = 9;
   }
 }
 
