@@ -241,136 +241,6 @@ message PowerMetrics {
 }
 
 /*
- * Air quality metrics
- */
-message AirQualityMetrics {
-  /*
-   * Concentration Units Standard PM1.0 in ug/m3
-   */
-  optional uint32 pm10_standard = 1;
-
-  /*
-   * Concentration Units Standard PM2.5 in ug/m3
-   */
-  optional uint32 pm25_standard = 2;
-
-  /*
-   * Concentration Units Standard PM10.0 in ug/m3
-   */
-  optional uint32 pm100_standard = 3;
-
-  /*
-   * Concentration Units Environmental PM1.0 in ug/m3
-   */
-  optional uint32 pm10_environmental = 4;
-
-  /*
-   * Concentration Units Environmental PM2.5 in ug/m3
-   */
-  optional uint32 pm25_environmental = 5;
-
-  /*
-   * Concentration Units Environmental PM10.0 in ug/m3
-   */
-  optional uint32 pm100_environmental = 6;
-
-  /*
-   * 0.3um Particle Count in #/0.1l
-   */
-  optional uint32 particles_03um = 7;
-
-  /*
-   * 0.5um Particle Count in #/0.1l
-   */
-  optional uint32 particles_05um = 8;
-
-  /*
-   * 1.0um Particle Count in #/0.1l
-   */
-  optional uint32 particles_10um = 9;
-
-  /*
-   * 2.5um Particle Count in #/0.1l
-   */
-  optional uint32 particles_25um = 10;
-
-  /*
-   * 5.0um Particle Count in #/0.1l
-   */
-  optional uint32 particles_50um = 11;
-
-  /*
-   * 10.0um Particle Count in #/0.1l
-   */
-  optional uint32 particles_100um = 12;
-
-  /*
-   * CO2 concentration in ppm
-   */
-  optional uint32 co2 = 13;
-
-  /*
-   * CO2 sensor temperature in degC
-   */
-  optional float co2_temperature = 14;
-
-  /*
-   * CO2 sensor relative humidity in %
-   */
-  optional float co2_humidity = 15;
-
-  /*
-   * Formaldehyde sensor formaldehyde concentration in ppb
-   */
-  optional float form_formaldehyde = 16;
-
-  /*
-   * Formaldehyde sensor relative humidity in %RH
-   */
-  optional float form_humidity = 17;
-
-  /*
-   * Formaldehyde sensor temperature in degrees Celsius
-   */
-  optional float form_temperature = 18;
-
-  /*
-   * Concentration Units Standard PM4.0 in ug/m3
-   */
-  optional uint32 pm40_standard = 19;
-
-  /*
-   * 4.0um Particle Count in #/0.1l
-   */
-  optional uint32 particles_40um = 20;
-
-  /*
-   * PM Sensor Temperature
-   */
-  optional float pm_temperature = 21;
-
-  /*
-   * PM Sensor humidity
-   */
-  optional float pm_humidity = 22;
-
-  /*
-   * PM Sensor VOC Index
-   */
-  optional float pm_voc_idx = 23;
-
-  /*
-   * PM Sensor NOx Index
-   */
-  optional float pm_nox_idx = 24;
-
-  /*
-   * Typical Particle Size in um
-   */
-  optional float particles_tps = 25;
-}
-
-/*
  * Local device mesh statistics
  */
 message LocalStats {
@@ -521,6 +391,74 @@ message HostMetrics {
   optional string user_string = 9;
 }
 
+/*
+ * Plantower PMSA003I Data
+ */
+message PMSA003IData {
+  /*
+   * Concentration Units Standard PM1.0 in ug/m3
+   */
+  optional uint32 pm10_standard = 1;
+
+  /*
+   * Concentration Units Standard PM2.5 in ug/m3
+   */
+  optional uint32 pm25_standard = 2;
+
+  /*
+   * Concentration Units Standard PM10.0 in ug/m3
+   */
+  optional uint32 pm100_standard = 3;
+
+  /*
+   * Concentration Units Environmental PM1.0 in ug/m3
+   */
+  optional uint32 pm10_environmental = 4;
+
+  /*
+   * Concentration Units Environmental PM2.5 in ug/m3
+   */
+  optional uint32 pm25_environmental = 5;
+
+  /*
+   * Concentration Units Environmental PM10.0 in ug/m3
+   */
+  optional uint32 pm100_environmental = 6;
+
+  /*
+   * 0.3um Particle Count in #/0.1l
+   */
+  optional uint32 particles_03um = 7;
+
+  /*
+   * 0.5um Particle Count in #/0.1l
+   */
+  optional uint32 particles_05um = 8;
+
+  /*
+   * 1.0um Particle Count in #/0.1l
+   */
+  optional uint32 particles_10um = 9;
+
+  /*
+   * 2.5um Particle Count in #/0.1l
+   */
+  optional uint32 particles_25um = 10;
+
+  /*
+   * 5.0um Particle Count in #/0.1l
+   */
+  optional uint32 particles_50um = 11;
+
+  /*
+   * 10.0um Particle Count in #/0.1l
+   */
+  optional uint32 particles_100um = 12;
+}
+
+/*
+ * Sensirion SEN5X Data
+ */
 message SEN5XData {
   /*
    * Concentration Units Standard PM1.0 in ug/m3
@@ -593,6 +531,9 @@ message SEN5XData {
   optional float particles_tps = 14;
 }
 
+/*
+ * Sensirion SCD4X Data
+ */
 message SCD4XData {
   /*
    * CO2 concentration in ppm
@@ -610,9 +551,49 @@ message SCD4XData {
   optional float co2_humidity = 3;
 }
 
-message AirQualityData {
-  optional SEN5XData sen5xdata = 1;
-  optional SCD4XData scd4xdata = 2;
+/*
+ * Sensirion SFA30 Data
+ */
+message SFA30Data {
+  /*
+   * Formaldehyde sensor formaldehyde concentration in ppb
+   */
+  optional float form_formaldehyde = 1;
+
+  /*
+   * Formaldehyde sensor relative humidity in %RH
+   */
+  optional float form_humidity = 2;
+
+  /*
+   * Formaldehyde sensor temperature in degrees Celsius
+   */
+  optional float form_temperature = 3;
+}
+
+/*
+ * Air Quality Metrics
+ */
+message AirQualityMetrics {
+  /*
+   * Plantower PMSA003I Data
+   */
+  optional PMSA003IData pmsa003idata = 1;
+
+  /*
+   * Sensirion SEN5X Data
+   */
+  optional SEN5XData sen5xdata = 2;
+
+  /*
+   * Sensirion SCD4X Data
+   */
+  optional SCD4XData scd4xdata = 3;
+
+  /*
+   * Sensirion SFA30 Data
+   */
+  optional SFA30Data sfa30data = 4;
 }
 
 /*
@@ -659,7 +640,6 @@ message Telemetry {
      * Linux host metrics
      */
     HostMetrics host_metrics = 8;
-    AirQualityData air_quality_data = 9;
   }
 }
 
