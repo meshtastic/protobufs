@@ -439,9 +439,9 @@ message LocalStats {
    */
   uint32 heap_free_bytes = 13;
 
-   /*
-    * Number of packets that were dropped because the transmit queue was full.
-    */
+  /*
+   * Number of packets that were dropped because the transmit queue was full.
+   */
   uint32 num_tx_dropped = 14;
 
   /*

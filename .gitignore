@@ -1,1 +1,4 @@
 .DS_Store
+
+# Generated protobuf files
+packages/ts/lib/
