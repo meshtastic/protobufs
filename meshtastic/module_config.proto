@@ -306,75 +306,70 @@ message ModuleConfig {
     bool enabled = 1;
 
     /*
-     * Dry-run mode: log actions but don't actually drop or modify packets
-     */
-    bool dry_run = 2;
-
-    /*
      * Enable position deduplication to drop redundant position broadcasts
      */
-    bool position_dedup_enabled = 3;
+    bool position_dedup_enabled = 2;
 
     /*
      * Number of bits of precision for position deduplication (0-32)
      */
-    uint32 position_precision_bits = 4;
+    uint32 position_precision_bits = 3;
 
     /*
      * Minimum interval in seconds between position updates from the same node
      */
-    uint32 position_min_interval_secs = 5;
+    uint32 position_min_interval_secs = 4;
 
     /*
      * Enable direct response to NodeInfo requests from local cache
      */
-    bool nodeinfo_direct_response = 6;
+    bool nodeinfo_direct_response = 5;
 
     /*
      * Minimum hop distance from requestor before responding to NodeInfo requests
      */
-    uint32 nodeinfo_direct_response_max_hops = 7;
+    uint32 nodeinfo_direct_response_max_hops = 6;
 
     /*
      * Enable per-node rate limiting to throttle chatty nodes
      */
-    bool rate_limit_enabled = 8;
+    bool rate_limit_enabled = 7;
 
     /*
      * Time window in seconds for rate limiting calculations
      */
-    uint32 rate_limit_window_secs = 9;
+    uint32 rate_limit_window_secs = 8;
 
     /*
      * Maximum packets allowed per node within the rate limit window
      */
-    uint32 rate_limit_max_packets = 10;
+    uint32 rate_limit_max_packets = 9;
 
     /*
      * Enable dropping of unknown/undecryptable packets per rate_limit_window_secs
 
      */
-    bool drop_unknown_enabled = 11;
+    bool drop_unknown_enabled = 10;
 
     /*
      * Number of unknown packets before dropping from a node
      */
-    uint32 unknown_packet_threshold = 12;
+    uint32 unknown_packet_threshold = 11;
 
     /*
      * Set hop_limit to 0 for relayed telemetry broadcasts (own packets unaffected)
      */
-    bool exhaust_hop_telemetry = 13;
+    bool exhaust_hop_telemetry = 12;
 
     /*
      * Set hop_limit to 0 for relayed position broadcasts (own packets unaffected)
      */
-    bool exhaust_hop_position = 14;
+    bool exhaust_hop_position = 13;
 
     /*
      * Preserve hop_limit for router-to-router traffic
      */
-    bool router_preserve_hops = 15;
+    bool router_preserve_hops = 14;
   }
 
   /*
