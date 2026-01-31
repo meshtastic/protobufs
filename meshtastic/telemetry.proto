@@ -851,3 +851,28 @@ message SEN5XState {
    */
   optional fixed64 voc_state_array = 6;
 }
+
+/*
+ * Database record wrapper for storing telemetry with metadata
+ */
+message TelemetryDatabaseRecord {
+  /*
+   * Telemetry data
+   */
+  Telemetry telemetry = 1;
+
+  /*
+   * Delivery status flags
+   */
+  bool delivered = 2;
+}
+
+/*
+ * Telemetry database
+ */
+message TelemetryDatabase {
+  /*
+   * List of database records
+   */
+  repeated TelemetryDatabaseRecord records = 1;
+}

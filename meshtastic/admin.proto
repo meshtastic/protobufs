@@ -701,3 +701,13 @@ message SEN5X_config {
    */
   optional bool set_one_shot_mode = 2;
 }
+
+  /*
+   * Telemetry recovery command
+   */
+message Telemetry_Recovery {
+  /*
+   * Air quality telemetry recovery command
+   */
+  bool air_quality_recovery = 1;
+}
