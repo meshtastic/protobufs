@@ -69,7 +69,7 @@ jobs:
 
       - name: Set package versions
         run: |
-          set -euxo pipefail
+          set -euo pipefail
           VERSION="${{ steps.version.outputs.VERSION }}"
           for f in packages/ts/deno.json packages/ts/package.json; do
             test -f "$f" || { echo "Missing $f" >&2; exit 1; }
