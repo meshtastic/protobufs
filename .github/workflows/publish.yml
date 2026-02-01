@@ -58,8 +58,22 @@ jobs:
         run: buf generate
 
       - name: Move generated files to lib root
-        run: mv packages/ts/lib/meshtastic/*_pb.ts packages/ts/lib/
+        run: |
+          set -euo pipefail
+          src_dir="packages/ts/lib/meshtastic"
+          dest_dir="packages/ts/lib"
 
+          if [ ! -d "$src_dir" ]; then
+            echo "Expected source directory '$src_dir' does not exist. 'buf generate' may have failed or changed its output paths." >&2
+            exit 1
+          fi
+
+          if ! compgen -G "$src_dir"/*_pb.ts > /dev/null; then
+            echo "No '*_pb.ts' files found in '$src_dir'. 'buf generate' may have produced no TypeScript files or changed their naming." >&2
+            exit 1
+          fi
+
+          mv "$src_dir"/*_pb.ts "$dest_dir"/
       - name: Show generated files
         run: |
           echo "=== packages/ts contents ==="
