@@ -132,6 +132,11 @@ message LocalModuleConfig {
   ModuleConfig.PaxcounterConfig paxcounter = 14;
 
   /*
+   * StatusMessage Config
+   */
+  ModuleConfig.StatusMessageConfig statusmessage = 15;
+
+  /*
    * A version integer used to invalidate old save files when we make
    * incompatible changes This integer is set at build time and is private to
    * NodeDB.cpp in the device code.
