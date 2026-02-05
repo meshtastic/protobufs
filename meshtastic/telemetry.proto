@@ -802,8 +802,8 @@ enum TelemetrySensorType {
   BH1750 = 45;
   
   /*
-  * HDC1080 Temperature and Humidity Sensor
-  */
+   * HDC1080 Temperature and Humidity Sensor
+   */
   HDC1080 = 46;
 }
 
