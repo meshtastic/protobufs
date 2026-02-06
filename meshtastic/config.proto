@@ -275,66 +275,67 @@ message Config {
      * are always included (also time if GPS-synced)
      * NOTE: the more fields are included, the larger the message will be -
      *   leading to longer airtime and a higher risk of packet loss
+     * DEPRECATED in favor of GpsProfile
      */
     enum PositionFlags {
       /*
        * Required for compilation
        */
-      UNSET = 0x0000;
+      UNSET = 0x0000 [deprecated = true];
 
       /*
        * Include an altitude value (if available)
        */
-      ALTITUDE = 0x0001;
+      ALTITUDE = 0x0001 [deprecated = true];
 
       /*
        * Altitude value is MSL
        */
-      ALTITUDE_MSL = 0x0002;
+      ALTITUDE_MSL = 0x0002 [deprecated = true];
 
       /*
        * Include geoidal separation
        */
-      GEOIDAL_SEPARATION = 0x0004;
+      GEOIDAL_SEPARATION = 0x0004 [deprecated = true];
 
       /*
        * Include the DOP value ; PDOP used by default, see below
        */
-      DOP = 0x0008;
+      DOP = 0x0008 [deprecated = true];
 
       /*
        * If POS_DOP set, send separate HDOP / VDOP values instead of PDOP
        */
-      HVDOP = 0x0010;
+      HVDOP = 0x0010 [deprecated = true];
 
       /*
        * Include number of "satellites in view"
        */
-      SATINVIEW = 0x0020;
+      SATINVIEW = 0x0020 [deprecated = true];
 
       /*
        * Include a sequence number incremented per packet
        */
-      SEQ_NO = 0x0040;
+      SEQ_NO = 0x0040 [deprecated = true];
 
       /*
        * Include positional timestamp (from GPS solution)
        */
-      TIMESTAMP = 0x0080;
+      TIMESTAMP = 0x0080 [deprecated = true];
 
       /*
        * Include positional heading
        * Intended for use with vehicle not walking speeds
        * walking speeds are likely to be error prone like the compass
        */
-      HEADING = 0x0100;
+      HEADING = 0x0100 [deprecated = true];
 
       /*
        * Include positional speed
        * Intended for use with vehicle not walking speeds
        * walking speeds are likely to be error prone like the compass
        */
-      SPEED = 0x0200;
+      SPEED = 0x0200 [deprecated = true];
     }
 
     enum GpsMode {
@@ -352,6 +353,44 @@ message Config {
        * GPS is not present on the device
        */
       NOT_PRESENT = 2;
+    }
+
+    /*
+     * A plain language label that users of GPS select based on their intended activity.
+     * We use this to make selections from the variety of GPS Settings, including:
+     * GPS Update Interval, Position Broadcast Interval, Smart Broadcast Min Interval,
+     * Smart Broadcast Min Distance, and Position Flags. The firmware also modifies the
+     * GPS hardware configuration to take advantage of advanced features for each case.
+     * The firmware may also discard erroneous positions based on movement determined to
+     * be physically impossible.
+     */
+    enum GpsProfile {
+      /*
+       * Profile not set, user will make their own decisions.
+       */
+      MANUAL = 0;
+
+      /*
+       * This node does not move.
+       * We automatically apply this to all routers, router_lates,
+       * and any node with manually set lat/lon.
+       */
+      FIXED_POSITION = 1;
+
+      /*
+       * Hikers, runners, walkers.
+       */
+      PEDESTRIAN = 2;
+
+      /*
+       * Cars, motorbikes.
+       */
+      VEHICLE = 3;
+
+      /*
+       * Planes, balloons, drones.
+       */
+      AIRBORNE = 4;
     }
 
     /*
@@ -392,8 +431,9 @@ message Config {
     /*
      * Bit field of boolean configuration options for POSITION messages
      * (bitwise OR of PositionFlags)
+     * DEPRECATED in favour of GPS Profile
      */
-    uint32 position_flags = 7;
+    uint32 position_flags = 7 [deprecated = true];
 
     /*
      * (Re)define GPS_RX_PIN for your board.
@@ -424,6 +464,11 @@ message Config {
      * Set where GPS is enabled, disabled, or not present
      */
     GpsMode gps_mode = 13;
+
+    /*
+     * A pre-tuned mode of operation for the GPS based on use-case.
+     */
+    GpsProfile gps_profile = 14;
   }
 
   /*

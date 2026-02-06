@@ -2,6 +2,7 @@
 *DeviceConfig.tzdef max_size:65
 *DeviceConfig.buzzer_mode int_size:8
 
+*PositionConfig.gps_profile int_size:8
 
 *NetworkConfig.wifi_ssid max_size:33
 *NetworkConfig.wifi_psk max_size:65
