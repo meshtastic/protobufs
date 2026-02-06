@@ -789,6 +789,11 @@ message Config {
      * If true, node names will show in long format
      */
     bool use_long_node_name = 13;
+
+    /*
+     * If true, the device will display message bubbles on screen.
+     */
+    bool enable_message_bubbles = 14;
   }
 
   /*
