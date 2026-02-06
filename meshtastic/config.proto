@@ -929,6 +929,16 @@ message Config {
        * Brazil 902MHz
        */
       BR_902 = 26;
+
+      /*
+       * EU 866MHz band (Band no. 47b of 2006/771/EC and subsequent amendments) for Non-specific short-range devices (SRD)
+       */
+      EU_866 = 27;
+
+      /*
+       * EU 868MHz band, with narrow presets
+       */
+      NARROW_868 = 28;
     }
 
     /*
@@ -990,6 +1000,35 @@ message Config {
        * This preset performs similarly to LongFast, but with 500Khz bandwidth.
        */
       LONG_TURBO = 9;
+
+      /*
+       * Lite Fast
+       * Medium range preset optimized for EU 866MHz SRD band with 125kHz bandwidth.
+       * Comparable link budget to MEDIUM_FAST but compliant with Band no. 47b of 2006/771/EC.
+       */
+      LITE_FAST = 10;
+
+      /*
+       * Lite Slow
+       * Medium-to-moderate range preset optimized for EU 866MHz SRD band with 125kHz bandwidth.
+       * Comparable link budget to LONG_FAST but compliant with Band no. 47b of 2006/771/EC.
+       */
+      LITE_SLOW = 11;
+
+      /*
+       * Narrow Fast
+       * Medium-to-moderate range preset optimized for EU 868MHz band with 62.5kHz bandwidth.
+       * Comparable link budget to SHORT_SLOW, but with half the data rate.
+       * Intended to avoid interference with other devices.
+       */
+      NARROW_FAST = 12;
+
+      /*
+       * Narrow Slow
+       * Moderate range preset optimized for EU 868MHz band with 62.5kHz bandwidth.
+       * Comparable link budget and data rate to LONG_FAST.
+       */
+      NARROW_SLOW = 13;
     }
 
     /*
