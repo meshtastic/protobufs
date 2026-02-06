@@ -48,6 +48,7 @@ message PowerMon {
      * See GPSPowerState for more details
      */
     GPS_Active = 0x800;
+    LTE_On = 0x1000; // LTE modem is powered on
   }
 }
 
@@ -92,6 +93,9 @@ message PowerStressMessage {
 
     GPS_OFF = 112; // Turn off the GPS radio for num_seconds
     GPS_ON = 113; // Turn on the GPS radio for num_seconds
+
+    LTE_OFF = 0x80; // Turn off the LTE radio for num_seconds
+    LTE_ON = 0x81; // Turn on the LTE radio for num_seconds
   }
 
   /*

@@ -22,3 +22,8 @@
 *SecurityConfig.private_key max_size:32
 *SecurityConfig.admin_key max_size:32
 *SecurityConfig.admin_key max_count:3
+
+*LTEConfig.apn max_size:32
+*LTEConfig.sim_pin max_size:4
+*LTEConfig.apn_username max_size:16
+*LTEConfig.apn_password max_size:16

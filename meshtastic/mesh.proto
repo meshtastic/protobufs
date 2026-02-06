@@ -2396,6 +2396,13 @@ message DeviceMetadata {
    * (bitwise OR of ExcludedModules)
    */
   uint32 excluded_modules = 12;
+
+  /*
+   * Indicates whether the device has LTE capabilities
+   * (e.g. Quectel BG96, SIM7600, etc.)
+   */
+
+  bool hasLTE = 13;
 }
 
 /*

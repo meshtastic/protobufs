@@ -579,6 +579,11 @@ message Config {
     bool ipv6_enabled = 11;
 
     /*
+     * LTE modem enabled
+     */
+    bool lte_enabled = 12;
+
+    /*
      * Available flags auxiliary network protocols
      */
     enum ProtocolFlags {
@@ -1194,6 +1199,23 @@ message Config {
    */
   message SessionkeyConfig {}
 
+  message LTEConfig {
+    /*
+     * LTE Config
+     */
+    // Access Point Name for LTE network
+    string apn = 1;
+
+    // SIM card PIN code (if required)
+    string sim_pin = 2;
+
+    // Username for APN authentication (optional)
+    string apn_username = 3;
+
+    // Password for APN authentication (optional)
+    string apn_password = 4;
+  }
+
   /*
    * Payload Variant
    */
@@ -1208,5 +1230,6 @@ message Config {
     SecurityConfig security = 8;
     SessionkeyConfig sessionkey = 9;
     DeviceUIConfig device_ui = 10;
+    LTEConfig lte = 11;
   }
 }
