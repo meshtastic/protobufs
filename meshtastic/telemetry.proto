@@ -800,6 +800,11 @@ enum TelemetrySensorType {
    * BH1750 light sensor
    */
   BH1750 = 45;
+
+  /*
+   * ADA4026 Soil Moisture Sensor
+   */
+  ADA4026 = 46;
 }
 
 /*
