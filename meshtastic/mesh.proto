@@ -1138,13 +1138,15 @@ message Data {
   fixed32 request_id = 6;
 
   /*
-   * If set, this message is intened to be a reply to a previously sent message with the defined id.
+   * If this field is 0, this message is a new message and not a reply.
+   * If this field is non-zero, this message is a reply to a previously sent message whose id is reply_id.
+   * Reply messages can be a text reply (emoji == 0), or an emoji reply (emoji == 1).
    */
   fixed32 reply_id = 7;
 
   /*
-   * Defaults to false. If true, then what is in the payload should be treated as an emoji like giving
-   * a message a heart or poop emoji.
+   * If set to 0 this message is a normal text message, like a chat message.
+   * If set to 1 this message is an emoji reply to an earlier message, like giving a message a heart or poop emoji.
    */
   fixed32 emoji = 8;
 
