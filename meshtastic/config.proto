@@ -943,9 +943,8 @@ message Config {
 
       /*
        * Long Range - Slow
-       * Deprecated in 2.7: Unpopular slow preset.
        */
-      LONG_SLOW = 1 [deprecated = true];
+      LONG_SLOW = 1;
 
       /*
        * Very Long Range - Slow
