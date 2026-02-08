@@ -296,6 +296,83 @@ message ModuleConfig {
   }
 
   /*
+   * Config for the Traffic Management module.
+   * Provides packet inspection and traffic shaping to help reduce channel utilization
+   */
+  message TrafficManagementConfig {
+    /*
+     * Master enable for traffic management module
+     */
+    bool enabled = 1;
+
+    /*
+     * Enable position deduplication to drop redundant position broadcasts
+     */
+    bool position_dedup_enabled = 2;
+
+    /*
+     * Number of bits of precision for position deduplication (0-32)
+     */
+    uint32 position_precision_bits = 3;
+
+    /*
+     * Minimum interval in seconds between position updates from the same node
+     */
+    uint32 position_min_interval_secs = 4;
+
+    /*
+     * Enable direct response to NodeInfo requests from local cache
+     */
+    bool nodeinfo_direct_response = 5;
+
+    /*
+     * Minimum hop distance from requestor before responding to NodeInfo requests
+     */
+    uint32 nodeinfo_direct_response_max_hops = 6;
+
+    /*
+     * Enable per-node rate limiting to throttle chatty nodes
+     */
+    bool rate_limit_enabled = 7;
+
+    /*
+     * Time window in seconds for rate limiting calculations
+     */
+    uint32 rate_limit_window_secs = 8;
+
+    /*
+     * Maximum packets allowed per node within the rate limit window
+     */
+    uint32 rate_limit_max_packets = 9;
+
+    /*
+     * Enable dropping of unknown/undecryptable packets per rate_limit_window_secs
+
+     */
+    bool drop_unknown_enabled = 10;
+
+    /*
+     * Number of unknown packets before dropping from a node
+     */
+    uint32 unknown_packet_threshold = 11;
+
+    /*
+     * Set hop_limit to 0 for relayed telemetry broadcasts (own packets unaffected)
+     */
+    bool exhaust_hop_telemetry = 12;
+
+    /*
+     * Set hop_limit to 0 for relayed position broadcasts (own packets unaffected)
+     */
+    bool exhaust_hop_position = 13;
+
+    /*
+     * Preserve hop_limit for router-to-router traffic
+     */
+    bool router_preserve_hops = 14;
+  }
+
+  /*
    * Serial Config
    */
   message SerialConfig {
@@ -852,6 +929,11 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     StatusMessageConfig statusmessage = 14;
+
+    /*
+     * Traffic management module config for mesh network optimization
+     */
+    TrafficManagementConfig traffic_management = 15;
   }
 }
 

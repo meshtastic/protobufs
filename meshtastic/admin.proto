@@ -157,6 +157,11 @@ message AdminMessage {
      * TODO: REPLACE
      */
     STATUSMESSAGE_CONFIG = 13;
+
+    /*
+     * Traffic management module config
+     */
+    TRAFFICMANAGEMENT_CONFIG = 14;
   }
 
   enum BackupLocation {
