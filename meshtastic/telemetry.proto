@@ -791,6 +791,7 @@ enum TelemetrySensorType {
    * SEN5X PM SENSORS
    */
   SEN5X = 43;
+
   /*
    * TSL2561 light sensor
    */
@@ -800,7 +801,7 @@ enum TelemetrySensorType {
    * BH1750 light sensor
    */
   BH1750 = 45;
-  
+
   /*
    * HDC1080 Temperature and Humidity Sensor
    */
@@ -815,6 +816,11 @@ enum TelemetrySensorType {
    * Sensirion STC31 CO2 sensor
    */
   STC31 = 48;
+
+  /*
+   * SCD30 CO2, humidity, temperature sensor
+   */
+  SCD30 = 49;
 }
 
 /*
