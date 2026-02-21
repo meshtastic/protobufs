@@ -9,6 +9,7 @@ import "meshtastic/connection_status.proto";
 import "meshtastic/device_ui.proto";
 import "meshtastic/mesh.proto";
 import "meshtastic/module_config.proto";
+import "meshtastic/telemetry.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -705,14 +706,9 @@ message SCD4X_config {
   optional bool set_power_mode = 7;
 
   /*
-   * Toggle for enabling CO2 readings
+   * Disables for SCD4X
    */
-  optional bool enable_co2 = 8;
-
-  /*
-   * Toggle for enabling T/RH readings
-   */
-  optional bool enable_trh = 9;
+  optional SCD4XDisables scd4xdisables = 8;
 }
 
 message SEN5X_config {
@@ -727,24 +723,10 @@ message SEN5X_config {
   optional bool set_one_shot_mode = 2;
 
   /*
-   * Toggle for enabling PM readings
+   * Disables for SEN5X
    */
-  optional bool enable_pm = 3;
+  optional SEN5XDisables sen5xdisables = 3;
 
-  /*
-   * Toggle for enabling PN readings
-   */
-  optional bool enable_pn = 4;
-
-  /*
-   * Toggle for enabling T/RH readings
-   */
-  optional bool enable_trh = 5;
-
-  /*
-   * Toggle for enabling IDx readings
-   */
-  optional bool enable_idx = 6;
 }
 
 message SCD30_config {
@@ -779,24 +761,14 @@ message SCD30_config {
   optional bool soft_reset = 6;
 
   /*
-   * Toggle for enabling CO2 readings
+   * Disables for SCD30
    */
-  optional bool enable_co2 = 7;
-
-  /*
-   * Toggle for enabling T/RH readings
-   */
-  optional bool enable_trh = 8;
+  optional SCD30Disables scd30disables= 7;
 }
 
 message SFA30_config {
   /*
-   * Toggle for enabling HCHO readings
+   * Disables for SFA30
    */
-  optional bool enable_hcho = 1;
-
-  /*
-   * Toggle for enabling T/RH readings
-   */
-  optional bool enable_trh = 2;
+  optional SFA30Disables sfa30disables = 1;
 }
