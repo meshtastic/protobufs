@@ -856,9 +856,14 @@ enum HardwareModel {
   T5_S3_EPAPER_PRO = 123;
 
   /*
+   * LilyGo T-Beam BPF (144-148Mhz)
+   */
+  TBEAM_BPF = 124;
+
+  /*
    * LilyGo T-Mini E-paper S3 Kit
    */
-  MINI_EPAPER_S3 = 124;
+  MINI_EPAPER_S3 = 125;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
