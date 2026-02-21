@@ -661,6 +661,11 @@ message SensorConfig {
    * SCD30 CO2 Sensor configuration
    */
   SCD30_config scd30_config = 3;
+
+  /*
+   * SFA30 HCHO Sensor configuration
+   */
+  SFA30_config sfa30_config = 4;
 }
 
 message SCD4X_config {
@@ -698,6 +703,16 @@ message SCD4X_config {
    * Power mode for sensor (true for low power, false for normal)
    */
   optional bool set_power_mode = 7;
+
+  /*
+   * Toggle for enabling CO2 readings
+   */
+  optional bool enable_co2 = 8;
+
+  /*
+   * Toggle for enabling T/RH readings
+   */
+  optional bool enable_trh = 9;
 }
 
 message SEN5X_config {
@@ -710,6 +725,26 @@ message SEN5X_config {
    * One-shot mode (true for low power - one-shot mode, false for normal - continuous mode)
    */
   optional bool set_one_shot_mode = 2;
+
+  /*
+   * Toggle for enabling PM readings
+   */
+  optional bool enable_pm = 3;
+
+  /*
+   * Toggle for enabling PN readings
+   */
+  optional bool enable_pn = 4;
+
+  /*
+   * Toggle for enabling T/RH readings
+   */
+  optional bool enable_trh = 5;
+
+  /*
+   * Toggle for enabling IDx readings
+   */
+  optional bool enable_idx = 6;
 }
 
 message SCD30_config {
@@ -742,4 +777,26 @@ message SCD30_config {
    * Perform a factory reset of the sensor
    */
   optional bool soft_reset = 6;
+
+  /*
+   * Toggle for enabling CO2 readings
+   */
+  optional bool enable_co2 = 7;
+
+  /*
+   * Toggle for enabling T/RH readings
+   */
+  optional bool enable_trh = 8;
+}
+
+message SFA30_config {
+  /*
+   * Toggle for enabling HCHO readings
+   */
+  optional bool enable_hcho = 1;
+
+  /*
+   * Toggle for enabling T/RH readings
+   */
+  optional bool enable_trh = 2;
 }
