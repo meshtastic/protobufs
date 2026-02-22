@@ -731,7 +731,6 @@ message SEN5X_config {
    * Disables for SEN5X
    */
   optional SEN5XDisables sen5xdisables = 3;
-
 }
 
 message SCD30_config {
@@ -768,7 +767,7 @@ message SCD30_config {
   /*
    * Disables for SCD30
    */
-  optional SCD30Disables scd30disables= 7;
+  optional SCD30Disables scd30disables = 7;
 }
 
 message SFA30_config {
