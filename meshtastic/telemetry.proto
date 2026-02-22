@@ -919,6 +919,56 @@ message SEN5XState {
 }
 
 /*
+ * Sensor disables
+ */
+message SensorDisables {
+  /*
+   * PMSA003I disables
+   */
+  optional PMSA003IDisables pmsa003i = 1;
+
+  /*
+   * SEN5X disables
+   */
+  optional SEN5XDisables sen5x = 2;
+
+  /*
+   * SCD30 disables
+   */
+  optional SCD30Disables scd30 = 3;
+
+  /*
+   * SCD4X disables
+   */
+  optional SCD4XDisables scd4x = 4;
+
+  /*
+   * SFA30 disables
+   */
+  optional SFA30Disables sfa30 = 5;
+}
+
+/*
+ * PMSA003I disables, for saving to flash
+ */
+message PMSA003IDisables {
+  /*
+   * Toggle for enabling PM readings
+   */
+  optional bool disable_pm = 1;
+
+  /*
+   * Toggle for enabling PM environmental readings
+   */
+  optional bool disable_pm_env = 2;
+
+  /*
+   * Toggle for enabling PN readings
+   */
+  optional bool disable_pn = 3;
+}
+
+/*
  * SEN5X disables, for saving to flash
  */
 message SEN5XDisables {

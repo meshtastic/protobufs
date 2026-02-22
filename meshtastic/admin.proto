@@ -667,6 +667,11 @@ message SensorConfig {
    * SFA30 HCHO Sensor configuration
    */
   SFA30_config sfa30_config = 4;
+
+  /*
+   * PMSA003I HCHO Sensor configuration
+   */
+  PMSA003I_config pmsa003i_config = 5;
 }
 
 message SCD4X_config {
@@ -771,4 +776,12 @@ message SFA30_config {
    * Disables for SFA30
    */
   optional SFA30Disables sfa30disables = 1;
+}
+
+message PMSA003I_config {
+  /*
+   * Disables for PMSA003I
+   */
+  optional PMSA003IDisables pmsa003idisables = 3;
+
 }
