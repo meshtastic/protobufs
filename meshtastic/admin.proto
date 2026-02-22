@@ -783,5 +783,4 @@ message PMSA003I_config {
    * Disables for PMSA003I
    */
   optional PMSA003IDisables pmsa003idisables = 3;
-
 }
