@@ -881,6 +881,11 @@ enum TelemetrySensorType {
    * DS248X Bridge for one-wire temperature sensors
    */
   DS248X = 51;
+
+  /*
+   * VL53L0X distance, sensor
+   */
+  VL53L0X = 52;
 }
 
 /*
