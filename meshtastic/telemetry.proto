@@ -866,6 +866,11 @@ enum TelemetrySensorType {
    * SCD30 CO2, humidity, temperature sensor
    */
   SCD30 = 49;
+
+  /*
+   * VL53L0 distance, sensor
+   */
+  VL53L0 = 50;
 }
 
 /*
