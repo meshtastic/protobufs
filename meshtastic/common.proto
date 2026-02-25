@@ -215,7 +215,7 @@ enum AltSource {
  * Error codes for critical errors.
  * The device might report these fault codes on the screen.
  */
-enum CriticalErrorCode {
+enum ErrorCode {
   /* No critical error */
   CRITICAL_NONE = 0;
   /* Transmit watchdog timer expired */
