@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package meshtastic;
+
+import "meshtastic/common.proto";
+
+option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "RegionRegistryProtos";
+option java_package = "org.meshtastic.proto";
+option swift_prefix = "";
+
+/*
+ * Region Registry
+ *
+ * NOT used on-wire; consumed by clients/apps and optionally embedded in firmware.
+ * Centralizes the 27 regulatory region definitions with their parameters and
+ * legal modem preset mappings.
+ *
+ * Shipped as a serialized .pb data file alongside the proto schema.
+ * Firmware can generate its RDEF table from this data or embed it directly.
+ */
+
+/*
+ * Regulatory region definition with radio parameters
+ */
+message RegionInfo {
+  /* Which region this defines */
+  RegionCode region_code = 1;
+
+  /* Frequency range start in MHz x100 (e.g. 90200 = 902.00 MHz) */
+  uint32 freq_start_mhz_x100 = 2;
+
+  /* Frequency range end in MHz x100 (e.g. 92800 = 928.00 MHz) */
+  uint32 freq_end_mhz_x100 = 3;
+
+  /* Duty cycle percentage (0-100, where 100 = no duty cycle restriction) */
+  uint32 duty_cycle = 4;
+
+  /* Channel spacing in kHz (0 = automatic calculation) */
+  uint32 spacing_khz = 5;
+
+  /* Maximum TX power in dBm */
+  uint32 power_limit_dbm = 6;
+
+  /* Whether audio mode is permitted by regulation */
+  bool audio_permitted = 7;
+
+  /* Whether frequency hopping/switching is allowed */
+  bool frequency_switching = 8;
+
+  /* Whether 2.4 GHz wide LoRa bandwidth modes are supported */
+  bool wide_lora = 9;
+
+  /* Human-readable region name, e.g. "US", "EU_868" */
+  string name = 10;
+
+  /* Which modem presets are legal in this region (many-to-one: each region permits a subset) */
+  repeated ModemPreset allowed_presets = 11;
+
+  /* If true, this region may only be used by licensed HAM radio operators */
+  bool ham_only = 12;
+
+  /*
+   * Maximum allowed occupied bandwidth in kHz for this region (inclusive).
+   * Presets with bandwidth_khz > max_bandwidth_khz are illegal.
+   * 0 = no bandwidth constraint (unrestricted).
+   */
+  uint32 max_bandwidth_khz = 13;
+
+  /*
+   * Maximum allowed on-air packet duration in milliseconds for this region (inclusive).
+   * Presets producing packets with duration > max_packet_duration_ms are illegal.
+   * 0 = no packet duration constraint (unrestricted).
+   * Firmware/clients compute packet duration from the preset's LoRa parameters and payload size.
+   */
+  uint32 max_packet_duration_ms = 14;
+}
+
+/*
+ * The complete region registry
+ */
+message RegionRegistry {
+  repeated RegionInfo regions = 1;
+}

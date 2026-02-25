@@ -27,5 +27,5 @@ message ChannelSet {
   /*
    * LoRa config
    */
-  Config.LoRaConfig lora_config = 2;
+  LoRaConfig lora_config = 2;
 }

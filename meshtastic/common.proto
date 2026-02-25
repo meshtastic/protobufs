@@ -1,0 +1,284 @@
+syntax = "proto3";
+
+package meshtastic;
+
+option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "CommonProtos";
+option java_package = "org.meshtastic.proto";
+option swift_prefix = "";
+
+/*
+ * Defines the device's role on the Mesh network
+ */
+enum Role {
+  /*
+   * Description: App connected or stand alone messaging device.
+   * Technical Details: Default Role
+   */
+  CLIENT = 0;
+
+  /*
+   * Description: Device that does not forward packets from other devices.
+   */
+  CLIENT_MUTE = 1;
+
+  /*
+   * Description: Infrastructure node for extending network coverage by relaying messages. Visible in Nodes list.
+   * Technical Details: Mesh packets will prefer to be routed over this node. This node will not be used by client apps.
+   *   The wifi radio and the oled screen will be put to sleep.
+   *   This mode may still potentially have higher power usage due to it's preference in message rebroadcasting on the mesh.
+   */
+  ROUTER = 2;
+
+  /*
+   * Description: Broadcasts GPS position packets as priority.
+   * Technical Details: Position Mesh packets will be prioritized higher and sent more frequently by default.
+   *   When used in conjunction with power.is_power_saving = true, nodes will wake up,
+   *   send position, and then sleep for position.position_broadcast_secs seconds.
+   */
+  TRACKER = 5;
+
+  /*
+   * Description: Broadcasts telemetry packets as priority.
+   * Technical Details: Telemetry Mesh packets will be prioritized higher and sent more frequently by default.
+   *   When used in conjunction with power.is_power_saving = true, nodes will wake up,
+   *   send environment telemetry, and then sleep for telemetry.environment_update_interval seconds.
+   */
+  SENSOR = 6;
+
+  /*
+   * Description: Optimized for ATAK system communication and reduces routine broadcasts.
+   * Technical Details: Used for nodes dedicated for connection to an ATAK EUD.
+   *    Turns off many of the routine broadcasts to favor CoT packet stream
+   *    from the Meshtastic ATAK plugin -> IMeshService -> Node
+   */
+  TAK = 7;
+
+  /*
+   * Description: Device that only broadcasts as needed for stealth or power savings.
+   * Technical Details: Used for nodes that "only speak when spoken to"
+   *    Turns all of the routine broadcasts but allows for ad-hoc communication
+   *    Still rebroadcasts, but with local only rebroadcast mode (known meshes only)
+   *    Can be used for clandestine operation or to dramatically reduce airtime / power consumption
+   */
+  CLIENT_HIDDEN = 8;
+
+  /*
+   * Description: Broadcasts location as message to default channel regularly for to assist with device recovery.
+   * Technical Details: Used to automatically send a text message to the mesh
+   *    with the current position of the device on a frequent interval:
+   *    "I'm lost! Position: lat / long"
+   */
+  LOST_AND_FOUND = 9;
+
+  /*
+   * Description: Enables automatic TAK PLI broadcasts and reduces routine broadcasts.
+   * Technical Details: Turns off many of the routine broadcasts to favor ATAK CoT packet stream
+   *    and automatic TAK PLI (position location information) broadcasts.
+   *    Uses position module configuration to determine TAK PLI broadcast interval.
+   */
+  TAK_TRACKER = 10;
+
+  /*
+   * Description: Will always rebroadcast packets, but will do so after all other modes.
+   * Technical Details: Used for router nodes that are intended to provide additional coverage
+   *    in areas not already covered by other routers, or to bridge around problematic terrain,
+   *    but should not be given priority over other routers in order to avoid unnecessarily
+   *    consuming hops.
+   */
+  ROUTER_LATE = 11;
+
+  /*
+   * Description: Treats packets from or to favorited nodes as ROUTER_LATE, and all other packets as CLIENT.
+   * Technical Details: Used for stronger attic/roof nodes to distribute messages more widely
+   *    from weaker, indoor, or less-well-positioned nodes. Recommended for users with multiple nodes
+   *    where one CLIENT_BASE acts as a more powerful base station, such as an attic/roof node.
+   */
+  CLIENT_BASE = 12;
+}
+
+/*
+ * Regulatory region codes for LoRa radio configuration
+ */
+enum RegionCode {
+  /* Region is not set */
+  REGION_UNSET = 0;
+  /* United States (902-928 MHz) */
+  REGION_US = 1;
+  /* European Union 433 MHz band */
+  REGION_EU_433 = 2;
+  /* European Union 868 MHz band */
+  REGION_EU_868 = 3;
+  /* China */
+  REGION_CN = 4;
+  /* Japan */
+  REGION_JP = 5;
+  /* Australia / New Zealand (915-928 MHz) */
+  REGION_ANZ = 6;
+  /* South Korea */
+  REGION_KR = 7;
+  /* Taiwan */
+  REGION_TW = 8;
+  /* Russia */
+  REGION_RU = 9;
+  /* India */
+  REGION_IN = 10;
+  /* New Zealand 865 MHz band */
+  REGION_NZ_865 = 11;
+  /* Thailand */
+  REGION_TH = 12;
+  /* 2.4 GHz wide LoRa (worldwide) */
+  REGION_LORA_24 = 13;
+  /* Ukraine 433 MHz band */
+  REGION_UA_433 = 14;
+  /* Ukraine 868 MHz band */
+  REGION_UA_868 = 15;
+  /* Malaysia 433 MHz band */
+  REGION_MY_433 = 16;
+  /* Malaysia 919 MHz band */
+  REGION_MY_919 = 17;
+  /* Singapore 923 MHz band */
+  REGION_SG_923 = 18;
+  /* Philippines 433 MHz band */
+  REGION_PH_433 = 19;
+  /* Philippines 868 MHz band */
+  REGION_PH_868 = 20;
+  /* Philippines 915 MHz band */
+  REGION_PH_915 = 21;
+  /* Australia / New Zealand 433 MHz band */
+  REGION_ANZ_433 = 22;
+  /* Kazakhstan 433 MHz band */
+  REGION_KZ_433 = 23;
+  /* Kazakhstan 863 MHz band */
+  REGION_KZ_863 = 24;
+  /* Nepal 865 MHz band */
+  REGION_NP_865 = 25;
+  /* Brazil 902 MHz band */
+  REGION_BR_902 = 26;
+}
+
+/*
+ * Standard predefined channel/modem settings.
+ * Note: these mappings must match ModemPreset choice in the device code.
+ */
+enum ModemPreset {
+  /* Long range, fast data rate (default) */
+  MODEM_LONG_FAST = 0;
+  /* Medium range, slow data rate */
+  MODEM_MEDIUM_SLOW = 3;
+  /* Medium range, fast data rate */
+  MODEM_MEDIUM_FAST = 4;
+  /* Short range, slow data rate */
+  MODEM_SHORT_SLOW = 5;
+  /* Short range, fast data rate */
+  MODEM_SHORT_FAST = 6;
+  /* Long range, moderate data rate */
+  MODEM_LONG_MODERATE = 7;
+  /* Short range, turbo data rate (highest throughput) */
+  MODEM_SHORT_TURBO = 8;
+  /* Long range, turbo data rate */
+  MODEM_LONG_TURBO = 9;
+}
+
+/*
+ * How the location was acquired: manual, onboard GPS, external (EUD) GPS
+ */
+enum LocSource {
+  /* Location source not set */
+  LOC_UNSET = 0;
+  /* Location was manually entered by the user */
+  LOC_MANUAL = 1;
+  /* Location from the device's onboard GPS */
+  LOC_INTERNAL = 2;
+  /* Location from an external device (e.g. phone GPS) */
+  LOC_EXTERNAL = 3;
+}
+
+/*
+ * How the altitude was acquired
+ */
+enum AltSource {
+  /* Altitude source not set */
+  ALT_UNSET = 0;
+  /* Altitude was manually entered by the user */
+  ALT_MANUAL = 1;
+  /* Altitude from the device's onboard GPS */
+  ALT_INTERNAL = 2;
+  /* Altitude from an external device (e.g. phone GPS) */
+  ALT_EXTERNAL = 3;
+  /* Altitude from a barometric pressure sensor */
+  ALT_BAROMETRIC = 4;
+}
+
+/*
+ * Error codes for critical errors.
+ * The device might report these fault codes on the screen.
+ */
+enum CriticalErrorCode {
+  /* No critical error */
+  CRITICAL_NONE = 0;
+  /* Transmit watchdog timer expired */
+  CRITICAL_TX_WATCHDOG = 1;
+  /* Timed out waiting to enter sleep mode */
+  CRITICAL_SLEEP_ENTER_WAIT = 2;
+  /* No LoRa radio detected */
+  CRITICAL_NO_RADIO = 3;
+  /* Unspecified critical error */
+  CRITICAL_UNSPECIFIED = 4;
+  /* u-blox GPS unit failed to initialize */
+  CRITICAL_UBLOX_UNIT_FAILED = 5;
+  /* AXP192 power management chip not found */
+  CRITICAL_NO_AXP192 = 6;
+  /* Invalid LoRa radio configuration */
+  CRITICAL_INVALID_RADIO_SETTING = 7;
+  /* LoRa radio transmission failed */
+  CRITICAL_TRANSMIT_FAILED = 8;
+  /* Brownout voltage detected */
+  CRITICAL_BROWNOUT = 9;
+  /* SX1262 LoRa radio failure */
+  CRITICAL_SX1262_FAILURE = 10;
+  /* SPI bus communication error with radio */
+  CRITICAL_RADIO_SPI_BUG = 11;
+  /* Flash filesystem corruption (recoverable) */
+  CRITICAL_FLASH_CORRUPTION_RECOVERABLE = 12;
+  /* Flash filesystem corruption (unrecoverable, factory reset required) */
+  CRITICAL_FLASH_CORRUPTION_UNRECOVERABLE = 13;
+}
+
+/*
+ * Enum to indicate to clients whether this firmware is a special firmware build, like an event.
+ */
+enum FirmwareEdition {
+  /* Standard / default firmware build */
+  EDITION_VANILLA = 0;
+  /* Smart Citizen science event firmware */
+  EDITION_SMART_CITIZEN = 1;
+  /* Open Sauce event firmware */
+  EDITION_OPEN_SAUCE = 16;
+  /* DEF CON event firmware */
+  EDITION_DEFCON = 17;
+  /* Burning Man event firmware */
+  EDITION_BURNING_MAN = 18;
+  /* Hamvention event firmware */
+  EDITION_HAMVENTION = 19;
+  /* DIY / maker community firmware */
+  EDITION_DIY = 127;
+}
+
+/*
+ * Shared constants between device and phone
+ */
+enum Constants {
+  /*
+   * First enum must be zero, and we are just using this enum to
+   * pass int constants between two very different environments
+   */
+  ZERO = 0;
+
+  /*
+   * Maximum payload length for Data protobuf (excluding protobuf overhead).
+   * The 16 byte header is outside of this envelope.
+   */
+  DATA_PAYLOAD_LEN = 233;
+}

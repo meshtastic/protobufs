@@ -22,3 +22,5 @@
 *SecurityConfig.private_key max_size:32
 *SecurityConfig.admin_key max_size:32
 *SecurityConfig.admin_key max_count:3
+
+*ConfigPayload.payload_variant anonymous_oneof:true

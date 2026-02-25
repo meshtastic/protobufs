@@ -3,12 +3,15 @@ syntax = "proto3";
 package meshtastic;
 
 /* trunk-ignore(buf-lint/COMPILE) */
+import "meshtastic/api.proto";
 import "meshtastic/channel.proto";
+import "meshtastic/common.proto";
 import "meshtastic/config.proto";
 import "meshtastic/connection_status.proto";
 import "meshtastic/device_ui.proto";
-import "meshtastic/mesh.proto";
 import "meshtastic/module_config.proto";
+import "meshtastic/packet.proto";
+import "meshtastic/wire.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -27,49 +30,49 @@ message AdminMessage {
    * The client MUST include the same key with any set_x commands. Key expires after 300 seconds.
    * Prevents replay attacks for admin messages.
    */
-  bytes session_passkey = 101;
+  bytes session_passkey = 1;
 
   /*
-   * TODO: REPLACE
+   * Identifies which device configuration block to get or set
    */
   enum ConfigType {
     /*
-     * TODO: REPLACE
+     * Device configuration (role, serial behavior, etc.)
      */
     DEVICE_CONFIG = 0;
 
     /*
-     * TODO: REPLACE
+     * Position configuration (GPS settings, broadcast interval, etc.)
      */
     POSITION_CONFIG = 1;
 
     /*
-     * TODO: REPLACE
+     * Power configuration (sleep settings, ADC multiplier, etc.)
      */
     POWER_CONFIG = 2;
 
     /*
-     * TODO: REPLACE
+     * Network configuration (WiFi SSID/password, NTP, etc.)
      */
     NETWORK_CONFIG = 3;
 
     /*
-     * TODO: REPLACE
+     * Display configuration (screen orientation, units, OLED settings, etc.)
      */
     DISPLAY_CONFIG = 4;
 
     /*
-     * TODO: REPLACE
+     * LoRa radio configuration (region, modem preset, hop limit, TX power, etc.)
      */
     LORA_CONFIG = 5;
 
     /*
-     * TODO: REPLACE
+     * Bluetooth configuration (enabled, pairing mode, fixed PIN, etc.)
      */
     BLUETOOTH_CONFIG = 6;
 
     /*
-     * TODO: REPLACE
+     * Security configuration (public key, private key, admin key, etc.)
      */
     SECURITY_CONFIG = 7;
 
@@ -85,76 +88,76 @@ message AdminMessage {
   }
 
   /*
-   * TODO: REPLACE
+   * Identifies which module configuration block to get or set
    */
   enum ModuleConfigType {
     /*
-     * TODO: REPLACE
+     * MQTT module configuration
      */
     MQTT_CONFIG = 0;
 
     /*
-     * TODO: REPLACE
+     * Serial module configuration
      */
     SERIAL_CONFIG = 1;
 
     /*
-     * TODO: REPLACE
+     * External notification module configuration
      */
     EXTNOTIF_CONFIG = 2;
 
     /*
-     * TODO: REPLACE
+     * Store and Forward module configuration
      */
     STOREFORWARD_CONFIG = 3;
 
     /*
-     * TODO: REPLACE
+     * Range test module configuration
      */
     RANGETEST_CONFIG = 4;
 
     /*
-     * TODO: REPLACE
+     * Telemetry module configuration
      */
     TELEMETRY_CONFIG = 5;
 
     /*
-     * TODO: REPLACE
+     * Canned message module configuration
      */
     CANNEDMSG_CONFIG = 6;
 
     /*
-     * TODO: REPLACE
+     * Audio module configuration
      */
     AUDIO_CONFIG = 7;
 
     /*
-     * TODO: REPLACE
+     * Remote hardware module configuration
      */
     REMOTEHARDWARE_CONFIG = 8;
 
     /*
-     * TODO: REPLACE
+     * Neighbor info module configuration
      */
     NEIGHBORINFO_CONFIG = 9;
 
     /*
-     * TODO: REPLACE
+     * Ambient lighting module configuration
      */
     AMBIENTLIGHTING_CONFIG = 10;
 
     /*
-     * TODO: REPLACE
+     * Detection sensor module configuration
      */
     DETECTIONSENSOR_CONFIG = 11;
 
     /*
-     * TODO: REPLACE
+     * Paxcounter module configuration
      */
     PAXCOUNTER_CONFIG = 12;
 
     /*
-     * TODO: REPLACE
+     * Status message module configuration
      */
     STATUSMESSAGE_CONFIG = 13;
 
@@ -221,49 +224,49 @@ message AdminMessage {
   }
 
   /*
-   * TODO: REPLACE
+   * The admin operation to perform
    */
   oneof payload_variant {
     /*
      * Send the specified channel in the response to this message
      * NOTE: This field is sent with the channel index + 1 (to ensure we never try to send 'zero' - which protobufs treats as not present)
      */
-    uint32 get_channel_request = 1;
+    uint32 get_channel_request = 2;
 
     /*
-     * TODO: REPLACE
+     * Return the current channel data for the requested index
      */
-    Channel get_channel_response = 2;
+    Channel get_channel_response = 3;
 
     /*
      * Send the current owner data in the response to this message.
      */
-    bool get_owner_request = 3;
+    bool get_owner_request = 4;
 
     /*
-     * TODO: REPLACE
+     * Return the current owner (User) data for this node
      */
-    User get_owner_response = 4;
-
-    /*
-     * Ask for the following config data to be sent
-     */
-    ConfigType get_config_request = 5;
-
-    /*
-     * Send the current Config in the response to this message.
-     */
-    Config get_config_response = 6;
+    User get_owner_response = 5;
 
     /*
      * Ask for the following config data to be sent
      */
-    ModuleConfigType get_module_config_request = 7;
+    ConfigType get_config_request = 6;
 
     /*
      * Send the current Config in the response to this message.
      */
-    ModuleConfig get_module_config_response = 8;
+    ConfigPayload get_config_response = 7;
+
+    /*
+     * Ask for the following config data to be sent
+     */
+    ModuleConfigType get_module_config_request = 8;
+
+    /*
+     * Send the current Config in the response to this message.
+     */
+    ModuleConfigPayload get_module_config_response = 9;
 
     /*
      * Get the Canned Message Module messages in the response to this message.
@@ -360,7 +363,7 @@ message AdminMessage {
     /*
      * Set the owner for this node
      */
-    User set_owner = 32;
+    User set_owner = 28;
 
     /*
      * Set channels (using the new API).
@@ -369,158 +372,151 @@ message AdminMessage {
      * Note: only one channel can be marked as primary.
      * If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically.
      */
-    Channel set_channel = 33;
+    Channel set_channel = 29;
 
     /*
      * Set the current Config
      */
-    Config set_config = 34;
+    ConfigPayload set_config = 30;
 
     /*
      * Set the current Config
      */
-    ModuleConfig set_module_config = 35;
+    ModuleConfigPayload set_module_config = 31;
 
     /*
      * Set the Canned Message Module messages text.
      */
-    string set_canned_message_module_messages = 36;
+    string set_canned_message_module_messages = 32;
 
     /*
      * Set the ringtone for ExternalNotification.
      */
-    string set_ringtone_message = 37;
+    string set_ringtone_message = 33;
 
     /*
      * Remove the node by the specified node-num from the NodeDB on the device
      */
-    uint32 remove_by_nodenum = 38;
+    uint32 remove_by_nodenum = 34;
 
     /*
      * Set specified node-num to be favorited on the NodeDB on the device
      */
-    uint32 set_favorite_node = 39;
+    uint32 set_favorite_node = 35;
 
     /*
      * Set specified node-num to be un-favorited on the NodeDB on the device
      */
-    uint32 remove_favorite_node = 40;
+    uint32 remove_favorite_node = 36;
 
     /*
      * Set fixed position data on the node and then set the position.fixed_position = true
      */
-    Position set_fixed_position = 41;
+    Position set_fixed_position = 37;
 
     /*
      * Clear fixed position coordinates and then set position.fixed_position = false
      */
-    bool remove_fixed_position = 42;
+    bool remove_fixed_position = 38;
 
     /*
      * Set time only on the node
      * Convenience method to set the time on the node (as Net quality) without any other position data
      */
-    fixed32 set_time_only = 43;
+    fixed32 set_time_only = 39;
 
     /*
      * Tell the node to send the stored ui data.
      */
-    bool get_ui_config_request = 44;
+    bool get_ui_config_request = 40;
 
     /*
      * Reply stored device ui data.
      */
-    DeviceUIConfig get_ui_config_response = 45;
+    DeviceUIConfig get_ui_config_response = 41;
 
     /*
      * Tell the node to store UI data persistently.
      */
-    DeviceUIConfig store_ui_config = 46;
+    DeviceUIConfig store_ui_config = 42;
 
     /*
      * Set specified node-num to be ignored on the NodeDB on the device
      */
-    uint32 set_ignored_node = 47;
+    uint32 set_ignored_node = 43;
 
     /*
      * Set specified node-num to be un-ignored on the NodeDB on the device
      */
-    uint32 remove_ignored_node = 48;
+    uint32 remove_ignored_node = 44;
 
     /*
      * Set specified node-num to be muted
      */
-    uint32 toggle_muted_node = 49;
+    uint32 toggle_muted_node = 45;
 
     /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes
      * This will delay the standard *implicit* save to the file system and subsequent reboot behavior until committed (commit_edit_settings)
      */
-    bool begin_edit_settings = 64;
+    bool begin_edit_settings = 46;
 
     /*
      * Commits an open transaction for any edits made to config, module config, owner, and channel settings
      */
-    bool commit_edit_settings = 65;
+    bool commit_edit_settings = 47;
 
     /*
      * Add a contact (User) to the nodedb
      */
-    SharedContact add_contact = 66;
+    SharedContact add_contact = 48;
 
     /*
      * Initiate or respond to a key verification request
      */
-    KeyVerificationAdmin key_verification = 67;
+    KeyVerificationAdmin key_verification = 49;
 
     /*
      * Tell the node to factory reset config everything; all device state and configuration will be returned to factory defaults and BLE bonds will be cleared.
      */
-    int32 factory_reset_device = 94;
-
-    /*
-     * Tell the node to reboot into the OTA Firmware in this many seconds (or <0 to cancel reboot)
-     * Only Implemented for ESP32 Devices. This needs to be issued to send a new main firmware via bluetooth.
-     * Deprecated in favor of reboot_ota_mode in 2.7.17
-     */
-    int32 reboot_ota_seconds = 95 [deprecated = true];
+    sint32 factory_reset_device = 50;
 
     /*
      * This message is only supported for the simulator Portduino build.
      * If received the simulator will exit successfully.
      */
-    bool exit_simulator = 96;
+    bool exit_simulator = 51;
 
     /*
      * Tell the node to reboot in this many seconds (or <0 to cancel reboot)
      */
-    int32 reboot_seconds = 97;
+    sint32 reboot_seconds = 52;
 
     /*
      * Tell the node to shutdown in this many seconds (or <0 to cancel shutdown)
      */
-    int32 shutdown_seconds = 98;
+    sint32 shutdown_seconds = 53;
 
     /*
      * Tell the node to factory reset config; all device state and configuration will be returned to factory defaults; BLE bonds will be preserved.
      */
-    int32 factory_reset_config = 99;
+    sint32 factory_reset_config = 54;
 
     /*
      * Tell the node to reset the nodedb.
      * When true, favorites are preserved through reset.
      */
-    bool nodedb_reset = 100;
+    bool nodedb_reset = 55;
 
     /*
      * Tell the node to reset into the OTA Loader
      */
-    OTAEvent ota_request = 102;
+    OTAEvent ota_request = 56;
 
     /*
      * Parameters and sensor configuration
      */
-    SensorConfig sensor_config = 103;
+    SensorConfig sensor_config = 57;
   }
 }
 
@@ -559,11 +555,9 @@ message HamParameters {
   int32 tx_power = 2;
 
   /*
-   * The selected frequency of LoRA operation
-   * Please respect your local laws, regulations, and band plans.
-   * Ensure your radio is capable of operating of the selected frequency before setting this.
+   * Frequency in Hz
    */
-  float frequency = 3;
+  uint32 frequency = 3;
 
   /*
    * Optional short name of user
@@ -680,9 +674,9 @@ message SCD4X_config {
   optional uint32 set_target_co2_conc = 2;
 
   /*
-   * Reference temperature in degC
+   * Reference temperature in centi-degrees Celsius
    */
-  optional float set_temperature = 3;
+  optional sint32 set_temperature = 3;
 
   /*
    * Altitude of sensor in meters above sea level. 0 - 3000m (overrides ambient pressure)
@@ -707,9 +701,9 @@ message SCD4X_config {
 
 message SEN5X_config {
   /*
-   * Reference temperature in degC
+   * Reference temperature in centi-degrees Celsius
    */
-  optional float set_temperature = 1;
+  optional sint32 set_temperature = 1;
 
   /*
    * One-shot mode (true for low power - one-shot mode, false for normal - continuous mode)
@@ -729,9 +723,9 @@ message SCD30_config {
   optional uint32 set_target_co2_conc = 2;
 
   /*
-   * Reference temperature in degC
+   * Reference temperature in centi-degrees Celsius
    */
-  optional float set_temperature = 3;
+  optional sint32 set_temperature = 3;
 
   /*
    * Altitude of sensor in meters above sea level. 0 - 3000m (overrides ambient pressure)

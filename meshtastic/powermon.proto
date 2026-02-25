@@ -16,9 +16,12 @@ message PowerMon {
    * If you are making new meshtastic features feel free to add new entries at the end of this definition.
    */
   enum State {
+    /* No power state active */
     None = 0;
 
+    /* CPU is in deep sleep mode (lowest power) */
     CPU_DeepSleep = 0x01;
+    /* CPU is in light sleep mode (reduced power, fast wake) */
     CPU_LightSleep = 0x02;
 
     /*
@@ -33,14 +36,22 @@ message PowerMon {
     */
     Vext1_On = 0x04;
 
+    /* LoRa radio receiver is powered on */
     Lora_RXOn = 0x08;
+    /* LoRa radio transmitter is powered on */
     Lora_TXOn = 0x10;
+    /* LoRa radio is actively receiving a packet */
     Lora_RXActive = 0x20;
+    /* Bluetooth radio is powered on */
     BT_On = 0x40;
+    /* LED is powered on */
     LED_On = 0x80;
 
+    /* Display screen is powered on */
     Screen_On = 0x100;
+    /* Display screen is actively being drawn to */
     Screen_Drawing = 0x200;
+    /* WiFi radio is powered on */
     Wifi_On = 0x400;
 
     /*
@@ -66,38 +77,60 @@ message PowerStressMessage {
      */
     UNSET = 0;
 
-    PRINT_INFO = 1; // Print board version slog and send an ack that we are alive and ready to process commands
-    FORCE_QUIET = 2; // Try to turn off all automatic processing of packets, screen, sleeping, etc (to make it easier to measure in isolation)
-    END_QUIET = 3; // Stop powerstress processing - probably by just rebooting the board
+    /* Print board version slog and send an ack that we are alive and ready to process commands */
+    PRINT_INFO = 1;
+    /* Try to turn off all automatic processing of packets, screen, sleeping, etc (to make it easier to measure in isolation) */
+    FORCE_QUIET = 2;
+    /* Stop powerstress processing - probably by just rebooting the board */
+    END_QUIET = 3;
 
-    SCREEN_ON = 16; // Turn the screen on
-    SCREEN_OFF = 17; // Turn the screen off
+    /* Turn the screen on for num_seconds */
+    SCREEN_ON = 16;
+    /* Turn the screen off for num_seconds */
+    SCREEN_OFF = 17;
 
-    CPU_IDLE = 32; // Let the CPU run but we assume mostly idling for num_seconds
-    CPU_DEEPSLEEP = 33; // Force deep sleep for FIXME seconds
-    CPU_FULLON = 34; // Spin the CPU as fast as possible for num_seconds
+    /* Let the CPU run but mostly idle for num_seconds */
+    CPU_IDLE = 32;
+    /* Force deep sleep for num_seconds */
+    CPU_DEEPSLEEP = 33;
+    /* Spin the CPU at full speed for num_seconds */
+    CPU_FULLON = 34;
 
-    LED_ON = 48; // Turn the LED on for num_seconds (and leave it on - for baseline power measurement purposes)
-    LED_OFF = 49; // Force the LED off for num_seconds
+    /* Turn the LED on for num_seconds (leave on for baseline power measurement) */
+    LED_ON = 48;
+    /* Force the LED off for num_seconds */
+    LED_OFF = 49;
 
-    LORA_OFF = 64; // Completely turn off the LORA radio for num_seconds
-    LORA_TX = 65; // Send Lora packets for num_seconds
-    LORA_RX = 66; // Receive Lora packets for num_seconds (node will be mostly just listening, unless an external agent is helping stress this by sending packets on the current channel)
+    /* Completely turn off the LoRa radio for num_seconds */
+    LORA_OFF = 64;
+    /* Send LoRa packets for num_seconds */
+    LORA_TX = 65;
+    /* Receive LoRa packets for num_seconds */
+    LORA_RX = 66;
 
-    BT_OFF = 80; // Turn off the BT radio for num_seconds
-    BT_ON = 81; // Turn on the BT radio for num_seconds
+    /* Turn off the Bluetooth radio for num_seconds */
+    BT_OFF = 80;
+    /* Turn on the Bluetooth radio for num_seconds */
+    BT_ON = 81;
 
-    WIFI_OFF = 96; // Turn off the WIFI radio for num_seconds
-    WIFI_ON = 97; // Turn on the WIFI radio for num_seconds
+    /* Turn off the WiFi radio for num_seconds */
+    WIFI_OFF = 96;
+    /* Turn on the WiFi radio for num_seconds */
+    WIFI_ON = 97;
 
-    GPS_OFF = 112; // Turn off the GPS radio for num_seconds
-    GPS_ON = 113; // Turn on the GPS radio for num_seconds
+    /* Turn off the GPS radio for num_seconds */
+    GPS_OFF = 112;
+    /* Turn on the GPS radio for num_seconds */
+    GPS_ON = 113;
   }
 
   /*
-   * What type of HardwareMessage is this?
+   * The power stress operation to perform
    */
   Opcode cmd = 1;
 
-  float num_seconds = 2;
+  /*
+   * Duration in seconds
+   */
+  uint32 num_seconds = 2;
 }

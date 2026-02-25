@@ -1,0 +1,695 @@
+syntax = "proto3";
+
+package meshtastic;
+
+import "meshtastic/common.proto";
+import "meshtastic/wire.proto";
+import "meshtastic/packet.proto";
+import "meshtastic/config.proto";
+import "meshtastic/module_config.proto";
+import "meshtastic/channel.proto";
+import "meshtastic/telemetry.proto";
+import "meshtastic/device_ui.proto";
+import "meshtastic/xmodem.proto";
+
+option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "ApiProtos";
+option java_package = "org.meshtastic.proto";
+option swift_prefix = "";
+
+/*
+ * Full information about a node on the mesh.
+ * Used for client API responses, NOT sent OTA.
+ */
+message NodeInfo {
+  /*
+   * The node number
+   */
+  uint32 num = 1;
+
+  /*
+   * The user info for this node
+   */
+  User user = 2;
+
+  /*
+   * This position data. Note: before 1.2.14 we would also store the last time we've heard from this node in position.time, that is no longer true.
+   * Position.time now indicates the last time we received a POSITION from that node.
+   */
+  Position position = 3;
+
+  /*
+   * Returns the Signal-to-noise ratio (SNR) of the last received message,
+   * as measured by the receiver. Return SNR of the last received message in dB.
+   * Value is in dB, scaled by 4 (i.e. multiply raw dB by 4 before storing).
+   */
+  sint32 snr = 4;
+
+  /*
+   * Set to indicate the last time we received a packet from this node
+   */
+  fixed32 last_heard = 5;
+
+  /*
+   * The latest device metrics for the node.
+   */
+  DeviceMetrics device_metrics = 6;
+
+  /*
+   * Local channel index we heard that node on. Only populated if its not the default channel.
+   */
+  uint32 channel = 7;
+
+  /*
+   * Bitfield packing of boolean node flags:
+   *   bit 0: via_mqtt - True if we witnessed the node over MQTT instead of LoRa transport
+   *   bit 1: is_favorite - True if node is in our favorites list (persists between NodeDB cleanups)
+   *   bit 2: is_ignored - True if node is in our ignored list (persists between NodeDB cleanups)
+   *   bit 3: is_key_manually_verified - True if node public key has been verified (persists between NodeDB cleanups)
+   *   bit 4: is_muted - True if node has been muted (persists between NodeDB cleanups)
+   */
+  uint32 flags = 8;
+
+  /*
+   * Number of hops away from us this node is (0 if direct neighbor)
+   */
+  optional uint32 hops_away = 9;
+}
+
+/*
+ * Unique local debugging info for this node.
+ * Note: we don't include position or the user info, because that will come in the
+ * Sent to the phone in response to WantNodes.
+ */
+message MyNodeInfo {
+  /*
+   * Tells the phone what our node number is, default starting value is
+   * lowbyte of macaddr, but it will be fixed if that is already in use
+   */
+  uint32 my_node_num = 1;
+
+  /*
+   * The total number of reboots this node has ever encountered
+   * (well - since the last time we discarded preferences)
+   */
+  uint32 reboot_count = 2;
+
+  /*
+   * The minimum app version that can talk to this device.
+   * Phone/PC apps should compare this to their build number and if too low tell the user they must update their app.
+   */
+  uint32 min_app_version = 3;
+
+  /*
+   * Unique hardware identifier for this device
+   */
+  bytes device_id = 4;
+
+  /*
+   * The PlatformIO environment used to build this firmware
+   */
+  string pio_env = 5;
+
+  /*
+   * The indicator for whether this device is running event firmware and which
+   */
+  FirmwareEdition firmware_edition = 6;
+
+  /*
+   * The number of nodes in the nodedb.
+   * This is used by the phone to know how many NodeInfo packets to expect on want_config.
+   */
+  uint32 nodedb_count = 7;
+}
+
+/*
+ * Debug output from the device.
+ * To minimize the size of records inside the device code, if a time/source/level is not set
+ * on the message it is assumed to be a continuation of the previously sent message.
+ * This allows the device code to use fixed maxlen 64 byte strings for messages,
+ * and then extend as needed by emitting multiple records.
+ */
+message LogRecord {
+  /*
+   * Log levels, chosen to match python logging conventions.
+   */
+  enum Level {
+    /*
+     * Log level unset
+     */
+    UNSET = 0;
+
+    /*
+     * Critical log level
+     */
+    CRITICAL = 50;
+
+    /*
+     * Error log level
+     */
+    ERROR = 40;
+
+    /*
+     * Warning log level
+     */
+    WARNING = 30;
+
+    /*
+     * Info log level
+     */
+    INFO = 20;
+
+    /*
+     * Debug log level
+     */
+    DEBUG = 10;
+
+    /*
+     * Trace log level
+     */
+    TRACE = 5;
+  }
+
+  /*
+   * The log message body
+   */
+  string message = 1;
+
+  /*
+   * Seconds since 1970 - or 0 for unknown/unset
+   */
+  fixed32 time = 2;
+
+  /*
+   * Usually based on thread name - if known
+   */
+  string source = 3;
+
+  /*
+   * The log level of this message
+   */
+  Level level = 4;
+}
+
+/*
+ * Status of the outgoing message queue
+ */
+message QueueStatus {
+  /*
+   * Last attempt to queue status, ErrorCode
+   */
+  sint32 res = 1;
+
+  /*
+   * Free entries in the outgoing queue
+   */
+  uint32 free = 2;
+
+  /*
+   * Maximum entries in the outgoing queue
+   */
+  uint32 maxlen = 3;
+
+  /*
+   * What was mesh packet id that generated this response?
+   */
+  uint32 mesh_packet_id = 4;
+}
+
+/*
+ * Device metadata response
+ */
+message DeviceMetadata {
+  /*
+   * Device firmware version string
+   */
+  string firmware_version = 1;
+
+  /*
+   * Device state version
+   */
+  uint32 device_state_version = 2;
+
+  /*
+   * Bitfield packing of device capability booleans:
+   *   bit 0: canShutdown - Indicates whether the device can shutdown CPU natively or via power management chip
+   *   bit 1: hasWifi - Indicates that the device has native wifi capability
+   *   bit 2: hasBluetooth - Indicates that the device has native bluetooth capability
+   *   bit 3: hasEthernet - Indicates that the device has an ethernet peripheral
+   *   bit 4: hasRemoteHardware - Has Remote Hardware enabled
+   *   bit 5: hasPKC - Has PKC capabilities
+   */
+  uint32 capabilities = 3;
+
+  /*
+   * Indicates the device's role in the mesh
+   */
+  Role role = 4;
+
+  /*
+   * Indicates the device's current enabled position flags
+   */
+  uint32 position_flags = 5;
+
+  /*
+   * Device hardware model, packed as VID/DID
+   */
+  uint32 hw_model = 6;
+
+  /*
+   * Bit field of boolean for excluded modules
+   * (bitwise OR of ExcludedModules)
+   */
+  uint32 excluded_modules = 7;
+}
+
+/*
+ * Enum for modules excluded from a device's configuration.
+ * Each value represents a ModuleConfigType that can be toggled as excluded
+ * by setting its corresponding bit in the `excluded_modules` bitmask field.
+ */
+enum ExcludedModules {
+  /*
+   * Default value of 0 indicates no modules are excluded.
+   */
+  EXCLUDED_NONE = 0x0000;
+
+  /*
+   * MQTT module
+   */
+  MQTT_CONFIG = 0x0001;
+
+  /*
+   * Serial module
+   */
+  SERIAL_CONFIG = 0x0002;
+
+  /*
+   * External Notification module
+   */
+  EXTNOTIF_CONFIG = 0x0004;
+
+  /*
+   * Store and Forward module
+   */
+  STOREFORWARD_CONFIG = 0x0008;
+
+  /*
+   * Range Test module
+   */
+  RANGETEST_CONFIG = 0x0010;
+
+  /*
+   * Telemetry module
+   */
+  TELEMETRY_CONFIG = 0x0020;
+
+  /*
+   * Canned Message module
+   */
+  CANNEDMSG_CONFIG = 0x0040;
+
+  /*
+   * Audio module
+   */
+  AUDIO_CONFIG = 0x0080;
+
+  /*
+   * Remote Hardware module
+   */
+  REMOTEHARDWARE_CONFIG = 0x0100;
+
+  /*
+   * Neighbor Info module
+   */
+  NEIGHBORINFO_CONFIG = 0x0200;
+
+  /*
+   * Ambient Lighting module
+   */
+  AMBIENTLIGHTING_CONFIG = 0x0400;
+
+  /*
+   * Detection Sensor module
+   */
+  DETECTIONSENSOR_CONFIG = 0x0800;
+
+  /*
+   * Paxcounter module
+   */
+  PAXCOUNTER_CONFIG = 0x1000;
+
+  /*
+   * Bluetooth config (not technically a module, but used to indicate bluetooth capabilities)
+   */
+  BLUETOOTH_CONFIG = 0x2000;
+
+  /*
+   * Network config (not technically a module, but used to indicate network capabilities)
+   */
+  NETWORK_CONFIG = 0x4000;
+}
+
+/*
+ * Packets from the radio to the phone will appear on the fromRadio characteristic.
+ * It will support READ and NOTIFY. When a new packet arrives the device will BLE notify.
+ * It will sit in that descriptor until consumed by the phone,
+ * at which point the next item in the FIFO will be populated.
+ */
+message FromRadio {
+  /*
+   * The packet id, used to allow the phone to request missing read packets from the FIFO,
+   * see our bluetooth docs
+   */
+  uint32 id = 1;
+
+  oneof payload_variant {
+    /*
+     * A mesh packet received or to be sent
+     */
+    MeshPacket packet = 2;
+
+    /*
+     * Tells the phone what our node number is, can be -1 if we've not yet joined a mesh.
+     * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
+     */
+    MyNodeInfo my_info = 3;
+
+    /*
+     * One packet is sent for each node in the on radio DB
+     * starts over with the first node in our DB
+     */
+    NodeInfo node_info = 4;
+
+    /*
+     * Include a part of the config
+     */
+    ConfigPayload config = 5;
+
+    /*
+     * Set to send debug console output over our protobuf stream
+     */
+    LogRecord log_record = 6;
+
+    /*
+     * Sent as true once the device has finished sending all of the responses to want_config.
+     * Recipient should check if this ID matches our original request nonce, if
+     * not, it means your config responses haven't started yet.
+     * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
+     */
+    uint32 config_complete_id = 7;
+
+    /*
+     * Sent to tell clients the radio has just rebooted.
+     * Set to true if present.
+     * Not used on all transports, currently just used for the serial console.
+     * NOTE: This ID must not change - to keep (minimal) compatibility with <1.2 version of android apps.
+     */
+    bool rebooted = 8;
+
+    /*
+     * Include module config
+     */
+    ModuleConfigPayload module_config = 9;
+
+    /*
+     * One packet is sent for each channel
+     */
+    Channel channel = 10;
+
+    /*
+     * Queue status info
+     */
+    QueueStatus queue_status = 11;
+
+    /*
+     * File Transfer Chunk
+     */
+    XModem xmodem_packet = 12;
+
+    /*
+     * Device metadata message
+     */
+    DeviceMetadata metadata = 13;
+
+    /*
+     * MQTT Client Proxy Message (device sending to client / phone for publishing to MQTT)
+     */
+    MqttClientProxyMessage mqtt_client_proxy_message = 14;
+
+    /*
+     * File system manifest messages
+     */
+    FileInfo file_info = 15;
+
+    /*
+     * Notification message to the client
+     */
+    ClientNotification client_notification = 16;
+
+    /*
+     * Persistent data for device-ui
+     */
+    DeviceUIConfig device_ui_config = 17;
+  }
+}
+
+/*
+ * Packets/commands to the radio will be written (reliably) to the toRadio characteristic.
+ * Once the write completes the phone can assume it is handled.
+ */
+message ToRadio {
+  oneof payload_variant {
+    /*
+     * Send this packet on the mesh
+     */
+    MeshPacket packet = 1;
+
+    /*
+     * Phone wants radio to send full node db to the phone. This is
+     * typically the first packet sent to the radio when the phone gets a
+     * bluetooth connection. The radio will respond by sending back a
+     * MyNodeInfo, a owner, a radio config and a series of
+     * FromRadio.node_infos, and config_complete.
+     * The integer you write into this field will be reported back in the
+     * config_complete_id response. This allows clients to never be confused by
+     * a stale old partially sent config.
+     */
+    uint32 want_config_id = 2;
+
+    /*
+     * Tell API server we are disconnecting now.
+     * This is useful for serial links where there is no hardware/protocol based notification that the client has dropped the link.
+     * (Sending this message is optional for clients)
+     */
+    bool disconnect = 3;
+
+    /*
+     * File Transfer Chunk
+     */
+    XModem xmodem_packet = 4;
+
+    /*
+     * MQTT Client Proxy Message (for client / phone subscribed to MQTT sending to device)
+     */
+    MqttClientProxyMessage mqtt_client_proxy_message = 5;
+
+    /*
+     * Heartbeat message (used to keep the device connection awake on serial)
+     */
+    Heartbeat heartbeat = 6;
+  }
+}
+
+/*
+ * A notification message from the device to the client.
+ * To be used for important messages that should be displayed to the user
+ * in the form of push notifications or validation messages when saving
+ * invalid configuration.
+ */
+message ClientNotification {
+  /*
+   * The id of the packet we're notifying in response to
+   */
+  optional uint32 reply_id = 1;
+
+  /*
+   * Seconds since 1970 - or 0 for unknown/unset
+   */
+  fixed32 time = 2;
+
+  /*
+   * The level type of notification
+   */
+  LogRecord.Level level = 3;
+
+  /*
+   * The message body of the notification
+   */
+  string message = 4;
+
+  /*
+   * The notification-specific payload
+   */
+  oneof payload_variant {
+    /* Informs the client of a security number for key verification */
+    KeyVerificationNumberInform key_verification_number_inform = 11;
+    /* Requests the client to provide a security number for key verification */
+    KeyVerificationNumberRequest key_verification_number_request = 12;
+    /* Final result of a key verification exchange */
+    KeyVerificationFinal key_verification_final = 13;
+    /* Notification that a duplicated public key was detected */
+    DuplicatedPublicKey duplicated_public_key = 14;
+    /* Notification that a low-entropy (weak) key was detected */
+    LowEntropyKey low_entropy_key = 15;
+  }
+}
+
+/*
+ * Informs the client of the security number to display for key verification
+ */
+message KeyVerificationNumberInform {
+  /* Nonce used to track this verification session */
+  uint64 nonce = 1;
+  /* Long name of the remote node being verified */
+  string remote_longname = 2;
+  /* The 4-digit security number to display */
+  uint32 security_number = 3;
+}
+
+/*
+ * Requests the client to prompt the user for the security number during key verification
+ */
+message KeyVerificationNumberRequest {
+  /* Nonce used to track this verification session */
+  uint64 nonce = 1;
+  /* Long name of the remote node being verified */
+  string remote_longname = 2;
+}
+
+/*
+ * Final stage of key verification, containing the result characters for visual comparison
+ */
+message KeyVerificationFinal {
+  /* Nonce used to track this verification session */
+  uint64 nonce = 1;
+  /* Long name of the remote node being verified */
+  string remote_longname = 2;
+  /* Whether this node initiated the verification */
+  bool isSender = 3;
+  /* The verification characters for visual comparison between devices */
+  string verification_characters = 4;
+}
+
+/*
+ * Notification that this device's public key is duplicated on the mesh (possible security issue)
+ */
+message DuplicatedPublicKey {}
+
+/*
+ * Notification that the device's key has low entropy and should be regenerated
+ */
+message LowEntropyKey {}
+
+/*
+ * Individual File info for the device
+ */
+message FileInfo {
+  /*
+   * The fully qualified path of the file
+   */
+  string file_name = 1;
+
+  /*
+   * The size of the file in bytes
+   */
+  uint32 size_bytes = 2;
+}
+
+/*
+ * A heartbeat message is sent to the node from the client to keep the connection alive.
+ * This is currently only needed to keep serial connections alive, but can be used by any PhoneAPI.
+ */
+message Heartbeat {
+  /*
+   * The nonce of the heartbeat message
+   */
+  uint32 nonce = 1;
+}
+
+/*
+ * RemoteHardwarePins associated with a node
+ */
+message NodeRemoteHardwarePin {
+  /*
+   * The node_num exposing the available gpio pin
+   */
+  uint32 node_num = 1;
+
+  /*
+   * The available gpio pin for usage with RemoteHardware module
+   */
+  RemoteHardwarePin pin = 2;
+}
+
+/*
+ * A chunk of a larger payload being transferred in multiple pieces
+ */
+message ChunkedPayload {
+  /*
+   * The ID of the entire payload
+   */
+  uint32 payload_id = 1;
+
+  /*
+   * The total number of chunks in the payload
+   */
+  uint32 chunk_count = 2;
+
+  /*
+   * The current chunk index in the total
+   */
+  uint32 chunk_index = 3;
+
+  /*
+   * The binary data of the current chunk
+   */
+  bytes payload_chunk = 4;
+}
+
+/*
+ * Wrapper message for broken repeated oneof support
+ */
+message resend_chunks {
+  /* List of chunk indexes that need to be re-sent */
+  repeated uint32 chunks = 1;
+}
+
+/*
+ * Responses to a ChunkedPayload request
+ */
+message ChunkedPayloadResponse {
+  /*
+   * The ID of the entire payload
+   */
+  uint32 payload_id = 1;
+
+  oneof payload_variant {
+    /*
+     * Request to transfer chunked payload
+     */
+    bool request_transfer = 2;
+
+    /*
+     * Accept the transfer chunked payload
+     */
+    bool accept_transfer = 3;
+
+    /*
+     * Request missing indexes in the chunked payload
+     */
+    resend_chunks resend_chunks = 4;
+  }
+}
+

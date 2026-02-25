@@ -1,0 +1,2 @@
+# nanopb options for common.proto
+# Most enums here are small and benefit from int_size:8

@@ -8,20 +8,38 @@ option java_outer_classname = "XmodemProtos";
 option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
+/*
+ * XModem file transfer protocol message for firmware/file transfers over the mesh
+ */
 message XModem {
+  /*
+   * XModem control byte values per the XMODEM protocol specification
+   */
   enum Control {
+    /* Null / padding byte */
     NUL = 0;
+    /* Start of Header (128-byte data block) */
     SOH = 1;
+    /* Start of Text (1024-byte data block) */
     STX = 2;
+    /* End of Transmission */
     EOT = 4;
+    /* Acknowledge */
     ACK = 6;
+    /* Negative Acknowledge */
     NAK = 21;
+    /* Cancel transfer */
     CAN = 24;
+    /* Ctrl+Z / EOF filler */
     CTRLZ = 26;
   }
 
+  /* The XModem control byte for this packet */
   Control control = 1;
+  /* Sequence number of this data block */
   uint32 seq = 2;
+  /* CRC-16 checksum of the data block */
   uint32 crc16 = 3;
+  /* The data block payload */
   bytes buffer = 4;
 }

@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package meshtastic;
+
+option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "HwDeviceRegistryProtos";
+option java_package = "org.meshtastic.proto";
+option swift_prefix = "";
+
+/*
+ * Hardware Device Registry
+ *
+ * NOT used on-wire; consumed by clients/apps for display purposes only.
+ * Maps (vendor_id, device_id) pairs to human-readable device names.
+ *
+ * Vendor 0x00 preserves existing numeric values from the legacy HardwareModel enum.
+ * e.g. TBEAM = 4 becomes vendor=0, device=4, packed value = 0x0004 = 4 (identical to today).
+ *
+ * Adding a new board = updating this registry data file. No proto schema change needed.
+ */
+
+/*
+ * A single device entry in the registry
+ */
+message HwDevice {
+  /* Parent vendor ID */
+  uint32 vendor_id = 1;
+
+  /* Device ID within the vendor (0x00-0xFE) */
+  uint32 device_id = 2;
+
+  /* Device name, e.g. "Lora V4", "T-Beam Supreme" */
+  string name = 3;
+
+  /* Optional pre-formatted display string, e.g. "Heltec Lora V4" */
+  string display = 4;
+}
+
+/*
+ * The complete device registry
+ */
+message HwDeviceRegistry {
+  repeated HwDevice devices = 1;
+}

@@ -1,0 +1,291 @@
+syntax = "proto3";
+
+package meshtastic;
+
+import "meshtastic/wire.proto";
+
+option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "PacketProtos";
+option java_package = "org.meshtastic.proto";
+option swift_prefix = "";
+
+/*
+ * A packet envelope sent/received over the mesh
+ * only payload_variant is sent in the payload portion of the LORA packet.
+ * The other fields are either not sent at all, or sent in the special 16 byte LORA header.
+ */
+message MeshPacket {
+  /*
+   * The priority of this message for sending.
+   * Higher priorities are sent first (when managing the transmit queue).
+   * This field is never sent over the air, it is only used internally inside of a local device node.
+   * API clients (either on the local node or connected directly to the node)
+   * can set this parameter if necessary.
+   * (values must be <= 127 to keep protobuf field to one byte in size.
+   * Detailed background on this field:
+   * I noticed a funny side effect of lora being so slow: Usually when making
+   * a protocol there isn't much need to use message priority to change the order
+   * of transmission (because interfaces are fairly fast).
+   * But for lora where packets can take a few seconds each, it is very important
+   * to make sure that critical packets are sent ASAP.
+   * In the case of meshtastic that means we want to send protocol acks as soon as possible
+   * (to prevent unneeded retransmissions), we want routing messages to be sent next,
+   * then messages marked as reliable and finally 'background' packets like periodic position updates.
+   * So I bit the bullet and implemented a new (internal - not sent over the air)
+   * field in MeshPacket called 'priority'.
+   * And the transmission queue in the router object is now a priority queue.
+   */
+  enum Priority {
+    /*
+     * Treated as Priority.DEFAULT
+     */
+    UNSET = 0;
+
+    /*
+     * Minimum priority
+     */
+    MIN = 1;
+
+    /*
+     * Background position updates are sent with very low priority -
+     * if the link is super congested they might not go out at all
+     */
+    BACKGROUND = 10;
+
+    /*
+     * This priority is used for most messages that don't have a priority set
+     */
+    DEFAULT = 64;
+
+    /*
+     * If priority is unset but the message is marked as want_ack,
+     * assume it is important and use a slightly higher priority
+     */
+    RELIABLE = 70;
+
+    /*
+     * If priority is unset but the packet is a response to a request, we want it to get there relatively quickly.
+     * Furthermore, responses stop relaying packets directed to a node early.
+     */
+    RESPONSE = 80;
+
+    /*
+     * Higher priority for specific message types (portnums) to distinguish between other reliable packets.
+     */
+    HIGH = 100;
+
+    /*
+     * Higher priority alert message used for critical alerts which take priority over other reliable packets.
+     */
+    ALERT = 110;
+
+    /*
+     * Ack/naks are sent with very high priority to ensure that retransmission
+     * stops as soon as possible
+     */
+    ACK = 120;
+
+    /*
+     * Maximum priority
+     */
+    MAX = 127;
+  }
+
+  /*
+   * Enum to identify which transport mechanism this packet arrived over
+   */
+  enum TransportMechanism {
+    /*
+     * The default case is that the node generated a packet itself
+     */
+    TRANSPORT_INTERNAL = 0;
+
+    /*
+     * Arrived via the primary LoRa radio
+     */
+    TRANSPORT_LORA = 1;
+
+    /*
+     * Arrived via a secondary LoRa radio
+     */
+    TRANSPORT_LORA_ALT1 = 2;
+
+    /*
+     * Arrived via a tertiary LoRa radio
+     */
+    TRANSPORT_LORA_ALT2 = 3;
+
+    /*
+     * Arrived via a quaternary LoRa radio
+     */
+    TRANSPORT_LORA_ALT3 = 4;
+
+    /*
+     * Arrived via an MQTT connection
+     */
+    TRANSPORT_MQTT = 5;
+
+    /*
+     * Arrived via Multicast UDP
+     */
+    TRANSPORT_MULTICAST_UDP = 6;
+
+    /*
+     * Arrived via API connection
+     */
+    TRANSPORT_API = 7;
+  }
+
+  /*
+   * The sending node number.
+   * Note: Our crypto implementation uses this field as well.
+   * See [crypto](/docs/overview/encryption) for details.
+   */
+  fixed32 from = 1;
+
+  /*
+   * The (immediate) destination for this packet.
+   * If the value is 4,294,967,295 (maximum value of an unsigned 32bit integer), this indicates that the packet was
+   * not destined for a specific node, but for a channel as indicated by the value of `channel` below.
+   * If the value is another, this indicates that the packet was destined for a specific
+   * node (i.e. a kind of "Direct Message" to this node) and not broadcast on a channel.
+   */
+  fixed32 to = 2;
+
+  /*
+   * (Usually) If set, this indicates the index in the secondary_channels table that this packet was sent/received on.
+   * If unset, packet was on the primary channel.
+   * A particular node might know only a subset of channels in use on the mesh.
+   * Therefore channel_index is inherently a local concept and meaningless to send between nodes.
+   * Very briefly, while sending and receiving deep inside the device Router code, this field instead
+   * contains the 'channel hash' instead of the index.
+   * This 'trick' is only used while the payload_variant is an 'encrypted'.
+   */
+  uint32 channel = 3;
+
+  /*
+   * Internally to the mesh radios we will route SubPackets encrypted per the docs.
+   * However, when a particular node has the correct
+   * key to decode a particular packet, it will decode the payload into a SubPacket protobuf structure.
+   * Software outside of the device nodes will never encounter a packet where
+   * "decoded" is not populated (i.e. any encryption/decryption happens before reaching the applications).
+   */
+  oneof payload_variant {
+    /*
+     * The decoded application-layer payload
+     */
+    Data decoded = 4;
+
+    /*
+     * The encrypted raw bytes of the payload
+     */
+    bytes encrypted = 5;
+  }
+
+  /*
+   * A unique ID for this packet.
+   * Always 0 for no-ack packets or non broadcast packets (and therefore take zero bytes of space).
+   * Otherwise a unique ID for this packet, useful for flooding algorithms.
+   * ID only needs to be unique on a _per sender_ basis, and it only
+   * needs to be unique for a few minutes (long enough to last for the length of
+   * any ACK or the completion of a mesh broadcast flood).
+   * Note: Our crypto implementation uses this id as well.
+   * See [crypto](/docs/overview/encryption) for details.
+   */
+  fixed32 id = 6;
+
+  /*
+   * The time this message was received by the esp32 (secs since 1970).
+   * Note: this field is _never_ sent on the radio link itself (to save space). Times
+   * are typically not sent over the mesh, but they will be added to any Packet
+   * sent to the phone (so the phone can know exact time of reception).
+   */
+  fixed32 rx_time = 7;
+
+  /*
+   * *Never* sent over the radio links.
+   * Set during reception to indicate the SNR of this packet.
+   * Used to collect statistics on current link quality.
+   * Value is in dB, scaled by 4 (i.e. multiply raw dB by 4 before storing).
+   */
+  sint32 rx_snr = 8;
+
+  /*
+   * If unset treated as zero (no forwarding, send to direct neighbor nodes only).
+   * if 1, allow hopping through one node, etc...
+   * For our usecase real world topologies probably have a max of about 3.
+   * This field is normally placed into a few of bits in the header.
+   */
+  uint32 hop_limit = 9;
+
+  /*
+   * This packet is being sent as a reliable message, we would prefer it to arrive at the destination.
+   * We would like to receive a ack packet in response.
+   * Broadcasts messages treat this flag specially: Since acks for broadcasts would
+   * rapidly flood the channel, the normal ack behavior is suppressed.
+   * Instead, the original sender listens to see if at least one node is rebroadcasting this packet (because naive flooding algorithm).
+   * If it hears that the odds (given typical LoRa topologies) the odds are very high that every node should eventually receive the message.
+   * So FloodingRouter.cpp generates an implicit ack which is delivered to the original sender.
+   * If after some time we don't hear anyone rebroadcast our packet, we will timeout and retransmit, using the regular resend logic.
+   * Note: This flag is normally sent in a flag bit in the header when sent over the wire.
+   */
+  bool want_ack = 10;
+
+  /*
+   * The priority of this message for sending.
+   * See MeshPacket.Priority description for more details.
+   */
+  Priority priority = 11;
+
+  /*
+   * RSSI of received packet. Only sent to phone for display purposes.
+   * Value is in dBm (always negative for received signals).
+   */
+  sint32 rx_rssi = 12;
+
+  /*
+   * Describes whether this packet passed via MQTT somewhere along the path it currently took.
+   */
+  bool via_mqtt = 13;
+
+  /*
+   * Hop limit with which the original packet started. Sent via LoRa using three bits in the unencrypted header.
+   * When receiving a packet, the difference between hop_start and hop_limit gives how many hops it traveled.
+   */
+  uint32 hop_start = 14;
+
+  /*
+   * Records the public key the packet was encrypted with, if applicable.
+   */
+  bytes public_key = 15;
+
+  /*
+   * Indicates whether the packet was en/decrypted using PKI
+   */
+  bool pki_encrypted = 16;
+
+  /*
+   * Last byte of the node number of the node that should be used as the next hop in routing.
+   * Set by the firmware internally, clients are not supposed to set this.
+   */
+  uint32 next_hop = 17;
+
+  /*
+   * Last byte of the node number of the node that will relay/relayed this packet.
+   * Set by the firmware internally, clients are not supposed to set this.
+   */
+  uint32 relay_node = 18;
+
+  /*
+   * *Never* sent over the radio links.
+   * Timestamp after which this packet may be sent.
+   * Set by the firmware internally, clients are not supposed to set this.
+   */
+  uint32 tx_after = 19;
+
+  /*
+   * Indicates which transport mechanism this packet arrived over
+   */
+  TransportMechanism transport_mechanism = 20;
+}

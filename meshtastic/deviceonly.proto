@@ -3,11 +3,13 @@ syntax = "proto3";
 package meshtastic;
 
 /* trunk-ignore(buf-lint/COMPILE) */
+import "meshtastic/api.proto";
 import "meshtastic/channel.proto";
-import "meshtastic/config.proto";
+import "meshtastic/common.proto";
 import "meshtastic/localonly.proto";
-import "meshtastic/mesh.proto";
+import "meshtastic/packet.proto";
 import "meshtastic/telemetry.proto";
+import "meshtastic/wire.proto";
 import "nanopb.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
@@ -28,14 +30,15 @@ message PositionLite {
   sfixed32 latitude_i = 1;
 
   /*
-   * TODO: REPLACE
+   * The new preferred location encoding, multiply by 1e-7 to get degrees
+   * in floating point
    */
   sfixed32 longitude_i = 2;
 
   /*
    * In meters above MSL (but see issue #359)
    */
-  int32 altitude = 3;
+  sint32 altitude = 3;
 
   /*
    * This is usually not sent over the mesh (to save space), but it is sent
@@ -47,17 +50,12 @@ message PositionLite {
   fixed32 time = 4;
 
   /*
-   * TODO: REPLACE
+   * How the position was obtained (manual, onboard GPS, or external GPS)
    */
-  Position.LocSource location_source = 5;
+  LocSource location_source = 5;
 }
 
 message UserLite {
-  /*
-   * This is the addr of the radio.
-   */
-  bytes macaddr = 1 [deprecated = true];
-
   /*
    * A full name for this user, i.e. "Kevin Hester"
    */
@@ -75,7 +73,7 @@ message UserLite {
    * Apps will still need the string here for older builds
    * (so OTA update can find the right image), but if the enum is available it will be used instead.
    */
-  HardwareModel hw_model = 4;
+  uint32 hw_model = 4;
 
   /*
    * In some regions Ham radio operators have different bandwidth limitations than others.
@@ -87,7 +85,7 @@ message UserLite {
   /*
    * Indicates that the user's role in the mesh
    */
-  Config.DeviceConfig.Role role = 6;
+  Role role = 6;
 
   /*
    * The public key of the user's device.
@@ -119,10 +117,9 @@ message NodeInfoLite {
   PositionLite position = 3;
 
   /*
-   * Returns the Signal-to-noise ratio (SNR) of the last received message,
-   * as measured by the receiver. Return SNR of the last received message in dB
+   * SNR in dB, scaled by 4 (i.e. multiply raw dB by 4 before storing)
    */
-  float snr = 4;
+  sint32 snr = 4;
 
   /*
    * Set to indicate the last time we received a packet from this node
@@ -209,19 +206,6 @@ message DeviceState {
    * Might be null
    */
   MeshPacket rx_text_message = 7;
-
-  /*
-   * Used only during development.
-   * Indicates developer is testing and changes should never be saved to flash.
-   * Deprecated in 2.3.1
-   */
-  bool no_save = 9 [deprecated = true];
-
-  /*
-   * Previously used to manage GPS factory resets.
-   * Deprecated in 2.5.23
-   */
-  bool did_gps_reset = 11 [deprecated = true];
 
   /*
    * We keep the last received waypoint stored in the device flash,

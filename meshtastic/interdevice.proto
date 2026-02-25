@@ -8,37 +8,61 @@ option java_outer_classname = "InterdeviceProtos";
 option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
-// encapsulate up to 1k of NMEA string data
-
+/*
+ * Message types for inter-device communication (e.g. between MCU and sensor co-processor).
+ * Also used to encapsulate up to 1k of NMEA string data.
+ */
 enum MessageType {
+  /* Acknowledgement */
   ACK = 0;
-  COLLECT_INTERVAL = 160; // in ms
-  BEEP_ON = 161; // duration ms
-  BEEP_OFF = 162; // cancel prematurely
+  /* Set the sensor data collection interval in milliseconds */
+  COLLECT_INTERVAL = 160;
+  /* Turn on the buzzer/beeper for the specified duration in ms */
+  BEEP_ON = 161;
+  /* Cancel an active beep prematurely */
+  BEEP_OFF = 162;
+  /* Shut down the co-processor */
   SHUTDOWN = 163;
+  /* Power on the co-processor */
   POWER_ON = 164;
+  /* SCD41 temperature reading */
   SCD41_TEMP = 176;
+  /* SCD41 humidity reading */
   SCD41_HUMIDITY = 177;
+  /* SCD41 CO2 concentration reading */
   SCD41_CO2 = 178;
+  /* AHT20 temperature reading */
   AHT20_TEMP = 179;
+  /* AHT20 humidity reading */
   AHT20_HUMIDITY = 180;
+  /* TVOC (Total Volatile Organic Compounds) index reading */
   TVOC_INDEX = 181;
 }
 
+/*
+ * A single sensor data reading from a co-processor
+ */
 message SensorData {
-  // The message type
+  /* The type of sensor message */
   MessageType type = 1;
-  // The sensor data, either as a float or an uint32
+  /* The sensor value, represented as either a float or uint32 */
   oneof data {
+    /* Sensor value as floating point */
     float float_value = 2;
+    /* Sensor value as unsigned integer */
     uint32 uint32_value = 3;
   }
 }
 
+/*
+ * Top-level inter-device message container for NMEA data or sensor readings
+ */
 message InterdeviceMessage {
-  // The message data
+  /* The message payload */
   oneof data {
+    /* NMEA sentence string data (up to 1k) */
     string nmea = 1;
+    /* Sensor data reading */
     SensorData sensor = 2;
   }
 }

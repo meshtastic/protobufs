@@ -4,7 +4,7 @@
 # FIXME - max_count is actually 32 but we save/load this as one long string of preencoded MeshPacket bytes - not a big array in RAM
 *DeviceState.receive_queue max_count:1
 
-*ChannelFile.channels max_count:8
+*ChannelFile.channels max_count:24
 
 *DeviceState.node_remote_hardware_pins max_count:12
 
@@ -15,4 +15,4 @@
 *UserLite.long_name max_size:40
 *UserLite.short_name max_size:5
 *UserLite.public_key max_size:32 # public key
-*UserLite.macaddr max_size:6 fixed_length:true
+*NodeInfoLite.bitfield int_size:8

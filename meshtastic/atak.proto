@@ -250,7 +250,7 @@ message PLI {
   /*
    * Altitude (ATAK prefers HAE)
    */
-  int32 altitude = 3;
+  sint32 altitude = 3;
 
   /*
    * Speed

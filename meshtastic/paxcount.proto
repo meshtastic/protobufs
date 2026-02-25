@@ -9,7 +9,7 @@ option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
 /*
- * TODO: REPLACE
+ * Paxcounter message reporting the count of detected WiFi and BLE devices nearby
  */
 message Paxcount {
   /*

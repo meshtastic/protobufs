@@ -6,3 +6,4 @@
 *GeoChat.to max_size:120
 *GeoChat.to_callsign max_size:120
 *TAKPacket.detail max_size:220
+*TAKPacket.payload_variant anonymous_oneof:true

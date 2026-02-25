@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package meshtastic;
+
+import "meshtastic/common.proto";
+
+option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "ModemPresetRegistryProtos";
+option java_package = "org.meshtastic.proto";
+option swift_prefix = "";
+
+/*
+ * Modem Preset Registry
+ *
+ * NOT used on-wire; consumed by clients/apps and optionally embedded in firmware.
+ * Centralizes the radio parameter definitions for each ModemPreset.
+ *
+ * Each preset has two parameter sets: standard sub-GHz LoRa and wide 2.4 GHz LoRa.
+ * Firmware selects the appropriate set based on the active region's wide_lora flag.
+ *
+ * Shipped as a serialized .pb data file alongside the proto schema.
+ * Firmware can generate its modem config table from this data or embed it directly.
+ */
+
+/*
+ * Radio parameters for a specific LoRa mode (standard or wide)
+ */
+message LoRaParams {
+  /* Bandwidth in kHz (e.g. 250, 500, 812, 1625) */
+  uint32 bandwidth_khz = 1;
+
+  /* Spreading factor (7-12) */
+  uint32 spread_factor = 2;
+
+  /* Coding rate denominator (5-8, i.e. 4/5 through 4/8) */
+  uint32 coding_rate = 3;
+}
+
+/*
+ * Complete definition of a single modem preset
+ */
+message ModemPresetInfo {
+  /* Which preset this defines */
+  ModemPreset preset = 1;
+
+  /* Human-readable preset name, e.g. "Long Fast", "Short Turbo" */
+  string name = 2;
+
+  /* Radio parameters for standard sub-GHz LoRa */
+  LoRaParams standard_params = 3;
+
+  /* Radio parameters for wide 2.4 GHz LoRa */
+  LoRaParams wide_params = 4;
+
+  /* If true, this preset may only be used by licensed HAM radio operators */
+  bool ham_only = 5;
+}
+
+/*
+ * The complete modem preset registry
+ */
+message ModemPresetRegistry {
+  repeated ModemPresetInfo presets = 1;
+}

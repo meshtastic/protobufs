@@ -20,37 +20,37 @@ message LocalConfig {
   /*
    * The part of the config that is specific to the Device
    */
-  Config.DeviceConfig device = 1;
+  DeviceConfig device = 1;
 
   /*
    * The part of the config that is specific to the GPS Position
    */
-  Config.PositionConfig position = 2;
+  PositionConfig position = 2;
 
   /*
    * The part of the config that is specific to the Power settings
    */
-  Config.PowerConfig power = 3;
+  PowerConfig power = 3;
 
   /*
    * The part of the config that is specific to the Wifi Settings
    */
-  Config.NetworkConfig network = 4;
+  NetworkConfig network = 4;
 
   /*
    * The part of the config that is specific to the Display
    */
-  Config.DisplayConfig display = 5;
+  DisplayConfig display = 5;
 
   /*
    * The part of the config that is specific to the Lora Radio
    */
-  Config.LoRaConfig lora = 6;
+  LoRaConfig lora = 6;
 
   /*
    * The part of the config that is specific to the Bluetooth settings
    */
-  Config.BluetoothConfig bluetooth = 7;
+  BluetoothConfig bluetooth = 7;
 
   /*
    * A version integer used to invalidate old save files when we make
@@ -62,89 +62,89 @@ message LocalConfig {
   /*
    * The part of the config that is specific to Security settings
    */
-  Config.SecurityConfig security = 9;
+  SecurityConfig security = 9;
 }
 
 message LocalModuleConfig {
   /*
    * The part of the config that is specific to the MQTT module
    */
-  ModuleConfig.MQTTConfig mqtt = 1;
+  MQTTConfig mqtt = 1;
 
   /*
    * The part of the config that is specific to the Serial module
    */
-  ModuleConfig.SerialConfig serial = 2;
+  SerialConfig serial = 2;
 
   /*
    * The part of the config that is specific to the ExternalNotification module
    */
-  ModuleConfig.ExternalNotificationConfig external_notification = 3;
+  ExternalNotificationConfig external_notification = 3;
 
   /*
    * The part of the config that is specific to the Store & Forward module
    */
-  ModuleConfig.StoreForwardConfig store_forward = 4;
+  StoreForwardConfig store_forward = 4;
 
   /*
    * The part of the config that is specific to the RangeTest module
    */
-  ModuleConfig.RangeTestConfig range_test = 5;
+  RangeTestConfig range_test = 5;
 
   /*
    * The part of the config that is specific to the Telemetry module
    */
-  ModuleConfig.TelemetryConfig telemetry = 6;
+  TelemetryConfig telemetry = 6;
 
   /*
    * The part of the config that is specific to the Canned Message module
    */
-  ModuleConfig.CannedMessageConfig canned_message = 7;
+  CannedMessageConfig canned_message = 7;
 
   /*
    * The part of the config that is specific to the Audio module
    */
-  ModuleConfig.AudioConfig audio = 9;
+  AudioConfig audio = 9;
 
   /*
    * The part of the config that is specific to the Remote Hardware module
    */
-  ModuleConfig.RemoteHardwareConfig remote_hardware = 10;
+  RemoteHardwareConfig remote_hardware = 10;
 
   /*
    * The part of the config that is specific to the Neighbor Info module
    */
-  ModuleConfig.NeighborInfoConfig neighbor_info = 11;
+  NeighborInfoConfig neighbor_info = 11;
 
   /*
    * The part of the config that is specific to the Ambient Lighting module
    */
-  ModuleConfig.AmbientLightingConfig ambient_lighting = 12;
+  AmbientLightingConfig ambient_lighting = 12;
 
   /*
    * The part of the config that is specific to the Detection Sensor module
    */
-  ModuleConfig.DetectionSensorConfig detection_sensor = 13;
+  DetectionSensorConfig detection_sensor = 13;
 
   /*
    * Paxcounter Config
    */
-  ModuleConfig.PaxcounterConfig paxcounter = 14;
+  PaxcounterConfig paxcounter = 14;
 
   /*
    * StatusMessage Config
    */
-  ModuleConfig.StatusMessageConfig statusmessage = 15;
+  StatusMessageConfig statusmessage = 15;
 
   /*
    * The part of the config that is specific to the Traffic Management module
    */
-  ModuleConfig.TrafficManagementConfig traffic_management = 16;
+  TrafficManagementConfig traffic_management = 16;
 
   /*
    * TAK Config
    */
-  ModuleConfig.TAKConfig tak = 17;
+  TAKConfig tak = 17;
 
   /*
    * A version integer used to invalidate old save files when we make

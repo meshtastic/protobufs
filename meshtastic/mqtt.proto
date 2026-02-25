@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package meshtastic;
 
-import "meshtastic/config.proto";
-import "meshtastic/mesh.proto";
+import "meshtastic/common.proto";
+import "meshtastic/packet.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -51,12 +51,12 @@ message MapReport {
   /*
    * Role of the node that applies specific settings for a particular use-case
    */
-  Config.DeviceConfig.Role role = 3;
+  Role role = 3;
 
   /*
-   * Hardware model of the node, i.e. T-Beam, Heltec V3, etc...
+   * Hardware model, packed as (vendor_id << 8 | device_id)
    */
-  HardwareModel hw_model = 4;
+  uint32 hw_model = 4;
 
   /*
    * Device firmware version string
@@ -66,12 +66,12 @@ message MapReport {
   /*
    * The region code for the radio (US, CN, EU433, etc...)
    */
-  Config.LoRaConfig.RegionCode region = 6;
+  RegionCode region = 6;
 
   /*
    * Modem preset used by the radio (LongFast, MediumSlow, etc...)
    */
-  Config.LoRaConfig.ModemPreset modem_preset = 7;
+  ModemPreset modem_preset = 7;
 
   /*
    * Whether the node has a channel with default PSK and name (LongFast, MediumSlow, etc...)
@@ -92,7 +92,7 @@ message MapReport {
   /*
    * Altitude in meters above MSL
    */
-  int32 altitude = 11;
+  sint32 altitude = 11;
 
   /*
    * Indicates the bits of precision for latitude and longitude set by the sending node

@@ -9,7 +9,8 @@ option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
 /*
- * TODO: REPLACE
+ * Store and Forward module message for requesting and delivering stored mesh messages.
+ * Allows clients to retrieve messages that were sent while they were offline.
  */
 message StoreAndForward {
   /*
@@ -101,7 +102,7 @@ message StoreAndForward {
   }
 
   /*
-   * TODO: REPLACE
+   * Statistics about the Store and Forward router's current state and capacity
    */
   message Statistics {
     /*
@@ -151,7 +152,7 @@ message StoreAndForward {
   }
 
   /*
-   * TODO: REPLACE
+   * Metadata about a history replay response from the router
    */
   message History {
     /*
@@ -172,7 +173,7 @@ message StoreAndForward {
   }
 
   /*
-   * TODO: REPLACE
+   * Periodic heartbeat broadcast from the Store and Forward router to advertise availability
    */
   message Heartbeat {
     /*
@@ -187,26 +188,26 @@ message StoreAndForward {
   }
 
   /*
-   * TODO: REPLACE
+   * The request/response type indicating what this message represents
    */
   RequestResponse rr = 1;
 
   /*
-   * TODO: REPLACE
+   * The payload variant for this Store and Forward message
    */
   oneof variant {
     /*
-     * TODO: REPLACE
+     * Router statistics (capacity, uptime, message counts)
      */
     Statistics stats = 2;
 
     /*
-     * TODO: REPLACE
+     * History replay metadata (message count, window, last request index)
      */
     History history = 3;
 
     /*
-     * TODO: REPLACE
+     * Heartbeat broadcast data (period, primary/secondary status)
      */
     Heartbeat heartbeat = 4;
 

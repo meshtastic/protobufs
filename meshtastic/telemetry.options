@@ -12,6 +12,12 @@
 *HealthMetrics.heart_bpm int_size:8
 *HealthMetrics.spO2 int_size:8
 
+*Telemetry.variant anonymous_oneof:true
+
+*DeviceMetrics.voltage int_size:16
+*DeviceMetrics.channel_utilization int_size:16
+*DeviceMetrics.air_util_tx int_size:16
+
 *HostMetrics.load1 int_size:16
 *HostMetrics.load5 int_size:16
 *HostMetrics.load15 int_size:16

@@ -21,7 +21,7 @@ option swift_prefix = "";
  */
 message HardwareMessage {
   /*
-   * TODO: REPLACE
+   * The type of remote hardware GPIO operation being requested or reported
    */
   enum Type {
     /*

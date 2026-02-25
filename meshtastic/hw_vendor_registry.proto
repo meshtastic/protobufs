@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package meshtastic;
+
+option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "HwVendorRegistryProtos";
+option java_package = "org.meshtastic.proto";
+option swift_prefix = "";
+
+/*
+ * Hardware Vendor Registry
+ *
+ * NOT used on-wire; consumed by clients/apps for display purposes only.
+ * Maps vendor IDs (7-bit, 0x00-0x7F) to human-readable vendor names.
+ *
+ * The on-wire hw_model field is a packed uint32: (vendor_id << 8) | device_id
+ * Vendor ID 0x00 = Legacy/Meshtastic community (device IDs map 1:1 to old HardwareModel values)
+ * Vendor IDs 0x01-0x6F = Registered third-party vendors (111 slots)
+ * Vendor IDs 0x70-0x7F = Private/development (unrestricted, never registered)
+ *
+ * Helper macros for firmware:
+ *   #define HW_VENDOR(hw_model)  ((uint8_t)(((hw_model) >> 8) & 0x7F))
+ *   #define HW_DEVICE(hw_model)  ((uint8_t)((hw_model) & 0xFF))
+ *   #define HW_MODEL(vid, did)   (((uint16_t)((vid) & 0x7F) << 8) | (uint8_t)(did))
+ */
+
+/*
+ * A single vendor entry in the registry
+ */
+message HwVendor {
+  /* Vendor ID (0x00-0x7F) */
+  uint32 vendor_id = 1;
+
+  /* Human-readable vendor name, e.g. "Heltec", "LILYGO", "RAKwireless" */
+  string name = 2;
+}
+
+/*
+ * The complete vendor registry
+ */
+message HwVendorRegistry {
+  repeated HwVendor vendors = 1;
+}

@@ -1,0 +1,38 @@
+# nanopb options for api.proto
+# https://jpa.kapsi.fi/nanopb/docs/reference.html#proto-file-options
+
+*NodeInfo.channel int_size:8
+*NodeInfo.hops_away int_size:8
+
+*MyNodeInfo.device_id max_size:16
+*MyNodeInfo.pio_env max_size:40
+*MyNodeInfo.firmware_edition int_size:8
+*MyNodeInfo.nodedb_count int_size:16
+
+*QueueStatus.res int_size:8
+*QueueStatus.free int_size:8
+*QueueStatus.maxlen int_size:8
+
+*ToRadio.payload_variant anonymous_oneof:true
+*FromRadio.payload_variant anonymous_oneof:true
+
+*LogRecord.message max_size:384
+*LogRecord.source max_size:32
+
+*FileInfo.file_name max_size:228
+
+*ClientNotification.message max_size:400
+*ClientNotification.payload_variant anonymous_oneof:true
+
+*KeyVerificationNumberInform.remote_longname max_size:40
+*KeyVerificationNumberRequest.remote_longname max_size:40
+*KeyVerificationFinal.remote_longname max_size:40
+*KeyVerificationFinal.verification_characters max_size:10
+
+*DeviceMetadata.firmware_version max_size:18
+
+*ChunkedPayload.chunk_count int_size:16
+*ChunkedPayload.chunk_index int_size:16
+*ChunkedPayload.payload_chunk max_size:228
+
+*ChunkedPayloadResponse.payload_variant anonymous_oneof:true

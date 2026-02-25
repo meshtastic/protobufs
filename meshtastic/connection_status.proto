@@ -44,9 +44,9 @@ message WifiConnectionStatus {
   string ssid = 2;
 
   /*
-   * RSSI of wireless connection
+   * RSSI of wireless connection (negative dBm)
    */
-  int32 rssi = 3;
+  sint32 rssi = 3;
 }
 
 /*
@@ -94,9 +94,9 @@ message BluetoothConnectionStatus {
   uint32 pin = 1;
 
   /*
-   * RSSI of bluetooth connection
+   * RSSI of bluetooth connection (negative dBm)
    */
-  int32 rssi = 2;
+  sint32 rssi = 2;
 
   /*
    * Whether the device has an active connection or not

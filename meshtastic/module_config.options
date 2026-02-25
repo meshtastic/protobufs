@@ -1,5 +1,3 @@
-*CannedMessageConfig.allow_input_source max_size:16
-
 *MQTTConfig.address max_size:64
 *MQTTConfig.username max_size:64
 *MQTTConfig.password max_size:32
@@ -29,3 +27,5 @@
 *DetectionSensorConfig.detection_trigger_type max_size:8
 
 *StatusMessageConfig.node_status max_size:80
+
+*ModuleConfigPayload.payload_variant anonymous_oneof:true

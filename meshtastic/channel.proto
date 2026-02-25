@@ -28,11 +28,6 @@ option swift_prefix = "";
  */
 message ChannelSettings {
   /*
-   * Deprecated in favor of LoraConfig.channel_num
-   */
-  uint32 channel_num = 1 [deprecated = true];
-
-  /*
    * A simple pre-shared key for now for crypto.
    * Must be either 0 bytes (no crypto), 16 bytes (AES128), or 32 bytes (AES256).
    * A special shorthand is used for 1 byte long psks.
@@ -151,7 +146,7 @@ message Channel {
   ChannelSettings settings = 2;
 
   /*
-   * TODO: REPLACE
+   * Whether this channel is disabled, primary, or secondary
    */
   Role role = 3;
 }
