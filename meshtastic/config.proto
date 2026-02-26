@@ -992,6 +992,23 @@ message Config {
       LONG_TURBO = 9;
     }
 
+    enum FEM_LNA_Mode {
+      /*
+        * FEM_LNA is present but disabled
+        */
+      DISABLED = 0;
+
+      /*
+        * FEM_LNA is present and enabled
+        */
+      ENABLED = 1;
+
+      /*
+        * FEM_LNA is not present on the device
+        */
+      NOT_PRESENT = 2;
+    }
+
     /*
      * When enabled, the `modem_preset` fields will be adhered to, else the `bandwidth`/`spread_factor`/`coding_rate`
      * will be taked from their respective manually defined fields
@@ -1112,6 +1129,10 @@ message Config {
      * Sets the ok_to_mqtt bit on outgoing packets
      */
     bool config_ok_to_mqtt = 105;
+    /*
+     * Set where LORA FEM is enabled, disabled, or not present
+     */
+    FEM_LNA_Mode fem_lna_mode=106;
   }
 
   message BluetoothConfig {
