@@ -5,12 +5,10 @@ package meshtastic;
 /* trunk-ignore(buf-lint/COMPILE) */
 import "meshtastic/api.proto";
 import "meshtastic/channel.proto";
-import "meshtastic/common.proto";
 import "meshtastic/config.proto";
 import "meshtastic/connection_status.proto";
 import "meshtastic/device_ui.proto";
 import "meshtastic/module_config.proto";
-import "meshtastic/packet.proto";
 import "meshtastic/wire.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
