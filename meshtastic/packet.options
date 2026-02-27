@@ -4,6 +4,7 @@
 # Note: the actual limit (because of header bytes) on the size of encrypted payloads is 251 bytes, but we use 256
 # here because we might need to fill with zeros for padding to encryption block size (16 bytes per block)
 *MeshPacket.encrypted max_size:256
+*MeshPacket.public_key max_size:32
 *MeshPacket.payload_variant anonymous_oneof:true
 *MeshPacket.hop_limit int_size:8
 *MeshPacket.hop_start int_size:8
