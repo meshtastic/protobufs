@@ -937,3 +937,17 @@ message SEN5XState {
    */
   optional fixed64 voc_state_array = 6;
 }
+
+message VL53L0XState {
+  enum RangingMode {
+    Default = 0;
+    LongRange = 1;
+    HighSpeed = 2;
+    HighAccuracy = 3;
+  }
+
+  /*
+   * Current Ranging Mode
+   */
+  RangingMode mode = 1;
+}
