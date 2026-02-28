@@ -868,9 +868,9 @@ enum TelemetrySensorType {
   SCD30 = 49;
 
   /*
-   * VL53L0 distance, sensor
+   * VL53L0X distance, sensor
    */
-  VL53L0 = 50;
+  VL53L0X = 50;
 }
 
 /*
@@ -921,4 +921,18 @@ message SEN5XState {
    * VOC state array (8x uint8t) for SEN55
    */
   optional fixed64 voc_state_array = 6;
+}
+
+message VL53L0XState {
+  enum RangingMode {
+    Default = 0;
+    LongRange = 1;
+    HighSpeed = 2;
+    HighAccuracy = 3;
+  }
+
+  /*
+   * Current Ranging Mode
+   */
+  RangingMode mode = 1;
 }
