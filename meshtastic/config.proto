@@ -994,18 +994,18 @@ message Config {
 
     enum FEM_LNA_Mode {
       /*
-        * FEM_LNA is present but disabled
-        */
+       * FEM_LNA is present but disabled
+       */
       DISABLED = 0;
 
       /*
-        * FEM_LNA is present and enabled
-        */
+       * FEM_LNA is present and enabled
+       */
       ENABLED = 1;
 
       /*
-        * FEM_LNA is not present on the device
-        */
+       * FEM_LNA is not present on the device
+       */
       NOT_PRESENT = 2;
     }
 
