@@ -1132,7 +1132,7 @@ message Config {
     /*
      * Set where LORA FEM is enabled, disabled, or not present
      */
-    FEM_LNA_Mode fem_lna_mode=106;
+    FEM_LNA_Mode fem_lna_mode = 106;
   }
 
   message BluetoothConfig {
