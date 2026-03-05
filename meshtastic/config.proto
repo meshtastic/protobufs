@@ -579,6 +579,54 @@ message Config {
     bool ipv6_enabled = 11;
 
     /*
+     * Syslog log level to control which messages are sent to the rsyslog server.
+     * Only messages at or above this level will be forwarded.
+     * Values match LogRecord.Level for consistency. Default (UNSET) treats as INFO.
+     */
+    enum LogLevel {
+      /*
+       * No level set, firmware defaults to INFO
+       */
+      LOG_UNSET = 0;
+
+      /*
+       * Trace level (most verbose)
+       */
+      LOG_TRACE = 5;
+
+      /*
+       * Debug level
+       */
+      LOG_DEBUG = 10;
+
+      /*
+       * Informational
+       */
+      LOG_INFO = 20;
+
+      /*
+       * Warning conditions
+       */
+      LOG_WARNING = 30;
+
+      /*
+       * Error conditions
+       */
+      LOG_ERROR = 40;
+
+      /*
+       * Critical conditions
+       */
+      LOG_CRITICAL = 50;
+    }
+
+    /*
+     * Minimum severity level of log messages to send to the rsyslog server.
+     * Messages below this level are filtered out. Default (UNSET) sends INFO and above.
+     */
+    LogLevel rsyslog_level = 12;
+
+    /*
      * Available flags auxiliary network protocols
      */
     enum ProtocolFlags {
