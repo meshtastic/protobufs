@@ -162,6 +162,11 @@ message AdminMessage {
      * Traffic management module config
      */
     TRAFFICMANAGEMENT_CONFIG = 14;
+
+    /*
+     * TAK module config
+     */
+    TAK_CONFIG = 15;
   }
 
   enum BackupLocation {
