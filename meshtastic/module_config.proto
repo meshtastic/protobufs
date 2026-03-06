@@ -3,6 +3,7 @@ syntax = "proto3";
 package meshtastic;
 
 import "meshtastic/atak.proto";
+import "meshtastic/telemetry.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -707,6 +708,11 @@ message ModuleConfig {
      * Enable/Disable the air quality telemetry measurement module on-device display
      */
     bool air_quality_screen_enabled = 15;
+
+    /*
+     * Enable/Disable sensors to save airtime
+     */
+    SensorDisables sensordisables = 16;
   }
 
   /*

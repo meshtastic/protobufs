@@ -9,6 +9,7 @@ import "meshtastic/connection_status.proto";
 import "meshtastic/device_ui.proto";
 import "meshtastic/mesh.proto";
 import "meshtastic/module_config.proto";
+import "meshtastic/telemetry.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -666,6 +667,16 @@ message SensorConfig {
    * SCD30 CO2 Sensor configuration
    */
   SCD30_config scd30_config = 3;
+
+  /*
+   * SFA30 HCHO Sensor configuration
+   */
+  SFA30_config sfa30_config = 4;
+
+  /*
+   * PMSA003I HCHO Sensor configuration
+   */
+  PMSA003I_config pmsa003i_config = 5;
 }
 
 message SCD4X_config {
@@ -703,6 +714,11 @@ message SCD4X_config {
    * Power mode for sensor (true for low power, false for normal)
    */
   optional bool set_power_mode = 7;
+
+  /*
+   * Disables for SCD4X
+   */
+  optional SCD4XDisables scd4xdisables = 8;
 }
 
 message SEN5X_config {
@@ -715,6 +731,11 @@ message SEN5X_config {
    * One-shot mode (true for low power - one-shot mode, false for normal - continuous mode)
    */
   optional bool set_one_shot_mode = 2;
+
+  /*
+   * Disables for SEN5X
+   */
+  optional SEN5XDisables sen5xdisables = 3;
 }
 
 message SCD30_config {
@@ -747,4 +768,23 @@ message SCD30_config {
    * Perform a factory reset of the sensor
    */
   optional bool soft_reset = 6;
+
+  /*
+   * Disables for SCD30
+   */
+  optional SCD30Disables scd30disables = 7;
+}
+
+message SFA30_config {
+  /*
+   * Disables for SFA30
+   */
+  optional SFA30Disables sfa30disables = 1;
+}
+
+message PMSA003I_config {
+  /*
+   * Disables for PMSA003I
+   */
+  optional PMSA003IDisables pmsa003idisables = 3;
 }
