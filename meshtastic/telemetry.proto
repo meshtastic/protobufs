@@ -866,6 +866,11 @@ enum TelemetrySensorType {
    * SCD30 CO2, humidity, temperature sensor
    */
   SCD30 = 49;
+
+  /*
+   * SHT family of sensors for temperature and humidity
+   */
+  SHTXX = 50;
 }
 
 /*
