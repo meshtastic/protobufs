@@ -653,7 +653,7 @@ enum TelemetrySensorType {
   BMP280 = 6;
 
   /*
-   * High accuracy temperature and humidity
+   * TODO - REMOVE High accuracy temperature and humidity
    */
   SHTC3 = 7;
 
@@ -678,7 +678,7 @@ enum TelemetrySensorType {
   QMC5883L = 11;
 
   /*
-   * High accuracy temperature and humidity
+   * TODO - REMOVE High accuracy temperature and humidity
    */
   SHT31 = 12;
 
@@ -703,7 +703,7 @@ enum TelemetrySensorType {
   RCWL9620 = 16;
 
   /*
-   * Sensirion High accuracy temperature and humidity
+   * TODO - REMOVE Sensirion High accuracy temperature and humidity
    */
   SHT4X = 17;
 
@@ -853,7 +853,7 @@ enum TelemetrySensorType {
   HDC1080 = 46;
 
   /*
-   * STH21 Temperature and R. Humidity sensor
+   * TODO - REMOVE STH21 Temperature and R. Humidity sensor
    */
   SHT21 = 47;
 
