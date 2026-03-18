@@ -157,42 +157,42 @@ message EnvironmentMetrics {
   /*
    * ADC Voltage (Ch1)
    */
-  optional float ch1_voltage = 23;
+  optional float adc_voltage_ch1 = 23;
 
   /*
    * ADC Voltage (Ch2)
    */
-  optional float ch2_voltage = 24;
+  optional float adc_voltage_ch2 = 24;
 
   /*
    * ADC Voltage (Ch3)
    */
-  optional float ch3_voltage = 25;
+  optional float adc_voltage_ch3 = 25;
 
   /*
    * ADC Voltage (Ch4)
    */
-  optional float ch4_voltage = 26;
+  optional float adc_voltage_ch4 = 26;
 
   /*
    * ADC Voltage (Ch5)
    */
-  optional float ch5_voltage = 27;
+  optional float adc_voltage_ch5 = 27;
 
   /*
    * ADC Voltage (Ch6)
    */
-  optional float ch6_voltage = 28;
+  optional float adc_voltage_ch6 = 28;
 
   /*
    * ADC Voltage (Ch7)
    */
-  optional float ch7_voltage = 29;
+  optional float adc_voltage_ch7 = 29;
 
   /*
    * ADC Voltage (Ch8)
    */
-  optional float ch8_voltage = 30;
+  optional float adc_voltage_ch8 = 30;
 }
 
 /*
