@@ -873,7 +873,7 @@ enum HardwareModel {
   /*
    * Heltec Mesh Node T096 board features an nRF52840 CPU and a TFT screen.
    */
-  HELTEC_MESH_NODE_T096 = 126;
+  HELTEC_MESH_NODE_T096 = 127;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
