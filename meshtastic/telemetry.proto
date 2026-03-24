@@ -153,6 +153,26 @@ message EnvironmentMetrics {
    * Soil temperature measured (*C)
    */
   optional float soil_temperature = 22;
+
+  /*
+   * DS18B20 1-Wire temperature sensor readings
+   */
+  repeated DS18B20Reading ds18b20_readings = 23;
+}
+
+/*
+ * A single DS18B20 1-Wire temperature sensor reading with its unique ROM code
+ */
+message DS18B20Reading {
+  /*
+   * 32-bit FNV-1a hash of the 64-bit 1-Wire ROM code — stable, compact identifier per sensor
+   */
+  fixed32 device_id = 1;
+
+  /*
+   * Temperature in degrees Celsius
+   */
+  float temperature = 2;
 }
 
 /*
@@ -871,6 +891,11 @@ enum TelemetrySensorType {
    * SHT family of sensors for temperature and humidity
    */
   SHTXX = 50;
+
+  /*
+   * Dallas/Maxim DS18B20 1-Wire digital thermometer
+   */
+  DS18B20 = 51;
 }
 
 /*

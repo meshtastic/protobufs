@@ -620,6 +620,50 @@ message ModuleConfig {
   }
 
   /*
+   * DS18B20 1-Wire sensor configuration.
+   */
+  message DS18B20Config {
+    /*
+     * GPIO pin for the DS18B20 1-Wire sensor bus. 0 = disabled.
+     * Set via CLI to activate DS18B20 support on any pin.
+     */
+    uint32 pin = 1;
+
+    /*
+     * Which value the legacy EnvironmentMetrics.temperature scalar reports.
+     */
+    enum TemperatureMode {
+      /*
+       * Report the temperature of the first sensor (index 0, sorted by ROM code). Default.
+       */
+      FIRST = 0;
+      /*
+       * Report the average temperature across all connected sensors.
+       */
+      AVERAGE = 1;
+      /*
+       * Report the minimum temperature across all connected sensors.
+       */
+      MIN = 2;
+      /*
+       * Report the maximum temperature across all connected sensors.
+       */
+      MAX = 3;
+    }
+
+    /*
+     * Selects what value the legacy EnvironmentMetrics.temperature scalar reports.
+     */
+    TemperatureMode mode = 2;
+
+    /*
+     * When true, DS18B20 readings beyond the first packet are broadcast over LoRa mesh.
+     * When false (default), extra sensor chunks are sent only to the connected phone/client.
+     */
+    bool mesh_enabled = 3;
+  }
+
+  /*
    * Configuration for both device and environment metrics
    */
   message TelemetryConfig {
@@ -707,6 +751,11 @@ message ModuleConfig {
      * Enable/Disable the air quality telemetry measurement module on-device display
      */
     bool air_quality_screen_enabled = 15;
+
+    /*
+     * DS18B20 1-Wire sensor configuration. Pin, temperature mode, and mesh broadcast control.
+     */
+    DS18B20Config ds18b20 = 16;
   }
 
   /*

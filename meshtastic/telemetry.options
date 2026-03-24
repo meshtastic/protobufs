@@ -1,6 +1,7 @@
 # options for nanopb
 # https://jpa.kapsi.fi/nanopb/docs/reference.html#proto-file-options
 
+*EnvironmentMetrics.ds18b20_readings max_count:16
 *EnvironmentMetrics.iaq int_size:16
 *EnvironmentMetrics.wind_direction int_size:16
 *EnvironmentMetrics.soil_moisture int_size:8
