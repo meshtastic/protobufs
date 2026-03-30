@@ -240,34 +240,69 @@ message ModuleConfig {
     bool codec2_enabled = 1;
 
     /*
-     * PTT Pin
+     * PTT Pin for codec2 audio.
+     * Can also be set at compile time via AUDIO_PTT_PIN.
      */
     uint32 ptt_pin = 2;
 
     /*
-     * The audio sample rate to use for codec2
+     * The codec2 bitrate to use for encoding/decoding voice
      */
     Audio_Baud bitrate = 3;
 
     /*
-     * I2S Word Select
+     * I2S Word Select pin.
+     * Legacy: only used in single-I2S-bus mode. Boards with AUDIO_I2S_DUAL
+     * define their I2S pins at compile time and ignore this field.
      */
     uint32 i2s_ws = 4;
 
     /*
-     * I2S Data IN
+     * I2S Data IN pin (microphone).
+     * Legacy: only used in single-I2S-bus mode.
      */
     uint32 i2s_sd = 5;
 
     /*
-     * I2S Data OUT
+     * I2S Data OUT pin (speaker).
+     * Legacy: only used in single-I2S-bus mode.
      */
     uint32 i2s_din = 6;
 
     /*
-     * I2S Clock
+     * I2S Clock pin.
+     * Legacy: only used in single-I2S-bus mode.
      */
     uint32 i2s_sck = 7;
+
+    /*
+     * Speaker output gain multiplier.
+     * Applied to decoded audio before writing to I2S.
+     * 0 = use firmware default. Valid range 1-30.
+     */
+    uint32 speaker_gain = 8;
+
+    /*
+     * Microphone input gain multiplier.
+     * Applied to raw mic samples after high-pass filtering.
+     * 0 = use firmware default. Valid range 1-30.
+     */
+    uint32 mic_gain = 9;
+
+    /*
+     * Target node number for audio transmission.
+     * 0 = broadcast to all nodes (default).
+     * Set to a specific node number to send audio as a direct message.
+     */
+    uint32 audio_target = 10;
+
+    /*
+     * Channel index for audio broadcast transmission.
+     * 0 = primary channel (default).
+     * Set to a channel index (0-7) to send audio on a specific channel.
+     * Only used when audio_target is 0 (broadcast mode).
+     */
+    uint32 audio_channel = 11;
   }
 
   /*
