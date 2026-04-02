@@ -1810,6 +1810,14 @@ message NodeInfo {
 }
 
 /*
+ * Batched NodeInfo wrapper for efficient bulk transfer during want_config flow.
+ * Allows multiple NodeInfo messages to be packed into a single FromRadio packet.
+ */
+message NodeInfoBatch {
+  repeated NodeInfo items = 1;
+}
+
+/*
  * Error codes for critical errors
  * The device might report these fault codes on the screen.
  * If you encounter a fault code, please post on the meshtastic.discourse.group
@@ -2165,6 +2173,12 @@ message FromRadio {
      * Persistent data for device-ui
      */
     DeviceUIConfig deviceuiConfig = 17;
+
+    /*
+     * Batched NodeInfo messages for efficient bulk transfer.
+     * Used when client opts in via special nonce value of 69422.
+     */
+    NodeInfoBatch node_info_batch = 18;
   }
 }
 
