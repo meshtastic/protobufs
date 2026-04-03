@@ -232,52 +232,52 @@ message PowerMetrics {
   /*
    * Voltage (Ch4) - TODO Remove
    */
-  optional float ch4_voltage = 7;
+  optional float ch4_voltage = 7 [deprecated = true];
 
   /*
    * Current (Ch4) - TODO Remove
    */
-  optional float ch4_current = 8;
+  optional float ch4_current = 8 [deprecated = true];
 
   /*
    * Voltage (Ch5) - TODO Remove
    */
-  optional float ch5_voltage = 9;
+  optional float ch5_voltage = 9 [deprecated = true];
 
   /*
    * Current (Ch5) - TODO Remove
    */
-  optional float ch5_current = 10;
+  optional float ch5_current = 10 [deprecated = true];
 
   /*
    * Voltage (Ch6) - TODO Remove
    */
-  optional float ch6_voltage = 11;
+  optional float ch6_voltage = 11 [deprecated = true];
 
   /*
    * Current (Ch6) - TODO Remove
    */
-  optional float ch6_current = 12;
+  optional float ch6_current = 12 [deprecated = true];
 
   /*
    * Voltage (Ch7) - TODO Remove
    */
-  optional float ch7_voltage = 13;
+  optional float ch7_voltage = 13 [deprecated = true];
 
   /*
    * Current (Ch7) - TODO Remove
    */
-  optional float ch7_current = 14;
+  optional float ch7_current = 14 [deprecated = true];
 
   /*
    * Voltage (Ch8) - TODO Remove
    */
-  optional float ch8_voltage = 15;
+  optional float ch8_voltage = 15 [deprecated = true];
 
   /*
    * Current (Ch8) - TODO Remove
    */
-  optional float ch8_current = 16;
+  optional float ch8_current = 16 [deprecated = true];
 }
 
 /*
@@ -695,7 +695,7 @@ enum TelemetrySensorType {
   /*
    * TODO - REMOVE High accuracy temperature and humidity
    */
-  SHTC3 = 7;
+  SHTC3 = 7 [deprecated = true];
 
   /*
    * High accuracy pressure
@@ -720,7 +720,7 @@ enum TelemetrySensorType {
   /*
    * TODO - REMOVE High accuracy temperature and humidity
    */
-  SHT31 = 12;
+  SHT31 = 12 [deprecated = true];
 
   /*
    * PM2.5 air quality sensor
@@ -745,7 +745,7 @@ enum TelemetrySensorType {
   /*
    * TODO - REMOVE Sensirion High accuracy temperature and humidity
    */
-  SHT4X = 17;
+  SHT4X = 17 [deprecated = true];
 
   /*
    * VEML7700 high accuracy ambient light(Lux) digital 16-bit resolution sensor.
@@ -895,7 +895,7 @@ enum TelemetrySensorType {
   /*
    * TODO - REMOVE STH21 Temperature and R. Humidity sensor
    */
-  SHT21 = 47;
+  SHT21 = 47 [deprecated = true];
 
   /*
    * Sensirion STC31 CO2 sensor
