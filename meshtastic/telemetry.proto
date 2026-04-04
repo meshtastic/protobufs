@@ -871,6 +871,11 @@ enum TelemetrySensorType {
    * SHT family of sensors for temperature and humidity
    */
   SHTXX = 50;
+
+  /*
+   * DS248X Bridge for one-wire temperature sensors
+   */
+  DS248X = 51;
 }
 
 /*
