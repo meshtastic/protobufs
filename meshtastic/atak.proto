@@ -262,3 +262,447 @@ message PLI {
    */
   uint32 course = 5;
 }
+
+/*
+ * CoT how field values.
+ * Represents how the coordinates were generated.
+ */
+enum CotHow {
+  /*
+   * Unspecified
+   */
+  CotHow_Unspecified = 0;
+  /*
+   * Human entered
+   */
+  CotHow_h_e = 1;
+  /*
+   * Machine generated
+   */
+  CotHow_m_g = 2;
+  /*
+   * Human GPS/INS derived
+   */
+  CotHow_h_g_i_g_o = 3;
+  /*
+   * Machine relayed (imported from another system/gateway)
+   */
+  CotHow_m_r = 4;
+  /*
+   * Machine fused (corroborated from multiple sources)
+   */
+  CotHow_m_f = 5;
+  /*
+   * Machine predicted
+   */
+  CotHow_m_p = 6;
+  /*
+   * Machine simulated
+   */
+  CotHow_m_s = 7;
+}
+
+/*
+ * Well-known CoT event types.
+ * When the type is known, use the enum value for efficient encoding.
+ * For unknown types, set cot_type_id to CotType_Other and populate cot_type_str.
+ */
+enum CotType {
+  /*
+   * Unknown or unmapped type, use cot_type_str
+   */
+  CotType_Other = 0;
+  /*
+   * a-f-G-U-C: Friendly ground unit combat
+   */
+  CotType_a_f_G_U_C = 1;
+  /*
+   * a-f-G-U-C-I: Friendly ground unit combat infantry
+   */
+  CotType_a_f_G_U_C_I = 2;
+  /*
+   * a-n-A-C-F: Neutral aircraft civilian fixed-wing
+   */
+  CotType_a_n_A_C_F = 3;
+  /*
+   * a-n-A-C-H: Neutral aircraft civilian helicopter
+   */
+  CotType_a_n_A_C_H = 4;
+  /*
+   * a-n-A-C: Neutral aircraft civilian
+   */
+  CotType_a_n_A_C = 5;
+  /*
+   * a-f-A-M-H: Friendly aircraft military helicopter
+   */
+  CotType_a_f_A_M_H = 6;
+  /*
+   * a-f-A-M: Friendly aircraft military
+   */
+  CotType_a_f_A_M = 7;
+  /*
+   * a-f-A-M-F-F: Friendly aircraft military fixed-wing fighter
+   */
+  CotType_a_f_A_M_F_F = 8;
+  /*
+   * a-f-A-M-H-A: Friendly aircraft military helicopter attack
+   */
+  CotType_a_f_A_M_H_A = 9;
+  /*
+   * a-f-A-M-H-U-M: Friendly aircraft military helicopter utility medium
+   */
+  CotType_a_f_A_M_H_U_M = 10;
+  /*
+   * a-h-A-M-F-F: Hostile aircraft military fixed-wing fighter
+   */
+  CotType_a_h_A_M_F_F = 11;
+  /*
+   * a-h-A-M-H-A: Hostile aircraft military helicopter attack
+   */
+  CotType_a_h_A_M_H_A = 12;
+  /*
+   * a-u-A-C: Unknown aircraft civilian
+   */
+  CotType_a_u_A_C = 13;
+  /*
+   * t-x-d-d: Tasking delete/disconnect
+   */
+  CotType_t_x_d_d = 14;
+  /*
+   * a-f-G-E-S-E: Friendly ground equipment sensor
+   */
+  CotType_a_f_G_E_S_E = 15;
+  /*
+   * a-f-G-E-V-C: Friendly ground equipment vehicle
+   */
+  CotType_a_f_G_E_V_C = 16;
+  /*
+   * a-f-S: Friendly sea
+   */
+  CotType_a_f_S = 17;
+  /*
+   * a-f-A-M-F: Friendly aircraft military fixed-wing
+   */
+  CotType_a_f_A_M_F = 18;
+  /*
+   * a-f-A-M-F-C-H: Friendly aircraft military fixed-wing cargo heavy
+   */
+  CotType_a_f_A_M_F_C_H = 19;
+  /*
+   * a-f-A-M-F-U-L: Friendly aircraft military fixed-wing utility light
+   */
+  CotType_a_f_A_M_F_U_L = 20;
+  /*
+   * a-f-A-M-F-L: Friendly aircraft military fixed-wing liaison
+   */
+  CotType_a_f_A_M_F_L = 21;
+  /*
+   * a-f-A-M-F-P: Friendly aircraft military fixed-wing patrol
+   */
+  CotType_a_f_A_M_F_P = 22;
+  /*
+   * a-f-A-C-H: Friendly aircraft civilian helicopter
+   */
+  CotType_a_f_A_C_H = 23;
+  /*
+   * a-n-A-M-F-Q: Neutral aircraft military fixed-wing drone
+   */
+  CotType_a_n_A_M_F_Q = 24;
+
+  // --- Chat / messaging ---
+
+  /*
+   * b-t-f: GeoChat message
+   */
+  CotType_b_t_f = 25;
+
+  // --- CASEVAC / MEDEVAC ---
+
+  /*
+   * b-r-f-h-c: CASEVAC/MEDEVAC report
+   */
+  CotType_b_r_f_h_c = 26;
+
+  // --- Alerts ---
+
+  /*
+   * b-a-o-pan: Ring the bell / alert all
+   */
+  CotType_b_a_o_pan = 27;
+  /*
+   * b-a-o-opn: Troops in contact
+   */
+  CotType_b_a_o_opn = 28;
+  /*
+   * b-a-o-can: Cancel alert
+   */
+  CotType_b_a_o_can = 29;
+  /*
+   * b-a-o-tbl: 911 alert
+   */
+  CotType_b_a_o_tbl = 30;
+  /*
+   * b-a-g: Geofence breach alert
+   */
+  CotType_b_a_g = 31;
+
+  // --- Generic ground atoms (simplified affiliation types) ---
+
+  /*
+   * a-f-G: Friendly ground (generic)
+   */
+  CotType_a_f_G = 32;
+  /*
+   * a-f-G-U: Friendly ground unit (generic)
+   */
+  CotType_a_f_G_U = 33;
+  /*
+   * a-h-G: Hostile ground (generic)
+   */
+  CotType_a_h_G = 34;
+  /*
+   * a-u-G: Unknown ground (generic)
+   */
+  CotType_a_u_G = 35;
+  /*
+   * a-n-G: Neutral ground (generic)
+   */
+  CotType_a_n_G = 36;
+
+  // --- Routes and waypoints ---
+
+  /*
+   * b-m-r: Route
+   */
+  CotType_b_m_r = 37;
+  /*
+   * b-m-p-w: Route waypoint
+   */
+  CotType_b_m_p_w = 38;
+  /*
+   * b-m-p-s-p-i: Self-position marker
+   */
+  CotType_b_m_p_s_p_i = 39;
+
+  // --- Drawing / tactical graphics ---
+
+  /*
+   * u-d-f: Freeform shape (line/polygon)
+   */
+  CotType_u_d_f = 40;
+  /*
+   * u-d-r: Rectangle
+   */
+  CotType_u_d_r = 41;
+  /*
+   * u-d-c-c: Circle
+   */
+  CotType_u_d_c_c = 42;
+  /*
+   * u-rb-a: Range/bearing line
+   */
+  CotType_u_rb_a = 43;
+
+  // --- Additional hostile/unknown aircraft ---
+
+  /*
+   * a-h-A: Hostile aircraft (generic)
+   */
+  CotType_a_h_A = 44;
+  /*
+   * a-u-A: Unknown aircraft (generic)
+   */
+  CotType_a_u_A = 45;
+  /*
+   * a-f-A-M-H-Q: Friendly aircraft military helicopter observation
+   */
+  CotType_a_f_A_M_H_Q = 46;
+}
+
+/*
+ * Geopoint and altitude source
+ */
+enum GeoPointSource {
+  /*
+   * Unspecified
+   */
+  GeoPointSource_Unspecified = 0;
+  /*
+   * GPS derived
+   */
+  GeoPointSource_GPS = 1;
+  /*
+   * User entered
+   */
+  GeoPointSource_USER = 2;
+  /*
+   * Network/external
+   */
+  GeoPointSource_NETWORK = 3;
+}
+
+/*
+ * Aircraft track information from ADS-B or military air tracking.
+ * Covers the majority of observed real-world CoT traffic.
+ */
+message AircraftTrack {
+  /*
+   * ICAO hex identifier (e.g. "AD237C")
+   */
+  string icao = 1;
+  /*
+   * Aircraft registration (e.g. "N946AK")
+   */
+  string registration = 2;
+  /*
+   * Flight number/callsign (e.g. "ASA864")
+   */
+  string flight = 3;
+  /*
+   * ICAO aircraft type designator (e.g. "B39M")
+   */
+  string aircraft_type = 4;
+  /*
+   * Transponder squawk code (0-7777 octal)
+   */
+  uint32 squawk = 5;
+  /*
+   * ADS-B emitter category (e.g. "A3")
+   */
+  string category = 6;
+  /*
+   * Received signal strength * 10 (e.g. -194 for -19.4 dBm)
+   */
+  sint32 rssi_x10 = 7;
+  /*
+   * Whether receiver has GPS fix
+   */
+  bool gps = 8;
+  /*
+   * CoT host ID for source attribution
+   */
+  string cot_host_id = 9;
+}
+
+/*
+ * ATAK v2 packet with expanded CoT field support and zstd dictionary compression.
+ * Sent on ATAK_PLUGIN_V2 port. The wire payload is:
+ *   [1 byte flags][zstd-compressed TAKPacketV2 protobuf]
+ * Flags byte: bits 0-5 = dictionary ID, bits 6-7 = reserved.
+ */
+message TAKPacketV2 {
+  /*
+   * Well-known CoT event type enum.
+   * Use CotType_Other with cot_type_str for unknown types.
+   */
+  CotType cot_type_id = 1;
+  /*
+   * How the coordinates were generated
+   */
+  CotHow how = 2;
+  /*
+   * Callsign
+   */
+  string callsign = 3;
+  /*
+   * Team color assignment
+   */
+  Team team = 4;
+  /*
+   * Role of the group member
+   */
+  MemberRole role = 5;
+  /*
+   * Latitude, multiply by 1e-7 to get degrees in floating point
+   */
+  sfixed32 latitude_i = 6;
+  /*
+   * Longitude, multiply by 1e-7 to get degrees in floating point
+   */
+  sfixed32 longitude_i = 7;
+  /*
+   * Altitude in meters (HAE)
+   */
+  sint32 altitude = 8;
+  /*
+   * Speed in cm/s
+   */
+  uint32 speed = 9;
+  /*
+   * Course in degrees * 100 (0-36000)
+   */
+  uint32 course = 10;
+  /*
+   * Battery level 0-100
+   */
+  uint32 battery = 11;
+  /*
+   * Geopoint source
+   */
+  GeoPointSource geo_src = 12;
+  /*
+   * Altitude source
+   */
+  GeoPointSource alt_src = 13;
+  /*
+   * Device UID (UUID string or device ID like "ANDROID-xxxx")
+   */
+  string uid = 14;
+  /*
+   * Device callsign
+   */
+  string device_callsign = 15;
+  /*
+   * Stale time as seconds offset from event time
+   */
+  uint32 stale_seconds = 16;
+  /*
+   * TAK client version string
+   */
+  string tak_version = 17;
+  /*
+   * TAK device model
+   */
+  string tak_device = 18;
+  /*
+   * TAK platform (ATAK-CIV, WebTAK, etc.)
+   */
+  string tak_platform = 19;
+  /*
+   * TAK OS version
+   */
+  string tak_os = 20;
+  /*
+   * Connection endpoint
+   */
+  string endpoint = 21;
+  /*
+   * Phone number
+   */
+  string phone = 22;
+  /*
+   * CoT event type string, only populated when cot_type_id is CotType_Other
+   */
+  string cot_type_str = 23;
+  /*
+   * The payload of the packet
+   */
+  oneof payload_variant {
+    /*
+     * Position report (true = PLI, no extra fields beyond the common ones above)
+     */
+    bool pli = 30;
+    /*
+     * ATAK GeoChat message
+     */
+    GeoChat chat = 31;
+    /*
+     * Aircraft track data (ADS-B, military air)
+     */
+    AircraftTrack aircraft = 32;
+    /*
+     * Generic CoT detail XML for unmapped types
+     */
+    bytes raw_detail = 33;
+  }
+}
