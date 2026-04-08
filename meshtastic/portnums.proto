@@ -250,7 +250,7 @@ enum PortNum {
    * ATAK Plugin V2
    * Portnum for payloads from the official Meshtastic ATAK plugin using
    * TAKPacketV2 with zstd dictionary compression.
-x   */
+   */
   ATAK_PLUGIN_V2 = 78;
 
   /*
