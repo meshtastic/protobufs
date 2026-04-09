@@ -162,6 +162,11 @@ message AdminMessage {
      * Traffic management module config
      */
     TRAFFICMANAGEMENT_CONFIG = 14;
+
+    /*
+     * TAK module config
+     */
+    TAK_CONFIG = 15;
   }
 
   enum BackupLocation {
@@ -661,6 +666,11 @@ message SensorConfig {
    * SCD30 CO2 Sensor configuration
    */
   SCD30_config scd30_config = 3;
+
+  /*
+   * SHTXX temperature and relative humidity sensor configuration
+   */
+  SHTXX_config shtxx_config = 4;
 }
 
 message SCD4X_config {
@@ -742,4 +752,11 @@ message SCD30_config {
    * Perform a factory reset of the sensor
    */
   optional bool soft_reset = 6;
+}
+
+message SHTXX_config {
+  /*
+   * Accuracy mode (0 = low, 1 = medium, 2 = high)
+   */
+  optional uint32 set_accuracy = 1;
 }

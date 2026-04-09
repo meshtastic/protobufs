@@ -142,6 +142,11 @@ message LocalModuleConfig {
   ModuleConfig.TrafficManagementConfig traffic_management = 16;
 
   /*
+   * TAK Config
+   */
+  ModuleConfig.TAKConfig tak = 17;
+
+  /*
    * A version integer used to invalidate old save files when we make
    * incompatible changes This integer is set at build time and is private to
    * NodeDB.cpp in the device code.

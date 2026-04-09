@@ -228,6 +228,12 @@ enum PortNum {
   POWERSTRESS_APP = 74;
 
   /*
+   * LoraWAN Payload Transport
+   * ENCODING: compact binary LoRaWAN uplink (10-byte RF metadata + PHY payload) - see LoRaWANBridgeModule
+   */
+  LORAWAN_BRIDGE = 75;
+
+  /*
    * Reticulum Network Stack Tunnel App
    * ENCODING: Fragmented RNS Packet. Handled by Meshtastic RNS interface
    */
@@ -239,6 +245,20 @@ enum PortNum {
    * ENCODING: CayenneLLP
    */
   CAYENNE_APP = 77;
+
+  /*
+   * ATAK Plugin V2
+   * Portnum for payloads from the official Meshtastic ATAK plugin using
+   * TAKPacketV2 with zstd dictionary compression.
+   */
+  ATAK_PLUGIN_V2 = 78;
+
+  /*
+   * GroupAlarm integration
+   * Used for transporting GroupAlarm-related messages between Meshtastic nodes
+   * and companion applications/services.
+   */
+  GROUPALARM_APP = 112;
 
   /*
    * Private applications should use portnums >= 256.
