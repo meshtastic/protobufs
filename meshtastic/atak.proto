@@ -768,7 +768,10 @@ message AircraftTrack {
 }
 
 /*
- * Compact geographic vertex used by repeated vertex lists in geometry payloads.
+ * Compact geographic vertex used by repeated vertex lists in TAK geometry
+ * payloads. Named with a `Cot` prefix to avoid a namespace collision with
+ * `meshtastic.GeoPoint` in `device_ui.proto`, which is an unrelated zoom/
+ * latitude/longitude type used by the on-device map UI.
  *
  * Encoded as a signed DELTA from TAKPacketV2.latitude_i / longitude_i (the
  * enclosing event's anchor point). The absolute coordinate is recovered by
@@ -784,7 +787,7 @@ message AircraftTrack {
  * per field, which is why TAKPacketV2's top-level latitude_i / longitude_i
  * stay sfixed32 — only small values win with sint32.
  */
-message GeoPoint {
+message CotGeoPoint {
   /*
    * Latitude delta from TAKPacketV2.latitude_i, in 1e-7 degree units.
    * Add to the enclosing event's latitude_i to recover the absolute latitude.
@@ -935,7 +938,7 @@ message DrawnShape {
    * the nanopb pool; senders MUST truncate longer inputs and set
    * `truncated = true`.
    */
-  repeated GeoPoint vertices = 12;
+  repeated CotGeoPoint vertices = 12;
   /*
    * True if the sender truncated `vertices` to fit the pool.
    */
@@ -1058,15 +1061,15 @@ message Marker {
  * Range and bearing measurement line from the event anchor to a target point.
  *
  * Covers CoT type u-rb-a. The anchor position is on
- * TAKPacketV2.latitude_i/longitude_i; the target endpoint is carried as an
- * absolute GeoPoint (not a delta) since RAB lines are cheap and the numeric
- * text is load-bearing for display.
+ * TAKPacketV2.latitude_i/longitude_i; the target endpoint is carried as a
+ * CotGeoPoint — same delta-from-anchor encoding used by DrawnShape.vertices
+ * so a self-anchored RAB (common case) encodes in zero bytes.
  */
 message RangeAndBearing {
   /*
-   * Target/anchor endpoint
+   * Target/anchor endpoint (delta-encoded from TAKPacketV2.latitude_i/longitude_i).
    */
-  GeoPoint anchor = 1;
+  CotGeoPoint anchor = 1;
   /*
    * Anchor UID (from <link uid="anchor-1"/>). Empty = free-standing.
    */
@@ -1154,9 +1157,9 @@ message Route {
    */
   message Link {
     /*
-     * Waypoint position (absolute, not delta).
+     * Waypoint position (delta-encoded from TAKPacketV2.latitude_i/longitude_i).
      */
-    GeoPoint point = 1;
+    CotGeoPoint point = 1;
     /*
      * Optional UID (empty = receiver derives).
      */

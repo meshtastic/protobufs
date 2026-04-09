@@ -30,12 +30,14 @@
 
 # --- Typed geometry payloads (v2 protocol extension) ---
 #
-# GeoPoint: sint32 deltas from the enclosing event's latitude_i/longitude_i.
+# CotGeoPoint: sint32 deltas from the enclosing event's latitude_i/longitude_i.
 # For nearby vertices (telestrations, small rectangles) the varint+zigzag
 # encoding is 2-3 bytes per field, cutting telestration vertex data in half
 # versus sfixed32. int_size:32 keeps the C type a plain int32.
-*GeoPoint.lat_delta_i int_size:32
-*GeoPoint.lon_delta_i int_size:32
+# Named with a `Cot` prefix to avoid a collision with `meshtastic.GeoPoint`
+# in device_ui.proto, which is an unrelated zoom/latitude/longitude type.
+*CotGeoPoint.lat_delta_i int_size:32
+*CotGeoPoint.lon_delta_i int_size:32
 #
 # DrawnShape pool sizing. `kind` and `style` are varint enums (no int_size
 # needed). stroke_color / fill_color are Team enum, also varint. stroke_argb
