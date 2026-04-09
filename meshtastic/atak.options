@@ -77,3 +77,34 @@
 *Route.Link.uid max_size:48
 *Route.Link.callsign max_size:16
 *Route.Link.link_type int_size:8
+
+# GeoChat receipt extension. receipt_for_uid matches TAKPacketV2.uid caps.
+*GeoChat.receipt_for_uid max_size:48
+
+# CasevacReport pool sizing. All numeric fields are small (0..255 for
+# patient counts, 1 byte for flags bitfields); strings are short.
+*CasevacReport.equipment_flags int_size:8
+*CasevacReport.terrain_flags int_size:8
+*CasevacReport.litter_patients int_size:8
+*CasevacReport.ambulatory_patients int_size:8
+*CasevacReport.us_military int_size:8
+*CasevacReport.us_civilian int_size:8
+*CasevacReport.non_us_military int_size:8
+*CasevacReport.non_us_civilian int_size:8
+*CasevacReport.epw int_size:8
+*CasevacReport.child int_size:8
+*CasevacReport.zone_marker max_size:16
+*CasevacReport.frequency max_size:16
+
+# EmergencyAlert pool sizing. UIDs match TAKPacketV2.uid caps (48).
+*EmergencyAlert.authoring_uid max_size:48
+*EmergencyAlert.cancel_reference_uid max_size:48
+
+# TaskRequest pool sizing. All four strings are capped tight so the
+# worst-case wire size stays under the LoRa MTU with headroom. task_type
+# is a short category tag; target_uid/assignee_uid match TAKPacketV2.uid
+# conventions; note is the one user-entered field.
+*TaskRequest.task_type max_size:12
+*TaskRequest.target_uid max_size:32
+*TaskRequest.assignee_uid max_size:32
+*TaskRequest.note max_size:48
