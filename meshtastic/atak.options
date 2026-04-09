@@ -27,3 +27,51 @@
 *AircraftTrack.squawk int_size:16
 *AircraftTrack.category max_size:4
 *AircraftTrack.cot_host_id max_size:64
+
+# --- Typed geometry payloads (v2 protocol extension) ---
+#
+# GeoPoint: sint32 deltas from the enclosing event's latitude_i/longitude_i.
+# For nearby vertices (telestrations, small rectangles) the varint+zigzag
+# encoding is 2-3 bytes per field, cutting telestration vertex data in half
+# versus sfixed32. int_size:32 keeps the C type a plain int32.
+*GeoPoint.lat_delta_i int_size:32
+*GeoPoint.lon_delta_i int_size:32
+#
+# DrawnShape pool sizing. `kind` and `style` are varint enums (no int_size
+# needed). stroke_color / fill_color are Team enum, also varint. stroke_argb
+# / fill_argb are fixed32 (always 4 bytes on the wire). Vertex pool is 32
+# entries x ~12B each ~= 384B worst case. Telestrations beyond 32 vertices
+# MUST be pre-truncated by the sender with `truncated = true`.
+*DrawnShape.vertices max_count:32
+*DrawnShape.major_cm int_size:32
+*DrawnShape.minor_cm int_size:32
+*DrawnShape.angle_deg int_size:16
+*DrawnShape.stroke_weight_x10 int_size:16
+*DrawnShape.bullseye_distance_dm int_size:32
+*DrawnShape.bullseye_bearing_ref int_size:8
+*DrawnShape.bullseye_flags int_size:8
+*DrawnShape.bullseye_uid_ref max_size:48
+
+# Marker pool sizing. Strings bounded tight to keep fixed pool small on
+# ESP32 nanopb. parent_uid matches existing TAKPacketV2.uid cap (48).
+# iconset fits "f7f71666-8b28-4b57-9fbb-e38e61d33b79/Google/hiker.png"
+# (~52 chars) with slack.
+*Marker.parent_uid max_size:48
+*Marker.parent_type max_size:24
+*Marker.parent_callsign max_size:24
+*Marker.iconset max_size:80
+
+# RangeAndBearing pool sizing.
+*RangeAndBearing.anchor_uid max_size:48
+*RangeAndBearing.range_cm int_size:32
+*RangeAndBearing.bearing_cdeg int_size:16
+*RangeAndBearing.stroke_weight_x10 int_size:16
+
+# Route pool sizing. 16 links x ~24B each ~= 384B worst case. prefix is
+# ATAK's short waypoint name prefix ("CP", "RP", etc.) — 8 chars is plenty.
+*Route.links max_count:16
+*Route.prefix max_size:8
+*Route.stroke_weight_x10 int_size:16
+*Route.Link.uid max_size:48
+*Route.Link.callsign max_size:16
+*Route.Link.link_type int_size:8

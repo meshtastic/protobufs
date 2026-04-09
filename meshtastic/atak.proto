@@ -663,6 +663,43 @@ enum CotType {
    * b-f-t-a: File transfer acknowledgment
    */
   CotType_b_f_t_a = 75;
+
+  // --- Additional drawing / tactical graphics ---
+
+  /*
+   * u-d-f-m: Freehand telestration / annotation. Anchor at event point,
+   * geometry carried via DrawnShape.vertices. May be truncated to
+   * MAX_VERTICES by the sender.
+   */
+  CotType_u_d_f_m = 76;
+  /*
+   * u-d-p: Closed polygon. Geometry carried via DrawnShape.vertices,
+   * implicitly closed (receiver duplicates first vertex as needed).
+   */
+  CotType_u_d_p = 77;
+
+  // --- Additional markers ---
+
+  /*
+   * b-m-p-s-m: Spot map marker (colored dot at a point of interest).
+   */
+  CotType_b_m_p_s_m = 78;
+  /*
+   * b-m-p-c: Checkpoint (intermediate route control point).
+   */
+  CotType_b_m_p_c = 79;
+
+  // --- Ranging tools ---
+
+  /*
+   * u-r-b-c-c: Ranging circle (range rings centered on the event point).
+   */
+  CotType_u_r_b_c_c = 80;
+  /*
+   * u-r-b-bullseye: Bullseye with configurable range rings and bearing
+   * reference (magnetic / true / grid).
+   */
+  CotType_u_r_b_bullseye = 81;
 }
 
 /*
@@ -728,6 +765,435 @@ message AircraftTrack {
    * CoT host ID for source attribution
    */
   string cot_host_id = 9;
+}
+
+/*
+ * Compact geographic vertex used by repeated vertex lists in geometry payloads.
+ *
+ * Encoded as a signed DELTA from TAKPacketV2.latitude_i / longitude_i (the
+ * enclosing event's anchor point). The absolute coordinate is recovered by
+ * the receiver as `event.latitude_i + vertex.lat_delta_i` (and likewise for
+ * longitude).
+ *
+ * Why deltas: a 32-vertex telestration with vertices clustered within a few
+ * hundred meters of the anchor has per-vertex deltas in the ±10^4 range.
+ * Under sint32+zigzag those encode as 2 bytes each (tag+varint), versus the
+ * 4 bytes that sfixed32 would always require. At 32 vertices that is ~128
+ * bytes of savings — the difference between fitting under the LoRa MTU or
+ * not. Absolute coordinates (values ~10^9) would cost sint32 varint 5 bytes
+ * per field, which is why TAKPacketV2's top-level latitude_i / longitude_i
+ * stay sfixed32 — only small values win with sint32.
+ */
+message GeoPoint {
+  /*
+   * Latitude delta from TAKPacketV2.latitude_i, in 1e-7 degree units.
+   * Add to the enclosing event's latitude_i to recover the absolute latitude.
+   */
+  sint32 lat_delta_i = 1;
+  /*
+   * Longitude delta from TAKPacketV2.longitude_i, in 1e-7 degree units.
+   */
+  sint32 lon_delta_i = 2;
+}
+
+/*
+ * User-drawn tactical graphic: circle, rectangle, polygon, polyline, freehand
+ * telestration, ranging circle, or bullseye.
+ *
+ * Covers CoT types u-d-c-c, u-d-r, u-d-f, u-d-f-m, u-d-p, u-r-b-c-c,
+ * u-r-b-bullseye. The shape's anchor position is carried on
+ * TAKPacketV2.latitude_i/longitude_i; polyline/polygon vertices are in the
+ * `vertices` repeated field (absolute, not deltas).
+ *
+ * Colors use the Team enum as a 14-color palette (see color encoding below)
+ * with a fixed32 exact-ARGB fallback for custom user-picked colors that
+ * don't map to a palette entry.
+ */
+message DrawnShape {
+  /*
+   * Shape kind discriminator. Drives receiver rendering and also controls
+   * which optional fields below are meaningful.
+   */
+  enum Kind {
+    /*
+     * Unspecified (do not use on the wire)
+     */
+    Kind_Unspecified = 0;
+    /*
+     * u-d-c-c: User-drawn circle (uses major/minor/angle, anchor = event point)
+     */
+    Kind_Circle = 1;
+    /*
+     * u-d-r: User-drawn rectangle (uses vertices = 4 corners)
+     */
+    Kind_Rectangle = 2;
+    /*
+     * u-d-f: User-drawn polyline (uses vertices, not closed)
+     */
+    Kind_Freeform = 3;
+    /*
+     * u-d-f-m: Freehand telestration / annotation (uses vertices, may be truncated)
+     */
+    Kind_Telestration = 4;
+    /*
+     * u-d-p: Closed polygon (uses vertices, implicitly closed)
+     */
+    Kind_Polygon = 5;
+    /*
+     * u-r-b-c-c: Ranging circle (major/minor/angle, stroke + optional fill)
+     */
+    Kind_RangingCircle = 6;
+    /*
+     * u-r-b-bullseye: Bullseye ring with range rings and bearing reference
+     */
+    Kind_Bullseye = 7;
+  }
+  /*
+   * Explicit stroke/fill/both discriminator.
+   *
+   * ATAK's source XML distinguishes "stroke-only polyline" from "closed shape
+   * with both stroke and fill" by the presence of the <fillColor> element.
+   * Both states can hash to all-zero color fields, so we carry the signal
+   * explicitly. Parser sets this from (sawStrokeColor, sawFillColor) at the
+   * end of parse; builder uses it to decide which of <strokeColor> /
+   * <fillColor> to emit in the reconstructed XML.
+   */
+  enum StyleMode {
+    /*
+     * Unspecified — receiver infers from which color fields are non-zero.
+     */
+    StyleMode_Unspecified = 0;
+    /*
+     * Stroke only. No <fillColor> in the source XML. Used for polylines,
+     * ranging lines, bullseye rings.
+     */
+    StyleMode_StrokeOnly = 1;
+    /*
+     * Fill only. No <strokeColor> in the source XML. Rare but valid in
+     * ATAK (solid region with no outline).
+     */
+    StyleMode_FillOnly = 2;
+    /*
+     * Both stroke and fill present. Closed shapes: circle, rectangle,
+     * polygon, ranging circle.
+     */
+    StyleMode_StrokeAndFill = 3;
+  }
+  /*
+   * Shape kind (circle, rectangle, freeform, etc.)
+   */
+  Kind kind = 1;
+  /*
+   * Explicit stroke/fill/both discriminator. See StyleMode doc.
+   */
+  StyleMode style = 2;
+  /*
+   * Ellipse major radius in centimeters. 0 for non-ellipse kinds.
+   */
+  uint32 major_cm = 3;
+  /*
+   * Ellipse minor radius in centimeters. 0 for non-ellipse kinds.
+   */
+  uint32 minor_cm = 4;
+  /*
+   * Ellipse rotation angle in degrees (0..360). Default 360 = circle.
+   */
+  uint32 angle_deg = 5;
+  /*
+   * Stroke color as a named palette entry from the Team enum. If
+   * Unspecifed_Color, the exact ARGB is carried in stroke_argb.
+   * Valid only when style is StrokeOnly or StrokeAndFill.
+   */
+  Team stroke_color = 6;
+  /*
+   * Stroke color as an exact 32-bit ARGB bit pattern. Always populated
+   * on the wire; readers MUST use this value when stroke_color ==
+   * Unspecifed_Color and MAY use it to recover the exact original bytes
+   * even when a palette entry is set.
+   */
+  fixed32 stroke_argb = 7;
+  /*
+   * Stroke weight in tenths of a unit (e.g. 30 = 3.0). Typical ATAK
+   * range 10..60.
+   */
+  uint32 stroke_weight_x10 = 8;
+  /*
+   * Fill color as a named palette entry. See stroke_color docs.
+   * Valid only when style is FillOnly or StrokeAndFill.
+   */
+  Team fill_color = 9;
+  /*
+   * Fill color exact ARGB fallback. See stroke_argb docs.
+   */
+  fixed32 fill_argb = 10;
+  /*
+   * Whether labels are rendered on this shape.
+   */
+  bool labels_on = 11;
+  /*
+   * Vertex list for polyline/polygon/rectangle shapes. Capped at 32 by
+   * the nanopb pool; senders MUST truncate longer inputs and set
+   * `truncated = true`.
+   */
+  repeated GeoPoint vertices = 12;
+  /*
+   * True if the sender truncated `vertices` to fit the pool.
+   */
+  bool truncated = 13;
+  // --- Bullseye-only fields. All ignored unless kind == Kind_Bullseye. ---
+  /*
+   * Bullseye distance in meters * 10 (e.g. 3285 = 328.5 m). 0 = unset.
+   */
+  uint32 bullseye_distance_dm = 14;
+  /*
+   * Bullseye bearing reference: 0 unset, 1 Magnetic, 2 True, 3 Grid.
+   */
+  uint32 bullseye_bearing_ref = 15;
+  /*
+   * Bullseye attribute bit flags:
+   *   bit 0: rangeRingVisible
+   *   bit 1: hasRangeRings
+   *   bit 2: edgeToCenter
+   *   bit 3: mils
+   */
+  uint32 bullseye_flags = 16;
+  /*
+   * Bullseye reference UID (anchor marker). Empty = anchor is self.
+   */
+  string bullseye_uid_ref = 17;
+}
+
+/*
+ * Fixed point of interest: spot marker, waypoint, checkpoint, 2525 symbol,
+ * or custom icon.
+ *
+ * Covers CoT types b-m-p-s-m, b-m-p-w, b-m-p-c, b-m-p-s-p-i, b-m-p-s-p-loc,
+ * plus a-u-G / a-f-G / a-h-G / a-n-G with iconset paths. The marker position
+ * is carried on TAKPacketV2.latitude_i/longitude_i; fields below carry only
+ * the marker-specific metadata.
+ */
+message Marker {
+  /*
+   * Marker kind. Used to pick sensible receiver defaults when the CoT type
+   * alone is ambiguous (e.g. a-u-G could be a 2525 symbol or a custom icon
+   * depending on the iconset path).
+   */
+  enum Kind {
+    /*
+     * Unspecified — fall back to TAKPacketV2.cot_type_id
+     */
+    Kind_Unspecified = 0;
+    /*
+     * b-m-p-s-m: Spot map marker
+     */
+    Kind_Spot = 1;
+    /*
+     * b-m-p-w: Route waypoint
+     */
+    Kind_Waypoint = 2;
+    /*
+     * b-m-p-c: Checkpoint
+     */
+    Kind_Checkpoint = 3;
+    /*
+     * b-m-p-s-p-i / b-m-p-s-p-loc: Self-position marker
+     */
+    Kind_SelfPosition = 4;
+    /*
+     * 2525B/C military symbol (iconsetpath = COT_MAPPING_2525B/...)
+     */
+    Kind_Symbol2525 = 5;
+    /*
+     * COT_MAPPING_SPOTMAP icon (e.g. colored dot)
+     */
+    Kind_SpotMap = 6;
+    /*
+     * Custom icon set (UUID/GroupName/filename.png)
+     */
+    Kind_CustomIcon = 7;
+  }
+  /*
+   * Marker kind
+   */
+  Kind kind = 1;
+  /*
+   * Marker color as a named palette entry. If Unspecifed_Color, the exact
+   * ARGB is in color_argb.
+   */
+  Team color = 2;
+  /*
+   * Marker color exact ARGB bit pattern. Always populated on the wire.
+   */
+  fixed32 color_argb = 3;
+  /*
+   * Status readiness flag (ATAK <status readiness="true"/>).
+   */
+  bool readiness = 4;
+  /*
+   * Parent link UID (ATAK <link uid=... relation="p-p"/>). Empty = no parent.
+   * For spot/waypoint markers this is typically the producing TAK user's UID.
+   */
+  string parent_uid = 5;
+  /*
+   * Parent CoT type (e.g. "a-f-G-U-C"). Usually the parent TAK user's type.
+   */
+  string parent_type = 6;
+  /*
+   * Parent callsign (e.g. "HOPE").
+   */
+  string parent_callsign = 7;
+  /*
+   * Iconset path stored verbatim. ATAK emits three flavors:
+   *   Kind_Symbol2525    -> "COT_MAPPING_2525B/<cot-type-prefix>/<cot-type>"
+   *   Kind_SpotMap       -> "COT_MAPPING_SPOTMAP/<cot-type>/<argb>"
+   *   Kind_CustomIcon    -> "<UUID>/<GroupName>/<filename>.png"
+   * Stored end-to-end without prefix stripping; the ~19 bytes saved by
+   * stripping well-known prefixes are not worth the builder-side bug
+   * surface, and the dict compresses the repetition effectively.
+   */
+  string iconset = 8;
+}
+
+/*
+ * Range and bearing measurement line from the event anchor to a target point.
+ *
+ * Covers CoT type u-rb-a. The anchor position is on
+ * TAKPacketV2.latitude_i/longitude_i; the target endpoint is carried as an
+ * absolute GeoPoint (not a delta) since RAB lines are cheap and the numeric
+ * text is load-bearing for display.
+ */
+message RangeAndBearing {
+  /*
+   * Target/anchor endpoint
+   */
+  GeoPoint anchor = 1;
+  /*
+   * Anchor UID (from <link uid="anchor-1"/>). Empty = free-standing.
+   */
+  string anchor_uid = 2;
+  /*
+   * Range in centimeters (value * 100). Range 0..4294 km.
+   */
+  uint32 range_cm = 3;
+  /*
+   * Bearing in degrees * 100 (0..36000).
+   */
+  uint32 bearing_cdeg = 4;
+  /*
+   * Stroke color as a Team palette entry. See DrawnShape.stroke_color doc.
+   */
+  Team stroke_color = 5;
+  /*
+   * Stroke color exact ARGB fallback.
+   */
+  fixed32 stroke_argb = 6;
+  /*
+   * Stroke weight * 10 (e.g. 30 = 3.0).
+   */
+  uint32 stroke_weight_x10 = 7;
+}
+
+/*
+ * Named route consisting of ordered waypoints and control points.
+ *
+ * Covers CoT type b-m-r. The first waypoint's position is on
+ * TAKPacketV2.latitude_i/longitude_i; subsequent waypoints and checkpoints
+ * are in `links`. Link count is capped at 16 by the nanopb pool; senders
+ * MUST truncate longer routes and set `truncated = true`.
+ */
+message Route {
+  /*
+   * Travel method for the route.
+   */
+  enum Method {
+    /*
+     * Unspecified / unknown
+     */
+    Method_Unspecified = 0;
+    /*
+     * Driving / vehicle
+     */
+    Method_Driving = 1;
+    /*
+     * Walking / foot
+     */
+    Method_Walking = 2;
+    /*
+     * Flying
+     */
+    Method_Flying = 3;
+    /*
+     * Swimming (individual)
+     */
+    Method_Swimming = 4;
+    /*
+     * Watercraft (boat)
+     */
+    Method_Watercraft = 5;
+  }
+  /*
+   * Route direction (infil = ingress, exfil = egress).
+   */
+  enum Direction {
+    /*
+     * Unspecified
+     */
+    Direction_Unspecified = 0;
+    /*
+     * Infiltration (ingress)
+     */
+    Direction_Infil = 1;
+    /*
+     * Exfiltration (egress)
+     */
+    Direction_Exfil = 2;
+  }
+  /*
+   * Route waypoint or control point. Each link corresponds to one ATAK
+   * <link type=... point=...> entry inside the b-m-r event.
+   */
+  message Link {
+    /*
+     * Waypoint position (absolute, not delta).
+     */
+    GeoPoint point = 1;
+    /*
+     * Optional UID (empty = receiver derives).
+     */
+    string uid = 2;
+    /*
+     * Optional display callsign (e.g. "CP1"). Empty for unnamed control points.
+     */
+    string callsign = 3;
+    /*
+     * Link role: 0 = waypoint (b-m-p-w), 1 = checkpoint (b-m-p-c).
+     */
+    uint32 link_type = 4;
+  }
+  /*
+   * Travel method
+   */
+  Method method = 1;
+  /*
+   * Direction (infil/exfil)
+   */
+  Direction direction = 2;
+  /*
+   * Waypoint name prefix (e.g. "CP").
+   */
+  string prefix = 3;
+  /*
+   * Stroke weight * 10 (e.g. 30 = 3.0). 0 = default.
+   */
+  uint32 stroke_weight_x10 = 4;
+  /*
+   * Ordered list of route control points. Capped at 16.
+   */
+  repeated Link links = 5;
+  /*
+   * True if the sender truncated `links` to fit the pool.
+   */
+  bool truncated = 6;
 }
 
 /*
@@ -847,8 +1313,28 @@ message TAKPacketV2 {
      */
     AircraftTrack aircraft = 32;
     /*
-     * Generic CoT detail XML for unmapped types
+     * Generic CoT detail XML for unmapped types. Kept as a fallback for CoT
+     * types not yet promoted to a typed variant; drawings, markers, ranging
+     * tools, and routes have dedicated variants below and should not land here.
      */
     bytes raw_detail = 33;
+    /*
+     * User-drawn tactical graphic: circle, rectangle, polygon, polyline,
+     * telestration, ranging circle, or bullseye. See DrawnShape.
+     */
+    DrawnShape shape = 34;
+    /*
+     * Fixed point of interest: spot marker, waypoint, checkpoint, 2525
+     * symbol, or custom icon. See Marker.
+     */
+    Marker marker = 35;
+    /*
+     * Range and bearing measurement line. See RangeAndBearing.
+     */
+    RangeAndBearing rab = 36;
+    /*
+     * Named route with ordered waypoints and control points. See Route.
+     */
+    Route route = 37;
   }
 }
