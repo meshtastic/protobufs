@@ -1686,6 +1686,14 @@ message TAKPacketV2 {
    */
   string cot_type_str = 23;
   /*
+   * Optional remarks / free-text annotation from the <remarks> element.
+   * Populated for non-GeoChat payload types (shapes, markers, routes, etc.)
+   * when the original CoT event carried non-empty remarks text.
+   * GeoChat messages carry their text in GeoChat.message instead.
+   * Empty string (proto3 default) means no remarks were present.
+   */
+  string remarks = 24;
+  /*
    * The payload of the packet
    */
   oneof payload_variant {
