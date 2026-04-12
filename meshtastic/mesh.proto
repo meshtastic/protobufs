@@ -878,6 +878,9 @@ enum HardwareModel {
   /* Seeed studio T1000-E Pro tracker card. NRF52840 w/ LR2021 radio, GPS, button, buzzer, and sensors. */
   TRACKER_T1000_E_PRO = 128;
 
+  /* Raspberry Pi Pico 2 (RP2350) with WIZnet W5500 Ethernet and EBYTE E22-900M30S SX1262 LoRa */
+  PICO2_W5500_E22 = 129;
+
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
