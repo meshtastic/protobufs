@@ -653,7 +653,7 @@ enum TelemetrySensorType {
   BMP280 = 6;
 
   /*
-   * High accuracy temperature and humidity
+   * TODO - REMOVE High accuracy temperature and humidity
    */
   SHTC3 = 7;
 
@@ -678,7 +678,7 @@ enum TelemetrySensorType {
   QMC5883L = 11;
 
   /*
-   * High accuracy temperature and humidity
+   * TODO - REMOVE High accuracy temperature and humidity
    */
   SHT31 = 12;
 
@@ -703,7 +703,7 @@ enum TelemetrySensorType {
   RCWL9620 = 16;
 
   /*
-   * Sensirion High accuracy temperature and humidity
+   * TODO - REMOVE Sensirion High accuracy temperature and humidity
    */
   SHT4X = 17;
 
@@ -836,6 +836,7 @@ enum TelemetrySensorType {
    * SEN5X PM SENSORS
    */
   SEN5X = 43;
+
   /*
    * TSL2561 light sensor
    */
@@ -845,14 +846,14 @@ enum TelemetrySensorType {
    * BH1750 light sensor
    */
   BH1750 = 45;
-  
+
   /*
    * HDC1080 Temperature and Humidity Sensor
    */
   HDC1080 = 46;
 
   /*
-   * STH21 Temperature and R. Humidity sensor
+   * TODO - REMOVE STH21 Temperature and R. Humidity sensor
    */
   SHT21 = 47;
 
@@ -860,6 +861,21 @@ enum TelemetrySensorType {
    * Sensirion STC31 CO2 sensor
    */
   STC31 = 48;
+
+  /*
+   * SCD30 CO2, humidity, temperature sensor
+   */
+  SCD30 = 49;
+
+  /*
+   * SHT family of sensors for temperature and humidity
+   */
+  SHTXX = 50;
+
+  /*
+   * DS248X Bridge for one-wire temperature sensors
+   */
+  DS248X = 51;
 }
 
 /*

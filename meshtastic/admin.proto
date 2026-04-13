@@ -162,6 +162,11 @@ message AdminMessage {
      * Traffic management module config
      */
     TRAFFICMANAGEMENT_CONFIG = 14;
+
+    /*
+     * TAK module config
+     */
+    TAK_CONFIG = 15;
   }
 
   enum BackupLocation {
@@ -656,6 +661,16 @@ message SensorConfig {
    * SEN5X PM Sensor configuration
    */
   SEN5X_config sen5x_config = 2;
+
+  /*
+   * SCD30 CO2 Sensor configuration
+   */
+  SCD30_config scd30_config = 3;
+
+  /*
+   * SHTXX temperature and relative humidity sensor configuration
+   */
+  SHTXX_config shtxx_config = 4;
 }
 
 message SCD4X_config {
@@ -705,4 +720,43 @@ message SEN5X_config {
    * One-shot mode (true for low power - one-shot mode, false for normal - continuous mode)
    */
   optional bool set_one_shot_mode = 2;
+}
+
+message SCD30_config {
+  /*
+   * Set Automatic self-calibration enabled
+   */
+  optional bool set_asc = 1;
+
+  /*
+   * Recalibration target CO2 concentration in ppm (FRC or ASC)
+   */
+  optional uint32 set_target_co2_conc = 2;
+
+  /*
+   * Reference temperature in degC
+   */
+  optional float set_temperature = 3;
+
+  /*
+   * Altitude of sensor in meters above sea level. 0 - 3000m (overrides ambient pressure)
+   */
+  optional uint32 set_altitude = 4;
+
+  /*
+   * Power mode for sensor (true for low power, false for normal)
+   */
+  optional uint32 set_measurement_interval = 5;
+
+  /*
+   * Perform a factory reset of the sensor
+   */
+  optional bool soft_reset = 6;
+}
+
+message SHTXX_config {
+  /*
+   * Accuracy mode (0 = low, 1 = medium, 2 = high)
+   */
+  optional uint32 set_accuracy = 1;
 }
