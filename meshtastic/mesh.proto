@@ -875,8 +875,18 @@ enum HardwareModel {
    */
   HELTEC_MESH_NODE_T096 = 127;
 
-  /* Seeed studio T1000-E Pro tracker card. NRF52840 w/ LR2021 radio, GPS, button, buzzer, and sensors. */
+  /*
+   * Seeed studio T1000-E Pro tracker card. NRF52840 w/ LR2021 radio,
+   * GPS, button, buzzer, and sensors.
+   */
   TRACKER_T1000_E_PRO = 128;
+
+  /*
+   * Elecrow ThinkNode M7, M8 and M9
+   */
+  THINKNODE_M7 = 129;
+  THINKNODE_M8 = 130;
+  THINKNODE_M9 = 131;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
@@ -1286,6 +1296,76 @@ message StoreForwardPlusPlus {
    * Used in a LINK_REQUEST to specify the message X spots back from head
    */
   uint32 chain_count = 10;
+}
+
+/*
+ * The actual over-the-mesh message doing RemoteShell
+ */
+message RemoteShell {
+  /*
+   * Frame op code for PTY session control and stream transport.
+   *
+   * Values 1-63 are client->server requests.
+   * Values 64-127 are server->client responses/events.
+   */
+  enum OpCode {
+    OP_UNSET = 0;
+
+    // Client -> server
+    OPEN = 1;
+    INPUT = 2;
+    RESIZE = 3;
+    CLOSE = 4;
+    PING = 5;
+    ACK = 6;
+
+    // Server -> client
+    OPEN_OK = 64;
+    OUTPUT = 65;
+    CLOSED = 66;
+    ERROR = 67;
+    PONG = 68;
+  }
+
+  /*
+   * Structured frame operation.
+   */
+  OpCode op = 1;
+
+  /*
+   * Logical PTY session identifier.
+   */
+  uint32 session_id = 2;
+
+  /*
+   * Monotonic sequence number for this frame.
+   */
+  uint32 seq = 3;
+
+  /*
+   * Cumulative ack sequence number.
+   */
+  uint32 ack_seq = 4;
+
+  /*
+   * Opaque bytes payload for INPUT/OUTPUT/ERROR and other frame bodies.
+   */
+  bytes payload = 5;
+
+  /*
+   * Terminal size columns used for OPEN/RESIZE signaling.
+   */
+  uint32 cols = 6;
+
+  /*
+   * Terminal size rows used for OPEN/RESIZE signaling.
+   */
+  uint32 rows = 7;
+
+  /*
+   * Bit flags for protocol extensions.
+   */
+  uint32 flags = 8;
 }
 
 /*

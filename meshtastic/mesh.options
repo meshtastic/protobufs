@@ -74,6 +74,8 @@
 *StoreForwardPlusPlus.root_hash max_size:32
 *StoreForwardPlusPlus.message max_size:240
 
+*RemoteShell.payload max_size:200
+
 *StatusMessage.status max_size:80
 
 # MyMessage.name         max_size:40 
