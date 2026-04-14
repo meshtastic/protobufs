@@ -1317,10 +1317,6 @@ message DMShell {
     PONG = 68;
   }
 
-  /*
-   * Legacy bytes tunnel payload. New clients should prefer structured fields below.
-   */
-  // bytes ShellBytes = 1;
 
   /*
    * Structured frame operation.
