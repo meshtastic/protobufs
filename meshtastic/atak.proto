@@ -59,8 +59,8 @@ message GeoChat {
    * or b-t-f-r (read). ReceiptType_None is the default for a normal chat
    * message (cot_type_id = b-t-f).
    *
-   * Receivers can detect a receipt by checking receipt_type != None without
-   * re-parsing the envelope cot_type_id.
+   * Receivers can detect a receipt by checking receipt_type != ReceiptType_None
+   * without re-parsing the envelope cot_type_id.
    */
   enum ReceiptType {
     ReceiptType_None = 0;       // normal chat message
