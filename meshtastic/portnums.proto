@@ -116,7 +116,7 @@ enum PortNum {
   KEY_VERIFICATION_APP = 12;
 
   /*
-   * Module/port for handling key verification requests.
+   * Module/port for handling primitive remote shell access.
    */
   REMOTE_SHELL_APP = 13;
 
