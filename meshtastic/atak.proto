@@ -1073,7 +1073,9 @@ message DrawnShape {
    */
   uint32 minor_cm = 4;
   /*
-   * Ellipse rotation angle in degrees (0..360). Default 360 = circle.
+   * Ellipse rotation angle in degrees. Valid values are 0..360 inclusive;
+   * 0 and 360 are equivalent rotations. In proto3, an unset uint32 reads
+   * as 0, so senders should emit 0 when the angle is unspecified.
    */
   uint32 angle_deg = 5;
   /*
