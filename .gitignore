@@ -2,3 +2,4 @@
 
 # Generated protobuf files
 packages/ts/lib/
+.bin/
