@@ -63,9 +63,9 @@ message GeoChat {
    * without re-parsing the envelope cot_type_id.
    */
   enum ReceiptType {
-    ReceiptType_None = 0;       // normal chat message
-    ReceiptType_Delivered = 1;  // b-t-f-d delivered receipt
-    ReceiptType_Read = 2;       // b-t-f-r read receipt
+    ReceiptType_None = 0; // normal chat message
+    ReceiptType_Delivered = 1; // b-t-f-d delivered receipt
+    ReceiptType_Read = 2; // b-t-f-r read receipt
   }
 
   /*
@@ -1414,11 +1414,11 @@ message CasevacReport {
    */
   enum Precedence {
     Precedence_Unspecified = 0;
-    Precedence_Urgent = 1;           // A - immediate, life-threatening
-    Precedence_UrgentSurgical = 2;   // B - needs surgery
-    Precedence_Priority = 3;         // C - within 4 hours
-    Precedence_Routine = 4;          // D - within 24 hours
-    Precedence_Convenience = 5;      // E - convenience
+    Precedence_Urgent = 1; // A - immediate, life-threatening
+    Precedence_UrgentSurgical = 2; // B - needs surgery
+    Precedence_Priority = 3; // C - within 4 hours
+    Precedence_Routine = 4; // D - within 24 hours
+    Precedence_Convenience = 5; // E - convenience
   }
   /*
    * Line 7: HLZ marking method.
@@ -1436,9 +1436,9 @@ message CasevacReport {
    */
   enum Security {
     Security_Unspecified = 0;
-    Security_NoEnemy = 1;             // N - no enemy activity
-    Security_PossibleEnemy = 2;       // P - possible enemy
-    Security_EnemyInArea = 3;         // E - enemy, approach with caution
+    Security_NoEnemy = 1; // N - no enemy activity
+    Security_PossibleEnemy = 2; // P - possible enemy
+    Security_EnemyInArea = 3; // E - enemy, approach with caution
     Security_EnemyInArmedContact = 4; // X - armed escort required
   }
 
@@ -1481,7 +1481,7 @@ message CasevacReport {
   uint32 us_civilian = 9;
   uint32 non_us_military = 10;
   uint32 non_us_civilian = 11;
-  uint32 epw = 12;   // enemy prisoner of war
+  uint32 epw = 12; // enemy prisoner of war
   uint32 child = 13;
   /*
    * Line 9: terrain and obstacles at the PZ, as a bitfield.
@@ -1512,12 +1512,12 @@ message CasevacReport {
 message EmergencyAlert {
   enum Type {
     Type_Unspecified = 0;
-    Type_Alert911 = 1;           // b-a-o-tbl
-    Type_RingTheBell = 2;        // b-a-o-pan
-    Type_InContact = 3;          // b-a-o-opn
-    Type_GeoFenceBreached = 4;   // b-a-g
-    Type_Custom = 5;             // b-a-o-c
-    Type_Cancel = 6;             // b-a-o-can
+    Type_Alert911 = 1; // b-a-o-tbl
+    Type_RingTheBell = 2; // b-a-o-pan
+    Type_InContact = 3; // b-a-o-opn
+    Type_GeoFenceBreached = 4; // b-a-g
+    Type_Custom = 5; // b-a-o-c
+    Type_Cancel = 6; // b-a-o-can
   }
   /*
    * Alert discriminator.
@@ -1557,11 +1557,11 @@ message TaskRequest {
   }
   enum Status {
     Status_Unspecified = 0;
-    Status_Pending = 1;        // assigned, not yet acknowledged
-    Status_Acknowledged = 2;   // assignee has seen it
-    Status_InProgress = 3;     // assignee is working it
-    Status_Completed = 4;      // task done
-    Status_Cancelled = 5;      // cancelled before completion
+    Status_Pending = 1; // assigned, not yet acknowledged
+    Status_Acknowledged = 2; // assignee has seen it
+    Status_InProgress = 3; // assignee is working it
+    Status_Completed = 4; // task done
+    Status_Cancelled = 5; // cancelled before completion
   }
 
   /*
