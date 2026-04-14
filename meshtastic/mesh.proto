@@ -1317,7 +1317,6 @@ message RemoteShell {
     PONG = 68;
   }
 
-
   /*
    * Structured frame operation.
    */
