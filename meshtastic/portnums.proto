@@ -118,7 +118,7 @@ enum PortNum {
   /*
    * Module/port for handling key verification requests.
    */
-  DM_SHELL_APP = 13;
+  REMOTE_SHELL_APP = 13;
 
   /*
    * Provides a 'ping' service that replies to any packet it receives.

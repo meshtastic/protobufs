@@ -1289,9 +1289,9 @@ message StoreForwardPlusPlus {
 }
 
 /*
- * The actual over-the-mesh message doing DMShell
+ * The actual over-the-mesh message doing RemoteShell
  */
-message DMShell {
+message RemoteShell {
   /*
    * Frame op code for PTY session control and stream transport.
    *
