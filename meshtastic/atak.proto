@@ -964,7 +964,7 @@ message CotGeoPoint {
  * Covers CoT types u-d-c-c, u-d-r, u-d-f, u-d-f-m, u-d-p, u-r-b-c-c,
  * u-r-b-bullseye. The shape's anchor position is carried on
  * TAKPacketV2.latitude_i/longitude_i; polyline/polygon vertices are in the
- * `vertices` repeated field (absolute, not deltas).
+ * `vertices` repeated field as `CotGeoPoint` deltas from that anchor.
  *
  * Colors use the Team enum as a 14-color palette (see color encoding below)
  * with a fixed32 exact-ARGB fallback for custom user-picked colors that
