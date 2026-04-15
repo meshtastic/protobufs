@@ -1498,6 +1498,141 @@ message CasevacReport {
    * "Victor 6"). Capped tight in options.
    */
   string frequency = 15;
+
+  // --- v2.x medline extensions (tags 16–33) --------------------------------
+  //
+  // Fields 16+ cost a 2-byte tag instead of 1 byte, but they're usually
+  // sparse so the on-wire delta is modest when most stay unset. A fully
+  // populated CASEVAC with 13 free-text fields + 2 ZMIST entries can run
+  // 200-400 bytes compressed, i.e. potentially over the 237 B LoRa MTU.
+  // Callers that hit the MTU on the `compressWithRemarksFallback` path
+  // SHOULD strip the tier-2 situational fields (tags 28-32 + terrain_other_detail)
+  // before dropping the packet entirely. See README "CASEVAC tier-2 stripping".
+
+  /*
+   * Short title / MEDEVAC identifier (e.g. "EAGLE.15.181230"). Usually the
+   * same as the envelope callsign but ATAK sometimes carries a distinct
+   * ops-number here.
+   */
+  string title = 16;
+  /*
+   * Primary medline free-text — the single most clinically important line
+   * on a MEDLINE form (e.g. "2 urgent litter patients, smoke on approach").
+   * MUST be preserved under MTU pressure as long as any casevac is sent.
+   */
+  string medline_remarks = 17;
+
+  /*
+   * Line 3 (newer ATAK format): patient counts by precedence level.
+   * Coexists with the enum-style `precedence` field (tag 1) — older ATAK
+   * emits a single enum, newer ATAK emits these counts, and both can be
+   * set simultaneously. Senders populate whichever style(s) the source
+   * XML had; receivers prefer counts when non-zero.
+   */
+  uint32 urgent_count = 18;
+  uint32 urgent_surgical_count = 19;
+  uint32 priority_count = 20;
+  uint32 routine_count = 21;
+  uint32 convenience_count = 22;
+
+  /*
+   * Line 4 supplementary: free-text description of non-standard equipment
+   * (e.g. "Blood warmer"). Pairs with the `equipment_flags` bitfield.
+   */
+  string equipment_detail = 23;
+  /*
+   * Line 1 override: MGRS grid when distinct from the event anchor point
+   * (e.g. "34T CQ 12345 67890"). Event lat/lon/hae still carries the
+   * numeric location; this field preserves the exact MGRS string the
+   * medic entered.
+   */
+  string zone_protected_coord = 24;
+  /*
+   * Line 9 supplementary: slope direction (e.g. "N", "NE", "SSW") when
+   * `terrain_flags` bit 0 (slope) is set.
+   */
+  string terrain_slope_dir = 25;
+  /*
+   * Line 9 supplementary: free-text description of "other" terrain hazards
+   * (e.g. "Loose debris on west edge") when `terrain_flags` bit 5 (other)
+   * is set. Tier-2 strippable under MTU pressure.
+   */
+  string terrain_other_detail = 26;
+  /*
+   * Line 7 supplementary: how the zone is being marked right now
+   * (e.g. "Orange smoke", "VS-17 panel"). Complements the structured
+   * `hlz_marking` enum with a specific human-readable description.
+   */
+  string marked_by = 27;
+
+  // --- Tier-2 situational awareness (stripped first under MTU pressure) ---
+  // These fields are free-text context that helps the receiver plan the
+  // approach but aren't strictly required to evacuate the patient.
+
+  /*
+   * Nearby obstacles on the approach (e.g. "Power lines north of HLZ").
+   */
+  string obstacles = 28;
+  /*
+   * Wind direction and speed (e.g. "270 at 12 kts").
+   */
+  string winds_are_from = 29;
+  /*
+   * Friendly forces posture near the pickup zone
+   * (e.g. "Squad east of HLZ").
+   */
+  string friendlies = 30;
+  /*
+   * Known or suspected enemy positions near the pickup zone
+   * (e.g. "Possible enemy on south ridge").
+   */
+  string enemy = 31;
+  /*
+   * Free-text description of the HLZ itself
+   * (e.g. "Primary HLZ is soccer field").
+   */
+  string hlz_remarks = 32;
+
+  /*
+   * Per-patient clinical records. Each entry is one patient's ZMIST card
+   * (Zap number / Mechanism / Injuries / Signs / Treatment). Repeatable —
+   * a mass-casualty event can carry 1-6 entries in practice, limited by
+   * the 237 B LoRa MTU.
+   */
+  repeated ZMistEntry zmist = 33;
+}
+
+/*
+ * Per-patient clinical summary record — one entry per patient in a CASEVAC.
+ * Maps directly to ATAK's <zMist> child element inside <zMistsMap>.
+ * All fields are optional free-text; senders populate what they have.
+ */
+message ZMistEntry {
+  /*
+   * Patient identifier / sequence label (e.g. "ZMIST-1", "ZMIST-2").
+   */
+  string title = 1;
+  /*
+   * Zap number — unique patient tracking ID (often a terse code like
+   * "Gunshot" or a serial).
+   */
+  string z = 2;
+  /*
+   * Mechanism of injury (e.g. "Penetrating trauma", "Blast injury").
+   */
+  string m = 3;
+  /*
+   * Injuries observed (e.g. "Left thigh", "Concussion").
+   */
+  string i = 4;
+  /*
+   * Signs / vital stats (e.g. "Stable", "Priority", "BP 110/70").
+   */
+  string s = 5;
+  /*
+   * Treatment given (e.g. "Tourniquet 1810Z", "O2 administered").
+   */
+  string t = 6;
 }
 
 /*
