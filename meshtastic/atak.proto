@@ -1732,8 +1732,16 @@ message TaskRequest {
  * promotes it to a first-class structured field.
  *
  * Target wire cost: ~6-8 bytes compressed with a fully populated instance.
+ *
+ * Named `TAKEnvironment` (not just `Environment`) because the bare name
+ * collides with `SwiftUI.Environment` — every SwiftUI view in a consuming
+ * iOS app uses the `@Environment` property wrapper, and importing the
+ * generated proto module would make `Environment` ambiguous in every one
+ * of those files. The `TAK` prefix matches the convention used by the
+ * outer `TAKPacketV2` wrapper and is unambiguous across all target
+ * languages (Swift, Kotlin, Python, TypeScript, C#).
  */
-message Environment {
+message TAKEnvironment {
   /*
    * Temperature in deci-degrees Celsius. 225 = 22.5°C.
    * Range covers -50°C to +50°C (-500 to +500) which spans every realistic
@@ -1939,8 +1947,10 @@ message TAKPacketV2 {
 
   /*
    * Observed weather conditions (temperature, wind). From <environment>.
+   * Type is `TAKEnvironment`, not `Environment`, to avoid colliding with
+   * SwiftUI's `@Environment` property wrapper in iOS consumers.
    */
-  optional Environment environment = 25;
+  optional TAKEnvironment environment = 25;
   /*
    * Sensor field-of-view cone (camera, FLIR, laser, etc.). From <sensor>.
    */
