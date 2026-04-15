@@ -1366,6 +1366,16 @@ message RemoteShell {
    * Bit flags for protocol extensions.
    */
   uint32 flags = 8;
+
+  /*
+   * The last sequence number TX'd.
+   */
+  uint32 last_tx_seq = 9;
+
+  /*
+   * The last sequence number RX'd.
+   */
+  uint32 last_rx_seq = 10;
 }
 
 /*
