@@ -1723,6 +1723,105 @@ message TaskRequest {
 }
 
 /*
+ * Weather annotation from <environment> CoT detail element.
+ *
+ * Attaches to any TAKPacketV2 regardless of payload_variant — an Aircraft,
+ * PLI, or Marker can all carry observed conditions at the emitting station.
+ * ATAK-CIV ships an XSD for <environment> but no dedicated handler, so the
+ * element round-trips through the generic detail pipeline; this message
+ * promotes it to a first-class structured field.
+ *
+ * Target wire cost: ~6-8 bytes compressed with a fully populated instance.
+ */
+message Environment {
+  /*
+   * Temperature in deci-degrees Celsius. 225 = 22.5°C.
+   * Range covers -50°C to +50°C (-500 to +500) which spans every realistic
+   * outdoor TAK deployment. sint32 because negative temps are common in
+   * cold-weather ops.
+   */
+  sint32 temperature_c_x10 = 1;
+  /*
+   * Wind direction in whole degrees, 0-359. "Direction FROM" per
+   * meteorological convention (matches CoT / ATAK).
+   */
+  uint32 wind_direction_deg = 2;
+  /*
+   * Wind speed in cm/s. Matches the unit of TAKPacketV2.speed for
+   * consistency. 1200 = 12.00 m/s = ~27 mph.
+   */
+  uint32 wind_speed_cm_s = 3;
+}
+
+/*
+ * Sensor field-of-view cone from <sensor> CoT detail element.
+ *
+ * Encodes the 8 geometry attributes that ATAK-CIV's SensorDetailHandler
+ * reads from the wire; drops the 9 visual-styling attributes that are
+ * receiver-side render hints (fovAlpha, fovRed/Green/Blue, strokeColor,
+ * strokeWeight, displayMagneticReference, hideFov, fovLabels, rangeLines).
+ * The receiving ATAK client restores those from its own defaults, same as
+ * every other CoT carried over Meshtastic today.
+ *
+ * Attaches to any TAKPacketV2 — a PLI with a sensor on the operator's head,
+ * an Aircraft with a FLIR turret, a Marker dropped on a UAV.
+ * Target wire cost: ~7-14 bytes compressed (dominated by model string).
+ */
+message SensorFov {
+  /*
+   * Coarse sensor category, inferred from `model` on parse when the source
+   * XML doesn't label it. Receivers that render differently per sensor
+   * class (thermal overlay vs daylight cone) use this.
+   */
+  enum SensorType {
+    SensorType_Unspecified = 0;
+    SensorType_Camera = 1;      // daylight / general optical
+    SensorType_Thermal = 2;     // FLIR, thermal imager
+    SensorType_Laser = 3;       // rangefinder, LRF, designator
+    SensorType_Nvg = 4;         // night vision goggles
+    SensorType_Rf = 5;          // radio/radar direction-finding
+    SensorType_Other = 6;
+  }
+
+  SensorType type = 1;
+  /*
+   * Azimuth in whole degrees, 0-359. "Pointing direction" of the cone axis,
+   * measured clockwise from true north. Whole degrees match ATAK-CIV's
+   * SensorDetailHandler default (270°) and save varint bytes over centi-deg.
+   */
+  uint32 azimuth_deg = 2;
+  /*
+   * Maximum range of the cone in meters. ATAK-CIV default is 100m.
+   */
+  uint32 range_m = 3;
+  /*
+   * Horizontal field of view in whole degrees (cone's angular width).
+   * ATAK-CIV default is 45°.
+   */
+  uint32 fov_horizontal_deg = 4;
+  /*
+   * Vertical field of view in whole degrees. ATAK-CIV default is 45°.
+   * Optional — a value of 0 means "not set / use horizontal FOV".
+   */
+  uint32 fov_vertical_deg = 5;
+  /*
+   * Elevation angle in whole degrees. Positive = up, negative = down.
+   * Range -90 to +90. sint32 for varint efficiency on small negatives.
+   */
+  sint32 elevation_deg = 6;
+  /*
+   * Roll (camera tilt) in whole degrees, -180 to +180.
+   * Optional — use 0 if the sensor doesn't track roll.
+   */
+  sint32 roll_deg = 7;
+  /*
+   * Free-form device model identifier, e.g. "FLIR-Boson-640", "SEEK".
+   * Optional — empty string means "unknown model" (ATAK-CIV default).
+   */
+  string model = 8;
+}
+
+/*
  * ATAK v2 packet with expanded CoT field support and zstd dictionary compression.
  * Sent on ATAK_PLUGIN_V2 port. The wire payload is:
  *   [1 byte flags][zstd-compressed TAKPacketV2 protobuf]
@@ -1830,6 +1929,26 @@ message TAKPacketV2 {
    * Empty string (proto3 default) means no remarks were present.
    */
   string remarks = 24;
+
+  // --- Sensor / environment annotations ----------------------------------
+  //
+  // Both fields are OPTIONAL and attach to any payload_variant. They
+  // describe observed conditions at the emitting station — a PLI with
+  // environment data, an Aircraft with a sensor cone, a Marker with both.
+  // Absent by default; presence is signaled by the message being non-null.
+
+  /*
+   * Observed weather conditions (temperature, wind). From <environment>.
+   */
+  optional Environment environment = 25;
+  /*
+   * Sensor field-of-view cone (camera, FLIR, laser, etc.). From <sensor>.
+   */
+  optional SensorFov sensor_fov = 26;
+
+  // Tags 27, 28, 29 reserved for future top-level annotations before the
+  // payload_variant oneof resumes at 30.
+
   /*
    * The payload of the packet
    */
