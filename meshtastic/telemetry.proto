@@ -153,6 +153,11 @@ message EnvironmentMetrics {
    * Soil temperature measured (*C)
    */
   optional float soil_temperature = 22;
+
+  /*
+   * One-wire temperature (*C)
+   */
+  repeated float one_wire_temperature = 23;
 }
 
 /*
@@ -871,6 +876,11 @@ enum TelemetrySensorType {
    * SHT family of sensors for temperature and humidity
    */
   SHTXX = 50;
+
+  /*
+   * DS248X Bridge for one-wire temperature sensors
+   */
+  DS248X = 51;
 }
 
 /*
