@@ -1799,9 +1799,10 @@ message SensorFov {
    */
   uint32 azimuth_deg = 2;
   /*
-   * Maximum range of the cone in meters. ATAK-CIV default is 100m.
+   * Maximum range of the cone in meters.
+   * Optional — if unset, receivers should use the ATAK-CIV default of 100m.
    */
-  uint32 range_m = 3;
+  optional uint32 range_m = 3;
   /*
    * Horizontal field of view in whole degrees (cone's angular width).
    * ATAK-CIV default is 45°.
