@@ -193,6 +193,11 @@ message EnvironmentMetrics {
    * ADC Voltage (Ch8)
    */
   optional float adc_voltage_ch8 = 30;
+
+  /*
+   * One-wire temperature (*C)
+   */
+  repeated float one_wire_temperature = 31;
 }
 
 /*
@@ -911,6 +916,11 @@ enum TelemetrySensorType {
    * SHT family of sensors for temperature and humidity
    */
   SHTXX = 50;
+
+  /*
+   * DS248X Bridge for one-wire temperature sensors
+   */
+  DS248X = 51;
 }
 
 /*
