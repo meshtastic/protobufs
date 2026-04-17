@@ -889,6 +889,12 @@ enum HardwareModel {
   THINKNODE_M9 = 131;
 
   /*
+   * Nordic nRF54L15-DK (PCA10156) community port — Zephyr RTOS + external
+   * EBYTE E22-900M30S (SX1262) LoRa module. Firmware variant: nrf54l15dk.
+   */
+  NRF54L15_DK = 132;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
