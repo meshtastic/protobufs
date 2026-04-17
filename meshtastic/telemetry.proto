@@ -155,49 +155,24 @@ message EnvironmentMetrics {
   optional float soil_temperature = 22;
 
   /*
-   * ADC Voltage (Ch1)
+   * Wild-card multi-measurement (up to 8 channels)
    */
-  optional float adc_voltage_ch1 = 23;
+  optional WildCardMeasurement multi_measurement = 23;
+}
+
+/*
+ * Wild-card measurement (up to 8 channels)
+ */
+message WildCardMeasurement {
+  /*
+   * 8 Channel multi-measurement
+   */
+  repeated float measurement = 1;
 
   /*
-   * ADC Voltage (Ch2)
+   * Sensor type
    */
-  optional float adc_voltage_ch2 = 24;
-
-  /*
-   * ADC Voltage (Ch3)
-   */
-  optional float adc_voltage_ch3 = 25;
-
-  /*
-   * ADC Voltage (Ch4)
-   */
-  optional float adc_voltage_ch4 = 26;
-
-  /*
-   * ADC Voltage (Ch5)
-   */
-  optional float adc_voltage_ch5 = 27;
-
-  /*
-   * ADC Voltage (Ch6)
-   */
-  optional float adc_voltage_ch6 = 28;
-
-  /*
-   * ADC Voltage (Ch7)
-   */
-  optional float adc_voltage_ch7 = 29;
-
-  /*
-   * ADC Voltage (Ch8)
-   */
-  optional float adc_voltage_ch8 = 30;
-
-  /*
-   * One-wire temperature (*C)
-   */
-  repeated float one_wire_temperature = 31;
+  TelemetrySensorType sensor_type = 2;
 }
 
 /*
