@@ -1957,6 +1957,7 @@ message TAKPacketV2 {
    */
   optional SensorFov sensor_fov = 26;
 
+  reserved 27, 28, 29;
   // Tags 27, 28, 29 reserved for future top-level annotations before the
   // payload_variant oneof resumes at 30.
 
