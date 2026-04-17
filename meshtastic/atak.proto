@@ -1783,11 +1783,11 @@ message SensorFov {
    */
   enum SensorType {
     SensorType_Unspecified = 0;
-    SensorType_Camera = 1;      // daylight / general optical
-    SensorType_Thermal = 2;     // FLIR, thermal imager
-    SensorType_Laser = 3;       // rangefinder, LRF, designator
-    SensorType_Nvg = 4;         // night vision goggles
-    SensorType_Rf = 5;          // radio/radar direction-finding
+    SensorType_Camera = 1; // daylight / general optical
+    SensorType_Thermal = 2; // FLIR, thermal imager
+    SensorType_Laser = 3; // rangefinder, LRF, designator
+    SensorType_Nvg = 4; // night vision goggles
+    SensorType_Rf = 5; // radio/radar direction-finding
     SensorType_Other = 6;
   }
 
