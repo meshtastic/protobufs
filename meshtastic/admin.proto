@@ -671,6 +671,11 @@ message SensorConfig {
    * SHTXX temperature and relative humidity sensor configuration
    */
   SHTXX_config shtxx_config = 4;
+
+  /*
+   * VL53L0X Distance Sensor configuration
+   */
+  VL53L0X_config vl53l0x_config = 5;
 }
 
 message SCD4X_config {
@@ -759,4 +764,11 @@ message SHTXX_config {
    * Accuracy mode (0 = low, 1 = medium, 2 = high)
    */
   optional uint32 set_accuracy = 1;
+}
+
+message VL53L0X_config {
+  /*
+   * Ranging mode (0 = default, 1 = long range, 2 = high speed,3 = high accuracy)
+   */
+  optional uint32 ranging_mode = 1;
 }
