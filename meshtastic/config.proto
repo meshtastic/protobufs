@@ -955,7 +955,6 @@ message Config {
        * EU 868MHz band, with narrow presets
        */
       EU_N_868 = 32;
-
     }
 
     /*
