@@ -939,12 +939,12 @@ message Config {
        * ITU Region 2 / 3 Amateur Radio 2m band (144-148 MHz)
        */
       ITU23_2M = 28;
-      
+
       /*
        * EU 866MHz band (Band no. 47b of 2006/771/EC and subsequent amendments) for Non-specific short-range devices (SRD)
        */
       EU_866 = 29;
-      
+
       /*
        * EU 874MHz and 917MHz bands (Band no. 1 and 4 of 2022/172/EC and subsequent amendments) for Non-specific short-range devices (SRD)
        */
