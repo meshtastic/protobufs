@@ -1498,6 +1498,141 @@ message CasevacReport {
    * "Victor 6"). Capped tight in options.
    */
   string frequency = 15;
+
+  // --- v2.x medline extensions (tags 16–33) --------------------------------
+  //
+  // Fields 16+ cost a 2-byte tag instead of 1 byte, but they're usually
+  // sparse so the on-wire delta is modest when most stay unset. A fully
+  // populated CASEVAC with 13 free-text fields + 2 ZMIST entries can run
+  // 200-400 bytes compressed, i.e. potentially over the 237 B LoRa MTU.
+  // Callers that hit the MTU on the `compressWithRemarksFallback` path
+  // SHOULD strip the tier-2 situational fields (tags 28-32 + terrain_other_detail)
+  // before dropping the packet entirely. See README "CASEVAC tier-2 stripping".
+
+  /*
+   * Short title / MEDEVAC identifier (e.g. "EAGLE.15.181230"). Usually the
+   * same as the envelope callsign but ATAK sometimes carries a distinct
+   * ops-number here.
+   */
+  string title = 16;
+  /*
+   * Primary medline free-text — the single most clinically important line
+   * on a MEDLINE form (e.g. "2 urgent litter patients, smoke on approach").
+   * MUST be preserved under MTU pressure as long as any casevac is sent.
+   */
+  string medline_remarks = 17;
+
+  /*
+   * Line 3 (newer ATAK format): patient counts by precedence level.
+   * Coexists with the enum-style `precedence` field (tag 1) — older ATAK
+   * emits a single enum, newer ATAK emits these counts, and both can be
+   * set simultaneously. Senders populate whichever style(s) the source
+   * XML had; receivers prefer counts when non-zero.
+   */
+  uint32 urgent_count = 18;
+  uint32 urgent_surgical_count = 19;
+  uint32 priority_count = 20;
+  uint32 routine_count = 21;
+  uint32 convenience_count = 22;
+
+  /*
+   * Line 4 supplementary: free-text description of non-standard equipment
+   * (e.g. "Blood warmer"). Pairs with the `equipment_flags` bitfield.
+   */
+  string equipment_detail = 23;
+  /*
+   * Line 1 override: MGRS grid when distinct from the event anchor point
+   * (e.g. "34T CQ 12345 67890"). Event lat/lon/hae still carries the
+   * numeric location; this field preserves the exact MGRS string the
+   * medic entered.
+   */
+  string zone_protected_coord = 24;
+  /*
+   * Line 9 supplementary: slope direction (e.g. "N", "NE", "SSW") when
+   * `terrain_flags` bit 0 (slope) is set.
+   */
+  string terrain_slope_dir = 25;
+  /*
+   * Line 9 supplementary: free-text description of "other" terrain hazards
+   * (e.g. "Loose debris on west edge") when `terrain_flags` bit 5 (other)
+   * is set. Tier-2 strippable under MTU pressure.
+   */
+  string terrain_other_detail = 26;
+  /*
+   * Line 7 supplementary: how the zone is being marked right now
+   * (e.g. "Orange smoke", "VS-17 panel"). Complements the structured
+   * `hlz_marking` enum with a specific human-readable description.
+   */
+  string marked_by = 27;
+
+  // --- Tier-2 situational awareness (stripped first under MTU pressure) ---
+  // These fields are free-text context that helps the receiver plan the
+  // approach but aren't strictly required to evacuate the patient.
+
+  /*
+   * Nearby obstacles on the approach (e.g. "Power lines north of HLZ").
+   */
+  string obstacles = 28;
+  /*
+   * Wind direction and speed (e.g. "270 at 12 kts").
+   */
+  string winds_are_from = 29;
+  /*
+   * Friendly forces posture near the pickup zone
+   * (e.g. "Squad east of HLZ").
+   */
+  string friendlies = 30;
+  /*
+   * Known or suspected enemy positions near the pickup zone
+   * (e.g. "Possible enemy on south ridge").
+   */
+  string enemy = 31;
+  /*
+   * Free-text description of the HLZ itself
+   * (e.g. "Primary HLZ is soccer field").
+   */
+  string hlz_remarks = 32;
+
+  /*
+   * Per-patient clinical records. Each entry is one patient's ZMIST card
+   * (Zap number / Mechanism / Injuries / Signs / Treatment). Repeatable —
+   * a mass-casualty event can carry 1-6 entries in practice, limited by
+   * the 237 B LoRa MTU.
+   */
+  repeated ZMistEntry zmist = 33;
+}
+
+/*
+ * Per-patient clinical summary record — one entry per patient in a CASEVAC.
+ * Maps directly to ATAK's <zMist> child element inside <zMistsMap>.
+ * All fields are optional free-text; senders populate what they have.
+ */
+message ZMistEntry {
+  /*
+   * Patient identifier / sequence label (e.g. "ZMIST-1", "ZMIST-2").
+   */
+  string title = 1;
+  /*
+   * Zap number — unique patient tracking ID (often a terse code like
+   * "Gunshot" or a serial).
+   */
+  string z = 2;
+  /*
+   * Mechanism of injury (e.g. "Penetrating trauma", "Blast injury").
+   */
+  string m = 3;
+  /*
+   * Injuries observed (e.g. "Left thigh", "Concussion").
+   */
+  string i = 4;
+  /*
+   * Signs / vital stats (e.g. "Stable", "Priority", "BP 110/70").
+   */
+  string s = 5;
+  /*
+   * Treatment given (e.g. "Tourniquet 1810Z", "O2 administered").
+   */
+  string t = 6;
 }
 
 /*
@@ -1585,6 +1720,114 @@ message TaskRequest {
    * tight in options to keep the worst-case under the LoRa MTU.
    */
   string note = 6;
+}
+
+/*
+ * Weather annotation from <environment> CoT detail element.
+ *
+ * Attaches to any TAKPacketV2 regardless of payload_variant — an Aircraft,
+ * PLI, or Marker can all carry observed conditions at the emitting station.
+ * ATAK-CIV ships an XSD for <environment> but no dedicated handler, so the
+ * element round-trips through the generic detail pipeline; this message
+ * promotes it to a first-class structured field.
+ *
+ * Target wire cost: ~6-8 bytes compressed with a fully populated instance.
+ *
+ * Named `TAKEnvironment` (not just `Environment`) because the bare name
+ * collides with `SwiftUI.Environment` — every SwiftUI view in a consuming
+ * iOS app uses the `@Environment` property wrapper, and importing the
+ * generated proto module would make `Environment` ambiguous in every one
+ * of those files. The `TAK` prefix matches the convention used by the
+ * outer `TAKPacketV2` wrapper and is unambiguous across all target
+ * languages (Swift, Kotlin, Python, TypeScript, C#).
+ */
+message TAKEnvironment {
+  /*
+   * Temperature in deci-degrees Celsius. 225 = 22.5°C.
+   * Range covers -50°C to +50°C (-500 to +500) which spans every realistic
+   * outdoor TAK deployment. sint32 because negative temps are common in
+   * cold-weather ops.
+   */
+  sint32 temperature_c_x10 = 1;
+  /*
+   * Wind direction in whole degrees, 0-359. "Direction FROM" per
+   * meteorological convention (matches CoT / ATAK).
+   */
+  uint32 wind_direction_deg = 2;
+  /*
+   * Wind speed in cm/s. Matches the unit of TAKPacketV2.speed for
+   * consistency. 1200 = 12.00 m/s = ~27 mph.
+   */
+  uint32 wind_speed_cm_s = 3;
+}
+
+/*
+ * Sensor field-of-view cone from <sensor> CoT detail element.
+ *
+ * Encodes the 8 geometry attributes that ATAK-CIV's SensorDetailHandler
+ * reads from the wire; drops the 9 visual-styling attributes that are
+ * receiver-side render hints (fovAlpha, fovRed/Green/Blue, strokeColor,
+ * strokeWeight, displayMagneticReference, hideFov, fovLabels, rangeLines).
+ * The receiving ATAK client restores those from its own defaults, same as
+ * every other CoT carried over Meshtastic today.
+ *
+ * Attaches to any TAKPacketV2 — a PLI with a sensor on the operator's head,
+ * an Aircraft with a FLIR turret, a Marker dropped on a UAV.
+ * Target wire cost: ~7-14 bytes compressed (dominated by model string).
+ */
+message SensorFov {
+  /*
+   * Coarse sensor category, inferred from `model` on parse when the source
+   * XML doesn't label it. Receivers that render differently per sensor
+   * class (thermal overlay vs daylight cone) use this.
+   */
+  enum SensorType {
+    SensorType_Unspecified = 0;
+    SensorType_Camera = 1; // daylight / general optical
+    SensorType_Thermal = 2; // FLIR, thermal imager
+    SensorType_Laser = 3; // rangefinder, LRF, designator
+    SensorType_Nvg = 4; // night vision goggles
+    SensorType_Rf = 5; // radio/radar direction-finding
+    SensorType_Other = 6;
+  }
+
+  SensorType type = 1;
+  /*
+   * Azimuth in whole degrees, 0-359. "Pointing direction" of the cone axis,
+   * measured clockwise from true north. Whole degrees match ATAK-CIV's
+   * SensorDetailHandler default (270°) and save varint bytes over centi-deg.
+   */
+  uint32 azimuth_deg = 2;
+  /*
+   * Maximum range of the cone in meters.
+   * Optional — if unset, receivers should use the ATAK-CIV default of 100m.
+   */
+  optional uint32 range_m = 3;
+  /*
+   * Horizontal field of view in whole degrees (cone's angular width).
+   * ATAK-CIV default is 45°.
+   */
+  uint32 fov_horizontal_deg = 4;
+  /*
+   * Vertical field of view in whole degrees. ATAK-CIV default is 45°.
+   * Optional — a value of 0 means "not set / use horizontal FOV".
+   */
+  uint32 fov_vertical_deg = 5;
+  /*
+   * Elevation angle in whole degrees. Positive = up, negative = down.
+   * Range -90 to +90. sint32 for varint efficiency on small negatives.
+   */
+  sint32 elevation_deg = 6;
+  /*
+   * Roll (camera tilt) in whole degrees, -180 to +180.
+   * Optional — use 0 if the sensor doesn't track roll.
+   */
+  sint32 roll_deg = 7;
+  /*
+   * Free-form device model identifier, e.g. "FLIR-Boson-640", "SEEK".
+   * Optional — empty string means "unknown model" (ATAK-CIV default).
+   */
+  string model = 8;
 }
 
 /*
@@ -1695,6 +1938,29 @@ message TAKPacketV2 {
    * Empty string (proto3 default) means no remarks were present.
    */
   string remarks = 24;
+
+  // --- Sensor / environment annotations ----------------------------------
+  //
+  // Both fields are OPTIONAL and attach to any payload_variant. They
+  // describe observed conditions at the emitting station — a PLI with
+  // environment data, an Aircraft with a sensor cone, a Marker with both.
+  // Absent by default; presence is signaled by the message being non-null.
+
+  /*
+   * Observed weather conditions (temperature, wind). From <environment>.
+   * Type is `TAKEnvironment`, not `Environment`, to avoid colliding with
+   * SwiftUI's `@Environment` property wrapper in iOS consumers.
+   */
+  optional TAKEnvironment environment = 25;
+  /*
+   * Sensor field-of-view cone (camera, FLIR, laser, etc.). From <sensor>.
+   */
+  optional SensorFov sensor_fov = 26;
+
+  reserved 27, 28, 29;
+  // Tags 27, 28, 29 reserved for future top-level annotations before the
+  // payload_variant oneof resumes at 30.
+
   /*
    * The payload of the packet
    */

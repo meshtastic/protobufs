@@ -931,14 +931,31 @@ message Config {
       BR_902 = 26;
 
       /*
+       * ITU Region 1 Amateur Radio 2m band (144-146 MHz)
+       */
+      ITU1_2M = 27;
+
+      /*
+       * ITU Region 2 / 3 Amateur Radio 2m band (144-148 MHz)
+       */
+      ITU23_2M = 28;
+      
+      /*
        * EU 866MHz band (Band no. 47b of 2006/771/EC and subsequent amendments) for Non-specific short-range devices (SRD)
        */
-      EU_866 = 27;
+      EU_866 = 29;
+      
+      /*
+       * EU 874MHz and 917MHz bands (Band no. 1 and 4 of 2022/172/EC and subsequent amendments) for Non-specific short-range devices (SRD)
+       */
+      EU_874 = 30;
+      EU_917 = 31;
 
       /*
        * EU 868MHz band, with narrow presets
        */
-      NARROW_868 = 28;
+      EU_N_868 = 32;
+
     }
 
     /*
