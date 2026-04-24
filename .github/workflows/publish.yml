@@ -224,6 +224,9 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [codegen, build-typescript]
     if: ${{ !inputs.dry_run }}
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Download NPM package
         uses: actions/download-artifact@v4
@@ -236,10 +239,11 @@ jobs:
           node-version: "22"
           registry-url: "https://registry.npmjs.org"
 
+      - name: Install NPM CLI
+        run: npm install -g npm@latest
+
       - name: Publish to NPM
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish
 
   publish-jsr:
     runs-on: ubuntu-24.04
