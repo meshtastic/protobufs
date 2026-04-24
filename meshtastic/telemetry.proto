@@ -881,6 +881,11 @@ enum TelemetrySensorType {
    * DS248X Bridge for one-wire temperature sensors
    */
   DS248X = 51;
+
+  /*
+   * QMP6988 high accuracy pressure and temperature sensor
+   */
+  QMP6988 = 52;
 }
 
 /*
