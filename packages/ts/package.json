@@ -3,6 +3,10 @@
   "description": "Protobuf definitions for the Meshtastic project",
   "version": "__PACKAGE_VERSION__",
   "homepage": "https://github.com/meshtastic/protobufs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meshtastic/protobufs.git"
+  },
   "license": "GPLV3",
   "publishConfig": {
     "access": "public"
