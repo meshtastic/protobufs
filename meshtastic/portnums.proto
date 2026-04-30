@@ -259,6 +259,13 @@ enum PortNum {
   ATAK_PLUGIN_V2 = 78;
 
   /*
+   * App for hydris protobuf, open source tactical sensor awareness,
+   * "home assistant for the outdoors"
+   * ENCODING: hydris protobuf
+   */
+  HYDRIS_APP = 79;
+
+  /*
    * GroupAlarm integration
    * Used for transporting GroupAlarm-related messages between Meshtastic nodes
    * and companion applications/services.
