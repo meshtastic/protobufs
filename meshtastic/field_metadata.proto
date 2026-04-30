@@ -10,12 +10,8 @@ option java_outer_classname = "FieldMetadataProtos";
 option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
-// Metadata attached to config fields via FieldOptions.
-message ConfigFieldMetadata {
-  required bool diy_only = 1 [default = false];
-}
-
 extend google.protobuf.FieldOptions {
   // Private-use extension number range is 50000-99999.
-  optional ConfigFieldMetadata config_field = 51001;
+  // Field is only relevant to DIY hardware builds.
+  optional bool diy_only = 51001 [default = false];
 }
