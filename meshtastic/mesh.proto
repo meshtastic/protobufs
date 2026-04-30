@@ -993,6 +993,10 @@ message RouteDiscovery {
 
   /*
    * The list of SNRs (in dB, scaled by 4) in the route towards the destination.
+   * Special values (ouside normal SNR range) are used as flags:
+   * -128 : Unknonw SNR
+   * -127 : MQTT hop
+   *  127 : UDP hop
    */
   repeated int32 snr_towards = 2;
 
@@ -1003,6 +1007,10 @@ message RouteDiscovery {
 
   /*
    * The list of SNRs (in dB, scaled by 4) in the route back from the destination.
+   * Special values (ouside normal SNR range) are used as flags:
+   * -128 : Unknonw SNR
+   * -127 : MQTT hop
+   *  127 : UDP hop
    */
   repeated int32 snr_back = 4;
 }
