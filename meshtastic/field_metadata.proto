@@ -1,0 +1,17 @@
+syntax = "proto2";
+
+package meshtastic;
+
+import "google/protobuf/descriptor.proto";
+
+option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "FieldMetadataProtos";
+option java_package = "org.meshtastic.proto";
+option swift_prefix = "";
+
+extend google.protobuf.FieldOptions {
+  // Private-use extension number range is 50000-99999.
+  // Field is only relevant to DIY hardware builds.
+  optional bool diy_only = 51001 [default = false];
+}
