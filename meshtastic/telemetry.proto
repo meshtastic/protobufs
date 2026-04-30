@@ -155,9 +155,85 @@ message EnvironmentMetrics {
   optional float soil_temperature = 22;
 
   /*
-   * One-wire temperature (*C)
+   * Multi-channel ADC Voltage Channel 0 (V)
    */
-  repeated float one_wire_temperature = 23;
+  optional float adc_voltage_ch0 = 23;
+
+  /*
+   * Multi-channel ADC Voltage Channel 1 (V)
+   */
+  optional float adc_voltage_ch1 = 24;
+
+  /*
+   * Multi-channel ADC Voltage Channel 2 (V)
+   */
+  optional float adc_voltage_ch2 = 25;
+
+  /*
+   * Multi-channel ADC Voltage Channel 3 (V)
+   */
+  optional float adc_voltage_ch3 = 26;
+
+  /*
+   * Multi-channel ADC Voltage Channel 4 (V)
+   */
+  optional float adc_voltage_ch4 = 27;
+
+  /*
+   * Multi-channel ADC Voltage Channel 5 (V)
+   */
+  optional float adc_voltage_ch5 = 28;
+
+  /*
+   * Multi-channel ADC Voltage Channel 6 (V)
+   */
+  optional float adc_voltage_ch6 = 29;
+
+  /*
+   * Multi-channel ADC Voltage Channel 7 (V)
+   */
+  optional float adc_voltage_ch7 = 30;
+
+  /*
+   * Multi-channel One-Wire Temperature Channel 0 (*C)
+   */
+  optional float one_wire_temperature_ch0 = 31;
+
+  /*
+   * Multi-channel One-Wire Temperature Channel 1 (*C)
+   */
+  optional float one_wire_temperature_ch1 = 32;
+
+  /*
+   * Multi-channel One-Wire Temperature Channel 2 (*C)
+   */
+  optional float one_wire_temperature_ch2 = 33;
+
+  /*
+   * Multi-channel One-Wire Temperature Channel 3 (*C)
+   */
+  optional float one_wire_temperature_ch3 = 34;
+
+  /*
+   * Multi-channel One-Wire Temperature Channel 4 (*C)
+   */
+  optional float one_wire_temperature_ch4 = 35;
+
+  /*
+   * Multi-channel One-Wire Temperature Channel 5 (*C)
+   */
+  optional float one_wire_temperature_ch5 = 36;
+
+  /*
+   * Multi-channel One-Wire Temperature Channel 6 (*C)
+   */
+  optional float one_wire_temperature_ch6 = 37;
+
+  /*
+   * Multi-channel One-Wire Temperature Channel 7 (*C)
+   */
+  optional float one_wire_temperature_ch7 = 38;
+
 }
 
 /*
@@ -195,54 +271,54 @@ message PowerMetrics {
   optional float ch3_current = 6;
 
   /*
-   * Voltage (Ch4)
+   * Voltage (Ch4) - TODO Remove
    */
-  optional float ch4_voltage = 7;
+  optional float ch4_voltage = 7 [deprecated = true];
 
   /*
-   * Current (Ch4)
+   * Current (Ch4) - TODO Remove
    */
-  optional float ch4_current = 8;
+  optional float ch4_current = 8 [deprecated = true];
 
   /*
-   * Voltage (Ch5)
+   * Voltage (Ch5) - TODO Remove
    */
-  optional float ch5_voltage = 9;
+  optional float ch5_voltage = 9 [deprecated = true];
 
   /*
-   * Current (Ch5)
+   * Current (Ch5) - TODO Remove
    */
-  optional float ch5_current = 10;
+  optional float ch5_current = 10 [deprecated = true];
 
   /*
-   * Voltage (Ch6)
+   * Voltage (Ch6) - TODO Remove
    */
-  optional float ch6_voltage = 11;
+  optional float ch6_voltage = 11 [deprecated = true];
 
   /*
-   * Current (Ch6)
+   * Current (Ch6) - TODO Remove
    */
-  optional float ch6_current = 12;
+  optional float ch6_current = 12 [deprecated = true];
 
   /*
-   * Voltage (Ch7)
+   * Voltage (Ch7) - TODO Remove
    */
-  optional float ch7_voltage = 13;
+  optional float ch7_voltage = 13 [deprecated = true];
 
   /*
-   * Current (Ch7)
+   * Current (Ch7) - TODO Remove
    */
-  optional float ch7_current = 14;
+  optional float ch7_current = 14 [deprecated = true];
 
   /*
-   * Voltage (Ch8)
+   * Voltage (Ch8) - TODO Remove
    */
-  optional float ch8_voltage = 15;
+  optional float ch8_voltage = 15 [deprecated = true];
 
   /*
-   * Current (Ch8)
+   * Current (Ch8) - TODO Remove
    */
-  optional float ch8_current = 16;
+  optional float ch8_current = 16 [deprecated = true];
 }
 
 /*
@@ -660,7 +736,7 @@ enum TelemetrySensorType {
   /*
    * TODO - REMOVE High accuracy temperature and humidity
    */
-  SHTC3 = 7;
+  SHTC3 = 7 [deprecated = true];
 
   /*
    * High accuracy pressure
@@ -685,7 +761,7 @@ enum TelemetrySensorType {
   /*
    * TODO - REMOVE High accuracy temperature and humidity
    */
-  SHT31 = 12;
+  SHT31 = 12 [deprecated = true];
 
   /*
    * PM2.5 air quality sensor
@@ -710,7 +786,7 @@ enum TelemetrySensorType {
   /*
    * TODO - REMOVE Sensirion High accuracy temperature and humidity
    */
-  SHT4X = 17;
+  SHT4X = 17 [deprecated = true];
 
   /*
    * VEML7700 high accuracy ambient light(Lux) digital 16-bit resolution sensor.
@@ -860,7 +936,7 @@ enum TelemetrySensorType {
   /*
    * TODO - REMOVE STH21 Temperature and R. Humidity sensor
    */
-  SHT21 = 47;
+  SHT21 = 47 [deprecated = true];
 
   /*
    * Sensirion STC31 CO2 sensor
