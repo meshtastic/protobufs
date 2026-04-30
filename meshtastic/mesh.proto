@@ -1109,6 +1109,13 @@ message Routing {
      * This is different from PKI_UNKNOWN_PUBKEY which indicates a failure upon receiving a packet
      */
     PKI_SEND_FAIL_PUBLIC_KEY = 39;
+
+    /*
+     * PKI packet could not be decrypted, even though the sender's public key is in NodeDB.
+     * Typically happens after the sender rotated keys; may also happen due to RF corruption or
+     * builds without PKI support (MESHTASTIC_EXCLUDE_PKI).
+     */
+    PKI_DECRYPT_FAILED = 40;
   }
 
   oneof variant {
