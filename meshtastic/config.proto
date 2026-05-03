@@ -1064,6 +1064,18 @@ message Config {
       NOT_PRESENT = 2;
     }
 
+    enum DynamicCodingRateMode {
+      /*
+       * Keep using the configured static coding rate.
+       */
+      DCR_OFF = 0;
+
+      /*
+       * Select LoRa coding rate per packet using local airtime policy.
+       */
+      DCR_ON = 1;
+    }
+
     /*
      * When enabled, the `modem_preset` fields will be adhered to, else the `bandwidth`/`spread_factor`/`coding_rate`
      * will be taked from their respective manually defined fields
@@ -1194,6 +1206,12 @@ message Config {
      * Don't use radiolib to initialize the radio, instead listen for a serialHal connection
      */
     bool serial_hal_only = 107;
+
+    /*
+     * Dynamic Coding Rate policy mode. DCR_OFF keeps the configured static coding rate; DCR_ON applies
+     * per-packet CR selection.
+     */
+    DynamicCodingRateMode dcr_mode = 108;
   }
 
   message BluetoothConfig {
