@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "meshtastic/admin.proto";
 import "meshtastic/config.proto";
 import "meshtastic/module_config.proto";
 
@@ -152,4 +153,26 @@ message LocalModuleConfig {
    * NodeDB.cpp in the device code.
    */
   uint32 version = 8;
+}
+
+/*
+ * On-disk wrapper for the bounded local client-app metadata store.
+ * Persisted by the firmware to /prefs/clientappdata.proto. Never sent over
+ * the wire and never broadcast. See ClientAppData (admin.proto) for the
+ * namespaced-not-owned caveat that governs how clients should treat the
+ * stored payloads.
+ */
+message LocalClientAppData {
+  /*
+   * The set of stored records. Bounded by localonly.options to a small
+   * number (initially 4). Firmware enforces uniqueness on app_id.
+   */
+  repeated ClientAppData records = 1;
+
+  /*
+   * A version integer used to invalidate old save files when we make
+   * incompatible changes. Set at build time by NodeDB.cpp in the device
+   * code, mirroring LocalConfig.version / LocalModuleConfig.version.
+   */
+  uint32 version = 2;
 }
