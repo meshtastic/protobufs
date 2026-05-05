@@ -19,3 +19,11 @@
 *HamParameters.call_sign max_size:8
 *HamParameters.short_name max_size:5
 *NodeRemoteHardwarePinsResponse.node_remote_hardware_pins max_count:16
+
+# Bounded client-app metadata store. app_id is ASCII [a-z0-9._-]{1,32}, so
+# 33 covers the 32-byte max plus the nanopb null terminator. Payload cap is
+# 512 bytes per the v1 RFC. TODO(maintainer): confirm sizes during review.
+*ClientAppData.app_id max_size:33
+*ClientAppData.payload max_size:512
+*AdminMessage.get_client_app_data_request max_size:33
+*AdminMessage.delete_client_app_data_request max_size:33

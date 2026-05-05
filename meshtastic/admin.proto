@@ -521,6 +521,39 @@ message AdminMessage {
      * Parameters and sensor configuration
      */
     SensorConfig sensor_config = 103;
+
+    /*
+     * Write a bounded local client-app metadata record. Local-only by
+     * default: the firmware refuses set_client_app_data from non-local
+     * senders. See top-level ClientAppData for the namespaced-not-owned
+     * caveat: any admin-capable client may overwrite any app_id, so
+     * callers must treat stored payloads as untrusted and recoverable.
+     * Validation failures (bad app_id, oversize payload, no slot free)
+     * are reported via meshtastic_Routing_Error_BAD_REQUEST.
+     * TODO(maintainer): confirm field-number allocation for 104..107.
+     */
+    ClientAppData set_client_app_data = 104;
+
+    /*
+     * Read a stored client-app metadata record by app_id. The firmware
+     * replies with get_client_app_data_response: a populated record on
+     * hit, or a record with empty app_id to signal NOT_FOUND.
+     */
+    string get_client_app_data_request = 105;
+
+    /*
+     * Stored client-app metadata in response to get_client_app_data_request.
+     * If app_id is empty, no record exists for the requested key.
+     */
+    ClientAppData get_client_app_data_response = 106;
+
+    /*
+     * Delete a stored client-app metadata record by app_id. Local-only by
+     * default. Returns Routing_Error_NONE on success (record removed) or
+     * Routing_Error_BAD_REQUEST on invalid app_id. Deleting a missing
+     * app_id is treated as success (idempotent).
+     */
+    string delete_client_app_data_request = 107;
   }
 }
 
@@ -759,4 +792,65 @@ message SHTXX_config {
    * Accuracy mode (0 = low, 1 = medium, 2 = high)
    */
   optional uint32 set_accuracy = 1;
+}
+
+/*
+ * Optional, bounded, local-node-only storage for opaque, app-owned metadata
+ * that a companion application can ask its locally-connected node to persist
+ * on its behalf. Not a filesystem, not a database, and not arbitrary NVRAM.
+ * It is a tiny fixed-slot table for a few small records.
+ *
+ * Intended to give clients an explicit, firmware-bounded place to store
+ * non-secret convenience metadata, without overloading user-visible
+ * fields like long_name or unrelated configuration surfaces.
+ *
+ * IMPORTANT: namespaced, not owned. The firmware enforces shape, payload
+ * size, and record-count limits, but does NOT authenticate which companion
+ * application is making a write request. app_id prevents accidental name
+ * collisions between apps, NOT malicious or intentional overwrites: any
+ * admin-capable client may overwrite or delete any app_id. Callers must
+ * therefore treat stored payloads as untrusted, optional, and recoverable.
+ *
+ * Do NOT store secrets, identity keys, session keys, paid-entitlement
+ * state, trust authority, blocklists, or any data used to make security,
+ * routing, authentication, or purchase decisions. Treat this as a
+ * convenience cache for non-critical app state only.
+ *
+ * Firmware never interprets `payload`, never broadcasts these records over
+ * LoRa, never includes them in NodeInfo, and never relays them via MQTT.
+ * Records are local-node-only, survive reboot, and are cleared by factory
+ * reset.
+ *
+ * Client guidance: gracefully fall back to app-local storage when the
+ * firmware does not support this feature; version your payloads via the
+ * `version` field below; keep payloads small (well under the 512-byte cap)
+ * to leave headroom for other apps.
+ */
+message ClientAppData {
+  /*
+   * Namespacing key. Must match `^[a-z0-9._-]{1,32}$`.
+   * Convention examples: "meshtastic-ios",
+   * "meshtastic-android", "thirdparty.example".
+   */
+  string app_id = 1;
+
+  /*
+   * Application-defined schema version for `payload`. The firmware does not
+   * interpret this; clients use it to migrate or reject stale payloads.
+   */
+  uint32 version = 2;
+
+  /*
+   * Opaque app-owned bytes, max 512. Firmware never inspects or interprets
+   * the contents.
+   */
+  bytes payload = 3;
+
+  /*
+   * Unix epoch seconds, set by the firmware on every successful write.
+   * May be 0 if the firmware does not yet have a valid wall-clock time.
+   * Useful for clients to detect that another admin-capable client has
+   * overwritten or deleted-then-recreated the record since the last read.
+   */
+  fixed32 updated_at = 4;
 }

@@ -1,0 +1,8 @@
+# nanopb sizing for local-only persistence wrappers.
+# LocalConfig and LocalModuleConfig contain only nested message types whose
+# sizing is governed by their own .options files, so they have no entries
+# here.
+
+# Bounded client-app metadata store: max 4 records per node by default.
+# TODO(maintainer): confirm record cap during review.
+*LocalClientAppData.records max_count:4
