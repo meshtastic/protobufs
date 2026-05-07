@@ -521,7 +521,66 @@ message AdminMessage {
      * Parameters and sensor configuration
      */
     SensorConfig sensor_config = 103;
+
+    /*
+     * Lockdown passphrase delivery / unlock / lock-now command for hardened
+     * firmware builds (see MESHTASTIC_LOCKDOWN). Used to provision the
+     * passphrase on first boot, unlock encrypted storage on subsequent
+     * reboots, re-verify on already-unlocked devices to authorize a new
+     * client connection, or immediately re-lock the device.
+     *
+     * Replaces the earlier scheme that repurposed SecurityConfig.private_key
+     * to carry passphrase bytes; that hack is retired.
+     */
+    LockdownAuth lockdown_auth = 104;
   }
+}
+
+/*
+ * Lockdown passphrase delivery payload.
+ *
+ * One message handles three operations distinguished by content:
+ *   - Provision (first-time): passphrase set, lock_now=false. Firmware
+ *     generates DEK, wraps with passphrase-derived KEK, persists.
+ *   - Unlock: passphrase set, lock_now=false. Firmware verifies
+ *     passphrase against stored DEK, unlocks storage, authorizes the
+ *     connection that delivered this packet.
+ *   - Lock now: lock_now=true, passphrase ignored. Firmware revokes
+ *     all client auth and reboots into the locked state.
+ *
+ * Firmware decides between provision and unlock based on its own state
+ * (whether a DEK file already exists). Clients do not need to track
+ * which case applies.
+ */
+message LockdownAuth {
+  /*
+   * Passphrase bytes (1-32). Empty when lock_now is true.
+   * Capped to 32 to match the proto cap on related security fields.
+   */
+  bytes passphrase = 1;
+
+  /*
+   * Optional override of the boot-count token TTL granted on success.
+   * 0 = use firmware default (TOKEN_DEFAULT_BOOTS).
+   * On reboot the firmware decrements this; when it reaches 0 the
+   * device boots fully locked and requires a fresh passphrase.
+   */
+  uint32 boots_remaining = 2;
+
+  /*
+   * Optional wall-clock expiry for the unlock token, as absolute
+   * Unix-epoch seconds. 0 = no time limit (only the boot-count TTL
+   * applies). On boot, if the device RTC is set and now > this value,
+   * the token is treated as expired.
+   */
+  uint32 valid_until_epoch = 3;
+
+  /*
+   * If true, ignore passphrase fields, immediately revoke all
+   * connection-level admin authorization, and reboot the device into
+   * the locked state. Always honoured regardless of current lock state.
+   */
+  bool lock_now = 4;
 }
 
 /*
