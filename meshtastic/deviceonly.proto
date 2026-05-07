@@ -285,8 +285,7 @@ message NodeDatabase {
   repeated NodePositionEntry positions = 3 [(nanopb).callback_datatype = "std::vector<meshtastic_NodePositionEntry>"];
   repeated NodeTelemetryEntry telemetry = 4 [(nanopb).callback_datatype = "std::vector<meshtastic_NodeTelemetryEntry>"];
   repeated NodeStatusEntry status = 5 [(nanopb).callback_datatype = "std::vector<meshtastic_NodeStatusEntry>"];
-  repeated NodeEnvironmentEntry environment = 6
-      [(nanopb).callback_datatype = "std::vector<meshtastic_NodeEnvironmentEntry>"];
+  repeated NodeEnvironmentEntry environment = 6 [(nanopb).callback_datatype = "std::vector<meshtastic_NodeEnvironmentEntry>"];
 }
 
 /*

@@ -44,6 +44,5 @@ message NodeInfoLite_Legacy {
  */
 message NodeDatabase_Legacy {
   uint32 version = 1;
-  repeated NodeInfoLite_Legacy nodes = 2
-      [(nanopb).callback_datatype = "std::vector<meshtastic_NodeInfoLite_Legacy>"];
+  repeated NodeInfoLite_Legacy nodes = 2 [(nanopb).callback_datatype = "std::vector<meshtastic_NodeInfoLite_Legacy>"];
 }
