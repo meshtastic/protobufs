@@ -1769,6 +1769,27 @@ message MeshPacket {
    * Indicates which transport mechanism this packet arrived over
    */
   TransportMechanism transport_mechanism = 21;
+
+  /*
+   * dB to subtract from the configured tx_power for this single packet.
+   * Used to "whisper" a message to nearby nodes without raising the
+   * noise floor for the wider mesh: lower power keeps the packet local
+   * but still reaches physically close neighbors.
+   *
+   * Only the originating device applies the penalty. Relays and
+   * rebroadcasts use their own configured tx_power, so the whisper
+   * does not propagate. The originator's want_ack retries reuse the
+   * same MeshPacket and inherit the penalty.
+   *
+   * *Never* sent over the radio links. Clamped on the originating
+   * firmware to the radio's hardware minimum on the low end and to
+   * 60 dB on the high end.
+   *
+   * Note: the generated C struct is uint8_t (see mesh.options
+   * `int_size:8`), so values above 255 are silently truncated on
+   * decode. The 60 dB upper clamp catches whatever survives.
+   */
+  uint32 tx_power_penalty_db = 22;
 }
 
 /*
