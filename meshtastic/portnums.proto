@@ -121,6 +121,14 @@ enum PortNum {
   REMOTE_SHELL_APP = 13;
 
   /*
+   * Example / developer reference module.
+   * A minimal, heavily-commented module included in the firmware for educational
+   * purposes and as a starting point for custom module development.
+   * ENCODING: ASCII Plaintext
+   */
+  EXAMPLE_APP = 14;
+
+  /*
    * Provides a 'ping' service that replies to any packet it receives.
    * Also serves as a small example module.
    * ENCODING: ASCII Plaintext
