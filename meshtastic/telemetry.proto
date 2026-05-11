@@ -881,7 +881,7 @@ enum TelemetrySensorType {
    * DS248X Bridge for one-wire temperature sensors
    */
   DS248X = 51;
-  
+
   /*
    * MMC5983MA 3-Axis Digital Magnetic Sensor
    */
