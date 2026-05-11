@@ -2273,7 +2273,93 @@ message FromRadio {
      * Persistent data for device-ui
      */
     DeviceUIConfig deviceuiConfig = 17;
+
+    /*
+     * Lockdown state notification for hardened firmware builds.
+     * Sent post-config (so unauthorized clients learn they must
+     * provision/unlock) and after each LockdownAuth admin command
+     * to report success or failure. Replaces the earlier scheme of
+     * encoding state as magic-string prefixes inside ClientNotification.
+     */
+    LockdownStatus lockdown_status = 18;
   }
+}
+
+/*
+ * Lockdown state report from firmware to client (for hardened builds
+ * with MESHTASTIC_LOCKDOWN). Sent immediately after config_complete_id
+ * to inform a freshly-connected unauthorized client what it must do,
+ * and again in response to each LockdownAuth admin command.
+ */
+message LockdownStatus {
+  enum State {
+    /* Default; should not be sent. */
+    STATE_UNSPECIFIED = 0;
+
+    /*
+     * No passphrase has ever been provisioned on this device.
+     * Client should prompt the operator to set one.
+     */
+    NEEDS_PROVISION = 1;
+
+    /*
+     * Storage is locked or this client has not authenticated yet.
+     * lock_reason carries a machine-readable detail string.
+     * Client should present (or auto-replay) a passphrase via
+     * AdminMessage.lockdown_auth.
+     */
+    LOCKED = 2;
+
+    /*
+     * Passphrase accepted; client is now authorized for this connection.
+     * boots_remaining and valid_until_epoch describe the active session
+     * token's TTL.
+     */
+    UNLOCKED = 3;
+
+    /*
+     * Passphrase rejected. backoff_seconds is non-zero when rate-limited.
+     */
+    UNLOCK_FAILED = 4;
+  }
+
+  /* Current lockdown state being reported. */
+  State state = 1;
+
+  /*
+   * For LOCKED: machine-readable reason. Known values:
+   *   "needs_auth"        — storage already unlocked, client must auth
+   *   "token_missing"     — no boot token on flash
+   *   "token_expired"     — boot token wall-clock TTL elapsed
+   *   "token_boots_zero"  — boot token boot-count TTL exhausted
+   *   "token_hmac_fail"   — token tampered or wrong device
+   *   "token_dek_fail"    — token DEK decrypt failed
+   *   "token_wrong_size"  — token file corrupted
+   *   "token_bad_magic"   — token file corrupted
+   *   "not_provisioned"   — should generally use NEEDS_PROVISION state instead
+   * Other values may be added; clients should treat unknown values as
+   * "locked, ask for passphrase".
+   */
+  string lock_reason = 2;
+
+  /*
+   * For UNLOCKED: remaining boots on the issued session token.
+   * Decrements by 1 on each subsequent boot.
+   */
+  uint32 boots_remaining = 3;
+
+  /*
+   * For UNLOCKED: wall-clock expiry of the issued session token,
+   * absolute Unix-epoch seconds. 0 = no time limit.
+   */
+  uint32 valid_until_epoch = 4;
+
+  /*
+   * For UNLOCK_FAILED: seconds the client must wait before another
+   * passphrase attempt will be accepted. 0 = wrong passphrase, no
+   * backoff (immediate retry allowed but advisable to prompt user).
+   */
+  uint32 backoff_seconds = 5;
 }
 
 /*
