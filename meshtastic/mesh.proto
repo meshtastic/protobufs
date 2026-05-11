@@ -899,6 +899,11 @@ enum HardwareModel {
   HELTEC_MESH_NODE_T1 = 133;
 
   /*
+   * B&Q Consulting Station G3: TBD
+
+   */
+  STATION_G3 = 134;
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
