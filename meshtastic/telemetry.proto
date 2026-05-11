@@ -881,6 +881,16 @@ enum TelemetrySensorType {
    * DS248X Bridge for one-wire temperature sensors
    */
   DS248X = 51;
+  
+  /*
+   * MMC5983MA 3-Axis Digital Magnetic Sensor
+   */
+  MMC5983MA = 52;
+
+  /*
+   * ICM-42607-P 6‑Axis IMU
+   */
+  ICM42607P = 53;
 }
 
 /*
