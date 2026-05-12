@@ -50,6 +50,11 @@ message PositionLite {
    * TODO: REPLACE
    */
   Position.LocSource location_source = 5;
+
+  /*
+   * Indicates the bits of precision set by the sending node
+   */
+  uint32 precision_bits = 6;
 }
 
 message UserLite {
