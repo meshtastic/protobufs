@@ -899,9 +899,9 @@ enum HardwareModel {
   HELTEC_MESH_NODE_T1 = 133;
 
   /*
-   * B&Q Consulting Station G3: TBD
+     * B&Q Consulting Station G3: TBD
 
-   */
+  */
   STATION_G3 = 134;
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
@@ -1200,6 +1200,11 @@ message Data {
    * Bitfield for extra flags. First use is to indicate that user approves the packet being uploaded to MQTT.
    */
   optional uint32 bitfield = 9;
+
+  /*
+   * XEdDSA signature for the payload
+   */
+  bytes xeddsa_signature = 10;
 }
 
 /*
@@ -1779,6 +1784,11 @@ message MeshPacket {
    * Indicates which transport mechanism this packet arrived over
    */
   TransportMechanism transport_mechanism = 21;
+
+  /*
+   * Indicates whether the packet has a valid signature
+   */
+  bool xeddsa_signed = 22;
 }
 
 /*
@@ -1915,6 +1925,13 @@ message NodeInfo {
    * Persistes between NodeDB internal clean ups
    */
   bool is_muted = 13;
+
+  /*
+   * True if node is signing its packets via XEdDSA
+   * Persists between NodeDB internal clean ups
+   * LSB 1 of the bitfield
+   */
+  bool has_xeddsa_signed = 14;
 }
 
 /*
