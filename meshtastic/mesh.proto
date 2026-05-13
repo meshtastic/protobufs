@@ -899,9 +899,9 @@ enum HardwareModel {
   HELTEC_MESH_NODE_T1 = 133;
 
   /*
-   * B&Q Consulting Station G3: TBD
+     * B&Q Consulting Station G3: TBD
 
-   */
+  */
   STATION_G3 = 134;
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
