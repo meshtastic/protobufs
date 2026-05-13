@@ -1,0 +1,5 @@
+version: v2
+plugins:
+  - remote: buf.build/bufbuild/es:v2.1.0
+    out: packages/ts/lib
+    opt: target=ts,import_extension=.ts

@@ -7,7 +7,7 @@ import "meshtastic/device_ui.proto";
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "ConfigProtos";
-option java_package = "com.geeksville.mesh";
+option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
 message Config {
@@ -48,8 +48,9 @@ message Config {
        * Description: Infrastructure node for extending network coverage by relaying messages with minimal overhead. Not visible in Nodes list.
        * Technical Details: Mesh packets will simply be rebroadcasted over this node. Nodes configured with this role will not originate NodeInfo, Position, Telemetry
        *   or any other packet type. They will simply rebroadcast any mesh packets on the same frequency, channel num, spread factor, and coding rate.
+       * Deprecated in v2.7.11 because it creates "holes" in the mesh rebroadcast chain.
        */
-      REPEATER = 4;
+      REPEATER = 4 [deprecated = true];
 
       /*
        * Description: Broadcasts GPS position packets as priority.
@@ -108,6 +109,14 @@ message Config {
        *    consuming hops.
        */
       ROUTER_LATE = 11;
+
+      /*
+       * Description: Treats packets from or to favorited nodes as ROUTER_LATE, and all other packets as CLIENT.
+       * Technical Details: Used for stronger attic/roof nodes to distribute messages more widely
+       *    from weaker, indoor, or less-well-positioned nodes. Recommended for users with multiple nodes
+       *    where one CLIENT_BASE acts as a more powerful base station, such as an attic/roof node.
+       */
+      CLIENT_BASE = 12;
     }
 
     /*
@@ -590,45 +599,10 @@ message Config {
    */
   message DisplayConfig {
     /*
-     * How the GPS coordinates are displayed on the OLED screen.
+     * Deprecated in 2.7.4: Unused
      */
-    enum GpsCoordinateFormat {
-      /*
-       * GPS coordinates are displayed in the normal decimal degrees format:
-       * DD.DDDDDD DDD.DDDDDD
-       */
-      DEC = 0;
-
-      /*
-       * GPS coordinates are displayed in the degrees minutes seconds format:
-       * DD°MM'SS"C DDD°MM'SS"C, where C is the compass point representing the locations quadrant
-       */
-      DMS = 1;
-
-      /*
-       * Universal Transverse Mercator format:
-       * ZZB EEEEEE NNNNNNN, where Z is zone, B is band, E is easting, N is northing
-       */
-      UTM = 2;
-
-      /*
-       * Military Grid Reference System format:
-       * ZZB CD EEEEE NNNNN, where Z is zone, B is band, C is the east 100k square, D is the north 100k square,
-       * E is easting, N is northing
-       */
-      MGRS = 3;
-
-      /*
-       * Open Location Code (aka Plus Codes).
-       */
-      OLC = 4;
-
-      /*
-       * Ordnance Survey Grid Reference (the National Grid System of the UK).
-       * Format: AB EEEEE NNNNN, where A is the east 100k square, B is the north 100k square,
-       * E is the easting, N is the northing
-       */
-      OSGR = 5;
+    enum DeprecatedGpsCoordinateFormat {
+      UNUSED = 0;
     }
 
     /*
@@ -666,14 +640,14 @@ message Config {
       OLED_SH1106 = 2;
 
       /*
-       * Can not be auto detected but set by proto. Used for 128x128 screens
+       * Can not be auto detected but set by proto. Used for 128x64 screens
        */
       OLED_SH1107 = 3;
 
       /*
-       * Can not be auto detected but set by proto. Used for 128x64 screens
+       * Can not be auto detected but set by proto. Used for 128x128 screens
        */
-      OLED_SH1107_128_64 = 4;
+      OLED_SH1107_128_128 = 4;
     }
 
     /*
@@ -686,7 +660,7 @@ message Config {
      * Deprecated in 2.7.4: Unused
      * How the GPS coordinates are formatted on the OLED screen.
      */
-    GpsCoordinateFormat gps_format = 2 [deprecated = true];
+    DeprecatedGpsCoordinateFormat gps_format = 2 [deprecated = true];
 
     /*
      * Automatically toggles to the next page on the screen like a carousel, based the specified interval in seconds.
@@ -803,6 +777,17 @@ message Config {
      * If true, the device will display the time in 12-hour format on screen.
      */
     bool use_12h_clock = 12;
+
+    /*
+     * If false (default), the device will use short names for various display screens.
+     * If true, node names will show in long format
+     */
+    bool use_long_node_name = 13;
+
+    /*
+     * If true, the device will display message bubbles on screen.
+     */
+    bool enable_message_bubbles = 14;
   }
 
   /*
@@ -944,6 +929,32 @@ message Config {
        * Brazil 902MHz
        */
       BR_902 = 26;
+
+      /*
+       * ITU Region 1 Amateur Radio 2m band (144-146 MHz)
+       */
+      ITU1_2M = 27;
+
+      /*
+       * ITU Region 2 / 3 Amateur Radio 2m band (144-148 MHz)
+       */
+      ITU23_2M = 28;
+
+      /*
+       * EU 866MHz band (Band no. 47b of 2006/771/EC and subsequent amendments) for Non-specific short-range devices (SRD)
+       */
+      EU_866 = 29;
+
+      /*
+       * EU 874MHz and 917MHz bands (Band no. 1 and 4 of 2022/172/EC and subsequent amendments) for Non-specific short-range devices (SRD)
+       */
+      EU_874 = 30;
+      EU_917 = 31;
+
+      /*
+       * EU 868MHz band, with narrow presets
+       */
+      EU_N_868 = 32;
     }
 
     /*
@@ -958,8 +969,9 @@ message Config {
 
       /*
        * Long Range - Slow
+       * Deprecated in 2.7: Unpopular slow preset.
        */
-      LONG_SLOW = 1;
+      LONG_SLOW = 1 [deprecated = true];
 
       /*
        * Very Long Range - Slow
@@ -998,6 +1010,58 @@ message Config {
        * It is not legal to use in all regions due to this wider bandwidth.
        */
       SHORT_TURBO = 8;
+
+      /*
+       * Long Range - Turbo
+       * This preset performs similarly to LongFast, but with 500Khz bandwidth.
+       */
+      LONG_TURBO = 9;
+
+      /*
+       * Lite Fast
+       * Medium range preset optimized for EU 866MHz SRD band with 125kHz bandwidth.
+       * Comparable link budget to MEDIUM_FAST but compliant with Band no. 47b of 2006/771/EC.
+       */
+      LITE_FAST = 10;
+
+      /*
+       * Lite Slow
+       * Medium-to-moderate range preset optimized for EU 866MHz SRD band with 125kHz bandwidth.
+       * Comparable link budget to LONG_FAST but compliant with Band no. 47b of 2006/771/EC.
+       */
+      LITE_SLOW = 11;
+
+      /*
+       * Narrow Fast
+       * Medium-to-moderate range preset optimized for EU 868MHz band with 62.5kHz bandwidth.
+       * Comparable link budget to SHORT_SLOW, but with half the data rate.
+       * Intended to avoid interference with other devices.
+       */
+      NARROW_FAST = 12;
+
+      /*
+       * Narrow Slow
+       * Moderate range preset optimized for EU 868MHz band with 62.5kHz bandwidth.
+       * Comparable link budget and data rate to LONG_FAST.
+       */
+      NARROW_SLOW = 13;
+    }
+
+    enum FEM_LNA_Mode {
+      /*
+       * FEM_LNA is present but disabled
+       */
+      DISABLED = 0;
+
+      /*
+       * FEM_LNA is present and enabled
+       */
+      ENABLED = 1;
+
+      /*
+       * FEM_LNA is not present on the device
+       */
+      NOT_PRESENT = 2;
     }
 
     /*
@@ -1120,6 +1184,16 @@ message Config {
      * Sets the ok_to_mqtt bit on outgoing packets
      */
     bool config_ok_to_mqtt = 105;
+
+    /*
+     * Set where LORA FEM is enabled, disabled, or not present
+     */
+    FEM_LNA_Mode fem_lna_mode = 106;
+
+    /*
+     * Don't use radiolib to initialize the radio, instead listen for a serialHal connection
+     */
+    bool serial_hal_only = 107;
   }
 
   message BluetoothConfig {

@@ -1,30 +1,267 @@
-name: Push new version to schema registry
-
-permissions:
-  contents: read
+name: Publish to JSR & NPM
 
 on:
   push:
     tags:
-      - "**"
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (e.g. v1.2.3). Used when manually dispatching."
+        required: false
+        type: string
+      dry_run:
+        description: "Dry run mode - generate artifacts without publishing"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  id-token: write
 
 jobs:
-  push_to_registry:
-    runs-on: ubuntu-latest
+  codegen:
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.VERSION }}
+      tag: ${{ steps.version.outputs.TAG }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      - name: Determine version
+        id: version
+        run: |
+          set -euo pipefail
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            TAG="${{ github.ref_name }}"
+          elif [ -n "${{ inputs.version || '' }}" ]; then
+            TAG="${{ inputs.version }}"
+          else
+            echo "No tag ref and no 'version' input. Provide a tag (push a tag) or pass inputs.version." >&2
+            exit 1
+          fi
+          VERSION="${TAG#v}"
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Resolved VERSION=$VERSION, TAG=$TAG"
+
+      - name: Setup Buf
+        uses: bufbuild/buf-setup-action@main
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Generate protobuf code
+        run: buf generate
+
+      - name: Move generated files to lib root
+        run: |
+          set -euo pipefail
+          src_dir="packages/ts/lib/meshtastic"
+          dest_dir="packages/ts/lib"
+
+          if [ ! -d "$src_dir" ]; then
+            echo "Expected source directory '$src_dir' does not exist. 'buf generate' may have failed or changed its output paths." >&2
+            exit 1
+          fi
+
+          if ! compgen -G "$src_dir"/*_pb.ts > /dev/null; then
+            echo "No '*_pb.ts' files found in '$src_dir'. 'buf generate' may have produced no TypeScript files or changed their naming." >&2
+            exit 1
+          fi
+
+          mv "$src_dir"/*_pb.ts "$dest_dir"/
+      - name: Show generated files
+        run: |
+          echo "=== packages/ts contents ==="
+          ls -la packages/ts/
+          echo "=== packages/ts/lib contents ==="
+          ls -la packages/ts/lib/ || echo "lib folder not found"
+
+      - name: Set package versions
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          for f in packages/ts/deno.json packages/ts/package.json; do
+            test -f "$f" || { echo "Missing $f" >&2; exit 1; }
+            sed -i "s/__PACKAGE_VERSION__/${VERSION}/g" "$f"
+          done
+
+      - name: Copy license & README
+        run: cp LICENSE README.md packages/ts/
+
+      - name: Upload TypeScript code
+        uses: actions/upload-artifact@v4
+        with:
+          name: ts_code
+          path: packages/ts
+
+  build-typescript:
+    runs-on: ubuntu-24.04
+    needs: codegen
+    steps:
+      - name: Download TypeScript code
+        uses: actions/download-artifact@v4
+        with:
+          name: ts_code
+
+      - name: Show downloaded files
+        run: |
+          echo "=== Working directory ==="
+          pwd
+          echo "=== Contents ==="
+          ls -la
+          echo "=== lib/ contents ==="
+          ls -la lib/ || echo "lib folder not found"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build with tsdown
+        run: npm run build
+
+      - name: Show build output
+        run: |
+          echo "=== Build output ==="
+          ls -la
+          ls -la dist/
+
+      - name: Upload built NPM package
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm_package
+          path: |
+            dist/
+            package.json
+            LICENSE
+            README.md
+
+      - name: Upload JSR package
+        uses: actions/upload-artifact@v4
+        with:
+          name: jsr_package
+          path: |
+            lib/
+            mod.ts
+            deno.json
+            LICENSE
+            README.md
+
+  create-release-zips:
+    runs-on: ubuntu-24.04
+    needs: [codegen, build-typescript]
+    steps:
+      - name: Download NPM package
+        uses: actions/download-artifact@v4
+        with:
+          name: npm_package
+          path: npm_package
+
+      - name: Download JSR package
+        uses: actions/download-artifact@v4
+        with:
+          name: jsr_package
+          path: jsr_package
+
+      - name: Create zip archives
+        run: |
+          cd npm_package && zip -r ../meshtastic-protobufs-npm.zip . && cd ..
+          cd jsr_package && zip -r ../meshtastic-protobufs-jsr.zip . && cd ..
+
+      - name: Upload release zips
+        uses: actions/upload-artifact@v4
+        with:
+          name: release_zips
+          path: |
+            meshtastic-protobufs-npm.zip
+            meshtastic-protobufs-jsr.zip
+
+  upload-release-assets:
+    runs-on: ubuntu-24.04
+    needs: [codegen, create-release-zips]
+    if: ${{ !inputs.dry_run }}
+    steps:
+      - name: Download release zips
+        uses: actions/download-artifact@v4
+        with:
+          name: release_zips
+
+      - name: Upload assets to GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.codegen.outputs.tag }}
+          files: |
+            meshtastic-protobufs-npm.zip
+            meshtastic-protobufs-jsr.zip
+
+  push-buf-registry:
+    runs-on: ubuntu-24.04
+    needs: codegen
+    if: ${{ !inputs.dry_run }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Buf
-        uses: bufbuild/buf-action@v1.2.0
+        uses: bufbuild/buf-setup-action@main
         with:
           github_token: ${{ github.token }}
-          token: ${{ secrets.BUF_TOKEN }}
-          setup_only: true
 
       - name: Push to schema registry
         env:
           BUF_TOKEN: ${{ secrets.BUF_TOKEN }}
-        run: |
-          buf push --tag ${{ github.ref_name }}
+        run: buf push --tag ${{ needs.codegen.outputs.tag }}
+
+  publish-npm:
+    runs-on: ubuntu-24.04
+    needs: [codegen, build-typescript]
+    if: ${{ !inputs.dry_run }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download NPM package
+        uses: actions/download-artifact@v4
+        with:
+          name: npm_package
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install NPM CLI
+        run: npm install -g npm@latest
+
+      - name: Publish to NPM
+        run: npm publish
+
+  publish-jsr:
+    runs-on: ubuntu-24.04
+    needs: [codegen, build-typescript]
+    if: ${{ !inputs.dry_run }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download JSR package
+        uses: actions/download-artifact@v4
+        with:
+          name: jsr_package
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Publish to JSR
+        run: npx jsr publish
