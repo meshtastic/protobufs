@@ -581,6 +581,30 @@ message LockdownAuth {
    * the locked state. Always honoured regardless of current lock state.
    */
   bool lock_now = 4;
+
+  /*
+   * Optional per-boot uptime cap on the unlocked session, in seconds.
+   * 0 = unlimited (token-only enforcement, suitable for unattended
+   * tower / infrastructure nodes).
+   *
+   * When non-zero, the firmware arms an uptime timer at the moment of
+   * unlock. On expiry the device revokes per-connection admin auth,
+   * re-engages screen redaction, and reboots — without deleting the
+   * token, so the next boot auto-unlocks via the boot-count TTL
+   * (decrementing boots_remaining) and arms a fresh session window.
+   * Total exposure ceiling = boots_remaining * max_session_seconds.
+   *
+   * The cap is persisted in the token, so it survives token-based
+   * auto-unlock across reboots. Explicit operator Lock Now still
+   * deletes the token and forces passphrase re-entry.
+   *
+   * Uses millis() (CPU uptime), not wall-clock time, so the cap is
+   * immune to GPS spoofing, RTC backup-battery removal, and Faraday
+   * cage isolation — none of those move the uptime counter. The only
+   * way to reset the session clock is a reboot, which costs a boot
+   * from the on-flash, HMAC-bound counter.
+   */
+  uint32 max_session_seconds = 5;
 }
 
 /*
