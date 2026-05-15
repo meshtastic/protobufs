@@ -593,14 +593,17 @@ message LockdownAuth {
    * token, so the next boot auto-unlocks via the boot-count TTL
    * (decrementing the token's boot count) and arms a fresh session window.
    *
-   * Total exposure ceiling = (resolved boot count) * max_session_seconds.
-   * The resolved boot count is the value the firmware writes into the
-   * token at unlock time: the client-supplied boots_remaining when
-   * non-zero, otherwise the firmware default (TOKEN_DEFAULT_BOOTS).
-   * Note that boots_remaining == 0 in this message means "use firmware
-   * default", NOT "zero boots" — a client computing the ceiling for
-   * display should mirror that resolution rather than multiplying the
-   * raw request value.
+   * Total exposure ceiling = ((resolved boot count) + 1) * max_session_seconds.
+   * The +1 accounts for the initial passphrase-unlocked session
+   * itself, since boots_remaining is the number of subsequent
+   * token-driven auto-unlocks. The resolved boot count is the value
+   * the firmware writes into the token at unlock time: the
+   * client-supplied boots_remaining when non-zero, otherwise the
+   * firmware default (TOKEN_DEFAULT_BOOTS). Note that
+   * boots_remaining == 0 in this message means "use firmware default",
+   * NOT "zero boots" — a client computing the ceiling for display
+   * should mirror that resolution rather than multiplying the raw
+   * request value.
    *
    * The cap is persisted in the token, so it survives token-based
    * auto-unlock across reboots. Explicit operator Lock Now still
