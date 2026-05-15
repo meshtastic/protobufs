@@ -591,8 +591,16 @@ message LockdownAuth {
    * unlock. On expiry the device revokes per-connection admin auth,
    * re-engages screen redaction, and reboots — without deleting the
    * token, so the next boot auto-unlocks via the boot-count TTL
-   * (decrementing boots_remaining) and arms a fresh session window.
-   * Total exposure ceiling = boots_remaining * max_session_seconds.
+   * (decrementing the token's boot count) and arms a fresh session window.
+   *
+   * Total exposure ceiling = (resolved boot count) * max_session_seconds.
+   * The resolved boot count is the value the firmware writes into the
+   * token at unlock time: the client-supplied boots_remaining when
+   * non-zero, otherwise the firmware default (TOKEN_DEFAULT_BOOTS).
+   * Note that boots_remaining == 0 in this message means "use firmware
+   * default", NOT "zero boots" — a client computing the ceiling for
+   * display should mirror that resolution rather than multiplying the
+   * raw request value.
    *
    * The cap is persisted in the token, so it survives token-based
    * auto-unlock across reboots. Explicit operator Lock Now still
