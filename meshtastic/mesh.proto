@@ -900,7 +900,6 @@ enum HardwareModel {
 
   /*
    * B&Q Consulting Station G3: TBD
-
    */
   STATION_G3 = 134;
   /*
