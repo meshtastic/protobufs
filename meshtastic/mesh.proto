@@ -909,6 +909,11 @@ enum HardwareModel {
   T_IMPULSE_PLUS = 135;
 
   /*
+   * Lilygo T-Echo Card
+   */
+  T_ECHO_CARD = 136;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
