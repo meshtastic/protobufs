@@ -252,17 +252,17 @@ message AirQualityMetrics {
   /*
    * Concentration Units Standard PM1.0 in ug/m3
    */
-  optional uint32 pm10_standard = 1;
+  optional float pm10_standard = 1;
 
   /*
    * Concentration Units Standard PM2.5 in ug/m3
    */
-  optional uint32 pm25_standard = 2;
+  optional float pm25_standard = 2;
 
   /*
    * Concentration Units Standard PM10.0 in ug/m3
    */
-  optional uint32 pm100_standard = 3;
+  optional float pm100_standard = 3;
 
   /*
    * Concentration Units Environmental PM1.0 in ug/m3
@@ -342,7 +342,7 @@ message AirQualityMetrics {
   /*
    * Concentration Units Standard PM4.0 in ug/m3
    */
-  optional uint32 pm40_standard = 19;
+  optional float pm40_standard = 19;
 
   /*
    * 4.0um Particle Count in #/0.1l
