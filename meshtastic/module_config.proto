@@ -53,9 +53,9 @@ message ModuleConfig {
     bool encryption_enabled = 5;
 
     /*
-     * Whether to send / consume json packets on MQTT
+     * Deprecated: JSON packet support on MQTT was removed, and this field is ignored.
      */
-    bool json_enabled = 6;
+    bool json_enabled = 6 [deprecated = true];
 
     /*
      * If true, we attempt to establish a secure connection using TLS
