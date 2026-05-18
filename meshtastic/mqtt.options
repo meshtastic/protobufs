@@ -1,6 +1,5 @@
-*ServiceEnvelope.packet type:FT_POINTER
-*ServiceEnvelope.channel_id type:FT_POINTER
-*ServiceEnvelope.gateway_id type:FT_POINTER
+*ServiceEnvelope.channel_id max_size:12 # ChannelSettings.name
+*ServiceEnvelope.gateway_id max_size:16 # User.id
 
 *MapReport.long_name max_size:40
 *MapReport.short_name max_size:5
