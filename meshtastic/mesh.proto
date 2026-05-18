@@ -900,9 +900,14 @@ enum HardwareModel {
 
   /*
    * B&Q Consulting Station G3: TBD
-
    */
   STATION_G3 = 134;
+
+  /*
+   * Lilygo T-Impulse-Plus
+   */
+  T_IMPULSE_PLUS = 135;
+
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
