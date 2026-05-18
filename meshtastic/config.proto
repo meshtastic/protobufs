@@ -591,6 +591,11 @@ message Config {
        * Enable broadcasting packets via UDP over the local network
        */
       UDP_BROADCAST = 0x0001;
+
+      /*
+       * Enable broadcasting packets over Bluetooth LE advertisements
+       */
+      BLE_ADVERTISEMENT_BROADCAST = 0x0002;
     }
   }
 
