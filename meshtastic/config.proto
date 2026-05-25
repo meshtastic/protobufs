@@ -941,9 +941,9 @@ message Config {
       ITU1_2M = 27;
 
       /*
-       * ITU Region 2 / 3 Amateur Radio 2m band (144-148 MHz)
+       * ITU Region 2 Amateur Radio 2m band (144-148 MHz)
        */
-      ITU23_2M = 28;
+      ITU2_2M = 28;
 
       /*
        * EU 866MHz band (Band no. 47b of 2006/771/EC and subsequent amendments) for Non-specific short-range devices (SRD)
@@ -960,6 +960,11 @@ message Config {
        * EU 868MHz band, with narrow presets
        */
       EU_N_868 = 32;
+
+      /*
+       * ITU Region 3 Amateur Radio 2m band (144-148 MHz)
+       */
+      ITU3_2M = 33;
     }
 
     /*
