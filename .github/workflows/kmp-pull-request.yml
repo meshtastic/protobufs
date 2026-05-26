@@ -1,0 +1,33 @@
+name: kmp-pull-request
+
+on:
+  pull_request:
+    paths:
+      - "meshtastic/**/*.proto"
+      - "nanopb.proto"
+      - "packages/kmp/**"
+
+permissions:
+  contents: read
+
+jobs:
+  build-kmp:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build KMP package
+        run: packages/kmp/gradlew --no-daemon -p packages/kmp build -Pversion=0.0.0-pr

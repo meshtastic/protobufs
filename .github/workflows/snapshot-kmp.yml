@@ -1,0 +1,49 @@
+name: Publish KMP snapshot
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "meshtastic/**/*.proto"
+      - "nanopb.proto"
+      - "packages/kmp/**"
+
+permissions:
+  contents: read
+
+jobs:
+  publish-snapshot:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build KMP package
+        run: packages/kmp/gradlew --no-daemon -p packages/kmp build -Pversion=0.0.0-SNAPSHOT
+
+      - name: Publish snapshot to Maven Central
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.MAVEN_SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.MAVEN_SIGNING_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [ -z "${ORG_GRADLE_PROJECT_mavenCentralUsername}" ] || [ -z "${ORG_GRADLE_PROJECT_mavenCentralPassword}" ]; then
+            echo "Missing Maven Central secrets — skipping snapshot publish." >&2
+            exit 0
+          fi
+          packages/kmp/gradlew --no-daemon -p packages/kmp publishAllPublicationsToMavenCentralRepository -Pversion=0.0.0-SNAPSHOT
