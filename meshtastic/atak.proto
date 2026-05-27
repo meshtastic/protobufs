@@ -96,6 +96,43 @@ message GeoChat {
    * means this is a regular chat message, not a receipt.
    */
   ReceiptType receipt_type = 5;
+
+  /*
+   * --- TAKTALK-flavored b-t-f extensions ---
+   *
+   * Set when the ATAK TAKTALK plugin originates the chat, so the message
+   * carries the room/language metadata TAKTALK uses to thread its UI.
+   * These fields are absent / empty for non-TAKTALK CoT chat, so the wire
+   * cost is paid only when TAKTALK is actually involved.
+   *
+   * Wire shape in source XML (inside <event type="b-t-f">/<detail>):
+   *   <Ea>English</Ea>                          - lang
+   *   <roomId>UUID</roomId>                     - room_id
+   *   <voice_profile_id>X</voice_profile_id>    - voice_profile_id
+   *   <voice_profile_id/>                       - empty marker; encoded as
+   *                                               present-but-empty string
+   */
+
+  /*
+   * BCP-47-ish language tag or human-readable name (e.g. "en", "English")
+   * that the originator's TAKTALK plugin recorded for the message.
+   */
+  optional string lang = 6;
+
+  /*
+   * TAKTALK chatroom UUID (e.g. "30b2755c-c547-44ef-a0cc-cdbd8a15616f") that
+   * the receiver's TAKTALK plugin uses to thread the message under the
+   * right room. Resolved to a friendly name via TakTalkRoomData broadcasts.
+   */
+  optional string room_id = 7;
+
+  /*
+   * TAKTALK voice profile pointer. Often empty in practice (the empty
+   * marker `<voice_profile_id/>` still signals TAKTALK origination), so
+   * receivers should treat empty-but-present as the equivalent of the
+   * marker rather than a missing field.
+   */
+  optional string voice_profile_id = 8;
 }
 
 /*
@@ -858,6 +895,27 @@ enum CotType {
    * TaskRequest typed variant.
    */
   CotType_t_s = 124;
+
+  // -- TAKTALK plugin shapes --
+  // CoT types unique to the TAKTALK ATAK plugin. Note `y-` has a literal
+  // trailing dash and no second atom — that's the wire format ATAK emits
+  // for TAKTALK room broadcasts. The CotType enum encodes the literal
+  // string verbatim (CotType_y -> "y-") so receivers reconstruct the
+  // original event type byte-for-byte without consulting cot_type_str.
+
+  /*
+   * m-t-t: TAKTALK voice/text chat message. Payload carried via the
+   * TakTalkMessage typed variant (text, chatroom_id, lang, from_voice).
+   */
+  CotType_m_t_t = 125;
+
+  /*
+   * y-: TAKTALK room/membership broadcast. Payload carried via the
+   * TakTalkRoomData typed variant (sender_callsign, room_id, room_name,
+   * participants). The CoT type literally has a trailing dash and no
+   * second atom — not a typo.
+   */
+  CotType_y = 126;
 }
 
 /*
@@ -1831,6 +1889,86 @@ message SensorFov {
 }
 
 /*
+ * TAKTALK chat message payload (CoT type m-t-t).
+ *
+ * TAKTALK is an ATAK plugin for voice + text team messaging. The voice
+ * audio stream goes over UDP/RTP and is NOT carried by the mesh — only
+ * the text envelope (this message) is. `from_voice` marks messages sent
+ * via push-to-talk speech-to-text so receivers can render a mic icon
+ * next to the text.
+ *
+ * Wire shape inside <event type="m-t-t">/<detail>:
+ *   <callsign>...</callsign>        - mapped to TAKPacketV2.callsign
+ *   <lang>English</lang>            - lang
+ *   <text>...</text>                - text
+ *   <chatroom-id>1</chatroom-id>    - chatroom_id
+ *   <voice/>                        - presence sets from_voice = true
+ */
+message TakTalkMessage {
+  /*
+   * The text body of the TAKTALK message (speech-to-text transcript when
+   * from_voice = true, typed message otherwise).
+   */
+  string text = 1;
+
+  /*
+   * TAKTALK chatroom identifier. May be a short id like "1" for the
+   * default room or a UUID like "30b2755c-c547-44ef-a0cc-cdbd8a15616f"
+   * for custom rooms (resolved by TakTalkRoomData broadcasts).
+   * Empty = broadcast room.
+   */
+  string chatroom_id = 2;
+
+  /*
+   * BCP-47-ish language tag or human-readable name (e.g. "en", "English").
+   * Empty = unspecified.
+   */
+  string lang = 3;
+
+  /*
+   * True when the source CoT carried a <voice/> marker, i.e. the message
+   * originated as push-to-talk speech-to-text. Lets receivers show a mic
+   * icon. Proto3 only encodes when true so empty payload cost is 0 bytes.
+   */
+  bool from_voice = 4;
+}
+
+/*
+ * TAKTALK room/membership broadcast (CoT type y-).
+ *
+ * Announces a TAKTALK chatroom's friendly name and roster so peers can
+ * resolve room UUIDs (used in TakTalkMessage.chatroom_id and
+ * GeoChat.room_id) to a display name and participant list. Not a chat
+ * message itself — these events are emitted by TAKTALK when rooms are
+ * created or memberships change.
+ */
+message TakTalkRoomData {
+  /*
+   * Callsign of the device broadcasting the room state (typically the
+   * room owner / latest writer).
+   */
+  string sender_callsign = 1;
+
+  /*
+   * Room UUID, matches TakTalkMessage.chatroom_id / GeoChat.room_id on
+   * messages routed into this room.
+   */
+  string room_id = 2;
+
+  /*
+   * Friendly display name for the room (e.g. "test", "Alpha Team").
+   */
+  string room_name = 3;
+
+  /*
+   * Member callsigns. Wire-encoded as repeated strings; the underlying
+   * CoT carries them as a single <chatroom-participants>A,B,C</> element
+   * which parsers split / builders join on ','.
+   */
+  repeated string participants = 4;
+}
+
+/*
  * ATAK v2 packet with expanded CoT field support and zstd dictionary compression.
  * Sent on ATAK_PLUGIN_V2 port. The wire payload is:
  *   [1 byte flags][zstd-compressed TAKPacketV2 protobuf]
@@ -2013,5 +2151,17 @@ message TAKPacketV2 {
      * Task / engage request. See TaskRequest.
      */
     TaskRequest task = 40;
+    /*
+     * TAKTALK chat message (CoT type m-t-t). See TakTalkMessage.
+     * Voice audio itself rides UDP/RTP outside the mesh; this carries the
+     * text envelope plus a from_voice marker for receiver UX.
+     */
+    TakTalkMessage taktalk = 41;
+    /*
+     * TAKTALK room/membership broadcast (CoT type y-). See TakTalkRoomData.
+     * Resolves room UUIDs (used in TakTalkMessage.chatroom_id and
+     * GeoChat.room_id) to display name + roster on receivers.
+     */
+    TakTalkRoomData taktalk_room = 42;
   }
 }
