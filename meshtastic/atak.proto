@@ -1946,8 +1946,13 @@ message TakTalkRoomData {
   /*
    * Callsign of the device broadcasting the room state (typically the
    * room owner / latest writer).
+   *
+   * DEPRECATED in v0.3.2: always equals TAKPacketV2.callsign, so the wire
+   * byte was redundant. Builders stop emitting this field in v0.3.2;
+   * parsers still read it for one release so v0.3.1-encoded packets decode
+   * cleanly. To be removed entirely in v0.4.x.
    */
-  string sender_callsign = 1;
+  string sender_callsign = 1 [deprecated = true];
 
   /*
    * Room UUID, matches TakTalkMessage.chatroom_id / GeoChat.room_id on
@@ -1966,6 +1971,32 @@ message TakTalkRoomData {
    * which parsers split / builders join on ','.
    */
   repeated string participants = 4;
+}
+
+/*
+ * ATAK directed-routing recipient list (CoT <marti><dest callsign='X'/>…</marti>).
+ *
+ * Present when an event is addressed to specific TAK users rather than the
+ * broadcast group. TAKTALK gates voice TTS on this element matching the
+ * receiver's callsign; directed b-t-f chats use it for the same purpose. A
+ * missing <marti> means "broadcast to all peers", which is the default for
+ * PLI, alerts, drawings, and most situational-awareness events.
+ *
+ * Carried as repeated strings (not indexes into a per-packet table) because
+ * the typical event has 1-2 destinations and table overhead would erase the
+ * savings. Receivers that need the original XML element rebuild it from
+ * dest_callsign on emit.
+ */
+message Marti {
+  /*
+   * Recipient callsigns. Order is preserved end-to-end so receivers can show
+   * primary-vs-cc distinction the same way ATAK does.
+   *
+   * If dest_callsign is [TAKPacketV2.callsign] (self-addressed, unusual but
+   * legal — e.g. ATAK echoing back to its own room), the builder still emits
+   * the element so loopback shapes round-trip cleanly.
+   */
+  repeated string dest_callsign = 1;
 }
 
 /*
@@ -2095,9 +2126,22 @@ message TAKPacketV2 {
    */
   optional SensorFov sensor_fov = 26;
 
-  reserved 27, 28, 29;
-  // Tags 27, 28, 29 reserved for future top-level annotations before the
-  // payload_variant oneof resumes at 30.
+  reserved 27, 28;
+  // Tags 27, 28 reserved for future top-level annotations before the
+  // payload_variant oneof resumes at 30. Tag 29 was previously reserved
+  // and is now consumed by `marti` below.
+
+  /*
+   * Directed-routing recipient list (CoT <marti><dest callsign='X'/>…</marti>).
+   * Empty / unset = broadcast to all peers (the default for situational-awareness
+   * events). Populated for TAKTALK m-t-t, directed b-t-f DMs, and any other CoT
+   * shape that ATAK addresses to specific recipients. TAKTALK gates voice TTS
+   * playback on this element matching the receiver's callsign, so dropping it
+   * silently breaks voice messaging end-to-end.
+   *
+   * See Marti.
+   */
+  optional Marti marti = 29;
 
   /*
    * The payload of the packet
