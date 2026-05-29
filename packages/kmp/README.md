@@ -13,7 +13,14 @@ This package publishes Kotlin Multiplatform models generated from the protobuf s
 
 ## Versioning
 
-The SDK version is locked to the protobufs repo tag. When the repo is tagged `v2.7.23`, the published artifact version is `2.7.23`. Snapshots are computed as `major.minor.(patch+1)-SNAPSHOT` from `VERSION_NAME` in `gradle.properties`.
+The SDK version is derived automatically from the latest git tag — no manual version file to maintain.
+
+| Context | Version | Source |
+|---------|---------|--------|
+| Release CI (`v2.7.23` tag push) | `2.7.23` | Tag stripped of `v` prefix, passed as `-PVERSION_NAME` |
+| Snapshot CI (master push) | `2.7.24-SNAPSHOT` | Latest tag + patch bump, computed in workflow |
+| Local dev (no flag) | `2.7.24-SNAPSHOT` | `git describe --tags --abbrev=0` + patch bump |
+| Local override | any | `./gradlew build -PVERSION_NAME=x.y.z` |
 
 ## Maven coordinates
 

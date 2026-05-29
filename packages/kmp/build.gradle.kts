@@ -6,7 +6,18 @@ plugins {
 }
 
 group = providers.gradleProperty("GROUP").get()
-version = providers.gradleProperty("VERSION_NAME").orElse("0.0.0-SNAPSHOT").get()
+version = providers.gradleProperty("VERSION_NAME").orElse(
+    providers.provider {
+        val process = ProcessBuilder("git", "describe", "--tags", "--abbrev=0")
+            .directory(rootDir)
+            .redirectErrorStream(true)
+            .start()
+        val tag = process.inputStream.bufferedReader().readText().trim()
+        val base = tag.removePrefix("v").ifEmpty { "0.0.0" }
+        val parts = base.split(".")
+        "${parts[0]}.${parts[1]}.${parts[2].toInt() + 1}-SNAPSHOT"
+    }
+).get()
 
 repositories {
     google()

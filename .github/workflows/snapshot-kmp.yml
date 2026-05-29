@@ -18,11 +18,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Compute snapshot version
         id: version
         run: |
-          RELEASE_VERSION=$(grep '^VERSION_NAME=' packages/kmp/gradle.properties | cut -d= -f2)
+          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          RELEASE_VERSION="${TAG#v}"
           IFS='.' read -r major minor patch <<< "$RELEASE_VERSION"
           SNAPSHOT_VERSION="${major}.${minor}.$((patch + 1))-SNAPSHOT"
           echo "snapshot=$SNAPSHOT_VERSION" >> "$GITHUB_OUTPUT"
