@@ -36,8 +36,10 @@ kotlin {
     iosSimulatorArm64()
 
     sourceSets {
-        commonMain.dependencies {
-            api("com.squareup.wire:wire-runtime:6.4.0")
+        commonMain {
+            dependencies {
+                api("com.squareup.wire:wire-runtime:6.4.0")
+            }
         }
     }
 
