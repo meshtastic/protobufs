@@ -49,6 +49,10 @@ kotlin {
     }
 }
 
+tasks.withType<Jar>().configureEach {
+    from(rootProject.layout.projectDirectory.file("../../LICENSE"))
+}
+
 wire {
     sourcePath {
         srcDir("proto")
