@@ -1168,13 +1168,25 @@ message DrawnShape {
    */
   bool labels_on = 11;
   /*
-   * Vertex list for polyline/polygon/rectangle shapes. Capped at 32 by
-   * the nanopb pool; senders MUST truncate longer inputs and set
-   * `truncated = true`.
+   * Vertex list for polyline/polygon/rectangle/telestration shapes, stored as
+   * two PACKED parallel columns of signed deltas from the event anchor
+   * (TAKPacketV2.latitude_i/longitude_i), in 1e-7 degree units. vertex N is
+   * (lat_deltas[N], lon_deltas[N]); the two columns MUST stay the same length.
+   *
+   * Replaces the former `repeated CotGeoPoint vertices = 12` (one length-
+   * delimited sub-message per vertex = ~2 B framing each). Packing into two
+   * `repeated sint32` columns pays the field framing ONCE per column instead
+   * of once per vertex — ~58 B saved on a 32-vertex telestration — while
+   * keeping the same zigzag small-delta win CotGeoPoint had. Capped at 32 by
+   * the nanopb pool; senders MUST truncate longer inputs and set `truncated`.
+   *
+   * Tag 12 (the old repeated-message field) is reserved to prevent reuse.
    */
-  repeated CotGeoPoint vertices = 12;
+  reserved 12;
+  repeated sint32 vertex_lat_deltas = 18;
+  repeated sint32 vertex_lon_deltas = 19;
   /*
-   * True if the sender truncated `vertices` to fit the pool.
+   * True if the sender truncated the vertex columns to fit the pool.
    */
   bool truncated = 13;
   // --- Bullseye-only fields. All ignored unless kind == Kind_Bullseye. ---
@@ -1946,8 +1958,13 @@ message TakTalkRoomData {
   /*
    * Callsign of the device broadcasting the room state (typically the
    * room owner / latest writer).
+   *
+   * DEPRECATED in v0.3.2: always equals TAKPacketV2.callsign, so the wire
+   * byte was redundant. Builders stop emitting this field in v0.3.2;
+   * parsers still read it for one release so v0.3.1-encoded packets decode
+   * cleanly. To be removed entirely in v0.4.x.
    */
-  string sender_callsign = 1;
+  string sender_callsign = 1 [deprecated = true];
 
   /*
    * Room UUID, matches TakTalkMessage.chatroom_id / GeoChat.room_id on
@@ -1966,6 +1983,32 @@ message TakTalkRoomData {
    * which parsers split / builders join on ','.
    */
   repeated string participants = 4;
+}
+
+/*
+ * ATAK directed-routing recipient list (CoT <marti><dest callsign='X'/>…</marti>).
+ *
+ * Present when an event is addressed to specific TAK users rather than the
+ * broadcast group. TAKTALK gates voice TTS on this element matching the
+ * receiver's callsign; directed b-t-f chats use it for the same purpose. A
+ * missing <marti> means "broadcast to all peers", which is the default for
+ * PLI, alerts, drawings, and most situational-awareness events.
+ *
+ * Carried as repeated strings (not indexes into a per-packet table) because
+ * the typical event has 1-2 destinations and table overhead would erase the
+ * savings. Receivers that need the original XML element rebuild it from
+ * dest_callsign on emit.
+ */
+message Marti {
+  /*
+   * Recipient callsigns. Order is preserved end-to-end so receivers can show
+   * primary-vs-cc distinction the same way ATAK does.
+   *
+   * If dest_callsign is [TAKPacketV2.callsign] (self-addressed, unusual but
+   * legal — e.g. ATAK echoing back to its own room), the builder still emits
+   * the element so loopback shapes round-trip cleanly.
+   */
+  repeated string dest_callsign = 1;
 }
 
 /*
@@ -2005,7 +2048,14 @@ message TAKPacketV2 {
    */
   sfixed32 longitude_i = 7;
   /*
-   * Altitude in meters (HAE)
+   * Altitude in meters (HAE). ATAK's "no altitude" sentinel is hae=9999999.0.
+   *
+   * NOTE: an earlier v0.4.0 attempt made this `optional` to omit the 9999999
+   * sentinel from the wire, but measurement showed it was net-negative: the
+   * zstd dictionary already compresses the literal 9999999 to ~nothing, while
+   * proto3 `optional` forces a genuine 0 m HAE (common on routes/drawings that
+   * carry hae="0.0" or omit hae → parsed as 0) to encode explicitly (+2 bytes),
+   * which REGRESSED the worst-case route fixture. Kept as a plain field.
    */
   sint32 altitude = 8;
   /*
@@ -2095,18 +2145,34 @@ message TAKPacketV2 {
    */
   optional SensorFov sensor_fov = 26;
 
-  reserved 27, 28, 29;
-  // Tags 27, 28, 29 reserved for future top-level annotations before the
-  // payload_variant oneof resumes at 30.
+  reserved 27, 28, 30;
+  // Tags 27, 28 reserved for future top-level annotations. Tag 29 is consumed
+  // by `marti` below. Tag 30 was the former `bool pli` oneof arm — dropped
+  // (PLI is now the implicit payload); reserved here at the message level
+  // because proto3 forbids `reserved` inside a oneof.
+
+  /*
+   * Directed-routing recipient list (CoT <marti><dest callsign='X'/>…</marti>).
+   * Empty / unset = broadcast to all peers (the default for situational-awareness
+   * events). Populated for TAKTALK m-t-t, directed b-t-f DMs, and any other CoT
+   * shape that ATAK addresses to specific recipients. TAKTALK gates voice TTS
+   * playback on this element matching the receiver's callsign, so dropping it
+   * silently breaks voice messaging end-to-end.
+   *
+   * See Marti.
+   */
+  optional Marti marti = 29;
 
   /*
    * The payload of the packet
    */
   oneof payload_variant {
-    /*
-     * Position report (true = PLI, no extra fields beyond the common ones above)
-     */
-    bool pli = 30;
+    // Tag 30 was `bool pli` — a PLI carries no fields beyond the common
+    // envelope (position is in latitude_i/longitude_i), so the boolean was
+    // pure overhead (~3 wire bytes on every position beacon, the highest-
+    // frequency packet). PLI is now the IMPLICIT payload: a packet with NO
+    // payload_variant set decodes as a position report. Tag 30 is reserved at
+    // the message level (proto3 forbids `reserved` inside a oneof).
     /*
      * ATAK GeoChat message
      */
