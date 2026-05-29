@@ -671,7 +671,7 @@ enum HardwareModel {
   MESH_TAB = 86;
 
   /*
-   * MeshLink board developed by LoraItalia. NRF52840, eByte E22900M22S (Will also come with other frequencies), 25w MPPT solar charger (5v,12v,18v selectable), support for gps, buzzer, oled or e-ink display, 10 gpios, hardware watchdog
+   * MeshLink board developed by LoraItalia. NRF52840, eByte E22900M22S (Will also come with other frequencies), 25w MPPT solar charger (5v,12v,18v selectable), support for gps, buzzer, oled or eInk, and an external programming and serial port.
    * https://www.loraitalia.it
    */
   MESHLINK = 87;
@@ -899,8 +899,8 @@ enum HardwareModel {
   HELTEC_MESH_NODE_T1 = 133;
 
   /*
-     * B&Q Consulting Station G3: TBD
-  */
+   * B&Q Consulting Station G3: TBD
+   */
   STATION_G3 = 134;
 
   /*
