@@ -44,6 +44,17 @@ wire {
     }
     kotlin {
         includes = listOf("meshtastic.*")
+
+        // Flatten oneof fields into nullable properties on the parent message
+        // class instead of generating intermediate sealed classes. All consumers
+        // (Meshtastic-Android, TAKPacket-SDK) are written against this shape —
+        // e.g. `packet.decoded`, `packet.chat`, `takPacketV2.shape` are all
+        // nullable top-level properties, not sealed-class arms.
+        boxOneOfsMinSize = 5000
+
+        // Skip defensive immutable copies of repeated/map fields on decode.
+        // Reduces allocations on high-frequency decode paths (mesh packets).
+        makeImmutableCopies = false
     }
 }
 
