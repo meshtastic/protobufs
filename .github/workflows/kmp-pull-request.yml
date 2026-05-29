@@ -30,4 +30,4 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build KMP package
-        run: packages/kmp/gradlew --no-daemon -p packages/kmp build -Pversion=0.0.0-pr
+        run: packages/kmp/gradlew --no-daemon -p packages/kmp build -PVERSION_NAME=0.0.0-pr

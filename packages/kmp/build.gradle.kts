@@ -6,7 +6,7 @@ plugins {
 }
 
 group = providers.gradleProperty("GROUP").get()
-version = providers.gradleProperty("version").orElse("0.0.0-SNAPSHOT").get()
+version = providers.gradleProperty("VERSION_NAME").orElse("0.0.0-SNAPSHOT").get()
 
 repositories {
     google()
@@ -59,7 +59,34 @@ wire {
 }
 
 mavenPublishing {
+    publishToMavenCentral(automaticRelease = true)
     if (providers.gradleProperty("signingInMemoryKey").isPresent) {
         signAllPublications()
+    }
+
+    pom {
+        name.set("Meshtastic Protobufs")
+        description.set("Kotlin Multiplatform Wire models generated from Meshtastic protobuf definitions.")
+        inceptionYear.set("2025")
+        url.set("https://github.com/meshtastic/protobufs")
+        licenses {
+            license {
+                name.set("GNU General Public License, Version 3.0")
+                url.set("https://www.gnu.org/licenses/gpl-3.0.html")
+                distribution.set("repo")
+            }
+        }
+        developers {
+            developer {
+                id.set("meshtastic")
+                name.set("Meshtastic")
+                url.set("https://meshtastic.org")
+            }
+        }
+        scm {
+            url.set("https://github.com/meshtastic/protobufs")
+            connection.set("scm:git:git://github.com/meshtastic/protobufs.git")
+            developerConnection.set("scm:git:ssh://git@github.com/meshtastic/protobufs.git")
+        }
     }
 }
