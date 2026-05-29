@@ -11,11 +11,15 @@ This package publishes Kotlin Multiplatform models generated from the protobuf s
 
 > This package publishes Kotlin/KMP artifacts to Maven repositories. Native Swift-only distribution (for example an XCFramework/SPM package) is a separate delivery path and is not part of this module.
 
+## Versioning
+
+The SDK version is locked to the protobufs repo tag. When the repo is tagged `v2.7.23`, the published artifact version is `2.7.23`. Snapshots are computed as `major.minor.(patch+1)-SNAPSHOT` from `VERSION_NAME` in `gradle.properties`.
+
 ## Maven coordinates
 
 ```kotlin
 // build.gradle.kts
-implementation("org.meshtastic:protobufs:1.0.0")
+implementation("org.meshtastic:protobufs:2.7.23")
 
 // Platform-specific artifacts (resolved automatically by Gradle KMP):
 //   org.meshtastic:protobufs-android
@@ -34,7 +38,7 @@ packages/kmp/gradlew -p packages/kmp clean build
 ## Publish locally
 
 ```bash
-packages/kmp/gradlew -p packages/kmp publishToMavenLocal -Pversion=0.0.0-dev
+packages/kmp/gradlew -p packages/kmp publishToMavenLocal -PVERSION_NAME=2.7.23
 ```
 
 ## Publish to Maven Central
@@ -44,10 +48,9 @@ Set these environment variables:
 - `ORG_GRADLE_PROJECT_mavenCentralUsername`
 - `ORG_GRADLE_PROJECT_mavenCentralPassword`
 - `ORG_GRADLE_PROJECT_signingInMemoryKey` (ASCII-armored private key)
-- `ORG_GRADLE_PROJECT_signingInMemoryKeyPassword`
 
 Then run:
 
 ```bash
-packages/kmp/gradlew -p packages/kmp publishAndReleaseToMavenCentral -Pversion=<semver>
+packages/kmp/gradlew -p packages/kmp publishAllPublicationsToMavenCentralRepository -PVERSION_NAME=2.7.23
 ```
