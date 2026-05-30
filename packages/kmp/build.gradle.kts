@@ -62,9 +62,21 @@ tasks.withType<Jar>().configureEach {
     from(rootProject.layout.projectDirectory.file("../../LICENSE"))
 }
 
+val repoRoot = rootProject.layout.projectDirectory.dir("../../")
+
+val syncProtos by tasks.registering(Sync::class) {
+    from(repoRoot.dir("meshtastic"))
+    into(layout.buildDirectory.dir("protos/meshtastic"))
+}
+
+val syncNanopb by tasks.registering(Sync::class) {
+    from(repoRoot.file("nanopb.proto"))
+    into(layout.buildDirectory.dir("protos"))
+}
+
 wire {
     sourcePath {
-        srcDir("proto")
+        srcDir(layout.buildDirectory.dir("protos"))
         include("meshtastic/**/*.proto")
         include("nanopb.proto")
     }
@@ -81,6 +93,13 @@ wire {
         // Skip defensive immutable copies of repeated/map fields on decode.
         // Reduces allocations on high-frequency decode paths (mesh packets).
         makeImmutableCopies = false
+    }
+}
+
+// Ensure protos are synced before Wire generates code
+afterEvaluate {
+    tasks.matching { it.name.startsWith("generate") && it.name.endsWith("Protos") }.configureEach {
+        dependsOn(syncProtos, syncNanopb)
     }
 }
 
