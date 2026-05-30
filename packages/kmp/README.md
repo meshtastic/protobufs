@@ -51,7 +51,7 @@ repository alongside `mavenCentral()` and depend on a `-SNAPSHOT` version:
 repositories {
   mavenCentral()
   maven("https://central.sonatype.com/repository/maven-snapshots/") {
-      content { includeGroup("org.meshtastic") }
+        mavenContent { snapshotsOnly() }
   }
 }
 
