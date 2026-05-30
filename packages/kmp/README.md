@@ -40,6 +40,23 @@ implementation("org.meshtastic:protobufs:2.7.23")
 //   org.meshtastic:protobufs-iossimulatorarm64
 ```
 
+### Snapshots
+
+Snapshot builds (published from `master`) live in the Central Portal snapshots
+repository, not on the main Maven Central CDN. To consume them, add that
+repository alongside `mavenCentral()` and depend on a `-SNAPSHOT` version:
+
+```kotlin
+// settings.gradle.kts (or build.gradle.kts)
+repositories {
+    mavenCentral()
+    maven("https://central.sonatype.com/repository/maven-snapshots/")
+}
+
+// build.gradle.kts
+implementation("org.meshtastic:protobufs:2.7.24-SNAPSHOT")
+```
+
 ## Local build
 
 ```bash
