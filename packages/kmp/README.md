@@ -22,6 +22,10 @@ The SDK version is derived automatically from the latest git tag — no manual v
 | Local dev (no flag) | `2.7.24-SNAPSHOT` | `git describe --tags --abbrev=0` + patch bump |
 | Local override | any | `./gradlew build -PVERSION_NAME=x.y.z` |
 
+If no `-PVERSION_NAME` is supplied and no tag can be resolved (git missing, or a
+shallow/tagless clone), the fallback degrades to `0.0.1-SNAPSHOT` rather than
+failing the build.
+
 ## Maven coordinates
 
 ```kotlin

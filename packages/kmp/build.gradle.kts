@@ -8,14 +8,23 @@ plugins {
 group = providers.gradleProperty("GROUP").get()
 version = providers.gradleProperty("VERSION_NAME").orElse(
     providers.provider {
-        val process = ProcessBuilder("git", "describe", "--tags", "--abbrev=0")
-            .directory(rootDir)
-            .redirectErrorStream(true)
-            .start()
-        val tag = process.inputStream.bufferedReader().readText().trim()
-        val base = tag.removePrefix("v").ifEmpty { "0.0.0" }
-        val parts = base.split(".")
-        "${parts[0]}.${parts[1]}.${parts[2].toInt() + 1}-SNAPSHOT"
+        // Fallback for local builds with no -PVERSION_NAME (CI always passes it):
+        // derive a snapshot version by patch-bumping the latest git tag. Any
+        // failure — git missing, shallow/tagless clone, or an unexpected tag
+        // format — degrades to 0.0.1-SNAPSHOT instead of breaking configuration.
+        val tag = runCatching {
+            val process = ProcessBuilder("git", "describe", "--tags", "--abbrev=0")
+                .directory(rootDir)
+                .start()
+            val out = process.inputStream.bufferedReader().readText().trim()
+            if (process.waitFor() == 0) out else ""
+        }.getOrDefault("")
+
+        val parts = tag.removePrefix("v").split(".")
+        val major = parts.getOrNull(0)?.toIntOrNull() ?: 0
+        val minor = parts.getOrNull(1)?.toIntOrNull() ?: 0
+        val patch = parts.getOrNull(2)?.toIntOrNull() ?: 0
+        "$major.$minor.${patch + 1}-SNAPSHOT"
     }
 ).get()
 
