@@ -49,8 +49,10 @@ repository alongside `mavenCentral()` and depend on a `-SNAPSHOT` version:
 ```kotlin
 // settings.gradle.kts (or build.gradle.kts)
 repositories {
-    mavenCentral()
-    maven("https://central.sonatype.com/repository/maven-snapshots/")
+  mavenCentral()
+  maven("https://central.sonatype.com/repository/maven-snapshots/") {
+        mavenContent { snapshotsOnly() }
+  }
 }
 
 // build.gradle.kts
