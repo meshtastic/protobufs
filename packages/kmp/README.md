@@ -5,7 +5,7 @@ This package publishes Kotlin Multiplatform models generated from the protobuf s
 ## What this provides
 
 - A single generated-model source of truth for downstream Kotlin and KMP clients.
-- Kotlin/Android, Kotlin/JVM, and Kotlin/Native (iOS) artifacts from the same protobuf schema.
+- Kotlin/Android, Kotlin/JVM, Kotlin/JS, Kotlin/Wasm (`wasmJs` and `wasmWasi`), and Kotlin/Native artifacts from the same protobuf schema.
 - Wire runtime-based models in the existing protobuf namespace (`meshtastic` package from `.proto`).
 - Wire reads schema sources from `packages/kmp/proto/`, which symlinks back to the repo-root proto files.
 
@@ -35,9 +35,18 @@ implementation("org.meshtastic:protobufs:2.7.23")
 // Platform-specific artifacts (resolved automatically by Gradle KMP):
 //   org.meshtastic:protobufs-android
 //   org.meshtastic:protobufs-jvm
+//   org.meshtastic:protobufs-js
+//   org.meshtastic:protobufs-wasm-js
+//   org.meshtastic:protobufs-wasm-wasi
 //   org.meshtastic:protobufs-iosx64
 //   org.meshtastic:protobufs-iosarm64
 //   org.meshtastic:protobufs-iossimulatorarm64
+//   org.meshtastic:protobufs-tvosarm64
+//   org.meshtastic:protobufs-tvossimulatorarm64
+//   org.meshtastic:protobufs-macosarm64
+//   org.meshtastic:protobufs-linuxx64
+//   org.meshtastic:protobufs-linuxarm64
+//   org.meshtastic:protobufs-mingwx64
 ```
 
 ### Snapshots

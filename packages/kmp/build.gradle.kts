@@ -33,6 +33,7 @@ repositories {
     mavenCentral()
 }
 
+@OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
 kotlin {
     android {
         namespace = "org.meshtastic.proto"
@@ -40,9 +41,25 @@ kotlin {
         minSdk = 24
     }
     jvm()
+    js {
+        browser()
+        nodejs()
+    }
+    wasmJs {
+        browser()
+    }
+    wasmWasi {
+        nodejs()
+    }
+    macosArm64()
+    linuxX64()
+    linuxArm64()
+    mingwX64()
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+    tvosArm64()
+    tvosSimulatorArm64()
 
     sourceSets {
         commonMain {
