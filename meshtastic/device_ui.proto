@@ -95,6 +95,16 @@ message DeviceUIConfig {
   GpsCoordinateFormat gps_format = 19;
 
   /*
+   * When true, the bearings/distance frame is replaced by the radar overlay.
+   */
+  bool bearings_view_radar = 20;
+
+  /*
+   * When true, the radar overlay only plots favorite nodes.
+   */
+  bool radar_favorites_only = 21;
+
+  /*
    * How the GPS coordinates are displayed on the OLED screen.
    */
   enum GpsCoordinateFormat {
