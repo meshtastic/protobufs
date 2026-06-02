@@ -830,6 +830,74 @@ message ModuleConfig {
   }
 
   /*
+   * MeshBeacon module config
+   */
+  message MeshBeaconConfig {
+    /*
+     * Enable receiving MESH_BEACON_APP packets from other nodes.
+     * The text portion is delivered to the local message inbox.
+     * Offered channel/preset are stored for the client app to act on.
+     */
+    bool listen_enabled = 1;
+
+    /*
+     * Enable periodically broadcasting MESH_BEACON_APP packets from this node.
+     */
+    bool broadcast_enabled = 2;
+
+    /*
+     * Optional: node ID to send beacon messages AS.
+     * When set, the `from` field of outgoing beacon packets is set to this node ID,
+     * making beacons appear to originate from that node.
+     * When unset (0), beacons are sent as the local node.
+     * A remote admin can only set this field to their own node ID.
+     */
+    uint32 broadcast_send_as_node = 3;
+
+    /*
+     * Message to include in each beacon broadcast. Max 100 bytes enforced by firmware.
+     */
+    string broadcast_message = 4;
+
+    /*
+     * Optional channel (name + PSK) to advertise in the MeshBeacon offer_channel field.
+     */
+    ChannelSettings broadcast_offer_channel = 5;
+
+    /*
+     * Optional region to advertise in the MeshBeacon offer_region field.
+     */
+    Config.LoRaConfig.RegionCode broadcast_offer_region = 6;
+
+    /*
+     * Optional modem preset to advertise in the MeshBeacon offer_preset field.
+     */
+    Config.LoRaConfig.ModemPreset broadcast_offer_preset = 7;
+
+    /*
+     * Channel settings (name + PSK) to use when sending beacons.
+     * If unset, beacons go out on the primary channel.
+     */
+    ChannelSettings broadcast_on_channel = 8;
+
+    /*
+     * Region to use when sending beacons on broadcast_on_preset.
+     */
+    Config.LoRaConfig.RegionCode broadcast_on_region = 9;
+
+    /*
+     * Modem preset to use when sending beacons.
+     * If different from current config, the radio is temporarily switched for TX.
+     */
+    Config.LoRaConfig.ModemPreset broadcast_on_preset = 10;
+
+    /*
+     * How often to broadcast, in seconds. Min 3600 (1 h), max 259200 (72 h). Default 3600.
+     */
+    uint32 broadcast_interval_secs = 11;
+  }
+
+  /*
    * TODO: REPLACE
    */
   oneof payload_variant {
@@ -912,6 +980,11 @@ message ModuleConfig {
      * TAK team/role configuration for TAK_TRACKER
      */
     TAKConfig tak = 16;
+
+    /*
+     * MeshBeacon module config
+     */
+    MeshBeaconConfig mesh_beacon = 17;
   }
 
   /*
