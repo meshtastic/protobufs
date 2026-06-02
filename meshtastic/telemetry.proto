@@ -16,7 +16,7 @@ enum BatteryStatus {
   /*
    * No further information (yet)
    */
-  UNKNOWN = 0;
+  BATTERY_STATUS_UNKNOWN = 0;
 
   /*
    * Running on battery (not externally powered)
