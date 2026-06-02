@@ -8,12 +8,38 @@ option java_outer_classname = "TelemetryProtos";
 option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
+/**
+ * Details about charging state of the battery.
+ * Added to preserve the battery percentage while it's charging.
+ */
+enum BatteryStatus {
+  /*
+   * No further information (yet)
+   */
+  UNKNOWN = 0;
+
+  /*
+   * Running on battery (not externally powered)
+   */
+  DISCHARGING = 1;
+
+  /*
+   * Externally powered and actively charging
+   */
+  CHARGING = 2;
+
+  /*
+   * Externally powered but not charging (already full, waiting, or out of temperature range)
+   */
+  NOT_CHARGING = 3;
+}
+
 /*
  * Key native device metrics such as battery level
  */
 message DeviceMetrics {
   /*
-   * 0-100 (>100 means powered)
+   * 0-100
    */
   optional uint32 battery_level = 1;
 
@@ -36,6 +62,11 @@ message DeviceMetrics {
    * How long the device has been running since the last reboot (in seconds)
    */
   optional uint32 uptime_seconds = 5;
+
+  /*
+   * Details about powered and charging state
+   */
+  optional BatteryStatus battery_status = 6;
 }
 
 /*
