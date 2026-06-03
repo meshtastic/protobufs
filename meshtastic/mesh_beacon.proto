@@ -38,5 +38,5 @@ message MeshBeacon {
    * Optional modem preset being advertised.
    * Combined with offer_region, tells a client "there is a mesh on this preset/region".
    */
-  Config.LoRaConfig.ModemPreset offer_preset = 4;
+  optional Config.LoRaConfig.ModemPreset offer_preset = 4;
 }
