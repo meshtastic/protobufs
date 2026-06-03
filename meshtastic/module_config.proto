@@ -902,7 +902,7 @@ message ModuleConfig {
     /*
      * Optional modem preset to advertise in the MeshBeacon offer_preset field.
      */
-    Config.LoRaConfig.ModemPreset broadcast_offer_preset = 7;
+    optional Config.LoRaConfig.ModemPreset broadcast_offer_preset = 7;
 
     /*
      * Channel settings (name + PSK) to use when sending beacons.
@@ -919,7 +919,7 @@ message ModuleConfig {
      * Modem preset to use when sending beacons.
      * If different from current config, the radio is temporarily switched for TX.
      */
-    Config.LoRaConfig.ModemPreset broadcast_on_preset = 10;
+    optional Config.LoRaConfig.ModemPreset broadcast_on_preset = 10;
 
     /*
      * How often to broadcast, in seconds. Min 3600 (1 h), max 259200 (72 h). Default 3600.
