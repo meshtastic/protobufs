@@ -619,6 +619,31 @@ message LockdownAuth {
    * from the on-flash, HMAC-bound counter.
    */
   uint32 max_session_seconds = 5;
+
+  /*
+   * Disable lockdown mode. Requires a valid passphrase in the same
+   * message (the device must prove the operator owns it before
+   * reverting at-rest encryption). On success the firmware decrypts
+   * every stored config / channel / nodedb file back to plaintext,
+   * removes the wrapped DEK, unlock token, monotonic-counter, and
+   * backoff files, and reboots out of lockdown.
+   *
+   * This is the inverse of the provision/unlock path: it is how the
+   * client app's "lockdown mode" toggle returns a device to normal
+   * operation.
+   *
+   * NOT reversed by this operation: APPROTECT. Once the debug port
+   * lockout has been burned (on silicon where it is effective) it is
+   * permanent — disabling lockdown decrypts your data and removes the
+   * access gates, but the SWD/JTAG port stays locked for the life of
+   * the device (recoverable only via a full chip erase over a debug
+   * probe, which destroys all data). Clients should make this
+   * irreversibility clear at the moment lockdown is first enabled.
+   *
+   * When true the passphrase field is still required; boots_remaining,
+   * valid_until_epoch, max_session_seconds, and lock_now are ignored.
+   */
+  bool disable = 6;
 }
 
 /*

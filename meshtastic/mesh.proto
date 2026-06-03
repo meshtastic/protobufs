@@ -899,8 +899,8 @@ enum HardwareModel {
   HELTEC_MESH_NODE_T1 = 133;
 
   /*
-     * B&Q Consulting Station G3: TBD
-  */
+   * B&Q Consulting Station G3: TBD
+   */
   STATION_G3 = 134;
 
   /*
@@ -2348,6 +2348,16 @@ message LockdownStatus {
      * Passphrase rejected. backoff_seconds is non-zero when rate-limited.
      */
     UNLOCK_FAILED = 4;
+
+    /*
+     * Lockdown is supported by this firmware but not currently active
+     * (no passphrase has been provisioned, or it was disabled via
+     * AdminMessage.lockdown_auth.disable). The device is operating in
+     * normal, non-encrypted mode. Clients render the lockdown-mode
+     * toggle as OFF on receiving this. Distinct from NEEDS_PROVISION,
+     * which is only used during an in-progress enable flow.
+     */
+    DISABLED = 5;
   }
 
   /* Current lockdown state being reported. */
