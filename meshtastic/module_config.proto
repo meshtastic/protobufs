@@ -934,7 +934,6 @@ message ModuleConfig {
      * This ensures nodes that only decode TEXT_MESSAGE_APP can still receive the human-readable text.
      */
     bool broadcast_legacy_split = 12;
-
   }
 
   /*
