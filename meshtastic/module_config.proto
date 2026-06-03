@@ -894,7 +894,7 @@ message ModuleConfig {
     optional Config.LoRaConfig.ModemPreset broadcast_on_preset = 10;
 
     /*
-     * How often to broadcast, in seconds. Min 3600 (1 h), max 259200 (72 h). Default 3600.
+     * How often to broadcast, in seconds. Min 3600 (1 h), default 3600.
      */
     uint32 broadcast_interval_secs = 11;
 
