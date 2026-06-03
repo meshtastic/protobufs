@@ -925,6 +925,16 @@ message ModuleConfig {
      * How often to broadcast, in seconds. Min 3600 (1 h), max 259200 (72 h). Default 3600.
      */
     uint32 broadcast_interval_secs = 11;
+
+    /*
+     * When true and both broadcast_message and offer content (preset/channel/region) are present,
+     * the broadcaster splits them into two separate packets instead of one combined MESH_BEACON_APP:
+     *   - Packet A: MESH_BEACON_APP carrying only the offer fields (no text) on the beacon radio config.
+     *   - Packet B: TEXT_MESSAGE_APP carrying only the broadcast_message on the normal radio config.
+     * This ensures nodes that only decode TEXT_MESSAGE_APP can still receive the human-readable text.
+     */
+    bool broadcast_legacy_split = 12;
+
   }
 
   /*
