@@ -46,7 +46,7 @@ enum BatteryStatus {
   /*
    * Externally powered but not charging due to anomaly (fault detected)
    */
-  NOT_PRESENT = 6;
+  CHARGE_FAILURE = 6;
 }
 
 /*
