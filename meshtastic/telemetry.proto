@@ -29,9 +29,24 @@ enum BatteryStatus {
   CHARGING = 2;
 
   /*
-   * Externally powered but not charging (already full, waiting, or out of temperature range)
+   *Externally powered and fully charged
    */
-  NOT_CHARGING = 3;
+  FULLY_CHARGED = 3;
+
+  /*
+   *Battery not present
+   */
+  NOT_PRESENT = 4;
+
+  /*
+   * Externally powered but not charging (charging disabled, not supported)
+   */
+  NOT_CHARGING = 5;
+
+  /*
+   * Externally powered but not charging due to anomaly (fault detected)
+   */
+  CHARGE_FAILURE = 6;
 }
 
 /*
