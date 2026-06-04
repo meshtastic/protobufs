@@ -29,24 +29,24 @@ enum BatteryStatus {
   CHARGING = 2;
 
   /*
-   *Externally powered and fully charged
+   * Externally powered and fully charged
    */
   FULLY_CHARGED = 3;
 
   /*
-   *Battery not present
+   * Battery not present
    */
   NOT_PRESENT = 4;
 
   /*
-   * Externally powered but not charging (charging disabled, not supported)
+   * Externally powered but not charging (disabled, suspended, or not supported)
    */
   NOT_CHARGING = 5;
 
   /*
    * Externally powered but not charging due to anomaly (fault detected)
    */
-  CHARGE_FAILURE = 6;
+  NOT_PRESENT = 6;
 }
 
 /*
