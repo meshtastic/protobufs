@@ -1636,6 +1636,11 @@ message MeshPacket {
      * Arrived via API connection
      */
     TRANSPORT_API = 7;
+
+    /*
+     * Arrived via Unicast UDP
+     */
+    TRANSPORT_UNICAST_UDP = 8;
   }
 
   /*
