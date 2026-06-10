@@ -2,5 +2,12 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "description": "Hold Kotlin at 2.3.x: the KMP artifact (org.meshtastic:protobufs) publishes native klibs, and klibs built by Kotlin 2.4 carry ABI version 2.4.0, which consumers on Kotlin 2.3.x (Meshtastic-Android, until InsertKoinIO/koin#2431 resolves) reject at compile time. Drop this rule once Meshtastic-Android is on Kotlin 2.4.",
+      "matchPackageNames": ["/^org\\.jetbrains\\.kotlin[.:]/"],
+      "allowedVersions": "<2.4.0"
+    }
   ]
 }
