@@ -262,6 +262,11 @@ message Config {
      * Defaults to ENABLED
      */
     BuzzerMode buzzer_mode = 13;
+
+    /*
+     * How often to broadcast routing stats packets (0 to disable)
+     */
+    uint32 routing_stats_broadcast_secs = 14;
   }
 
   /*
