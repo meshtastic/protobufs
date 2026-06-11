@@ -5,7 +5,11 @@
 *id max_size:16 # node id strings
 *public_key max_size:32 # public key
 
-*User.long_name max_size:25
+# Decode width stays 40 so NodeInfo/set_owner from senders built against the
+# old 39-byte limit still parse (nanopb halts on string overflow rather than
+# truncating). Firmware clamps everything it stores or transmits to 24 bytes —
+# see NodeInfoLite.long_name in deviceonly.options.
+*User.long_name max_size:40
 *User.short_name max_size:5
 
 *RouteDiscovery.route max_count:8

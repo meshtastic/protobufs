@@ -954,6 +954,9 @@ message User {
 
   /*
    * A full name for this user, i.e. "Kevin Hester"
+   * Limited to 24 bytes of UTF-8: longer names are accepted from senders
+   * built against the older 39-byte limit, but devices truncate them before
+   * storing or rebroadcasting. Clients should enforce 24 bytes in their UI.
    */
   string long_name = 2;
 

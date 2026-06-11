@@ -24,7 +24,11 @@
 *NodeInfoLite.hw_model int_size:8
 *NodeInfoLite.role int_size:8
 
-*UserLite.long_name max_size:25
+# UserLite survives only as the v24 nodedb migration decode type; it must keep
+# the legacy on-disk width (40) or saves holding longer names fail to decode
+# and the whole DB is discarded. The migration copy truncates into the slim
+# header fields above.
+*UserLite.long_name max_size:40
 *UserLite.short_name max_size:5
 *UserLite.public_key max_size:32 # public key
 *UserLite.macaddr max_size:6 fixed_length:true
