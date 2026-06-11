@@ -24,7 +24,7 @@
 *NodeInfoLite.hw_model int_size:8
 *NodeInfoLite.role int_size:8
 
-*UserLite.long_name max_size:40
+*UserLite.long_name max_size:25
 *UserLite.short_name max_size:5
 *UserLite.public_key max_size:32 # public key
 *UserLite.macaddr max_size:6 fixed_length:true
