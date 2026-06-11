@@ -5,7 +5,7 @@
 *id max_size:16 # node id strings
 *public_key max_size:32 # public key
 
-*User.long_name max_size:40
+*User.long_name max_size:25
 *User.short_name max_size:5
 
 *RouteDiscovery.route max_count:8
