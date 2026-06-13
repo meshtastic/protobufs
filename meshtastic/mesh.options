@@ -43,6 +43,7 @@
 *MeshPacket.channel int_size:8
 *MeshPacket.next_hop int_size:8
 *MeshPacket.relay_node int_size:8
+*MeshPacket.tx_power_penalty_db int_size:8
 
 *QueueStatus.res int_size:8
 *QueueStatus.free int_size:8
