@@ -1,0 +1,95 @@
+name: Publish KMP package
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (e.g. v1.2.3). Used when manually dispatching."
+        required: false
+        type: string
+      dry_run:
+        description: "Dry run mode - build and publish to Maven Local only"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  build-kmp:
+    runs-on: macos-latest
+    outputs:
+      version: ${{ steps.version.outputs.VERSION }}
+      tag: ${{ steps.version.outputs.TAG }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine version
+        id: version
+        run: |
+          set -euo pipefail
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            TAG="${{ github.ref_name }}"
+          elif [ -n "${{ inputs.version || '' }}" ]; then
+            TAG="${{ inputs.version }}"
+          else
+            echo "No tag ref and no 'version' input. Provide a tag or pass inputs.version." >&2
+            exit 1
+          fi
+          VERSION="${TAG#v}"
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build KMP package
+        run: packages/kmp/gradlew --no-daemon -p packages/kmp clean build -PVERSION_NAME=${{ steps.version.outputs.VERSION }}
+
+      - name: Publish to Maven Local
+        run: packages/kmp/gradlew --no-daemon -p packages/kmp publishToMavenLocal -PVERSION_NAME=${{ steps.version.outputs.VERSION }}
+
+  publish-kmp:
+    runs-on: macos-latest
+    needs: build-kmp
+    if: ${{ !inputs.dry_run }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Publish to Maven Central
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.MAVEN_SIGNING_KEY }}
+        run: packages/kmp/gradlew --no-daemon -p packages/kmp publishAllPublicationsToMavenCentralRepository -PVERSION_NAME=${{ needs.build-kmp.outputs.version }}

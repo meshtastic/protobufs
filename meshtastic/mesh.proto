@@ -914,6 +914,26 @@ enum HardwareModel {
   T_ECHO_CARD = 136;
 
   /*
+   * Seeed Tracker L2
+   */
+  SEEED_WIO_TRACKER_L2 = 137;
+
+  /*
+   * Elecrow CrowPanel Advance P4 models, ESP32-P4 and TFT with SX1262 radio plugin
+   */
+  CROWPANEL_P4 = 138;
+
+  /*
+   * Heltec Mesh Tower V2
+   */
+  HELTEC_MESH_TOWER_V2 = 139;
+
+  /*
+   * Meshnology W10
+   */
+  MESHNOLOGY_W10 = 140;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------

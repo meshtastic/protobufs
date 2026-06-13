@@ -11,6 +11,12 @@ The [Protobuf](https://developers.google.com/protocol-buffers) message definitio
 
 **[Documentation/API Reference](https://buf.build/meshtastic/protobufs)**
 
+## Generated client packages
+
+- TypeScript package: `packages/ts`
+- Rust package: `packages/rust`
+- Kotlin Multiplatform package (Wire): `packages/kmp`
+
 ## Stats
 
 ![Alt](https://repobeats.axiom.co/api/embed/47e9ee1d81d9c0fdd2b4b5b4c673adb1756f6db5.svg "Repobeats analytics image")
