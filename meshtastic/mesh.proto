@@ -1651,6 +1651,11 @@ message MeshPacket {
      * Arrived via API connection
      */
     TRANSPORT_API = 7;
+
+    /*
+     * Arrived via Bluetooth LE advertisements
+     */
+    TRANSPORT_BLE_ADVERTISEMENT = 8;
   }
 
   /*
