@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - develop
     paths:
       - "meshtastic/**/*.proto"
       - "nanopb.proto"
@@ -18,17 +19,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Compute snapshot version
-        id: version
-        run: |
-          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          RELEASE_VERSION="${TAG#v}"
-          IFS='.' read -r major minor patch <<< "$RELEASE_VERSION"
-          SNAPSHOT_VERSION="${major}.${minor}.$((patch + 1))-SNAPSHOT"
-          echo "snapshot=$SNAPSHOT_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -43,7 +33,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build KMP package
-        run: packages/kmp/gradlew --no-daemon -p packages/kmp build -PVERSION_NAME=${{ steps.version.outputs.snapshot }}
+        run: packages/kmp/gradlew --no-daemon -p packages/kmp build -PVERSION_NAME=${{ github.ref_name }}-SNAPSHOT
 
       - name: Publish snapshot to Maven Central
         env:
@@ -56,4 +46,4 @@ jobs:
             echo "Missing Maven Central secrets — skipping snapshot publish." >&2
             exit 0
           fi
-          packages/kmp/gradlew --no-daemon -p packages/kmp publishAllPublicationsToMavenCentralRepository -PVERSION_NAME=${{ steps.version.outputs.snapshot }}
+          packages/kmp/gradlew --no-daemon -p packages/kmp publishAllPublicationsToMavenCentralRepository -PVERSION_NAME=${{ github.ref_name }}-SNAPSHOT

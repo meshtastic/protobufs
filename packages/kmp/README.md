@@ -18,7 +18,8 @@ The SDK version is derived automatically from the latest git tag — no manual v
 | Context | Version | Source |
 |---------|---------|--------|
 | Release CI (`v2.7.23` tag push) | `2.7.23` | Tag stripped of `v` prefix, passed as `-PVERSION_NAME` |
-| Snapshot CI (master push) | `2.7.24-SNAPSHOT` | Latest tag + patch bump, computed in workflow |
+| Snapshot CI (`master` push) | `master-SNAPSHOT` | Branch name, passed as `-PVERSION_NAME` |
+| Snapshot CI (`develop` push) | `develop-SNAPSHOT` | Branch name, passed as `-PVERSION_NAME` |
 | Local dev (no flag) | `2.7.24-SNAPSHOT` | `git describe --tags --abbrev=0` + patch bump |
 | Local override | any | `./gradlew build -PVERSION_NAME=x.y.z` |
 
@@ -51,9 +52,11 @@ implementation("org.meshtastic:protobufs:2.7.23")
 
 ### Snapshots
 
-Snapshot builds (published from `master`) live in the Central Portal snapshots
-repository, not on the main Maven Central CDN. To consume them, add that
-repository alongside `mavenCentral()` and depend on a `-SNAPSHOT` version:
+Snapshot builds are published from `master` and `develop` under the stable
+coordinates `master-SNAPSHOT` and `develop-SNAPSHOT` — pin once and every push
+to that branch republishes the same version. They live in the Central Portal
+snapshots repository, not on the main Maven Central CDN. To consume them, add
+that repository alongside `mavenCentral()`:
 
 ```kotlin
 // settings.gradle.kts (or build.gradle.kts)
@@ -65,7 +68,16 @@ repositories {
 }
 
 // build.gradle.kts
-implementation("org.meshtastic:protobufs:2.7.24-SNAPSHOT")
+implementation("org.meshtastic:protobufs:develop-SNAPSHOT")
+```
+
+Gradle caches snapshot resolutions for 24 hours by default. To always pick up
+the latest publish during active development:
+
+```kotlin
+configurations.all {
+  resolutionStrategy.cacheChangingModulesFor(0, "minutes")
+}
 ```
 
 ## Local build
