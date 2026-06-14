@@ -48,9 +48,8 @@ jobs:
           echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
           echo "Resolved VERSION=$VERSION, TAG=$TAG"
-
       - name: Setup Buf
-        uses: bufbuild/buf-setup-action@main
+        uses: bufbuild/buf-setup-action@v1.50.0
         with:
           github_token: ${{ github.token }}
 
@@ -62,17 +61,14 @@ jobs:
           set -euo pipefail
           src_dir="packages/ts/lib/meshtastic"
           dest_dir="packages/ts/lib"
-
           if [ ! -d "$src_dir" ]; then
             echo "Expected source directory '$src_dir' does not exist. 'buf generate' may have failed or changed its output paths." >&2
             exit 1
           fi
-
           if ! compgen -G "$src_dir"/*_pb.ts > /dev/null; then
             echo "No '*_pb.ts' files found in '$src_dir'. 'buf generate' may have produced no TypeScript files or changed their naming." >&2
             exit 1
           fi
-
           mv "$src_dir"/*_pb.ts "$dest_dir"/
       - name: Show generated files
         run: |
@@ -80,7 +76,6 @@ jobs:
           ls -la packages/ts/
           echo "=== packages/ts/lib contents ==="
           ls -la packages/ts/lib/ || echo "lib folder not found"
-
       - name: Set package versions
         run: |
           set -euo pipefail
@@ -89,7 +84,6 @@ jobs:
             test -f "$f" || { echo "Missing $f" >&2; exit 1; }
             sed -i "s/__PACKAGE_VERSION__/${VERSION}/g" "$f"
           done
-
       - name: Copy license & README
         run: cp LICENSE README.md packages/ts/
 
@@ -116,11 +110,10 @@ jobs:
           ls -la
           echo "=== lib/ contents ==="
           ls -la lib/ || echo "lib folder not found"
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
 
       - name: Install dependencies
         run: npm install
@@ -133,7 +126,6 @@ jobs:
           echo "=== Build output ==="
           ls -la
           ls -la dist/
-
       - name: Upload built NPM package
         uses: actions/upload-artifact@v4
         with:
@@ -143,7 +135,6 @@ jobs:
             package.json
             LICENSE
             README.md
-
       - name: Upload JSR package
         uses: actions/upload-artifact@v4
         with:
@@ -154,7 +145,6 @@ jobs:
             deno.json
             LICENSE
             README.md
-
   create-release-zips:
     runs-on: ubuntu-24.04
     needs: [codegen, build-typescript]
@@ -175,7 +165,6 @@ jobs:
         run: |
           cd npm_package && zip -r ../meshtastic-protobufs-npm.zip . && cd ..
           cd jsr_package && zip -r ../meshtastic-protobufs-jsr.zip . && cd ..
-
       - name: Upload release zips
         uses: actions/upload-artifact@v4
         with:
@@ -183,7 +172,6 @@ jobs:
           path: |
             meshtastic-protobufs-npm.zip
             meshtastic-protobufs-jsr.zip
-
   upload-release-assets:
     runs-on: ubuntu-24.04
     needs: [codegen, create-release-zips]
@@ -201,7 +189,6 @@ jobs:
           files: |
             meshtastic-protobufs-npm.zip
             meshtastic-protobufs-jsr.zip
-
   push-buf-registry:
     runs-on: ubuntu-24.04
     needs: codegen
@@ -211,7 +198,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Buf
-        uses: bufbuild/buf-setup-action@main
+        uses: bufbuild/buf-setup-action@v1.50.0
         with:
           github_token: ${{ github.token }}
 
@@ -224,9 +211,6 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [codegen, build-typescript]
     if: ${{ !inputs.dry_run }}
-    permissions:
-      contents: read
-      id-token: write
     steps:
       - name: Download NPM package
         uses: actions/download-artifact@v4
@@ -236,14 +220,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
           registry-url: "https://registry.npmjs.org"
 
-      - name: Install NPM CLI
-        run: npm install -g npm@latest
-
       - name: Publish to NPM
-        run: npm publish
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-jsr:
     runs-on: ubuntu-24.04
@@ -261,7 +244,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
 
       - name: Publish to JSR
-        run: npx jsr publish
+        run: npx jsr publish --allow-dirty
