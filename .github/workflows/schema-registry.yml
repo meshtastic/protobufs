@@ -19,6 +19,7 @@ jobs:
       - name: Push to schema registry
         uses: bufbuild/buf-action@v1.2.0
         with:
+          version: 1.71.0 # renovate: datasource=github-releases depName=bufbuild/buf
           github_token: ${{ github.token }}
           token: ${{ secrets.BUF_TOKEN }}
           push: true
