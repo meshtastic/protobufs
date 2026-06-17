@@ -96,6 +96,19 @@
 
 *DeviceMetadata.firmware_version max_size:18
 
+# Region->preset compatibility map (FromRadio.region_presets). Bounds chosen
+# above the current table (6 groups / 9 presets in the largest group / 32 regions)
+# so LoRaRegionPresetMap stays small enough that FromRadio_size does not grow past
+# the 512-byte MAX_TO_FROM_RADIO_SIZE cap. nanopb sizes repeated enums unpacked
+# (~2 bytes/element), so the flat groups + region_groups layout keeps cost additive
+# rather than groups*regions. See bin/regen-protos.sh output for the actual size.
+# region_groups capped at 38 = the number of RegionCode enum values, so it can
+# never overflow regardless of how many regions gain a firmware table entry.
+*LoRaRegionPresetMap.groups        max_count:8
+*LoRaRegionPresetMap.region_groups max_count:38
+*LoRaPresetGroup.presets           max_count:11
+*LoRaRegionPresets.group_index     int_size:8
+
 *MqttClientProxyMessage.topic max_size:60
 *MqttClientProxyMessage.data max_size:435
 *MqttClientProxyMessage.text max_size:435
