@@ -738,6 +738,12 @@ message HamParameters {
    * Optional short name of user
    */
   string short_name = 4;
+
+  /*
+   * Optional long name of user
+   * Appended to callsign
+   */
+  string long_name = 5;
 }
 
 /*

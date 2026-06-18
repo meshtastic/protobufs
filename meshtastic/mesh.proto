@@ -914,6 +914,26 @@ enum HardwareModel {
   T_ECHO_CARD = 136;
 
   /*
+   * Seeed Tracker L2
+   */
+  SEEED_WIO_TRACKER_L2 = 137;
+
+  /*
+   * Elecrow CrowPanel Advance P4 models, ESP32-P4 and TFT with SX1262 radio plugin
+   */
+  CROWPANEL_P4 = 138;
+
+  /*
+   * Heltec Mesh Tower V2
+   */
+  HELTEC_MESH_TOWER_V2 = 139;
+
+  /*
+   * Meshnology W10
+   */
+  MESHNOLOGY_W10 = 140;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
@@ -2317,6 +2337,15 @@ message FromRadio {
      * encoding state as magic-string prefixes inside ClientNotification.
      */
     LockdownStatus lockdown_status = 18;
+
+    /*
+     * Map of which modem presets are legal in each LoRa region. Sent once
+     * during the want_config handshake (right after `metadata`, before the
+     * first `channel`) so client UIs can prevent the user from selecting an
+     * illegal region+preset combination. A region that does not appear in
+     * any group carries no constraint info and should not be restricted.
+     */
+    LoRaRegionPresetMap region_presets = 19;
   }
 }
 
@@ -2660,6 +2689,74 @@ message DeviceMetadata {
    * Indicates that the device has a buzzer or audio output usable by the find-node command
    */
   bool hasBuzzer = 13;
+}
+
+/*
+ * A distinct set of legal modem presets shared by one or more LoRa regions.
+ * Regions that have an identical preset list / default / licensing reference
+ * the same group (by index) via LoRaRegionPresetMap.region_groups. This keeps
+ * the whole map small enough to fit in a single FromRadio packet, since most
+ * regions share the one standard preset list.
+ */
+message LoRaPresetGroup {
+  /*
+   * The modem presets that are legal for every region referencing this group.
+   */
+  repeated Config.LoRaConfig.ModemPreset presets = 1;
+
+  /*
+   * The firmware's default modem preset for regions in this group.
+   * Always one of `presets`. Clients should select this when switching to one
+   * of these regions, or when the current preset is not legal in the new region.
+   */
+  Config.LoRaConfig.ModemPreset default_preset = 2;
+
+  /*
+   * True if regions referencing this group are for licensed operators only
+   * (e.g. amateur / ham radio bands). Clients should warn or gate accordingly.
+   */
+  bool licensed_only = 3;
+}
+
+/*
+ * Associates a single LoRa region with its preset group.
+ */
+message LoRaRegionPresets {
+  /*
+   * The LoRa region this entry describes.
+   */
+  Config.LoRaConfig.RegionCode region = 1;
+
+  /*
+   * Index into LoRaRegionPresetMap.groups for the preset list that is legal
+   * in `region`.
+   */
+  uint32 group_index = 2;
+}
+
+/*
+ * Map describing which modem presets are valid for each LoRa region. Sent by
+ * the firmware during the want_config handshake (as FromRadio.region_presets)
+ * so that client UIs can prevent illegal region+preset selections.
+ *
+ * Delivery is grouped to save space: `groups` holds each distinct preset list,
+ * and `region_groups` maps every known region to one of those groups by index.
+ * A region that does NOT appear in `region_groups` carries no constraint
+ * information and should not be restricted by the client (e.g. firmware that
+ * predates this message, or a region with no firmware table entry). Clients
+ * must also tolerate this whole message being absent.
+ */
+message LoRaRegionPresetMap {
+  /*
+   * One entry per distinct (preset-list, default, licensing) combination.
+   * Referenced by index from `region_groups`.
+   */
+  repeated LoRaPresetGroup groups = 1;
+
+  /*
+   * One entry per known LoRa region, pointing at its preset group.
+   */
+  repeated LoRaRegionPresets region_groups = 2;
 }
 
 /*
