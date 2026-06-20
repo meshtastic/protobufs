@@ -303,12 +303,6 @@ message ModuleConfig {
    */
   message TrafficManagementConfig {
     /*
-     * Number of bits of precision for position deduplication (0–32).
-     * A non-zero value implicitly enables position dedup; 0 disables it.
-     */
-    uint32 position_precision_bits = 3;
-
-    /*
      * Minimum interval in seconds between position updates from the same node.
      * A non-zero value implicitly enables the suppression window; 0 disables it.
      */
