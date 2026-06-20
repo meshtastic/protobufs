@@ -302,75 +302,47 @@ message ModuleConfig {
    * Provides packet inspection and traffic shaping to help reduce channel utilization
    */
   message TrafficManagementConfig {
-    /*
-     * Master enable for traffic management module
-     */
-    bool enabled = 1;
+    // Tags 1, 2, 3, 5, 7, 10, 12, 13, 14 were bool toggle fields removed in favour
+    // of the "non-zero implies enabled" convention on their companion uint32 fields.
+    // Tag 3 (position_precision_bits) was removed because precision is now derived
+    // from the channel's own position_precision ceiling.
+    // None of these tags ever shipped in a stable release.
+    reserved 1, 2, 3, 5, 7, 10, 12, 13, 14;
+    reserved "enabled", "position_dedup_enabled", "position_precision_bits",
+             "nodeinfo_direct_response", "rate_limit_enabled", "drop_unknown_enabled",
+             "exhaust_hop_telemetry", "exhaust_hop_position", "router_preserve_hops";
 
     /*
-     * Enable position deduplication to drop redundant position broadcasts
-     */
-    bool position_dedup_enabled = 2;
-
-    /*
-     * Number of bits of precision for position deduplication (0-32)
-     */
-    uint32 position_precision_bits = 3;
-
-    /*
-     * Minimum interval in seconds between position updates from the same node
+     * Minimum interval in seconds between position updates from the same node.
+     * A non-zero value implicitly enables the suppression window; 0 disables it.
      */
     uint32 position_min_interval_secs = 4;
 
     /*
-     * Enable direct response to NodeInfo requests from local cache
-     */
-    bool nodeinfo_direct_response = 5;
-
-    /*
-     * Minimum hop distance from requestor before responding to NodeInfo requests
+     * Maximum hop distance from the requestor at which direct NodeInfo responses
+     * are served from the local cache. A non-zero value implicitly enables direct
+     * response; 0 disables it.
      */
     uint32 nodeinfo_direct_response_max_hops = 6;
 
     /*
-     * Enable per-node rate limiting to throttle chatty nodes
-     */
-    bool rate_limit_enabled = 7;
-
-    /*
-     * Time window in seconds for rate limiting calculations
+     * Time window in seconds for per-node rate limiting.
+     * A non-zero value implicitly enables rate limiting; 0 disables it.
      */
     uint32 rate_limit_window_secs = 8;
 
     /*
-     * Maximum packets allowed per node within the rate limit window
+     * Maximum packets allowed per node within the rate limit window.
+     * A non-zero value implicitly enables rate limiting; 0 disables it.
      */
     uint32 rate_limit_max_packets = 9;
 
     /*
-     * Enable dropping of unknown/undecryptable packets per rate_limit_window_secs
-     */
-    bool drop_unknown_enabled = 10;
-
-    /*
-     * Number of unknown packets before dropping from a node
+     * Maximum unknown/undecryptable packets per rate window before the source
+     * is dropped. A non-zero value implicitly enables unknown-packet filtering;
+     * 0 disables it.
      */
     uint32 unknown_packet_threshold = 11;
-
-    /*
-     * Set hop_limit to 0 for relayed telemetry broadcasts (own packets unaffected)
-     */
-    bool exhaust_hop_telemetry = 12;
-
-    /*
-     * Set hop_limit to 0 for relayed position broadcasts (own packets unaffected)
-     */
-    bool exhaust_hop_position = 13;
-
-    /*
-     * Preserve hop_limit for router-to-router traffic
-     */
-    bool router_preserve_hops = 14;
   }
 
   /*
