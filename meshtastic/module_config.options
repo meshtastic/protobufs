@@ -35,3 +35,6 @@
 *MeshBeaconConfig.broadcast_offer_channel.psk max_size:32
 *MeshBeaconConfig.broadcast_on_channel.name max_size:12
 *MeshBeaconConfig.broadcast_on_channel.psk max_size:32
+*MeshBeaconConfig.broadcast_targets max_count:4
+*BroadcastTarget.channel.name max_size:12
+*BroadcastTarget.channel.psk max_size:32

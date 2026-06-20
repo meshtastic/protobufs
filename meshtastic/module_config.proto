@@ -906,6 +906,38 @@ message ModuleConfig {
      * This ensures nodes that only decode TEXT_MESSAGE_APP can still receive the human-readable text.
      */
     bool broadcast_legacy_split = 12;
+
+    /*
+     * One entry in the multi-target broadcast list.
+     * The broadcaster transmits one beacon copy per entry, each on its own radio settings.
+     */
+    message BroadcastTarget {
+      /*
+       * Modem preset to use for this target.
+       * Falls back to the running config preset if unset.
+       */
+      optional Config.LoRaConfig.ModemPreset preset = 1;
+
+      /*
+       * Region to use for this target. UNSET means use the running config region.
+       */
+      Config.LoRaConfig.RegionCode region = 2;
+
+      /*
+       * Channel (name + PSK + slot) to use for this target.
+       * If unset, the default channel for the preset is used.
+       */
+      optional ChannelSettings channel = 3;
+    }
+
+    /*
+     * Per-preset broadcast targets.
+     * When non-empty the broadcaster transmits one beacon copy per entry in sequence,
+     * each temporarily switching the radio to that entry's preset/region/channel.
+     * When empty, falls back to the broadcast_on_preset / broadcast_on_region /
+     * broadcast_on_channel fields (single-target legacy path).
+     */
+    repeated BroadcastTarget broadcast_targets = 13;
   }
 
   /*
