@@ -900,8 +900,11 @@ message ModuleConfig {
     optional Config.LoRaConfig.ModemPreset broadcast_offer_preset = 7;
 
     /*
-     * Channel settings (name + PSK) to use when sending beacons.
-     * If unset, beacons go out on the primary channel.
+     * Single-target TX channel: channel settings (name + PSK) to send beacons on.
+     * If unset, beacons go out on the primary channel. Used only when broadcast_targets is empty.
+     * NOTE: the single-target path embeds the ChannelSettings inline here, whereas a
+     * broadcast_targets entry references a channel-table slot by channel_index instead — see
+     * BroadcastTarget. The two paths are equal, first-class options; only this representation differs.
      */
     ChannelSettings broadcast_on_channel = 8;
 
@@ -937,19 +940,28 @@ message ModuleConfig {
        */
       Config.LoRaConfig.RegionCode region = 2;
 
+      // Tag 3 was an embedded ChannelSettings; replaced by channel_index (tag 4) to keep
+      // ModuleConfig within the BLE FromRadio size budget. Branch unreleased, so tag 3 is a gap.
+
       /*
-       * Channel (name + PSK + slot) to use for this target.
-       * If unset, the default channel for the preset is used.
+       * Index into the device's channel table (0..MAX_NUM_CHANNELS-1) of the channel to
+       * transmit this target's beacon on. The referenced channel must already be configured
+       * on the node (its key is needed to encrypt). If unset, the default channel for the
+       * preset is used.
        */
-      optional ChannelSettings channel = 3;
+      optional uint32 channel_index = 4;
     }
 
     /*
-     * Per-preset broadcast targets.
+     * Multi-target broadcast list.
      * When non-empty the broadcaster transmits one beacon copy per entry in sequence,
      * each temporarily switching the radio to that entry's preset/region/channel.
-     * When empty, falls back to the broadcast_on_preset / broadcast_on_region /
-     * broadcast_on_channel fields (single-target legacy path).
+     * When empty, the broadcaster uses the scalar broadcast_on_preset / broadcast_on_region /
+     * broadcast_on_channel fields instead (the single-target path).
+     * Single- and multi-target are equal, first-class options — neither is preferred or
+     * deprecated. They differ only in how the TX channel is named: broadcast_on_channel embeds a
+     * ChannelSettings inline, while a target references an existing channel-table slot by
+     * channel_index (see BroadcastTarget).
      */
     repeated BroadcastTarget broadcast_targets = 13;
   }
