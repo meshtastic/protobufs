@@ -18,10 +18,16 @@ The SDK version is derived automatically from the latest git tag — no manual v
 | Context | Version | Source |
 |---------|---------|--------|
 | Release CI (`v2.7.23` tag push) | `2.7.23` | Tag stripped of `v` prefix, passed as `-PVERSION_NAME` |
-| Snapshot CI (`master` push) | `master-SNAPSHOT` | Branch name, passed as `-PVERSION_NAME` |
-| Snapshot CI (`develop` push) | `develop-SNAPSHOT` | Branch name, passed as `-PVERSION_NAME` |
+| Snapshot CI (`master` push) | `2.7.23-497cd88-SNAPSHOT` | Latest tag, `v`-stripped + short commit SHA, passed as `-PVERSION_NAME` |
 | Local dev (no flag) | `2.7.24-SNAPSHOT` | `git describe --tags --abbrev=0` + patch bump |
 | Local override | any | `./gradlew build -PVERSION_NAME=x.y.z` |
+
+CI snapshots keep the tag and append the SHA; local builds instead patch-bump.
+The difference is deliberate: a `-<sha>` suffix is a build qualifier that sorts
+*above* its base version, so CI can name the current tag and still land above
+the release. A *bare* `-SNAPSHOT` sorts *below* its base, so the local fallback
+names the next version to stay ahead of the last release. Both land between the
+last and next release.
 
 If no `-PVERSION_NAME` is supplied and no tag can be resolved (git missing, or a
 shallow/tagless clone), the fallback degrades to `0.0.1-SNAPSHOT` rather than
@@ -52,11 +58,14 @@ implementation("org.meshtastic:protobufs:2.7.23")
 
 ### Snapshots
 
-Snapshot builds are published from `master` and `develop` under the stable
-coordinates `master-SNAPSHOT` and `develop-SNAPSHOT` — pin once and every push
-to that branch republishes the same version. They live in the Central Portal
-snapshots repository, not on the main Maven Central CDN. To consume them, add
-that repository alongside `mavenCentral()`:
+Every push to `master` publishes a snapshot under a unique coordinate of the
+form `{latest-tag}-{short-sha}-SNAPSHOT` (e.g. `2.7.23-497cd88-SNAPSHOT`): the
+latest release tag with its `v` stripped, plus the 7-char commit SHA. The
+`-<sha>` suffix is a build qualifier, so Maven sorts each snapshot *above* the
+release it was built from (dependency bots never propose a downgrade) yet
+*below* the next release. They live in the Central Portal snapshots repository,
+not on the main Maven Central CDN. To consume them, add that repository
+alongside `mavenCentral()`:
 
 ```kotlin
 // settings.gradle.kts (or build.gradle.kts)
@@ -67,18 +76,12 @@ repositories {
   }
 }
 
-// build.gradle.kts
-implementation("org.meshtastic:protobufs:develop-SNAPSHOT")
+// build.gradle.kts — pin a specific published snapshot
+implementation("org.meshtastic:protobufs:2.7.23-497cd88-SNAPSHOT")
 ```
 
-Gradle caches snapshot resolutions for 24 hours by default. To always pick up
-the latest publish during active development:
-
-```kotlin
-configurations.all {
-  resolutionStrategy.cacheChangingModulesFor(0, "minutes")
-}
-```
+Each `master` push produces a new coordinate, so pin a specific one and bump it
+(e.g. via Renovate) as newer snapshots publish.
 
 ## Local build
 
