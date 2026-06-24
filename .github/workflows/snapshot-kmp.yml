@@ -35,9 +35,14 @@ jobs:
 
       - name: Set version name
         run: |
-          PREV_TAG=$(git describe --tags --abbrev=0)
+          # Name the snapshot after the latest tag (v-stripped) plus the short SHA.
+          # The `-<sha>` is a build qualifier, so Maven sorts this ABOVE the tag's
+          # release (no Renovate downgrade) yet below the next release — no patch
+          # bump needed. (The local fallback in build.gradle.kts uses a *bare*
+          # `-SNAPSHOT`, which sorts below its base, so it patch-bumps instead.)
+          BASE=$(git describe --tags --abbrev=0)
           SHORT_SHA=${GITHUB_SHA::7}
-          echo "VERSION_NAME=${PREV_TAG}-${SHORT_SHA}-SNAPSHOT" >> $GITHUB_ENV
+          echo "VERSION_NAME=${BASE#v}-${SHORT_SHA}-SNAPSHOT" >> "$GITHUB_ENV"
 
       - name: Build KMP package
         run: packages/kmp/gradlew --no-daemon -p packages/kmp build -PVERSION_NAME=${{ env.VERSION_NAME }}
