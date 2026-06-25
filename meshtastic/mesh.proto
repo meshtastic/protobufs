@@ -363,7 +363,7 @@ enum HardwareModel {
   /*
    * Makerfabs Reserved
    */
-  MAKERFAB_RESERVED = 28;
+  MAKERFABS_RESERVED = 28;
 
   /*
    * Canary Radio Company - CanaryOne: https://canaryradio.io/products/canaryone
