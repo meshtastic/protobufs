@@ -356,14 +356,14 @@ enum HardwareModel {
   RAK11310 = 26;
 
   /*
-   * Makerfabs SenseLoRA Receiver (RP2040 + RFM96)
+   * Makerfabs Tracker Reserved
    */
-  SENSELORA_RP2040 = 27;
+  MAKERFABS_TRACKER = 27;
 
   /*
-   * Makerfabs SenseLoRA Industrial Monitor (ESP32-S3 + RFM96)
+   * Makerfabs Reserved
    */
-  SENSELORA_S3 = 28;
+  MAKERFAB_RESERVED = 28;
 
   /*
    * Canary Radio Company - CanaryOne: https://canaryradio.io/products/canaryone
