@@ -308,9 +308,7 @@ message ModuleConfig {
     // from the channel's own position_precision ceiling.
     // None of these tags ever shipped in a stable release.
     reserved 1, 2, 3, 5, 7, 10, 12, 13, 14;
-    reserved "enabled", "position_dedup_enabled", "position_precision_bits",
-             "nodeinfo_direct_response", "rate_limit_enabled", "drop_unknown_enabled",
-             "exhaust_hop_telemetry", "exhaust_hop_position", "router_preserve_hops";
+    reserved "enabled", "position_dedup_enabled", "position_precision_bits", "nodeinfo_direct_response", "rate_limit_enabled", "drop_unknown_enabled", "exhaust_hop_telemetry", "exhaust_hop_position", "router_preserve_hops";
 
     /*
      * Minimum interval in seconds between position updates from the same node.
