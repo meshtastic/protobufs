@@ -3,6 +3,8 @@ syntax = "proto3";
 package meshtastic;
 
 import "meshtastic/atak.proto";
+import "meshtastic/channel.proto";
+import "meshtastic/config.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
@@ -828,6 +830,141 @@ message ModuleConfig {
   }
 
   /*
+   * MeshBeacon module config
+   */
+  message MeshBeaconConfig {
+    /*
+     * Boolean options for the beacon module, packed into the `flags` bitfield below.
+     * OR the FLAG_* values together; a flag is on when its bit is set.
+     */
+    enum Flags {
+      /*
+       * No options enabled.
+       */
+      FLAG_NONE = 0;
+
+      /*
+       * Enable receiving MESH_BEACON_APP packets from other nodes.
+       * The text portion is delivered to the local message inbox.
+       * Offered channel/preset are stored for the client app to act on.
+       */
+      FLAG_LISTEN_ENABLED = 1;
+
+      /*
+       * Enable periodically broadcasting MESH_BEACON_APP packets from this node.
+       */
+      FLAG_BROADCAST_ENABLED = 2;
+
+      /*
+       * When both text and offer content are present, split the beacon into a separate
+       * MESH_BEACON_APP (offer only) and TEXT_MESSAGE_APP (text only) packet, so firmware
+       * that only decodes TEXT_MESSAGE_APP still receives the human-readable text.
+       */
+      FLAG_LEGACY_SPLIT = 4;
+    }
+
+    /*
+     * Bitwise-OR of Flags values (listen / broadcast / legacy-split toggles).
+     */
+    uint32 flags = 1;
+
+    /*
+     * Optional: node ID to send beacon messages AS.
+     * When set, the `from` field of outgoing beacon packets is set to this node ID,
+     * making beacons appear to originate from that node.
+     * When unset (0), beacons are sent as the local node.
+     * A remote admin can only set this field to their own node ID.
+     */
+    uint32 broadcast_send_as_node = 3;
+
+    /*
+     * Message to include in each beacon broadcast. Max 100 bytes enforced by firmware.
+     */
+    string broadcast_message = 4;
+
+    /*
+     * Optional channel (name + PSK) to advertise in the MeshBeacon offer_channel field.
+     */
+    ChannelSettings broadcast_offer_channel = 5;
+
+    /*
+     * Optional region to advertise in the MeshBeacon offer_region field.
+     */
+    Config.LoRaConfig.RegionCode broadcast_offer_region = 6;
+
+    /*
+     * Optional modem preset to advertise in the MeshBeacon offer_preset field.
+     */
+    optional Config.LoRaConfig.ModemPreset broadcast_offer_preset = 7;
+
+    /*
+     * Single-target TX channel: channel settings (name + PSK) to send beacons on.
+     * If unset, beacons go out on the primary channel. Used only when broadcast_targets is empty.
+     * NOTE: the single-target path embeds the ChannelSettings inline here, whereas a
+     * broadcast_targets entry references a channel-table slot by channel_index instead — see
+     * BroadcastTarget. The two paths are equal, first-class options; only this representation differs.
+     */
+    ChannelSettings broadcast_on_channel = 8;
+
+    /*
+     * Region to use when sending beacons on broadcast_on_preset.
+     */
+    Config.LoRaConfig.RegionCode broadcast_on_region = 9;
+
+    /*
+     * Modem preset to use when sending beacons.
+     * If different from current config, the radio is temporarily switched for TX.
+     */
+    optional Config.LoRaConfig.ModemPreset broadcast_on_preset = 10;
+
+    /*
+     * How often to broadcast, in seconds. Min 3600 (1 h), default 3600.
+     */
+    uint32 broadcast_interval_secs = 11;
+
+    /*
+     * One entry in the multi-target broadcast list.
+     * The broadcaster transmits one beacon copy per entry, each on its own radio settings.
+     */
+    message BroadcastTarget {
+      /*
+       * Modem preset to use for this target.
+       * Falls back to the running config preset if unset.
+       */
+      optional Config.LoRaConfig.ModemPreset preset = 1;
+
+      /*
+       * Region to use for this target. UNSET means use the running config region.
+       */
+      Config.LoRaConfig.RegionCode region = 2;
+
+      // Tag 3 was an embedded ChannelSettings; replaced by channel_index (tag 4) to keep
+      // ModuleConfig within the BLE FromRadio size budget. Branch unreleased, so tag 3 is a gap.
+
+      /*
+       * Index into the device's channel table (0..MAX_NUM_CHANNELS-1) of the channel to
+       * transmit this target's beacon on. The referenced channel must already be configured
+       * on the node (its key is needed to encrypt). If unset, the default channel for the
+       * preset is used.
+       */
+      optional uint32 channel_index = 4;
+    }
+
+    /*
+     * Multi-target broadcast list.
+     * When non-empty the broadcaster transmits one beacon copy per entry in sequence,
+     * each temporarily switching the radio to that entry's preset/region/channel.
+     * When empty, the broadcaster uses the scalar broadcast_on_preset / broadcast_on_region /
+     * broadcast_on_channel fields instead (the single-target path).
+     * Single- and multi-target are equal, first-class options — neither is preferred or
+     * deprecated. They differ only in how the TX channel is named: broadcast_on_channel embeds a
+     * ChannelSettings inline, while a target references an existing channel-table slot by
+     * channel_index (see BroadcastTarget).
+     */
+    repeated BroadcastTarget broadcast_targets = 13;
+  }
+
+  /*
    * TODO: REPLACE
    */
   oneof payload_variant {
@@ -910,6 +1047,11 @@ message ModuleConfig {
      * TAK team/role configuration for TAK_TRACKER
      */
     TAKConfig tak = 16;
+
+    /*
+     * MeshBeacon module config
+     */
+    MeshBeaconConfig mesh_beacon = 17;
   }
 
   /*

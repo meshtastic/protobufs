@@ -29,3 +29,10 @@
 *DetectionSensorConfig.detection_trigger_type max_size:8
 
 *StatusMessageConfig.node_status max_size:80
+
+*MeshBeaconConfig.broadcast_message max_size:101
+*MeshBeaconConfig.broadcast_offer_channel.name max_size:12
+*MeshBeaconConfig.broadcast_offer_channel.psk max_size:32
+*MeshBeaconConfig.broadcast_on_channel.name max_size:12
+*MeshBeaconConfig.broadcast_on_channel.psk max_size:32
+*MeshBeaconConfig.broadcast_targets max_count:4
