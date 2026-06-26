@@ -157,8 +157,8 @@ enum PortNum {
 
   /*
    * Beacon module broadcast packets.
-   * ENCODING: protobuf (MeshBeacon)
-   * Periodically broadcast by nodes in beacon mode; received by nodes with listen_enabled.
+   * ENCODING: protobuf
+   * Periodically broadcast by nodes in beacon mode; received by nodes with MeshBeaconConfig.FLAG_LISTEN_ENABLED.
    * Carries a text message plus optional channel/preset offers for client apps.
    */
   MESH_BEACON_APP = 37;
