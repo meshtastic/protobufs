@@ -1530,6 +1530,14 @@ message Waypoint {
    * waypoint's geofence (the circular radius and/or the bounding box).
    */
   bool notify_on_exit = 12;
+
+  /*
+   * If true, only raise geofence enter/exit notifications for nodes that are
+   * marked as favorites on the receiving device. Applies to both notify_on_enter
+   * and notify_on_exit. Favorite status is resolved locally per receiver, so the
+   * same waypoint alerts each node only for its own favorites.
+   */
+  bool notify_favorites_only = 13;
 }
 
 /*
