@@ -356,14 +356,14 @@ enum HardwareModel {
   RAK11310 = 26;
 
   /*
-   * Makerfabs SenseLoRA Receiver (RP2040 + RFM96)
+   * Makerfabs Tracker Reserved
    */
-  SENSELORA_RP2040 = 27;
+  MAKERFABS_TRACKER = 27;
 
   /*
-   * Makerfabs SenseLoRA Industrial Monitor (ESP32-S3 + RFM96)
+   * Makerfabs Reserved
    */
-  SENSELORA_S3 = 28;
+  MAKERFABS_RESERVED = 28;
 
   /*
    * Canary Radio Company - CanaryOne: https://canaryradio.io/products/canaryone
@@ -1432,6 +1432,36 @@ message RemoteShell {
 }
 
 /*
+ * A rectangular, axis-aligned geographic bounding box.
+ * Used to define a rectangular geofence region for a Waypoint.
+ * Fields are ordered west, south, east, north to match the standard bounding box
+ * convention used by GeoJSON and PMTiles (min longitude, min latitude, max longitude, max latitude),
+ * so the box can drive an offline map extract directly.
+ * All coordinates are in degrees scaled by 1e-7 (same convention as Position and Waypoint).
+ */
+message BoundingBox {
+  /*
+   * Western edge of the box - minimum longitude (south-west corner)
+   */
+  sfixed32 longitude_west_i = 1;
+
+  /*
+   * Southern edge of the box - minimum latitude (south-west corner)
+   */
+  sfixed32 latitude_south_i = 2;
+
+  /*
+   * Eastern edge of the box - maximum longitude (north-east corner)
+   */
+  sfixed32 longitude_east_i = 3;
+
+  /*
+   * Northern edge of the box - maximum latitude (north-east corner)
+   */
+  sfixed32 latitude_north_i = 4;
+}
+
+/*
  * Waypoint message, used to share arbitrary locations across the mesh
  */
 message Waypoint {
@@ -1475,6 +1505,39 @@ message Waypoint {
    * Designator icon for the waypoint in the form of a unicode emoji
    */
   fixed32 icon = 8;
+
+  /*
+   * If greater than zero, defines a circular geofence centred on this waypoint's
+   * location (latitude_i / longitude_i) with this radius in meters.
+   * Zero means the waypoint has no circular geofence.
+   */
+  uint32 geofence_radius = 9;
+
+  /*
+   * Optional rectangular geofence region for this waypoint.
+   * May be used instead of, or in addition to, geofence_radius.
+   */
+  optional BoundingBox bounding_box = 10;
+
+  /*
+   * If true, a notification should be raised when a tracked node enters this
+   * waypoint's geofence (the circular radius and/or the bounding box).
+   */
+  bool notify_on_enter = 11;
+
+  /*
+   * If true, a notification should be raised when a tracked node exits this
+   * waypoint's geofence (the circular radius and/or the bounding box).
+   */
+  bool notify_on_exit = 12;
+
+  /*
+   * If true, only raise geofence enter/exit notifications for nodes that are
+   * marked as favorites on the receiving device. Applies to both notify_on_enter
+   * and notify_on_exit. Favorite status is resolved locally per receiver, so the
+   * same waypoint alerts each node only for its own favorites.
+   */
+  bool notify_favorites_only = 13;
 }
 
 /*
