@@ -893,7 +893,7 @@ enum TelemetrySensorType {
   ICM42607P = 53;
 
   /*
-   * SPA06 6‑Axis IMU
+   * SPA06 pressure and temperature
    */
   SPA06 = 54;
 }
