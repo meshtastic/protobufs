@@ -876,7 +876,7 @@ enum HardwareModel {
   HELTEC_MESH_NODE_T096 = 127;
 
   /*
-   * Seeed studio c                                                                                                                                               Mesh Tracker X1card. NRF52840 w/ LR2021 radio,
+   * Seeed studio Mesh Tracker X1card. NRF52840 w/ LR2021 radio,
    * GPS, button, buzzer, and sensors.
    */
   MESH_TRACKER_X1 = 128;
