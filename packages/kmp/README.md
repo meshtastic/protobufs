@@ -13,7 +13,7 @@ This package publishes Kotlin Multiplatform models generated from the protobuf s
 
 ## Versioning
 
-The SDK version is derived automatically from the latest git tag — no manual version file to maintain.
+The SDK version is derived automatically from the latest git tag - no manual version file to maintain.
 
 | Context | Version | Source |
 |---------|---------|--------|
@@ -76,7 +76,7 @@ repositories {
   }
 }
 
-// build.gradle.kts — pin a specific published snapshot
+// build.gradle.kts - pin a specific published snapshot
 implementation("org.meshtastic:protobufs:2.7.23-497cd88-SNAPSHOT")
 ```
 
