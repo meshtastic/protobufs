@@ -4,4 +4,9 @@
 packages/ts/lib/
 packages/kmp/.gradle/
 packages/kmp/build/
+packages/kmp/buildSrc/.gradle/
+packages/kmp/buildSrc/build/
 .bin/
+
+# Local build of the field-metadata protoc plugin
+tools/protoc-gen-fieldmeta/protoc-gen-fieldmeta
