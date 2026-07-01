@@ -934,6 +934,11 @@ enum HardwareModel {
   MESHNOLOGY_W10 = 140;
 
   /*
+   * LilyGo T-Deck Max, ESP32-S3 handheld with e-paper display and SX1262 radio
+   */
+  T_DECK_MAX = 141;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
