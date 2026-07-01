@@ -44,7 +44,7 @@ jobs:
           # The count goes after a DOT, not a hyphen, and that is load-bearing. In
           # Maven's ComparableVersion a dot-separated numeric segment outranks ANY
           # hyphen-nested token, so these sort ABOVE the legacy `<tag>-<sha>-SNAPSHOT`
-          # snapshots still in the repo — whose SHA can tokenize to a huge integer
+          # snapshots still in the repo - whose SHA can tokenize to a huge integer
           # (e.g. 678281c -> 678281) that would otherwise dwarf the count and mask
           # every new snapshot from dependency bots. Among themselves, higher count =
           # newer commit sorts higher, so bots pick the newest. Still sorts ABOVE the
@@ -70,7 +70,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "${ORG_GRADLE_PROJECT_mavenCentralUsername}" ] || [ -z "${ORG_GRADLE_PROJECT_mavenCentralPassword}" ]; then
-            echo "Missing Maven Central secrets — skipping snapshot publish." >&2
+            echo "Missing Maven Central secrets - skipping snapshot publish." >&2
             exit 0
           fi
           packages/kmp/gradlew --no-daemon -p packages/kmp publishAllPublicationsToMavenCentralRepository -PVERSION_NAME=${{ env.VERSION_NAME }}
