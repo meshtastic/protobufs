@@ -934,6 +934,21 @@ enum HardwareModel {
   MESHNOLOGY_W10 = 140;
 
   /*
+   * Heltec ESP32S3 + SX1262
+   */
+  HELTEC_RC32 = 141;
+
+  /*
+   * Heltec NRF52840 + SX1262
+   */
+  HELTEC_RC52 = 142;
+
+  /*
+   * Heltec ESP32C6 + SX1262
+   */
+  HELTEC_RCC6 = 143;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
