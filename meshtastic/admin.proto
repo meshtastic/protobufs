@@ -226,6 +226,49 @@ message AdminMessage {
   }
 
   /*
+   * Request that the node emit an audible find-node pattern.
+   */
+  message FindNodeRequest {
+    /*
+     * Stop any active find-node pattern instead of starting a new one.
+     */
+    bool stop = 1;
+  }
+
+  /*
+   * Response to a find-node request.
+   */
+  message FindNodeResponse {
+    enum Result {
+      /*
+       * Find-node pattern started.
+       */
+      STARTED = 0;
+
+      /*
+       * Find-node pattern stopped.
+       */
+      STOPPED = 1;
+
+      /*
+       * Request could not run because the node has no buzzer/audio output.
+       */
+      NO_BUZZER = 2;
+
+      /*
+       * Request could not run because buzzer/audio output is disabled.
+       */
+      BUZZER_DISABLED = 3;
+    }
+
+    /*
+     * Result of the request.
+     */
+    Result result = 1;
+
+  }
+
+  /*
    * TODO: REPLACE
    */
   oneof payload_variant {
@@ -477,6 +520,16 @@ message AdminMessage {
      * Initiate or respond to a key verification request
      */
     KeyVerificationAdmin key_verification = 67;
+
+    /*
+     * Start or stop the audible find-node pattern.
+     */
+    FindNodeRequest find_node_request = 68;
+
+    /*
+     * Result of a find-node request.
+     */
+    FindNodeResponse find_node_response = 69;
 
     /*
      * Tell the node to factory reset config everything; all device state and configuration will be returned to factory defaults and BLE bonds will be cleared.
