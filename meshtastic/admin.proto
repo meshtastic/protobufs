@@ -235,9 +235,24 @@ message AdminMessage {
    */
   message FindNodeResponse {
     enum Result {
+      /*
+       * Find-node pattern started.
+       */
       STARTED = 0;
+
+      /*
+       * Find-node pattern stopped.
+       */
       STOPPED = 1;
+
+      /*
+       * Request could not run because the node has no buzzer/audio output.
+       */
       NO_BUZZER = 2;
+
+      /*
+       * Request could not run because buzzer/audio output is disabled.
+       */
       BUZZER_DISABLED = 3;
     }
 
