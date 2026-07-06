@@ -265,7 +265,7 @@ enum PortNum {
    * TAKPacketV2 with zstd dictionary compression.
    */
   ATAK_PLUGIN_V2 = 78;
-  
+
   /* signed firmware updates over lora.
    *
    * ENCODING: binary (ota-common transport frames)
