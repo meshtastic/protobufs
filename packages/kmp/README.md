@@ -18,17 +18,20 @@ The SDK version is derived automatically from the latest git tag — no manual v
 | Context | Version | Source |
 |---------|---------|--------|
 | Release CI (`v2.7.23` tag push) | `2.7.23` | Tag stripped of `v` prefix, passed as `-PVERSION_NAME` |
-| Snapshot CI (`master` push) | `2.7.23-42-g497cd88-SNAPSHOT` | `git describe --tags --long`, `v`-stripped, passed as `-PVERSION_NAME` |
+| Snapshot CI (`master` push) | `2.7.23.42-g497cd88-SNAPSHOT` | `git describe --tags --long`, `v`-stripped, count after a dot, passed as `-PVERSION_NAME` |
 | Local dev (no flag) | `2.7.24-SNAPSHOT` | `git describe --tags --abbrev=0` + patch bump |
 | Local override | any | `./gradlew build -PVERSION_NAME=x.y.z` |
 
 CI snapshots keep the tag and append the commit count since it (`N`) plus the
-SHA; local builds instead patch-bump. The difference is deliberate: `-N-g<sha>`
-leads with a *numeric* token, so Maven sorts newer commits above older snapshots
-(dependency bots pick the newest) while the whole coordinate still sorts *above*
-its base release and *below* the next one. A *bare* `-SNAPSHOT` sorts *below* its
-base, so the local fallback names the next version to stay ahead of the last
-release. Both land between the last and next release.
+SHA; local builds instead patch-bump. The count goes after a *dot* (`{tag}.{N}`),
+which is deliberate: in Maven's ordering a dot-separated numeric segment outranks
+any hyphen-nested token, so a newer commit's higher count sorts above older
+snapshots — including legacy `{tag}-{sha}-SNAPSHOT` builds still in the repo whose
+SHA can tokenize to a large integer — while the whole coordinate still sorts
+*above* its base release and *below* the next one. Dependency bots therefore pick
+the newest. A *bare* `-SNAPSHOT` sorts *below* its base, so the local fallback
+names the next version to stay ahead of the last release. Both land between the
+last and next release.
 
 If no `-PVERSION_NAME` is supplied and no tag can be resolved (git missing, or a
 shallow/tagless clone), the fallback degrades to `0.0.1-SNAPSHOT` rather than
@@ -60,12 +63,14 @@ implementation("org.meshtastic:protobufs:2.7.23")
 ### Snapshots
 
 Every push to `master` publishes a snapshot under a unique coordinate of the
-form `{latest-tag}-{N}-g{short-sha}-SNAPSHOT` (e.g. `2.7.23-42-g497cd88-SNAPSHOT`):
+form `{latest-tag}.{N}-g{short-sha}-SNAPSHOT` (e.g. `2.7.23.42-g497cd88-SNAPSHOT`):
 `git describe --tags --long` with the `v` stripped — the latest release tag, the
-commit count `N` since that tag, and the 7-char commit SHA. The leading numeric
-`N` makes Maven sort newer commits *above* older snapshots (dependency bots pick
-the newest and never propose a downgrade) while each snapshot still sorts *above*
-the release it was built from yet *below* the next release. They live in the Central Portal snapshots repository,
+commit count `N` since that tag (after a **dot**), and the 7-char commit SHA. The
+dot-separated numeric `N` outranks any hyphen-nested token in Maven's ordering, so
+newer commits sort *above* older snapshots — including legacy `{tag}-{sha}` builds
+still in the repo — letting dependency bots pick the newest and never downgrade,
+while each snapshot still sorts *above* the release it was built from yet *below*
+the next release. They live in the Central Portal snapshots repository,
 not on the main Maven Central CDN. To consume them, add that repository
 alongside `mavenCentral()`:
 
@@ -79,7 +84,7 @@ repositories {
 }
 
 // build.gradle.kts — pin a specific published snapshot
-implementation("org.meshtastic:protobufs:2.7.23-42-g497cd88-SNAPSHOT")
+implementation("org.meshtastic:protobufs:2.7.23.42-g497cd88-SNAPSHOT")
 ```
 
 Each `master` push produces a new coordinate, so pin a specific one and bump it
