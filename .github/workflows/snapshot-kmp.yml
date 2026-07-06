@@ -35,14 +35,16 @@ jobs:
 
       - name: Set version name
         run: |
-          # Name the snapshot after the latest tag (v-stripped) plus the short SHA.
-          # The `-<sha>` is a build qualifier, so Maven sorts this ABOVE the tag's
-          # release (no Renovate downgrade) yet below the next release — no patch
-          # bump needed. (The local fallback in build.gradle.kts uses a *bare*
-          # `-SNAPSHOT`, which sorts below its base, so it patch-bumps instead.)
-          BASE=$(git describe --tags --abbrev=0)
-          SHORT_SHA=${GITHUB_SHA::7}
-          echo "VERSION_NAME=${BASE#v}-${SHORT_SHA}-SNAPSHOT" >> "$GITHUB_ENV"
+          # Name the snapshot after the latest tag (v-stripped) plus the commit
+          # count since that tag and the short SHA, e.g. 2.7.26-82-g678281c-SNAPSHOT.
+          # The count is a *numeric* token, so Maven sorts newer commits ABOVE older
+          # snapshots — consumers' Renovate picks the newest by default, no custom
+          # versioning needed. It still sorts ABOVE the tag's release (no downgrade)
+          # and BELOW the next release. `--long` forces the -<N>-g<sha> suffix even on
+          # a tagged commit, so a bare `-SNAPSHOT` (which sorts below its base) is never
+          # produced. (The local fallback in build.gradle.kts still uses bare `-SNAPSHOT`.)
+          DESCRIBE=$(git describe --tags --long)
+          echo "VERSION_NAME=${DESCRIBE#v}-SNAPSHOT" >> "$GITHUB_ENV"
 
       - name: Build KMP package
         run: packages/kmp/gradlew --no-daemon -p packages/kmp build -PVERSION_NAME=${{ env.VERSION_NAME }}
