@@ -1100,6 +1100,14 @@ message Config {
        * Comparable link budget and data rate to LONG_MODERATE.
        */
       TINY_SLOW = 15;
+
+      /*
+       * Short Range - Ultra
+       * Fastest preset with 500kHz bandwidth, SF5, and CR 4/5.
+       * Intended data rate is about 62.5 kbps.
+       * Only compatible with SX126x-family chipsets, including STM32WLx, and LR11xx chipsets.
+       */
+      SHORT_ULTRA = 16;
     }
 
     enum FEM_LNA_Mode {
