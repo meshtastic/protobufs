@@ -158,6 +158,18 @@ message EnvironmentMetrics {
    * One-wire temperature (*C)
    */
   repeated float one_wire_temperature = 23;
+
+  /*
+   * Lightning strikes detected in the last hour
+   */
+  optional uint32 lightning_strike_count_1h = 24;
+
+  /*
+   * Estimated distance to the leading edge of the storm for the most recently detected
+   * lightning strike in the current window, in km (only meaningful if a genuine strike,
+   * not noise/disturber, was classified this window)
+   */
+  optional float lightning_distance_km = 25;
 }
 
 /*
@@ -896,6 +908,11 @@ enum TelemetrySensorType {
    * SPA06 pressure and temperature
    */
   SPA06 = 54;
+
+  /*
+   * AS3935 Franklin lightning sensor
+   */
+  AS3935 = 55;
 }
 
 /*
