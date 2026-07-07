@@ -167,6 +167,11 @@ message AdminMessage {
      * TAK module config
      */
     TAK_CONFIG = 15;
+
+    /*
+     * Mesh Beacon module config
+     */
+    MESHBEACON_CONFIG = 16;
   }
 
   enum BackupLocation {
