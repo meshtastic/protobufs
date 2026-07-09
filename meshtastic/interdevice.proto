@@ -53,38 +53,38 @@ enum FileStatus {
 // Message for file operations
 message FileTransfer {
   FileOperation operation = 1; // File operation (GET, POST, PUT, DELETE)
-  string filepath = 2;         // Path of the file on the SD card
-  bytes filedata = 3;          // Chunk content (POST/PUT request, GET response)
-  FileStatus status = 4;       // Response: outcome of the operation
-  string message = 5;          // Response: human readable detail, may be empty
-  uint64 offset = 6;           // Byte offset of this chunk within the file (ranged GET/PUT)
+  string filepath = 2; // Path of the file on the SD card
+  bytes filedata = 3; // Chunk content (POST/PUT request, GET response)
+  FileStatus status = 4; // Response: outcome of the operation
+  string message = 5; // Response: human readable detail, may be empty
+  uint64 offset = 6; // Byte offset of this chunk within the file (ranged GET/PUT)
   // GET request: number of bytes to read, 0 = max chunk size. A response
   // carries at most the filedata max_size (see interdevice.options) per
   // chunk; larger requests are truncated, visible in the filedata length.
   uint32 length = 7;
-  uint64 file_size = 8;        // GET response: total size of the file
+  uint64 file_size = 8; // GET response: total size of the file
 }
 
 // Message for structured directory listing
 message DirectoryListing {
-  string directory = 1;          // Path of the directory
+  string directory = 1; // Path of the directory
   // One page of entry names, full FAT LFN length. Subdirectories carry a
   // trailing slash. Note that a name whose directory prefix pushes the
   // combined path past the FileTransfer.filepath limit cannot round-trip.
   // Page size is the max_count in interdevice.options; page through with
   // offset and total_count.
   repeated string filenames = 2;
-  FileStatus status = 3;         // Response: outcome of the operation
-  string message = 4;            // Response: human readable detail, may be empty
-  uint32 offset = 5;             // Request: skip this many entries (paging)
-  uint32 total_count = 6;        // Response: total number of entries in the directory
+  FileStatus status = 3; // Response: outcome of the operation
+  string message = 4; // Response: human readable detail, may be empty
+  uint32 offset = 5; // Request: skip this many entries (paging)
+  uint32 total_count = 6; // Response: total number of entries in the directory
 }
 
 // A single I2C transaction: an optional write followed by an optional
 // read with repeated start, matching the TwoWire usage of sensor drivers
 // (beginTransmission/write.../endTransmission(false)/requestFrom)
 message I2CTransaction {
-  uint32 address = 1;   // 7-bit device address
+  uint32 address = 1; // 7-bit device address
   bytes write_data = 2; // Bytes to write, may be empty
   // Number of bytes to read after the write, 0 = write-only. Bounded by
   // the read_data max_size of I2CResult (see interdevice.options); larger
@@ -113,7 +113,7 @@ message SdCardInfo {
   bool present = 1;
   CardType card_type = 2;
   FatType fat_type = 3;
-  uint64 card_size = 4;  // Filesystem size in bytes
+  uint64 card_size = 4; // Filesystem size in bytes
   uint64 used_bytes = 5; // Used bytes (may be expensive to compute on FAT32)
   uint64 free_bytes = 6; // Free bytes
   // used_bytes/free_bytes are only meaningful when true: the scan behind
@@ -132,8 +132,8 @@ message SdCardInfo {
 // What to do with the SD card of the co-processor
 enum SdCommand {
   SD_COMMAND_UNSPECIFIED = 0;
-  SD_MOUNT = 1;  // mount a card that is in the slot, also after an eject
-  SD_EJECT = 2;  // flush and release the card so it can be pulled safely
+  SD_MOUNT = 1; // mount a card that is in the slot, also after an eject
+  SD_EJECT = 2; // flush and release the card so it can be pulled safely
   SD_FORMAT = 3; // wipe the card and put a fresh FAT on it, then mount it
 }
 
@@ -163,11 +163,11 @@ message InterdeviceMessage {
     uint32 beep = 2;
     I2CTransaction i2c_transaction = 3;
     I2CResult i2c_result = 4;
-    bool i2c_scan = 5;         // Request: scan the secondary I2C bus
+    bool i2c_scan = 5; // Request: scan the secondary I2C bus
     bytes i2c_scan_result = 6; // Response: 7-bit addresses of discovered devices
     FileTransfer file_transfer = 7;
     DirectoryListing directory_listing = 8;
-    bool get_sd_info = 9;   // Request: SD card statistics
+    bool get_sd_info = 9; // Request: SD card statistics
     SdCardInfo sd_info = 10; // Response
     // Link liveness probe and version handshake. The receiver answers ping
     // with pong, echoing the id. Touches no peripherals, so it works with
