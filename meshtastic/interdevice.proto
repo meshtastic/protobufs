@@ -8,37 +8,68 @@ option java_outer_classname = "InterdeviceProtos";
 option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
-// encapsulate up to 1k of NMEA string data
-
-enum MessageType {
-  ACK = 0;
-  COLLECT_INTERVAL = 160; // in ms
-  BEEP_ON = 161; // duration ms
-  BEEP_OFF = 162; // cancel prematurely
-  SHUTDOWN = 163;
-  POWER_ON = 164;
-  SCD41_TEMP = 176;
-  SCD41_HUMIDITY = 177;
-  SCD41_CO2 = 178;
-  AHT20_TEMP = 179;
-  AHT20_HUMIDITY = 180;
-  TVOC_INDEX = 181;
+// Defines the supported file operations
+enum FileOperation {
+  GET = 0;
+  POST = 1;
+  PUT = 2;
+  DELETE = 3;
 }
 
-message SensorData {
-  // The message type
-  MessageType type = 1;
-  // The sensor data, either as a float or an uint32
-  oneof data {
-    float float_value = 2;
-    uint32 uint32_value = 3;
+// Message for file operations
+message FileTransfer {
+  FileOperation operation = 1; // File operation (GET, POST, PUT, DELETE)
+  string filepath = 2;         // Path of the file on the SD card
+  bytes filedata = 3;          // Chunk content (POST/PUT request, GET response)
+  bool success = 4;            // Response: Was the operation successful?
+  string message = 5;          // Response: Status message
+  uint32 offset = 6;           // Byte offset of this chunk within the file (ranged GET/PUT)
+  uint32 length = 7;           // GET request: number of bytes to read (0 = max chunk size)
+  uint32 file_size = 8;        // GET response: total size of the file
+}
+
+// Message for structured directory listing
+message DirectoryListing {
+  string directory = 1;          // Path of the directory
+  repeated string filenames = 2; // List of file names
+  bool success = 3;              // Response: Was the operation successful?
+  string message = 4;            // Response: Status message
+  uint32 offset = 5;             // Request: skip this many entries (paging)
+  uint32 total_count = 6;        // Response: total number of entries in the directory
+}
+
+// A single I2C transaction: an optional write followed by an optional
+// read with repeated start, matching the TwoWire usage of sensor drivers
+// (beginTransmission/write.../endTransmission(false)/requestFrom)
+message I2CTransaction {
+  uint32 address = 1;   // 7-bit device address
+  bytes write_data = 2; // Bytes to write, may be empty
+  uint32 read_len = 3;  // Number of bytes to read after the write, 0 = write-only
+}
+
+// Result of an I2CTransaction
+message I2CResult {
+  enum Status {
+    OK = 0;
+    NACK_ADDRESS = 1;
+    NACK_DATA = 2;
+    ERROR = 3;
   }
+  Status status = 1;
+  bytes read_data = 2; // Data read from the device, empty for write-only transactions
 }
 
+// Main message for interdevice communication
 message InterdeviceMessage {
   // The message data
   oneof data {
     string nmea = 1;
-    SensorData sensor = 2;
+    uint32 beep = 2;
+    I2CTransaction i2c_transaction = 3;
+    I2CResult i2c_result = 4;
+    bool i2c_scan = 5;         // Request: scan the secondary I2C bus
+    bytes i2c_scan_result = 6; // Response: 7-bit addresses of discovered devices
+    FileTransfer file_transfer = 7;
+    DirectoryListing directory_listing = 8;
   }
 }
