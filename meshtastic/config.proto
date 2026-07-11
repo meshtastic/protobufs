@@ -1100,6 +1100,13 @@ message Config {
        * Comparable link budget and data rate to LONG_MODERATE.
        */
       TINY_SLOW = 15;
+
+      /*
+       * Medium Range - Turbo
+       * This preset performs similarly to MEDIUM_FAST, but with 500kHz bandwidth.
+       * It is not legal to use in all regions due to this wider bandwidth.
+       */
+      MEDIUM_TURBO = 16;
     }
 
     enum FEM_LNA_Mode {
