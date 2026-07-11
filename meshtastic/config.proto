@@ -992,10 +992,10 @@ message Config {
       ITU2_125CM = 37;
 
       /*
-       * New Zealand Short Fast
+       * New Zealand 924MHz
        * Same band as ANZ, for use with the Short Fast modem preset
        */
-      NZ_SF = 38;
+      NZ_924 = 38;
     }
 
     /*
