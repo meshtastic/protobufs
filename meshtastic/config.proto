@@ -990,6 +990,12 @@ message Config {
        * Check local law!
        */
       ITU2_125CM = 37;
+
+      /*
+       * New Zealand Short Fast
+       * Same band as ANZ, for use with the Short Fast modem preset
+       */
+      NZ_SF = 38;
     }
 
     /*
