@@ -122,5 +122,10 @@ message InterdeviceMessage {
     // id. Touches no peripherals, so it works with nothing attached.
     bool ping = 11;
     bool pong = 12;
+    // Response: the request could not be decoded or is of an unhandled
+    // type, so the requester fails fast instead of burning its timeout.
+    // Echoes the id when known, 0 when the frame was undecodable. Never
+    // sent in reaction to a nack.
+    bool nack = 13;
   }
 }
