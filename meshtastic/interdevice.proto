@@ -109,5 +109,9 @@ message InterdeviceMessage {
     DirectoryListing directory_listing = 8;
     bool get_sd_info = 9;   // Request: SD card statistics
     SdCardInfo sd_info = 10; // Response
+    // Link liveness probe. The receiver answers ping with pong, echoing the
+    // id. Touches no peripherals, so it works with nothing attached.
+    bool ping = 11;
+    bool pong = 12;
   }
 }
