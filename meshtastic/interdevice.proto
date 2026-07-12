@@ -47,6 +47,30 @@ message I2CTransaction {
   uint32 read_len = 3;  // Number of bytes to read after the write, 0 = write-only
 }
 
+// SD card statistics
+message SdCardInfo {
+  enum CardType {
+    NONE = 0;
+    MMC = 1;
+    SD = 2;
+    SDHC = 3;
+    SDXC = 4;
+    UNKNOWN_CARD = 5;
+  }
+  enum FatType {
+    UNKNOWN_FAT = 0;
+    FAT16 = 1;
+    FAT32 = 2;
+    EXFAT = 3;
+  }
+  bool present = 1;      // Card initialized and usable
+  CardType card_type = 2;
+  FatType fat_type = 3;
+  uint64 card_size = 4;  // Filesystem size in bytes
+  uint64 used_bytes = 5; // Used bytes (may be expensive to compute on FAT32)
+  uint64 free_bytes = 6; // Free bytes
+}
+
 // Result of an I2CTransaction
 message I2CResult {
   enum Status {
@@ -71,5 +95,7 @@ message InterdeviceMessage {
     bytes i2c_scan_result = 6; // Response: 7-bit addresses of discovered devices
     FileTransfer file_transfer = 7;
     DirectoryListing directory_listing = 8;
+    bool get_sd_info = 9;   // Request: SD card statistics
+    SdCardInfo sd_info = 10; // Response
   }
 }
