@@ -4,8 +4,8 @@
 *I2CTransaction.write_data max_size:256
 *I2CResult.read_data max_size:256
 *DirectoryListing.filenames max_length:255 max_count:16
-*DirectoryListing.directory max_size:255
+*DirectoryListing.directory max_size:256
 *DirectoryListing.message max_size:255
 *FileTransfer.filedata max_size:4096
-*FileTransfer.filepath max_size:255
+*FileTransfer.filepath max_size:256
 *FileTransfer.message max_size:255
