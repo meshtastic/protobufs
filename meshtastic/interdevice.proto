@@ -89,10 +89,13 @@ message SdCardInfo {
 // Result of an I2CTransaction
 message I2CResult {
   enum Status {
-    OK = 0;
-    NACK_ADDRESS = 1;
-    NACK_DATA = 2;
-    ERROR = 3;
+    // Never sent: an all-defaults (e.g. accidentally empty) message must
+    // not decode as a successful transaction
+    UNSPECIFIED = 0;
+    OK = 1;
+    NACK_ADDRESS = 2;
+    NACK_DATA = 3;
+    ERROR = 4;
   }
   Status status = 1;
   bytes read_data = 2; // Data read from the device, empty for write-only transactions
