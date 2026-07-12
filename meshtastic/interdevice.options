@@ -6,6 +6,6 @@
 *DirectoryListing.filenames max_length:40 max_count:32
 *DirectoryListing.directory max_size:255
 *DirectoryListing.message max_size:255
-*FileTransfer.filedata max_size:1024
+*FileTransfer.filedata max_size:4096
 *FileTransfer.filepath max_size:255
 *FileTransfer.message max_size:255
