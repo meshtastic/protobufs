@@ -94,6 +94,9 @@ message I2CResult {
 
 // Main message for interdevice communication
 message InterdeviceMessage {
+  // Correlates a response with its request: responses echo the id of the
+  // request they answer. 0 for unsolicited messages (e.g. the nmea stream).
+  uint32 id = 15;
   // The message data
   oneof data {
     string nmea = 1;
