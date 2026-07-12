@@ -34,9 +34,11 @@ message FileTransfer {
 // Message for structured directory listing
 message DirectoryListing {
   string directory = 1;          // Path of the directory
-  // One page of entry names, full FAT LFN length so they round-trip into
-  // FileTransfer.filepath. Page size is the max_count in
-  // interdevice.options; page through with offset and total_count.
+  // One page of entry names, full FAT LFN length. Subdirectories carry a
+  // trailing slash. Note that a name whose directory prefix pushes the
+  // combined path past the FileTransfer.filepath limit cannot round-trip.
+  // Page size is the max_count in interdevice.options; page through with
+  // offset and total_count.
   repeated string filenames = 2;
   bool success = 3;              // Response: Was the operation successful?
   string message = 4;            // Response: Status message
@@ -78,6 +80,10 @@ message SdCardInfo {
   uint64 card_size = 4;  // Filesystem size in bytes
   uint64 used_bytes = 5; // Used bytes (may be expensive to compute on FAT32)
   uint64 free_bytes = 6; // Free bytes
+  // used_bytes/free_bytes are only meaningful when true: the scan behind
+  // them runs in the background after mount and can take a while, and a
+  // full card is otherwise indistinguishable from a scan in progress
+  bool stats_valid = 7;
 }
 
 // Result of an I2CTransaction
