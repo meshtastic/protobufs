@@ -23,15 +23,21 @@ message FileTransfer {
   bytes filedata = 3;          // Chunk content (POST/PUT request, GET response)
   bool success = 4;            // Response: Was the operation successful?
   string message = 5;          // Response: Status message
-  uint32 offset = 6;           // Byte offset of this chunk within the file (ranged GET/PUT)
-  uint32 length = 7;           // GET request: number of bytes to read (0 = max chunk size)
-  uint32 file_size = 8;        // GET response: total size of the file
+  uint64 offset = 6;           // Byte offset of this chunk within the file (ranged GET/PUT)
+  // GET request: number of bytes to read, 0 = max chunk size. A response
+  // carries at most the filedata max_size (see interdevice.options) per
+  // chunk; larger requests are truncated, visible in the filedata length.
+  uint32 length = 7;
+  uint64 file_size = 8;        // GET response: total size of the file
 }
 
 // Message for structured directory listing
 message DirectoryListing {
   string directory = 1;          // Path of the directory
-  repeated string filenames = 2; // List of file names
+  // One page of entry names, full FAT LFN length so they round-trip into
+  // FileTransfer.filepath. Page size is the max_count in
+  // interdevice.options; page through with offset and total_count.
+  repeated string filenames = 2;
   bool success = 3;              // Response: Was the operation successful?
   string message = 4;            // Response: Status message
   uint32 offset = 5;             // Request: skip this many entries (paging)
@@ -44,7 +50,10 @@ message DirectoryListing {
 message I2CTransaction {
   uint32 address = 1;   // 7-bit device address
   bytes write_data = 2; // Bytes to write, may be empty
-  uint32 read_len = 3;  // Number of bytes to read after the write, 0 = write-only
+  // Number of bytes to read after the write, 0 = write-only. Bounded by
+  // the read_data max_size of I2CResult (see interdevice.options); larger
+  // requests are truncated, visible in the returned byte count.
+  uint32 read_len = 3;
 }
 
 // SD card statistics
