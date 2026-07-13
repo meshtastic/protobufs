@@ -52,13 +52,10 @@ enum FileStatus {
 
 // Message for file operations
 message FileTransfer {
-  // Tag 4 held a `bool success`. Status lives on a new tag so that a peer
-  // predating it reads no field at all (and fails safe) instead of reading
-  // a nonzero status as a successful operation.
-  reserved 4;
   FileOperation operation = 1; // File operation (GET, POST, PUT, DELETE)
   string filepath = 2;         // Path of the file on the SD card
   bytes filedata = 3;          // Chunk content (POST/PUT request, GET response)
+  FileStatus status = 4;       // Response: outcome of the operation
   string message = 5;          // Response: human readable detail, may be empty
   uint64 offset = 6;           // Byte offset of this chunk within the file (ranged GET/PUT)
   // GET request: number of bytes to read, 0 = max chunk size. A response
@@ -66,12 +63,10 @@ message FileTransfer {
   // chunk; larger requests are truncated, visible in the filedata length.
   uint32 length = 7;
   uint64 file_size = 8;        // GET response: total size of the file
-  FileStatus status = 9;       // Response: outcome of the operation
 }
 
 // Message for structured directory listing
 message DirectoryListing {
-  reserved 3; // held a `bool success`, see FileTransfer
   string directory = 1;          // Path of the directory
   // One page of entry names, full FAT LFN length. Subdirectories carry a
   // trailing slash. Note that a name whose directory prefix pushes the
@@ -79,10 +74,10 @@ message DirectoryListing {
   // Page size is the max_count in interdevice.options; page through with
   // offset and total_count.
   repeated string filenames = 2;
+  FileStatus status = 3;         // Response: outcome of the operation
   string message = 4;            // Response: human readable detail, may be empty
   uint32 offset = 5;             // Request: skip this many entries (paging)
   uint32 total_count = 6;        // Response: total number of entries in the directory
-  FileStatus status = 7;         // Response: outcome of the operation
 }
 
 // A single I2C transaction: an optional write followed by an optional
