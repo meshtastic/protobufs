@@ -160,11 +160,11 @@ message InterdeviceMessage {
     SdCardInfo sd_info = 10; // Response
     // Link liveness probe and version handshake. The receiver answers ping
     // with pong, echoing the id. Touches no peripherals, so it works with
-    // nothing attached. Both carry the sender's InterdeviceVersion; a peer
+    // nothing attached. Both carry the version the sender speaks; a peer
     // that answers with a different one speaks another protocol and must
     // not be used.
-    uint32 ping = 11;
-    uint32 pong = 12;
+    InterdeviceVersion ping = 11;
+    InterdeviceVersion pong = 12;
     // Response: the request could not be decoded or is of an unhandled
     // type, so the requester fails fast instead of burning its timeout.
     // Echoes the id when known, 0 when the frame was undecodable. Never
