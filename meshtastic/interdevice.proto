@@ -31,13 +31,32 @@ enum FileOperation {
   DELETE = 3;
 }
 
+// Outcome of a file or directory operation. The requester must be able to
+// tell a transient condition from a definitive one: BUSY is worth another
+// try, NOT_FOUND is not.
+enum FileStatus {
+  FILE_UNSPECIFIED = 0;
+  FILE_OK = 1;
+  // Retry later: the co-processor is doing card maintenance (mount,
+  // free space scan) and cannot serve the request right now
+  FILE_BUSY = 2;
+  FILE_NO_CARD = 3;
+  FILE_NOT_FOUND = 4;
+  // PUT only: offset did not match the current end of the file. file_size
+  // carries the size the file actually has, so the writer can resync (or
+  // recognize its own chunk as already written after a lost response).
+  FILE_OFFSET_CONFLICT = 5;
+  FILE_IO_ERROR = 6;
+  FILE_NOT_A_FILE = 7; // path is a directory (GET) or not one (listing)
+}
+
 // Message for file operations
 message FileTransfer {
   FileOperation operation = 1; // File operation (GET, POST, PUT, DELETE)
   string filepath = 2;         // Path of the file on the SD card
   bytes filedata = 3;          // Chunk content (POST/PUT request, GET response)
-  bool success = 4;            // Response: Was the operation successful?
-  string message = 5;          // Response: Status message
+  FileStatus status = 4;       // Response: outcome of the operation
+  string message = 5;          // Response: human readable detail, may be empty
   uint64 offset = 6;           // Byte offset of this chunk within the file (ranged GET/PUT)
   // GET request: number of bytes to read, 0 = max chunk size. A response
   // carries at most the filedata max_size (see interdevice.options) per
@@ -55,8 +74,8 @@ message DirectoryListing {
   // Page size is the max_count in interdevice.options; page through with
   // offset and total_count.
   repeated string filenames = 2;
-  bool success = 3;              // Response: Was the operation successful?
-  string message = 4;            // Response: Status message
+  FileStatus status = 3;         // Response: outcome of the operation
+  string message = 4;            // Response: human readable detail, may be empty
   uint32 offset = 5;             // Request: skip this many entries (paging)
   uint32 total_count = 6;        // Response: total number of entries in the directory
 }
