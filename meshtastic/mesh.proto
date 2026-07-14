@@ -876,10 +876,10 @@ enum HardwareModel {
   HELTEC_MESH_NODE_T096 = 127;
 
   /*
-   * Seeed studio T1000-E Pro tracker card. NRF52840 w/ LR2021 radio,
+   * Seeed studio Mesh Tracker X1card. NRF52840 w/ LR2021 radio,
    * GPS, button, buzzer, and sensors.
    */
-  TRACKER_T1000_E_PRO = 128;
+  MESH_TRACKER_X1 = 128;
 
   /*
    * Elecrow ThinkNode M7, M8 and M9
@@ -932,6 +932,21 @@ enum HardwareModel {
    * Meshnology W10
    */
   MESHNOLOGY_W10 = 140;
+
+  /*
+   * Heltec ESP32S3 + SX1262
+   */
+  HELTEC_RC32 = 141;
+
+  /*
+   * Heltec NRF52840 + SX1262
+   */
+  HELTEC_RC52 = 142;
+
+  /*
+   * Heltec ESP32C6 + SX1262
+   */
+  HELTEC_RCC6 = 143;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------

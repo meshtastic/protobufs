@@ -8,6 +8,9 @@ on:
       - "meshtastic/**/*.proto"
       - "nanopb.proto"
       - "packages/kmp/**"
+  # Allow republishing on demand (e.g. after a versioning-scheme change that
+  # touches only this workflow, which the push paths above don't match).
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -35,14 +38,26 @@ jobs:
 
       - name: Set version name
         run: |
-          # Name the snapshot after the latest tag (v-stripped) plus the short SHA.
-          # The `-<sha>` is a build qualifier, so Maven sorts this ABOVE the tag's
-          # release (no Renovate downgrade) yet below the next release — no patch
-          # bump needed. (The local fallback in build.gradle.kts uses a *bare*
-          # `-SNAPSHOT`, which sorts below its base, so it patch-bumps instead.)
-          BASE=$(git describe --tags --abbrev=0)
-          SHORT_SHA=${GITHUB_SHA::7}
-          echo "VERSION_NAME=${BASE#v}-${SHORT_SHA}-SNAPSHOT" >> "$GITHUB_ENV"
+          # Name the snapshot after the latest tag (v-stripped), the commit count
+          # since that tag, and the short SHA, e.g. 2.7.26.88-gd77b460-SNAPSHOT.
+          #
+          # The count goes after a DOT, not a hyphen, and that is load-bearing. In
+          # Maven's ComparableVersion a dot-separated numeric segment outranks ANY
+          # hyphen-nested token, so these sort ABOVE the legacy `<tag>-<sha>-SNAPSHOT`
+          # snapshots still in the repo — whose SHA can tokenize to a huge integer
+          # (e.g. 678281c -> 678281) that would otherwise dwarf the count and mask
+          # every new snapshot from dependency bots. Among themselves, higher count =
+          # newer commit sorts higher, so bots pick the newest. Still sorts ABOVE the
+          # tag's release (no downgrade) and BELOW the next release. `--long` forces
+          # the -<N>-g<sha> suffix even on a tagged commit, so a bare `-SNAPSHOT`
+          # (which sorts below its base) is never produced. (Local fallback in
+          # build.gradle.kts still uses bare `-SNAPSHOT`.)
+          #
+          # Parsed right-to-left (describe = <tag>-<N>-g<sha>) so a hyphenated tag
+          # like v1.2.3-rc1 would still split correctly.
+          DESCRIBE=$(git describe --tags --long); DESCRIBE=${DESCRIBE#v}
+          SHA=${DESCRIBE##*-}; REST=${DESCRIBE%-*}; COUNT=${REST##*-}; TAG=${REST%-*}
+          echo "VERSION_NAME=${TAG}.${COUNT}-${SHA}-SNAPSHOT" >> "$GITHUB_ENV"
 
       - name: Build KMP package
         run: packages/kmp/gradlew --no-daemon -p packages/kmp build -PVERSION_NAME=${{ env.VERSION_NAME }}
