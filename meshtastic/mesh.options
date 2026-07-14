@@ -102,10 +102,10 @@
 # the 512-byte MAX_TO_FROM_RADIO_SIZE cap. nanopb sizes repeated enums unpacked
 # (~2 bytes/element), so the flat groups + region_groups layout keeps cost additive
 # rather than groups*regions. See bin/regen-protos.sh output for the actual size.
-# region_groups capped at 38 = the number of RegionCode enum values, so it can
+# region_groups capped at 39 = the number of RegionCode enum values, so it can
 # never overflow regardless of how many regions gain a firmware table entry.
 *LoRaRegionPresetMap.groups        max_count:8
-*LoRaRegionPresetMap.region_groups max_count:38
+*LoRaRegionPresetMap.region_groups max_count:39
 *LoRaPresetGroup.presets           max_count:11
 *LoRaRegionPresets.group_index     int_size:8
 
