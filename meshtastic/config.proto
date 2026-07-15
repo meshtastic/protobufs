@@ -878,7 +878,7 @@ message Config {
       /*
        * Ukraine 868mhz
        */
-      UA_868 = 15;
+      UA_868 = 15 [deprecated = true];
 
       /*
        * Malaysia 433mhz
