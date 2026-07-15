@@ -124,6 +124,17 @@ message SdCardInfo {
   // present is not decided yet. Ask again rather than concluding the slot
   // is empty.
   bool busy = 8;
+  // A card answers in the slot but carries no filesystem that could be
+  // mounted (present is false then). Formatting it makes it usable.
+  bool unformatted = 9;
+}
+
+// What to do with the SD card of the co-processor
+enum SdCommand {
+  SD_COMMAND_UNSPECIFIED = 0;
+  SD_MOUNT = 1;  // mount a card that is in the slot, also after an eject
+  SD_EJECT = 2;  // flush and release the card so it can be pulled safely
+  SD_FORMAT = 3; // wipe the card and put a fresh FAT on it, then mount it
 }
 
 // Result of an I2CTransaction
@@ -170,5 +181,10 @@ message InterdeviceMessage {
     // Echoes the id when known, 0 when the frame was undecodable. Never
     // sent in reaction to a nack.
     bool nack = 13;
+    // Request: mount the card, or release it so it can be pulled safely. The
+    // co-processor answers with sd_info. Without an eject the card is mounted
+    // on its own and kept mounted; after one it stays released until a mount
+    // is asked for.
+    SdCommand sd_command = 14;
   }
 }
