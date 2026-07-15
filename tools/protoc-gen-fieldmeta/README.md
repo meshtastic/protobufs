@@ -97,6 +97,10 @@ go -C protobufs/tools/protoc-gen-fieldmeta build -o "$PWD/protoc-gen-fieldmeta" 
 
 ### Apple (swift-protobuf)
 
+> A pure-Swift implementation with byte-identical output also lives at
+> [`tools/protoc-gen-fieldmeta-swift`](../protoc-gen-fieldmeta-swift) for
+> consumers who prefer to keep their toolchain Go-free.
+
 In `Meshtastic-Apple`'s `scripts/gen_protos.sh`:
 
 ```bash

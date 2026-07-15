@@ -10,3 +10,6 @@ packages/kmp/buildSrc/build/
 
 # Local build of the field-metadata protoc plugin
 tools/protoc-gen-fieldmeta/protoc-gen-fieldmeta
+
+# Local build of the Swift field-metadata protoc plugin
+tools/protoc-gen-fieldmeta-swift/.build/
