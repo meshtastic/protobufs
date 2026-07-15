@@ -25,6 +25,13 @@ Swift consumer doesn't need Go on contributor machines or CI.
   switch that **fails loudly** on an unhandled attribute (a one-line `case` to
   extend) rather than fully dynamic rendering — metadata is never silently
   dropped.
+- The `deprecated` attribute is mirrored from each field's **standard**
+  `[deprecated = true]` option (read off `field.options.deprecated`), not from
+  the custom annotation — so fields already marked deprecated surface as
+  `FieldMetadata(deprecated: true)` and apps can read deprecation at runtime.
+  Entry/attribute ordering matches the Go plugin (entries by proto type then
+  tag; accessors by type path then field name), keeping the output
+  byte-identical even across many message types.
 
 ## Usage (Apple / swift-protobuf)
 
@@ -61,6 +68,16 @@ protoc --proto_path=. \
 
 ## Verification
 
+- Byte-for-byte parity with `protoc-gen-fieldmeta`'s `target=swift` is enforced
+  in CI (`.github/workflows/field-metadata.yml`) and reproducible locally:
+
+  ```bash
+  tools/protoc-gen-fieldmeta-swift/scripts/verify-parity.sh
+  ```
+
+  It builds this plugin, runs both generators over the schema, and diffs — so
+  the "interchangeable" claim can't silently rot. Run it after touching either
+  generator.
 - Output diffed byte-for-byte identical to `protoc-gen-fieldmeta`'s
   `target=swift` over this repo's schema, on swift-protobuf 1.36.1 and 1.38.1.
 - The generated registry compiles inside Meshtastic-Apple's real

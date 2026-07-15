@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"sort"
 	"strings"
 	"testing"
 
@@ -78,6 +79,7 @@ message FieldMetadata {
   optional double min_value = 3;
   optional double max_value = 4;
   optional string unit = 5;
+  optional bool deprecated = 6;
 }
 extend google.protobuf.FieldOptions {
   optional FieldMetadata field_metadata = 51001;
@@ -127,6 +129,69 @@ message Outer {
 	if strings.Contains(out, "plain") {
 		t.Errorf("e2e: un-annotated field 'plain' must not appear:\n%s", out)
 	}
+}
+
+// TestGenerateMirrorsDeprecated verifies that a field's standard
+// `[deprecated = true]` option is mirrored into the registry as a
+// `deprecated` attribute — with no (meshtastic.field_metadata) annotation
+// required — and coexists with custom attributes on the same field.
+func TestGenerateMirrorsDeprecated(t *testing.T) {
+	sources := map[string]string{
+		"meshtastic/field_metadata.proto": fieldMetadataProtoSrc,
+		"meshtastic/test.proto": `
+syntax = "proto3";
+package meshtastic;
+import "meshtastic/field_metadata.proto";
+message M {
+  uint32 old_pin = 1 [deprecated = true];
+  uint32 rx_gpio = 2 [(meshtastic.field_metadata) = { diy_only: true }];
+  uint32 both    = 3 [deprecated = true, (meshtastic.field_metadata) = { diy_only: true }];
+  uint32 plain   = 4;
+}
+`,
+	}
+
+	// Python (dynamic table): deprecated-only field appears; attributes sort
+	// alphabetically so "deprecated" precedes "diy_only" on the combined field.
+	py := generateTo(t, sources, "python")
+	mustContain(t, "deprecated-py", py,
+		`("meshtastic.M", 1): {"deprecated": True}`,
+		`("meshtastic.M", 2): {"diy_only": True}`,
+		`("meshtastic.M", 3): {"deprecated": True, "diy_only": True}`,
+	)
+	if strings.Contains(py, `4): `) || strings.Contains(py, "plain") {
+		t.Errorf("deprecated-py: un-annotated, non-deprecated field must be absent:\n%s", py)
+	}
+
+	// Rust (typed struct): the schema-declared `deprecated` field becomes a
+	// struct member and is set on the mirrored entry.
+	rust := generateTo(t, sources, "rust")
+	mustContain(t, "deprecated-rust", rust,
+		"pub deprecated: Option<bool>,",
+		`("meshtastic.M", 1, FieldMetadata { diy_only: None, admin_only: None, min_value: None, max_value: None, unit: None, deprecated: Some(true) })`,
+	)
+}
+
+// generateTo compiles the sources and runs the plugin for one target, returning
+// the single generated file's content.
+func generateTo(t *testing.T, sources map[string]string, target string) string {
+	t.Helper()
+	paths := make([]string, 0, len(sources))
+	for p := range sources {
+		paths = append(paths, p)
+	}
+	sort.Strings(paths)
+	resp, err := generate(compileRequest(t, sources, target, paths...))
+	if err != nil {
+		t.Fatalf("generate(%s): %v", target, err)
+	}
+	if resp.GetError() != "" {
+		t.Fatalf("plugin returned error for %s: %s", target, resp.GetError())
+	}
+	if len(resp.GetFile()) != 1 {
+		t.Fatalf("want 1 generated file for %s, got %d", target, len(resp.GetFile()))
+	}
+	return resp.GetFile()[0].GetContent()
 }
 
 // TestGenerateNoExtensionEmitsNothing verifies that a module which does not

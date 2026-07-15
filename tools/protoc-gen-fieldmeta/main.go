@@ -40,6 +40,14 @@ import (
 // carries field metadata. Defined in meshtastic/field_metadata.proto.
 const fieldMetadataExtension protoreflect.FullName = "meshtastic.field_metadata"
 
+// deprecatedAttr is the FieldMetadata attribute mirrored from a field's standard
+// (google.protobuf.FieldOptions) `deprecated` bit. It is generator-managed: we
+// set it from that standard option rather than from the custom annotation, so
+// existing `[deprecated = true]` fields flow into the registry with no per-field
+// annotation. The FieldMetadata message declares a matching `deprecated` field
+// so it shows up in every emitted/generated type (see field_metadata.proto).
+const deprecatedAttr = "deprecated"
+
 // schemaField describes one attribute of the FieldMetadata message (e.g.
 // diy_only: bool). Read from the schema so typed-struct targets (C/Rust/Swift)
 // stay in sync as attributes are added.
@@ -236,15 +244,24 @@ func collectMessages(msgs protoreflect.MessageDescriptors, extType protoreflect.
 		fields := md.Fields()
 		for j := 0; j < fields.Len(); j++ {
 			f := fields.Get(j)
-			if mf := readMetadata(f, extType, resolver); mf != nil {
-				*out = append(*out, entry{
-					MessageType: string(md.FullName()),
-					TypePath:    typePath,
-					FieldName:   string(f.Name()),
-					Tag:         int32(f.Number()),
-					Fields:      mf,
-				})
+			mf := readMetadata(f, extType, resolver)
+			// Mirror the standard `deprecated` field option into the registry.
+			// The custom annotation isn't expected to set it (see
+			// field_metadata.proto); the standard option is authoritative, so
+			// upsert to a single deprecated=true attribute either way.
+			if fieldIsDeprecated(f) {
+				mf = upsertBool(mf, deprecatedAttr, true)
 			}
+			if len(mf) == 0 {
+				continue
+			}
+			*out = append(*out, entry{
+				MessageType: string(md.FullName()),
+				TypePath:    typePath,
+				FieldName:   string(f.Name()),
+				Tag:         int32(f.Number()),
+				Fields:      mf,
+			})
 		}
 		collectMessages(md.Messages(), extType, resolver, out) // nested message types
 	}
@@ -283,6 +300,32 @@ func readMetadata(f protoreflect.FieldDescriptor, extType protoreflect.Extension
 		fields = append(fields, metaField{Name: string(fd.Name()), Value: goValue(fd, v)})
 		return true
 	})
+	sort.Slice(fields, func(i, j int) bool { return fields[i].Name < fields[j].Name })
+	return fields
+}
+
+// fieldIsDeprecated reports whether the field carries the standard
+// `[deprecated = true]` option. This is a well-known FieldOptions field (not our
+// custom extension), so it reads straight off the descriptor's options — no
+// re-decode needed.
+func fieldIsDeprecated(f protoreflect.FieldDescriptor) bool {
+	if o, ok := f.Options().(*descriptorpb.FieldOptions); ok && o != nil {
+		return o.GetDeprecated()
+	}
+	return false
+}
+
+// upsertBool sets attr to v (replacing any existing value) and keeps the
+// attribute slice sorted by name, matching readMetadata's ordering so every
+// target renders attributes deterministically.
+func upsertBool(fields []metaField, attr string, v bool) []metaField {
+	for i := range fields {
+		if fields[i].Name == attr {
+			fields[i].Value = v
+			return fields
+		}
+	}
+	fields = append(fields, metaField{Name: attr, Value: v})
 	sort.Slice(fields, func(i, j int) bool { return fields[i].Name < fields[j].Name })
 	return fields
 }

@@ -61,6 +61,19 @@ generation time** rather than producing meaningless, non-deterministic output.
 If a module doesn't define the extension (e.g. buf generates the option-free
 `nanopb.proto` as its own module), the plugin emits nothing rather than failing.
 
+### The `deprecated` attribute (mirrored, not annotated)
+
+`FieldMetadata` has one attribute the schema author never sets by hand:
+`deprecated`. The plugin populates it from the field's **standard**
+`[deprecated = true]` option — the deprecation info that protobuf runtimes strip
+and apps therefore can't read at runtime. So any field already marked
+`[deprecated = true]` shows up in the registry (`deprecated: true`) with no
+`(meshtastic.field_metadata)` annotation, and a field carrying both a custom
+attribute and `[deprecated = true]` gets both. The standard option is
+authoritative. This is the one attribute that costs a generator change (the
+sibling Kotlin/Wire and pure-Swift generators mirror it identically); every
+other attribute remains a schema-only addition.
+
 ## Build & test
 
 ```bash

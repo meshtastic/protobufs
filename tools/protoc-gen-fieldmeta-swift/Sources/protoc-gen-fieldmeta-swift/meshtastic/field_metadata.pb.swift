@@ -38,6 +38,12 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 /// To tag a field, set the option on it, e.g.
 ///   uint32 rx_gpio = 8 [(meshtastic.field_metadata) = { diy_only: true }];
 ///
+/// One attribute, `deprecated`, is special: it MIRRORS the field's standard
+/// `[deprecated = true]` option rather than being set inside this annotation.
+/// The generators populate it from that standard option so apps can read
+/// deprecation at runtime (protobuf runtimes strip options, so it is otherwise
+/// invisible). This is the only attribute that costs a generator change.
+///
 /// Downstream apps use this to drive UI decisions (e.g. hiding DIY-only settings
 /// on pre-assembled boards) directly from the protobuf schema.
 public struct FieldMetadata: Sendable {
@@ -102,6 +108,22 @@ public struct FieldMetadata: Sendable {
   /// Clears the value of `unit`. Subsequent reads from it will return its default value.
   public mutating func clearUnit() {self._unit = nil}
 
+  ///
+  /// Field is deprecated. MIRRORS the field's standard `[deprecated = true]`
+  /// option — the generators populate this automatically from that option so
+  /// every consumer can read it at runtime (protobuf runtimes strip options, so
+  /// the standard `deprecated` bit is otherwise invisible to apps). Do NOT set
+  /// this by hand in a (meshtastic.field_metadata) annotation; mark the field
+  /// `[deprecated = true]` as usual and it flows through here.
+  public var deprecated: Bool {
+    get {_deprecated ?? false}
+    set {_deprecated = newValue}
+  }
+  /// Returns true if `deprecated` has been explicitly set.
+  public var hasDeprecated: Bool {self._deprecated != nil}
+  /// Clears the value of `deprecated`. Subsequent reads from it will return its default value.
+  public mutating func clearDeprecated() {self._deprecated = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -111,6 +133,7 @@ public struct FieldMetadata: Sendable {
   fileprivate var _minValue: Double? = nil
   fileprivate var _maxValue: Double? = nil
   fileprivate var _unit: String? = nil
+  fileprivate var _deprecated: Bool? = nil
 }
 
 // MARK: - Extension support defined in field_metadata.proto.
@@ -176,7 +199,7 @@ fileprivate let _protobuf_package = "meshtastic"
 
 extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FieldMetadata"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}diy_only\0\u{3}admin_only\0\u{3}min_value\0\u{3}max_value\0\u{1}unit\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}diy_only\0\u{3}admin_only\0\u{3}min_value\0\u{3}max_value\0\u{1}unit\0\u{1}deprecated\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -189,6 +212,7 @@ extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
       case 3: try { try decoder.decodeSingularDoubleField(value: &self._minValue) }()
       case 4: try { try decoder.decodeSingularDoubleField(value: &self._maxValue) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self._unit) }()
+      case 6: try { try decoder.decodeSingularBoolField(value: &self._deprecated) }()
       default: break
       }
     }
@@ -214,6 +238,9 @@ extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
     try { if let v = self._unit {
       try visitor.visitSingularStringField(value: v, fieldNumber: 5)
     } }()
+    try { if let v = self._deprecated {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 6)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -223,6 +250,7 @@ extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
     if lhs._minValue != rhs._minValue {return false}
     if lhs._maxValue != rhs._maxValue {return false}
     if lhs._unit != rhs._unit {return false}
+    if lhs._deprecated != rhs._deprecated {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -80,8 +80,10 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
             val relative = if (packageName != null) fqn.removePrefix("$packageName.") else fqn
             val typePath = relative.split(".")
             for (field in type.fieldsAndOneOfFields) {
-                val raw = field.options.get(optionMember) ?: continue
-                val ctor = renderConstructor(raw, metaFieldTypes) ?: continue
+                // A field earns an entry if it carries the custom annotation OR the standard
+                // `deprecated` option, which we mirror into the registry (see renderConstructor).
+                val ctor = renderConstructor(field.options.get(optionMember), field.isDeprecated, metaFieldTypes)
+                    ?: continue
                 out += Entry(fqn, typePath, field.name, field.tag, ctor)
             }
         }
@@ -90,17 +92,29 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun renderConstructor(raw: Any?, metaFieldTypes: Map<String, ProtoType>): String? {
-        val map = raw as? Map<*, *> ?: return null
-        val args = map.entries
-            .mapNotNull { (key, value) ->
-                if (value == null) return@mapNotNull null
-                val name = (key as? ProtoMember)?.simpleName ?: key.toString()
-                "$name = ${renderLiteral(value, metaFieldTypes[name])}"
-            }
-            .sorted()
-        return if (args.isEmpty()) null else "FieldMetadata(${args.joinToString(", ")})"
+    /**
+     * Renders the `FieldMetadata(...)` constructor call for one field, or null if the field has no
+     * metadata at all. [raw] is the decoded `(meshtastic.field_metadata)` option (may be null);
+     * [isDeprecated] is the field's standard `deprecated` option, mirrored in as the `deprecated`
+     * attribute so apps can read deprecation at runtime. Args are keyed by attribute name (sorted,
+     * deduped) so the standard `deprecated` option is authoritative and ordering matches the other
+     * generators.
+     */
+    private fun renderConstructor(
+        raw: Any?,
+        isDeprecated: Boolean,
+        metaFieldTypes: Map<String, ProtoType>,
+    ): String? {
+        val args = sortedMapOf<String, String>()
+        (raw as? Map<*, *>)?.forEach { (key, value) ->
+            if (value == null) return@forEach
+            val name = (key as? ProtoMember)?.simpleName ?: key.toString()
+            args[name] = "$name = ${renderLiteral(value, metaFieldTypes[name])}"
+        }
+        if (isDeprecated) {
+            args[DEPRECATED_ATTR] = "$DEPRECATED_ATTR = true"
+        }
+        return if (args.isEmpty()) null else "FieldMetadata(${args.values.joinToString(", ")})"
     }
 
     private fun renderLiteral(value: Any, protoType: ProtoType?): String = when (protoType) {
@@ -176,6 +190,7 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
     private companion object {
         const val FIELD_METADATA_OPTION = "meshtastic.field_metadata"
         const val FIELD_METADATA_TYPE = "meshtastic.FieldMetadata"
+        const val DEPRECATED_ATTR = "deprecated"
         const val REGISTRY_PACKAGE = "org.meshtastic.proto"
         const val REGISTRY_RELATIVE_PATH = "org/meshtastic/proto/FieldMetadataRegistry.kt"
     }

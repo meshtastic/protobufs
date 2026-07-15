@@ -34,8 +34,12 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         let swiftTypePath: String     // e.g. Config.PositionConfig
         let protoTypeName: String     // e.g. meshtastic.Config.PositionConfig
         let swiftFieldName: String    // e.g. rxGpio
+        let protoFieldName: String    // e.g. rx_gpio (ordering key, matches the Go plugin)
         let tag: Int32
         let metadata: FieldMetadata
+        // Mirrored from the field's standard `[deprecated = true]` option (not
+        // from the custom annotation); surfaced as the `deprecated` attribute.
+        let deprecated: Bool
     }
 
     func generate(
@@ -70,13 +74,17 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
             while !stack.isEmpty {
                 let message = stack.removeFirst()
                 stack.append(contentsOf: message.messages)
-                for field in message.fields where field.options.hasFieldMetadata {
+                // A field earns an entry if it carries the custom annotation OR
+                // the standard `deprecated` option (which we mirror below).
+                for field in message.fields where field.options.hasFieldMetadata || field.options.deprecated {
                     entries.append(Entry(
                         swiftTypePath: namer.fullName(message: message),
                         protoTypeName: message.fullName,
                         swiftFieldName: namer.messagePropertyNames(field: field, prefixed: "", includeHasAndClear: false).name,
+                        protoFieldName: field.name,
                         tag: field.number,
-                        metadata: field.options.fieldMetadata
+                        metadata: field.options.fieldMetadata,
+                        deprecated: field.options.deprecated
                     ))
                 }
             }
@@ -92,26 +100,31 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         out += "}\n\n"
 
         // Typed accessors as extensions on the real swift-protobuf message types.
+        // Ordering mirrors the Go plugin (so the two stay byte-identical): groups
+        // by proto type path sorted alphabetically, fields within a group sorted
+        // by proto field name.
         var grouped: [String: [Entry]] = [:]
-        var groupOrder: [String] = []
         for e in entries {
-            if grouped[e.swiftTypePath] == nil { groupOrder.append(e.swiftTypePath) }
             grouped[e.swiftTypePath, default: []].append(e)
         }
-        for typePath in groupOrder {
+        for typePath in grouped.keys.sorted() {
             out += "extension \(typePath) {\n"
-            for e in grouped[typePath]! {
-                out += "    public static var \(e.swiftFieldName): FieldMetadata { \(literal(for: e.metadata, shape: metadataDescriptor)) }\n"
+            for e in grouped[typePath]!.sorted(by: { $0.protoFieldName < $1.protoFieldName }) {
+                out += "    public static var \(e.swiftFieldName): FieldMetadata { \(literal(for: e, shape: metadataDescriptor)) }\n"
             }
             out += "}\n\n"
         }
 
-        // Low-level table + dynamic lookup.
+        // Low-level table + dynamic lookup. Entries sorted by (proto type, tag),
+        // matching the Go plugin.
         out += "public enum FieldMetadataRegistry {\n"
         out += "    // Keyed by \"\\(messageType)#\\(tag)\".\n"
         out += "    static let registry: [String: FieldMetadata] = [\n"
-        for e in entries {
-            out += "        \"\(e.protoTypeName)#\(e.tag)\": \(literal(for: e.metadata, shape: metadataDescriptor)),\n"
+        let sortedEntries = entries.sorted { a, b in
+            a.protoTypeName != b.protoTypeName ? a.protoTypeName < b.protoTypeName : a.tag < b.tag
+        }
+        for e in sortedEntries {
+            out += "        \"\(e.protoTypeName)#\(e.tag)\": \(literal(for: e, shape: metadataDescriptor)),\n"
         }
         out += "    ]\n\n"
         out += "    /// Metadata for the field with `tag` on `messageType`, or nil.\n"
@@ -123,24 +136,32 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         try generatorOutputs.add(fileName: "FieldMetadataRegistry.swift", contents: out)
     }
 
-    /// FieldMetadata(...) literal with only the explicitly-set attributes, in schema order.
-    private func literal(for metadata: FieldMetadata, shape: Descriptor) -> String {
-        var args: [String] = []
+    /// FieldMetadata(...) literal with only the explicitly-set attributes.
+    ///
+    /// Args are sorted by proto (snake_case) field name, matching the Go
+    /// plugin's ordering so the two stay byte-identical even when a field
+    /// carries more than one attribute. `deprecated` is sourced from the entry's
+    /// mirrored standard option, not from the custom-annotation `metadata`.
+    private func literal(for entry: Entry, shape: Descriptor) -> String {
+        let metadata = entry.metadata
+        var args: [(name: String, rendered: String)] = []
         for f in shape.fields {
-            let name = NamingUtils.toLowerCamelCase(f.name)
+            let label = NamingUtils.toLowerCamelCase(f.name)
             switch f.name {
-            case "diy_only":   if metadata.hasDiyOnly { args.append("\(name): \(metadata.diyOnly)") }
-            case "admin_only": if metadata.hasAdminOnly { args.append("\(name): \(metadata.adminOnly)") }
-            case "min_value":  if metadata.hasMinValue { args.append("\(name): \(metadata.minValue)") }
-            case "max_value":  if metadata.hasMaxValue { args.append("\(name): \(metadata.maxValue)") }
-            case "unit":       if metadata.hasUnit { args.append("\(name): \(swiftStringLiteral(metadata.unit))") }
+            case "diy_only":   if metadata.hasDiyOnly { args.append((f.name, "\(label): \(metadata.diyOnly)")) }
+            case "admin_only": if metadata.hasAdminOnly { args.append((f.name, "\(label): \(metadata.adminOnly)")) }
+            case "min_value":  if metadata.hasMinValue { args.append((f.name, "\(label): \(metadata.minValue)")) }
+            case "max_value":  if metadata.hasMaxValue { args.append((f.name, "\(label): \(metadata.maxValue)")) }
+            case "unit":       if metadata.hasUnit { args.append((f.name, "\(label): \(swiftStringLiteral(metadata.unit))")) }
+            case "deprecated": if entry.deprecated { args.append((f.name, "\(label): true")) }
             default:
                 // A new schema attribute reached emission without plugin support — fail loudly
                 // rather than silently dropping metadata (parity with the Go plugin's guard).
                 fatalError("FieldMetadata attribute '\(f.name)' is not handled by protoc-gen-fieldmeta-swift; add a case")
             }
         }
-        return "FieldMetadata(\(args.joined(separator: ", ")))"
+        let rendered = args.sorted { $0.name < $1.name }.map(\.rendered)
+        return "FieldMetadata(\(rendered.joined(separator: ", ")))"
     }
 
     private func swiftScalarType(for type: Google_Protobuf_FieldDescriptorProto.TypeEnum) -> String? {
