@@ -893,6 +893,11 @@ enum TelemetrySensorType {
   ICM42607P = 53;
 
   /*
+   * SPA06 pressure and temperature
+   */
+  SPA06 = 54;
+
+  /*
    * HM330X PM SENSOR
    */
   HM330X = 55;
