@@ -2168,6 +2168,11 @@ enum FirmwareEdition {
   HAMVENTION = 19;
 
   /*
+   * FAB, the international Fab Lab digital fabrication conference
+   */
+  FAB = 20;
+
+  /*
    * Placeholder for DIY and unofficial events
    */
   DIY_EDITION = 127;
