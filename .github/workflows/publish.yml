@@ -28,7 +28,7 @@ jobs:
       tag: ${{ steps.version.outputs.TAG }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -195,7 +195,7 @@ jobs:
     if: ${{ !inputs.dry_run }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Buf
         uses: bufbuild/buf-setup-action@v1.50.0
