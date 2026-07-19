@@ -88,7 +88,7 @@ jobs:
         run: cp LICENSE README.md packages/ts/
 
       - name: Upload TypeScript code
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ts_code
           path: packages/ts
@@ -98,7 +98,7 @@ jobs:
     needs: codegen
     steps:
       - name: Download TypeScript code
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ts_code
 
@@ -127,7 +127,7 @@ jobs:
           ls -la
           ls -la dist/
       - name: Upload built NPM package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: npm_package
           path: |
@@ -136,7 +136,7 @@ jobs:
             LICENSE
             README.md
       - name: Upload JSR package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: jsr_package
           path: |
@@ -150,13 +150,13 @@ jobs:
     needs: [codegen, build-typescript]
     steps:
       - name: Download NPM package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: npm_package
           path: npm_package
 
       - name: Download JSR package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: jsr_package
           path: jsr_package
@@ -166,7 +166,7 @@ jobs:
           cd npm_package && zip -r ../meshtastic-protobufs-npm.zip . && cd ..
           cd jsr_package && zip -r ../meshtastic-protobufs-jsr.zip . && cd ..
       - name: Upload release zips
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release_zips
           path: |
@@ -178,7 +178,7 @@ jobs:
     if: ${{ !inputs.dry_run }}
     steps:
       - name: Download release zips
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: release_zips
 
@@ -213,7 +213,7 @@ jobs:
     if: ${{ !inputs.dry_run }}
     steps:
       - name: Download NPM package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: npm_package
 
@@ -237,7 +237,7 @@ jobs:
       id-token: write
     steps:
       - name: Download JSR package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: jsr_package
 
