@@ -230,6 +230,38 @@ func TestGenerateRejectsBadTarget(t *testing.T) {
 	}
 }
 
+// TestGenerateRejectsHandSetDeprecated verifies that setting the
+// generator-managed `deprecated` attribute by hand inside the custom annotation
+// is a hard error — regardless of its value or of the standard option — instead
+// of silently producing output the other generators would disagree with.
+func TestGenerateRejectsHandSetDeprecated(t *testing.T) {
+	for name, fieldDef := range map[string]string{
+		"true, no standard option":    `uint32 p = 1 [(meshtastic.field_metadata) = { deprecated: true }];`,
+		"false, among other attrs":    `uint32 p = 1 [(meshtastic.field_metadata) = { deprecated: false, diy_only: true }];`,
+		"redundant with standard opt": `uint32 p = 1 [deprecated = true, (meshtastic.field_metadata) = { deprecated: true }];`,
+	} {
+		t.Run(name, func(t *testing.T) {
+			req := compileRequest(t, map[string]string{
+				"meshtastic/field_metadata.proto": fieldMetadataProtoSrc,
+				"meshtastic/test.proto": `
+syntax = "proto3";
+package meshtastic;
+import "meshtastic/field_metadata.proto";
+message M { ` + fieldDef + ` }
+`,
+			}, "python", "meshtastic/test.proto", "meshtastic/field_metadata.proto")
+
+			_, err := generate(req)
+			if err == nil {
+				t.Fatal("expected error for hand-set deprecated attribute, got nil")
+			}
+			if !strings.Contains(err.Error(), "meshtastic.M.p") || !strings.Contains(err.Error(), "generator-managed") {
+				t.Errorf("error should name the field and the rule, got: %v", err)
+			}
+		})
+	}
+}
+
 // TestGenerateRejectsNonScalarAttribute verifies the scalar-only guard: a
 // non-scalar FieldMetadata attribute (here a repeated field) must fail the build
 // rather than emit meaningless, non-deterministic output.

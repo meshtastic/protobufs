@@ -80,9 +80,21 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
             val relative = if (packageName != null) fqn.removePrefix("$packageName.") else fqn
             val typePath = relative.split(".")
             for (field in type.fieldsAndOneOfFields) {
+                val raw = field.options.get(optionMember)
+                // `deprecated` is generator-managed (mirrored from the standard option); a
+                // hand-set value in the annotation is a hard error, matching the other
+                // generators, so they can't disagree about it.
+                val handSet = (raw as? Map<*, *>)?.keys?.any { key ->
+                    ((key as? ProtoMember)?.simpleName ?: key.toString()) == DEPRECATED_ATTR
+                } == true
+                check(!handSet) {
+                    "$fqn.${field.name}: the \"$DEPRECATED_ATTR\" attribute is generator-managed and cannot be " +
+                        "set in (meshtastic.field_metadata); mark the field `[deprecated = true]` instead and " +
+                        "it is mirrored automatically"
+                }
                 // A field earns an entry if it carries the custom annotation OR the standard
                 // `deprecated` option, which we mirror into the registry (see renderConstructor).
-                val ctor = renderConstructor(field.options.get(optionMember), field.isDeprecated, metaFieldTypes)
+                val ctor = renderConstructor(raw, field.isDeprecated, metaFieldTypes)
                     ?: continue
                 out += Entry(fqn, typePath, field.name, field.tag, ctor)
             }
@@ -96,9 +108,9 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
      * Renders the `FieldMetadata(...)` constructor call for one field, or null if the field has no
      * metadata at all. [raw] is the decoded `(meshtastic.field_metadata)` option (may be null);
      * [isDeprecated] is the field's standard `deprecated` option, mirrored in as the `deprecated`
-     * attribute so apps can read deprecation at runtime. Args are keyed by attribute name (sorted,
-     * deduped) so the standard `deprecated` option is authoritative and ordering matches the other
-     * generators.
+     * attribute so apps can read deprecation at runtime (a hand-set `deprecated` in the annotation
+     * is rejected in [collect]). Args are keyed by attribute name and sorted so ordering matches
+     * the other generators.
      */
     private fun renderConstructor(
         raw: Any?,

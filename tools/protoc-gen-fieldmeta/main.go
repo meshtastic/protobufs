@@ -152,13 +152,19 @@ func generate(req *pluginpb.CodeGeneratorRequest) (*pluginpb.CodeGeneratorRespon
 	}
 
 	var entries []entry
+	var collectErr error
 	files.RangeFiles(func(fd protoreflect.FileDescriptor) bool {
 		if len(toGen) > 0 && !toGen[fd.Path()] {
 			return true
 		}
-		collectMessages(fd.Messages(), extType, resolver, &entries)
+		if collectErr = collectMessages(fd.Messages(), extType, resolver, &entries); collectErr != nil {
+			return false
+		}
 		return true
 	})
+	if collectErr != nil {
+		return nil, collectErr
+	}
 
 	sort.Slice(entries, func(i, j int) bool {
 		if entries[i].MessageType != entries[j].MessageType {
@@ -235,7 +241,7 @@ func isScalarKind(k protoreflect.Kind) bool {
 	return isIntKind(k)
 }
 
-func collectMessages(msgs protoreflect.MessageDescriptors, extType protoreflect.ExtensionType, resolver *protoregistry.Types, out *[]entry) {
+func collectMessages(msgs protoreflect.MessageDescriptors, extType protoreflect.ExtensionType, resolver *protoregistry.Types, out *[]entry) error {
 	for i := 0; i < msgs.Len(); i++ {
 		md := msgs.Get(i)
 		// Package-relative path, e.g. meshtastic.Config.PositionConfig -> [Config, PositionConfig].
@@ -245,10 +251,18 @@ func collectMessages(msgs protoreflect.MessageDescriptors, extType protoreflect.
 		for j := 0; j < fields.Len(); j++ {
 			f := fields.Get(j)
 			mf := readMetadata(f, extType, resolver)
-			// Mirror the standard `deprecated` field option into the registry.
-			// The custom annotation isn't expected to set it (see
-			// field_metadata.proto); the standard option is authoritative, so
-			// upsert to a single deprecated=true attribute either way.
+			// `deprecated` is generator-managed: it mirrors the field's standard
+			// option, and a hand-set value in the annotation is rejected rather
+			// than merged — the generators would otherwise disagree about it (the
+			// Swift plugin reads only the standard option), and the schema would
+			// carry two sources of truth for the same fact.
+			for _, a := range mf {
+				if a.Name == deprecatedAttr {
+					return fmt.Errorf(
+						"%s.%s: the %q attribute is generator-managed and cannot be set in (meshtastic.field_metadata); mark the field `[deprecated = true]` instead and it is mirrored automatically",
+						md.FullName(), f.Name(), deprecatedAttr)
+				}
+			}
 			if fieldIsDeprecated(f) {
 				mf = upsertBool(mf, deprecatedAttr, true)
 			}
@@ -263,8 +277,11 @@ func collectMessages(msgs protoreflect.MessageDescriptors, extType protoreflect.
 				Fields:      mf,
 			})
 		}
-		collectMessages(md.Messages(), extType, resolver, out) // nested message types
+		if err := collectMessages(md.Messages(), extType, resolver, out); err != nil { // nested message types
+			return err
+		}
 	}
+	return nil
 }
 
 // readMetadata returns the set attributes of the field_metadata option on a

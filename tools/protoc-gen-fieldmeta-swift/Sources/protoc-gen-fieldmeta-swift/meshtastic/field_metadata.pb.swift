@@ -112,9 +112,10 @@ public struct FieldMetadata: Sendable {
   /// Field is deprecated. MIRRORS the field's standard `[deprecated = true]`
   /// option — the generators populate this automatically from that option so
   /// every consumer can read it at runtime (protobuf runtimes strip options, so
-  /// the standard `deprecated` bit is otherwise invisible to apps). Do NOT set
-  /// this by hand in a (meshtastic.field_metadata) annotation; mark the field
-  /// `[deprecated = true]` as usual and it flows through here.
+  /// the standard `deprecated` bit is otherwise invisible to apps). Setting it
+  /// by hand in a (meshtastic.field_metadata) annotation is a generation-time
+  /// ERROR; mark the field `[deprecated = true]` as usual and it flows through
+  /// here.
   public var deprecated: Bool {
     get {_deprecated ?? false}
     set {_deprecated = newValue}

@@ -29,8 +29,9 @@ Swift consumer doesn't need Go on contributor machines or CI.
   `[deprecated = true]` option (read off `field.options.deprecated`), not from
   the custom annotation — so fields already marked deprecated surface as
   `FieldMetadata(deprecated: true)` and apps can read deprecation at runtime.
-  Entry/attribute ordering matches the Go plugin (entries by proto type then
-  tag; accessors by type path then field name), keeping the output
+  Hand-setting `deprecated` inside the annotation is a hard error, same as the
+  Go plugin. Entry/attribute ordering matches the Go plugin (entries by proto
+  type then tag; accessors by type path then field name), keeping the output
   byte-identical even across many message types.
 
 ## Usage (Apple / swift-protobuf)

@@ -50,6 +50,15 @@ separate module, so there's no collision). Rust could instead use an inherent
 `impl` on the prost types once the Rust generation pipeline is wired into this
 repo; the standalone module is used until then.
 
+> **`target=swift` assumes `option swift_prefix = "";`** (which every
+> `meshtastic/*.proto` sets). The emitted `extension Config.PositionConfig`
+> blocks use raw proto type paths; for a file *without* that option,
+> swift-protobuf prefixes generated type names with the package name
+> (`Meshtastic_Config`), so this plugin's extensions would reference types that
+> don't exist. The pure-Swift sibling plugin derives names from swift-protobuf's
+> own namer and is immune — the divergence is caught by the parity check in CI
+> (`.github/workflows/field-metadata.yml`).
+
 The plugin reads the option **dynamically** (no generated Go bindings) and is
 generic over the contents of the `FieldMetadata` message: adding a scalar
 attribute to `field_metadata.proto` requires no change here. The `FieldMetadata`
@@ -69,10 +78,12 @@ If a module doesn't define the extension (e.g. buf generates the option-free
 and apps therefore can't read at runtime. So any field already marked
 `[deprecated = true]` shows up in the registry (`deprecated: true`) with no
 `(meshtastic.field_metadata)` annotation, and a field carrying both a custom
-attribute and `[deprecated = true]` gets both. The standard option is
-authoritative. This is the one attribute that costs a generator change (the
-sibling Kotlin/Wire and pure-Swift generators mirror it identically); every
-other attribute remains a schema-only addition.
+attribute and `[deprecated = true]` gets both. Setting `deprecated` by hand
+inside the annotation is a **hard error at generation time** (in all three
+generators) — it would create a second source of truth for the same fact. This
+is the one attribute that costs a generator change (the sibling Kotlin/Wire and
+pure-Swift generators mirror it identically); every other attribute remains a
+schema-only addition.
 
 ## Build & test
 

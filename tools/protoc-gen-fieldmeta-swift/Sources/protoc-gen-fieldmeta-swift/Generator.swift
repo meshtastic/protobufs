@@ -77,6 +77,14 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
                 // A field earns an entry if it carries the custom annotation OR
                 // the standard `deprecated` option (which we mirror below).
                 for field in message.fields where field.options.hasFieldMetadata || field.options.deprecated {
+                    // `deprecated` is generator-managed (mirrored from the standard
+                    // option); a hand-set value in the annotation is a hard error,
+                    // matching the Go plugin, so the generators can't disagree.
+                    if field.options.fieldMetadata.hasDeprecated {
+                        throw GenError.message(
+                            "\(message.fullName).\(field.name): the \"deprecated\" attribute is generator-managed and cannot be set in (meshtastic.field_metadata); mark the field `[deprecated = true]` instead and it is mirrored automatically"
+                        )
+                    }
                     entries.append(Entry(
                         swiftTypePath: namer.fullName(message: message),
                         protoTypeName: message.fullName,
