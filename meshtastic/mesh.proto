@@ -2773,6 +2773,12 @@ message DeviceMetadata {
    * This is a read-only capability and must be false when XEdDSA is not compiled in.
    */
   bool has_xeddsa = 14;
+
+  /*
+   * Supports AdminMessage.apply_channel_profile: an atomic, channels-only
+   * profile operation with explicit REPLACE or ADD semantics.
+   */
+  bool has_channel_profile = 15;
 }
 
 /*

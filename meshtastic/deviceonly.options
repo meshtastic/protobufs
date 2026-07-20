@@ -5,6 +5,8 @@
 *DeviceState.receive_queue max_count:1
 
 *ChannelFile.channels max_count:8
+*ChannelFile.applied_profile_id max_size:64
+*ChannelFile.applied_profile_digest max_size:32
 
 *DeviceState.node_remote_hardware_pins max_count:12
 

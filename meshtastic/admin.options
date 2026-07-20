@@ -16,6 +16,14 @@
 *AdminMessage.set_ringtone_message max_size:231
 *AdminMessage.get_ringtone_response max_size:231
 
+*AdminMessage.ChannelProfile.profile_id max_size:64
+*AdminMessage.ChannelProfile.profile_digest max_size:32
+*AdminMessage.ChannelProfile.channels max_count:8
+*AdminMessage.ChannelProfileResult.profile_id max_size:64
+*AdminMessage.ChannelProfileResult.profile_digest max_size:32
+*AdminMessage.ChannelProfileStatus.applied_profile_id max_size:64
+*AdminMessage.ChannelProfileStatus.applied_profile_digest max_size:32
+
 *HamParameters.call_sign max_size:8
 *HamParameters.short_name max_size:5
 *HamParameters.long_name max_size:15

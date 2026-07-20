@@ -226,6 +226,95 @@ message AdminMessage {
   }
 
   /*
+   * A complete channel profile to apply as one validated operation.
+   *
+   * The profile intentionally contains channels only.  LoRa configuration is
+   * a separate, explicit operation so importing a profile never changes the
+   * radio region, frequency, modem preset, or transmit settings.
+   */
+  message ChannelProfile {
+    enum ApplyMode {
+      /* The client must choose a mode explicitly. */
+      APPLY_MODE_UNSPECIFIED = 0;
+
+      /* Replace the entire channel table after validating the submitted table. */
+      REPLACE = 1;
+
+      /* Preserve the current primary and append compatible profile channels as secondaries. */
+      ADD = 2;
+    }
+
+    /*
+     * A stable, non-secret profile or event identifier.  Firmware echoes it
+     * in ChannelProfileResult so clients can pair a reconnect with the apply
+     * operation that caused it.
+     */
+    string profile_id = 1;
+
+    /*
+     * Opaque, non-secret SHA-256 profile digest supplied by the publisher.
+     * This field is correlation metadata, not a signature or a replacement
+     * for validating the profile at its source.
+     */
+    bytes profile_digest = 2;
+
+    /*
+     * The channels to apply.  REPLACE supplies a complete table with unique
+     * slot indexes and exactly one PRIMARY.  ADD supplies enabled profile
+     * channels; the device chooses vacant slots and stores them as SECONDARY
+     * channels so the current primary and LoRa settings stay unchanged.
+     */
+    repeated Channel channels = 3;
+
+    /* The explicitly selected profile-application behavior. */
+    ApplyMode apply_mode = 4;
+
+    /*
+     * Version of this profile contract.  Version 1 is this schema; devices
+     * reject a newer version instead of partially interpreting it.
+     */
+    uint32 profile_format_version = 5;
+  }
+
+  /*
+   * Result of a channel-profile request.  It contains no channel material or
+   * keys, allowing clients to show completion/reboot state without exporting
+   * sensitive channel settings in a status message.
+   */
+  message ChannelProfileResult {
+    enum Status {
+      STATUS_UNSPECIFIED = 0;
+      APPLIED = 1;
+      INVALID_PROFILE = 2;
+      INSUFFICIENT_CHANNEL_SLOTS = 3;
+      UNSUPPORTED = 4;
+    }
+
+    Status status = 1;
+    string profile_id = 2;
+    bytes profile_digest = 3;
+    uint32 applied_channel_count = 4;
+
+    /* True only when this specific profile operation schedules a reboot. */
+    bool will_reboot = 5;
+  }
+
+  /*
+   * Capability and durable completion state for channel-profile application.
+   * No channel settings or PSKs are returned by this status message.
+   */
+  message ChannelProfileStatus {
+    /* Highest supported ChannelProfile.profile_format_version. */
+    uint32 max_profile_format_version = 1;
+    bool supports_replace = 2;
+    bool supports_add = 3;
+
+    /* Last profile committed with the channel table, if any. */
+    string applied_profile_id = 4;
+    bytes applied_profile_digest = 5;
+  }
+
+  /*
    * TODO: REPLACE
    */
   oneof payload_variant {
@@ -538,6 +627,21 @@ message AdminMessage {
      * to carry passphrase bytes; that hack is retired.
      */
     LockdownAuth lockdown_auth = 104;
+
+    /*
+     * Apply a complete channel profile atomically.  Devices that do not
+     * advertise DeviceMetadata.has_channel_profile must not receive this.
+     */
+    ChannelProfile apply_channel_profile = 105;
+
+    /* Result for an apply_channel_profile request. */
+    ChannelProfileResult channel_profile_result = 106;
+
+    /* Request capability and persisted completion state for channel profiles. */
+    bool get_channel_profile_status_request = 107;
+
+    /* Channel-profile capability and persisted completion state. */
+    ChannelProfileStatus get_channel_profile_status_response = 108;
   }
 }
 

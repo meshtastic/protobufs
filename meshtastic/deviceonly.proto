@@ -315,6 +315,14 @@ message ChannelFile {
    * NodeDB.cpp in the device code.
    */
   uint32 version = 2;
+
+  /*
+   * Completion metadata for the last atomically committed channel profile.
+   * This is non-secret correlation data stored with the channel table so a
+   * reconnect can distinguish a committed operation from an interrupted one.
+   */
+  string applied_profile_id = 3;
+  bytes applied_profile_digest = 4;
 }
 
 /*
