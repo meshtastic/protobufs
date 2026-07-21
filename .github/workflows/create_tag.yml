@@ -1,7 +1,12 @@
 name: Create tag
 
+# contents: write — create the release/tag (increment_version).
+# id-token: write — required by the called publish.yml for JSR OIDC / npm
+#   provenance. A reusable workflow cannot exceed the caller's token scope,
+#   so it must be granted here even though create_tag itself doesn't use it.
 permissions:
   contents: write
+  id-token: write
 
 on:
   workflow_dispatch:
@@ -18,6 +23,8 @@ on:
 jobs:
   increment_version:
     runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.version.outputs.NEW_VERSION }}
 
     steps:
       - name: Checkout code
@@ -70,3 +77,24 @@ jobs:
           BUF_TOKEN: ${{ secrets.BUF_TOKEN }}
         run: |
           buf push --tag ${{ steps.version.outputs.NEW_VERSION }}
+
+  # The tag above is created with GITHUB_TOKEN, which by design does NOT fire
+  # the `push: tags` trigger on the publish workflows (GitHub's recursion
+  # guard). Before this, publishing depended on someone manually dispatching
+  # each publish workflow — and when that was missed, an artifact silently
+  # lagged its tag (org.meshtastic:protobufs sat at 2.7.25 while v2.7.26 was
+  # tagged). Invoke the publishers directly instead so every tag publishes
+  # every package.
+  publish-npm:
+    needs: increment_version
+    uses: ./.github/workflows/publish.yml
+    with:
+      version: ${{ needs.increment_version.outputs.new_version }}
+    secrets: inherit
+
+  publish-kmp:
+    needs: increment_version
+    uses: ./.github/workflows/publish-kmp.yml
+    with:
+      version: ${{ needs.increment_version.outputs.new_version }}
+    secrets: inherit
