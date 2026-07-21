@@ -1,0 +1,56 @@
+/*
+ * Shared remote HTTP Gradle build cache for Meshtastic KMP libraries.
+ *
+ * Credentials come from the GRADLE_CACHE_URL / GRADLE_CACHE_USERNAME /
+ * GRADLE_CACHE_PASSWORD environment variables (CI secrets), or a
+ * local.properties / config.properties entry for local use. Push is enabled
+ * only when credentials are present, so fork PRs (which have no secrets) are
+ * pull-only and cannot poison the cache.
+ */
+
+def getMeshProperty(String key) {
+    def env = System.getenv(key)
+    if (env) return env
+    def currentDir = settingsDir
+    while (currentDir != null) {
+        for (name in ["local.properties", "config.properties"]) {
+            def f = new File(currentDir, name)
+            if (f.exists()) {
+                def props = new Properties()
+                f.withInputStream { props.load(it) }
+                if (props.containsKey(key)) return props.getProperty(key)
+            }
+        }
+        currentDir = currentDir.parentFile
+    }
+    return null
+}
+
+buildCache {
+    local {
+        enabled = true
+    }
+    remote(HttpBuildCache) {
+        // Some cache servers return 403 on "Expect: 100-continue".
+        useExpectContinue = false
+        def cacheUrl = getMeshProperty("GRADLE_CACHE_URL")?.trim()
+        def cacheUsername = getMeshProperty("GRADLE_CACHE_USERNAME")?.trim()
+        def cachePassword = getMeshProperty("GRADLE_CACHE_PASSWORD")?.trim()
+        if (cacheUrl) {
+            url = cacheUrl.endsWith("/") ? cacheUrl : "${cacheUrl}/"
+            if (cacheUsername && cachePassword) {
+                credentials {
+                    username = cacheUsername
+                    password = cachePassword
+                }
+            }
+            allowInsecureProtocol = true
+            allowUntrustedServer = true
+            // Push only when credentials exist -> fork PRs are pull-only.
+            push = (cacheUsername && cachePassword)
+            enabled = true
+        } else {
+            enabled = false
+        }
+    }
+}
