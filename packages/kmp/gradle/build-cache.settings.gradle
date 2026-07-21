@@ -3,9 +3,10 @@
  *
  * Credentials come from the GRADLE_CACHE_URL / GRADLE_CACHE_USERNAME /
  * GRADLE_CACHE_PASSWORD environment variables (CI secrets), or a
- * local.properties / config.properties entry for local use. Push is enabled
- * only when credentials are present, so fork PRs (which have no secrets) are
- * pull-only and cannot poison the cache.
+ * local.properties / config.properties entry for local use. Writes to the
+ * cache happen only from trusted events (local dev, push, merge_group) with
+ * credentials present, so pull-request runs (and credential-less fork PRs)
+ * stay pull-only and cannot poison the cache.
  */
 
 def getMeshProperty(String key) {
@@ -37,6 +38,9 @@ buildCache {
         def cacheUsername = getMeshProperty("GRADLE_CACHE_USERNAME")?.trim()
         def cachePassword = getMeshProperty("GRADLE_CACHE_PASSWORD")?.trim()
         if (cacheUrl) {
+            // HTTPS + valid TLS enforced (no allowInsecureProtocol / no
+            // allowUntrustedServer): the cache server must present a trusted
+            // certificate over TLS.
             url = cacheUrl.endsWith("/") ? cacheUrl : "${cacheUrl}/"
             if (cacheUsername && cachePassword) {
                 credentials {
@@ -44,10 +48,12 @@ buildCache {
                     password = cachePassword
                 }
             }
-            allowInsecureProtocol = true
-            allowUntrustedServer = true
-            // Push only when credentials exist -> fork PRs are pull-only.
-            push = (cacheUsername && cachePassword)
+            // Write only from trusted events (local dev, push to a protected
+            // branch, or the merge queue) with credentials — never from
+            // pull_request runs, so unmerged code can't poison the cache.
+            def eventName = System.getenv("GITHUB_EVENT_NAME")
+            def trustedForPush = eventName == null || eventName == "push" || eventName == "merge_group"
+            push = (cacheUsername && cachePassword && trustedForPush)
             enabled = true
         } else {
             enabled = false
