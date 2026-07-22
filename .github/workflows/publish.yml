@@ -53,6 +53,13 @@ jobs:
         with:
           github_token: ${{ github.token }}
 
+      # buf.gen.yaml runs the field-metadata plugin via `go run`, so Go must be
+      # on PATH. (`go-version-file` pins it to the plugin module's go directive.)
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: tools/protoc-gen-fieldmeta/go.mod
+
       - name: Generate protobuf code
         run: buf generate
 
@@ -69,7 +76,12 @@ jobs:
             echo "No '*_pb.ts' files found in '$src_dir'. 'buf generate' may have produced no TypeScript files or changed their naming." >&2
             exit 1
           fi
+          if [ ! -f "$src_dir/field_metadata_registry.ts" ]; then
+            echo "Expected 'field_metadata_registry.ts' (field-metadata plugin output) not found in '$src_dir'. The protoc-gen-fieldmeta target may have failed; mod.ts re-exports it as 'FieldMeta'." >&2
+            exit 1
+          fi
           mv "$src_dir"/*_pb.ts "$dest_dir"/
+          mv "$src_dir"/field_metadata_registry.ts "$dest_dir"/
       - name: Show generated files
         run: |
           echo "=== packages/ts contents ==="
