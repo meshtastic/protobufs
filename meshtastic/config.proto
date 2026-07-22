@@ -990,6 +990,12 @@ message Config {
        * Check local law!
        */
       ITU2_125CM = 37;
+
+      /*
+       * India 433MHz
+       * G.S.R. 347(E), 2022
+       */
+      IN_433 = 38;
     }
 
     /*
