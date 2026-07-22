@@ -70,7 +70,7 @@
 *RangeAndBearing.stroke_weight_x10 int_size:16
 
 # Route pool sizing. 16 links x ~24B each ~= 384B worst case. prefix is
-# ATAK's short waypoint name prefix ("CP", "RP", etc.) — 8 chars is plenty.
+# ATAK's short waypoint name prefix ("CP", "RP", etc.) - 8 chars is plenty.
 *Route.links max_count:16
 *Route.prefix max_size:8
 *Route.stroke_weight_x10 int_size:16
