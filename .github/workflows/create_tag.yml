@@ -1,7 +1,8 @@
 name: Create tag
 
+# Least privilege: default read-only, each job grants only what it needs.
 permissions:
-  contents: write
+  contents: read
 
 on:
   workflow_dispatch:
@@ -18,6 +19,10 @@ on:
 jobs:
   increment_version:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the release + tag
+    outputs:
+      new_version: ${{ steps.version.outputs.NEW_VERSION }}
 
     steps:
       - name: Checkout code
@@ -57,16 +62,32 @@ jobs:
           generateReleaseNotes: true
           token: ${{ github.token }}
 
-      - name: Setup Buf
-        uses: bufbuild/buf-action@v1.4.0
-        with:
-          version: 1.72.0 # renovate: datasource=github-releases depName=bufbuild/buf
-          github_token: ${{ github.token }}
-          token: ${{ secrets.BUF_TOKEN }}
-          setup_only: true
+      # The Buf schema-registry push previously lived here. It now runs in
+      # publish.yml's push-buf-registry job (invoked below), so keeping it
+      # here too would push the same tag to Buf twice per release.
 
-      - name: Push to schema registry
-        env:
-          BUF_TOKEN: ${{ secrets.BUF_TOKEN }}
-        run: |
-          buf push --tag ${{ steps.version.outputs.NEW_VERSION }}
+  # The tag above is created with GITHUB_TOKEN, which by design does NOT fire
+  # the `push: tags` trigger on the publish workflows (GitHub's recursion
+  # guard). Before this, publishing depended on someone manually dispatching
+  # each publish workflow — and when that was missed, an artifact silently
+  # lagged its tag (org.meshtastic:protobufs sat at 2.7.25 while v2.7.26 was
+  # tagged). Invoke the publishers directly instead so every tag publishes
+  # every package. publish.yml also owns the Buf schema-registry push.
+  publish-npm:
+    needs: increment_version
+    permissions:
+      contents: write # create-release + upload assets
+      id-token: write # JSR OIDC / npm provenance
+    uses: ./.github/workflows/publish.yml
+    with:
+      version: ${{ needs.increment_version.outputs.new_version }}
+    secrets: inherit
+
+  publish-kmp:
+    needs: increment_version
+    permissions:
+      contents: read
+    uses: ./.github/workflows/publish-kmp.yml
+    with:
+      version: ${{ needs.increment_version.outputs.new_version }}
+    secrets: inherit
