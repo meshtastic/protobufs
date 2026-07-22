@@ -1256,6 +1256,13 @@ message Config {
      * Don't use radiolib to initialize the radio, instead listen for a serialHal connection
      */
     bool serial_hal_only = 107;
+
+    /*
+     * Act as a transparent LoRa modem: run RadioLib on-device but do no encryption, decryption, or mesh routing.
+     * The connected client sets the PHY settings via this LoRaConfig, supplies fully-formed (already-encrypted) frames to transmit verbatim,
+     * and receives every frame the radio hears delivered raw (never decrypted) back over the API.
+     */
+    bool transparent_mode = 108;
   }
 
   message BluetoothConfig {
