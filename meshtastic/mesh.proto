@@ -2995,8 +2995,9 @@ message ChunkedPayload {
  */
 message ClientApiChunkedPayload {
   /*
-   * The total size of the reassembled payload. This is sent only on the
-   * first chunk of an ordered transfer; later chunks omit it.
+   * The non-zero total size of the reassembled payload. This is sent only
+   * on the first chunk of an ordered transfer; later chunks omit it. Empty
+   * client API messages are not transported in chunked form.
    */
   uint32 payload_size = 1;
 
