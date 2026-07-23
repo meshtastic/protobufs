@@ -2429,6 +2429,12 @@ message FromRadio {
      * any group carries no constraint info and should not be restricted.
      */
     LoRaRegionPresetMap region_presets = 19;
+
+    /*
+     * Chunked client API payload. Only sent to clients that have opted in to
+     * chunked API transport support.
+     */
+    ClientApiChunkedPayload chunked_payload = 20;
   }
 }
 
@@ -2635,6 +2641,12 @@ message ToRadio {
      * Heartbeat message (used to keep the device connection awake on serial)
      */
     Heartbeat heartbeat = 7;
+
+    /*
+     * Chunked client API payload. The reassembled payload is a serialized
+     * ToRadio message and is handled through the normal PhoneAPI path.
+     */
+    ClientApiChunkedPayload chunked_payload = 8;
   }
 }
 
@@ -2976,6 +2988,22 @@ message ChunkedPayload {
    * The binary data of the current chunk
    */
   bytes payload_chunk = 4;
+}
+
+/*
+ * Compact ordered chunk used to transport serialized client API messages.
+ */
+message ClientApiChunkedPayload {
+  /*
+   * The total size of the reassembled payload. This is sent only on the
+   * first chunk of an ordered transfer; later chunks omit it.
+   */
+  uint32 payload_size = 1;
+
+  /*
+   * The binary data of the current chunk
+   */
+  bytes payload_chunk = 2;
 }
 
 /*
