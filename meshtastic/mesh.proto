@@ -949,6 +949,26 @@ enum HardwareModel {
   HELTEC_RCC6 = 143;
 
   /*
+   * RAKwireless WisMesh Pocket V3
+   */
+  WISMESH_POCKET = 144;
+
+  /*
+   * RAKwireless WisMesh Repeater Mini V2
+   */
+  WISMESH_REPEATER_MINI = 145;
+
+  /*
+   * RAKwireless WisMesh Repeater Mini V2 HP
+   */
+  WISMESH_REPEATER_MINI_HP = 146;
+
+  /*
+   * RAKwireless WisMesh Pod
+   */
+  WISMESH_POD = 147;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
