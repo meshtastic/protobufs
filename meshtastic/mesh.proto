@@ -2274,6 +2274,21 @@ message LogRecord {
 }
 
 message QueueStatus {
+  /*
+   * Lifecycle state for the mesh packet identified by mesh_packet_id.
+   * Clients that do not recognize this field should retain their existing
+   * queue-status behavior.
+   */
+  enum State {
+    STATE_UNSPECIFIED = 0;
+
+    /*
+     * The device is holding a direct message while it requests the
+     * recipient's NodeInfo to obtain a public encryption key.
+     */
+    KEY_EXCHANGE = 1;
+  }
+
   /* Last attempt to queue status, ErrorCode */
   int32 res = 1;
 
@@ -2285,6 +2300,9 @@ message QueueStatus {
 
   /* What was mesh packet id that generated this response? */
   uint32 mesh_packet_id = 4;
+
+  /* Current lifecycle state for mesh_packet_id */
+  State state = 5;
 }
 
 /*
