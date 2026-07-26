@@ -52,6 +52,7 @@
 *QueueStatus.res int_size:8
 *QueueStatus.free int_size:8
 *QueueStatus.maxlen int_size:8
+*QueueStatus.state int_size:8
 
 *ToRadio.payload_variant anonymous_oneof:true
 
