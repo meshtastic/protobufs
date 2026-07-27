@@ -1309,6 +1309,21 @@ message Config {
     }
 
     /*
+     * Controls which remote nodes may request DeviceMetrics when device telemetry broadcasting is disabled.
+     */
+    enum DeviceTelemetryRequestPolicy {
+      /*
+       * Accept DeviceMetrics requests using normal shared-channel encryption.
+       */
+      DEVICE_TELEMETRY_REQUEST_POLICY_CHANNEL = 0;
+
+      /*
+       * Accept remote DeviceMetrics requests only when PKI-authenticated by an authorized admin key.
+       */
+      DEVICE_TELEMETRY_REQUEST_POLICY_ADMIN_PKI = 1;
+    }
+
+    /*
      * Controls how the device authenticates remotely received mesh packets.
      */
     enum PacketSignaturePolicy {
@@ -1379,6 +1394,12 @@ message Config {
      * Determines which remote nodes may request LocalStats. Directly connected clients remain trusted.
      */
     LocalStatsRequestPolicy local_stats_request_policy = 10;
+
+    /*
+     * Determines which remote nodes may request DeviceMetrics while device telemetry broadcasting is disabled.
+     * This setting is ignored while device telemetry broadcasting is enabled. Directly connected clients remain trusted.
+     */
+    DeviceTelemetryRequestPolicy device_telemetry_request_policy = 11;
   }
 
   /*
