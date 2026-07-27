@@ -1294,6 +1294,21 @@ message Config {
 
   message SecurityConfig {
     /*
+     * Controls which remote nodes may request LocalStats.
+     */
+    enum LocalStatsRequestPolicy {
+      /*
+       * Accept LocalStats requests using normal shared-channel encryption.
+       */
+      LOCAL_STATS_REQUEST_POLICY_CHANNEL = 0;
+
+      /*
+       * Accept remote LocalStats requests only when PKI-authenticated by an authorized admin key.
+       */
+      LOCAL_STATS_REQUEST_POLICY_ADMIN_PKI = 1;
+    }
+
+    /*
      * Controls how the device authenticates remotely received mesh packets.
      */
     enum PacketSignaturePolicy {
@@ -1359,6 +1374,11 @@ message Config {
      * Determines the packet signature policy applied to remotely received mesh packets.
      */
     PacketSignaturePolicy packet_signature_policy = 9;
+
+    /*
+     * Determines which remote nodes may request LocalStats. Directly connected clients remain trusted.
+     */
+    LocalStatsRequestPolicy local_stats_request_policy = 10;
   }
 
   /*
