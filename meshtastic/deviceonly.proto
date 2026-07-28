@@ -194,14 +194,6 @@ message NodeInfoLite {
    * "never measured".
    */
   sint32 snr_q4 = 19;
-
-  /*
-   * Last received RSSI (dBm) for this node, restored into replayed packets so history sent to
-   * the phone after a reconnect isn't misrepresented as a live zero-signal reception. A stored
-   * 0 does not by itself mean "unknown" - RSSI can legitimately read 0 dBm or, on some radios,
-   * positive. See NODEINFO_BITFIELD_HAS_RSSI in src/mesh/NodeDB.h for the presence bit.
-   */
-  sint32 rssi = 20;
 }
 
 /*
