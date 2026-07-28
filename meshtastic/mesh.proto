@@ -1848,8 +1848,13 @@ message MeshPacket {
 
   /*
    * rssi of received packet. Only sent to phone for dispay purposes.
+   * Explicit presence: rssi 0 is a legitimate reading on some radios (SX126x can report exactly
+   * 0 dBm; SX127x's formula can even go positive), so implicit-presence proto3 made an unset
+   * value indistinguishable from a measured one. has_rx_rssi disambiguates; a replayed packet
+   * built from history the device never restored an RSSI for should leave this field absent
+   * rather than emitting 0.
    */
-  int32 rx_rssi = 12;
+  optional int32 rx_rssi = 12;
 
   /*
    * Describe if this message is delayed

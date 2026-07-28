@@ -11,6 +11,9 @@
 *NodeInfoLite.channel int_size:8
 *NodeInfoLite.hops_away int_size:8
 *NodeInfoLite.next_hop int_size:8
+# Real range is roughly -164..+98 (SX127x low-band offset .. positive-RSSI edge case, see
+# phantom-zero-hop-direct-nodes bug notes) - int8 can't hold it, int16 comfortably can.
+*NodeInfoLite.rssi int_size:16
 
 # Flattened user fields. long_name was 40 on UserLite; trimmed to 25 here so the
 # slim header gives back ~15 B/node of RAM. Names that exceeded 24 chars on the
