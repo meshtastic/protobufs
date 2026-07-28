@@ -1848,8 +1848,11 @@ message MeshPacket {
 
   /*
    * rssi of received packet. Only sent to phone for dispay purposes.
+   * Explicit presence: rssi 0 is a legitimate reading on some radios (SX126x can report exactly
+   * 0 dBm; SX127x's formula can even go positive). has_rx_rssi disambiguates; a replayed packet
+   * built from history should leave this field absent rather than emitting 0.
    */
-  int32 rx_rssi = 12;
+  optional int32 rx_rssi = 12;
 
   /*
    * Describe if this message is delayed
@@ -1864,6 +1867,10 @@ message MeshPacket {
   /*
    * Hop limit with which the original packet started. Sent via LoRa using three bits in the unencrypted header.
    * When receiving a packet, the difference between hop_start and hop_limit gives how many hops it traveled.
+   * hop_start == 0 does not necessarily mean a direct (0-hop) neighbor: firmware prior to 2.3.0
+   * never populated this field, so a receiver can only trust hop_start == 0 as genuine once it has
+   * decoded the packet and confirmed the sender's bitfield is present (added in 2.5.0). Until then,
+   * or for a sender that never sets that bitfield, treat hop_start == 0 as unknown, not direct.
    */
   uint32 hop_start = 15;
 
