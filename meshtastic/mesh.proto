@@ -1809,8 +1809,14 @@ message MeshPacket {
    * Note: this field is _never_ sent on the radio link itself (to save space) Times
    * are typically not sent over the mesh, but they will be added to any Packet
    * (chain of SubPacket) sent to the phone (so the phone can know exact time of reception)
+   * Explicit presence: firmware cannot always attach a trustworthy wall-clock timestamp at the
+   * moment of reception - a node with no GPS and no phone connected yet has no time source at
+   * all. has_rx_time disambiguates that state from a genuine (if coincidental) 1970-01-01
+   * reading. A packet delivered with this field absent may still be re-timestamped once a valid
+   * clock becomes available, before the phone ever sees it - "absent" is not guaranteed
+   * permanent, only "not yet known at last observation".
    */
-  fixed32 rx_time = 7;
+  optional fixed32 rx_time = 7;
 
   /*
    * *Never* sent over the radio links.
