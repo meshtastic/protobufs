@@ -1,0 +1,56 @@
+/*
+ * Develocity — Build Scans and remote Build Cache on the OSS Community instance
+ * (https://community.develocity.cloud), project `meshtastic`.
+ *
+ * Covers the KMP leg of this repo only; the buf, deno and cargo builds are
+ * unaffected.
+ *
+ * Replaces the former self-hosted HttpBuildCache: GRADLE_CACHE_URL / _USERNAME /
+ * _PASSWORD are no longer read anywhere in this repo.
+ */
+
+def isCI = System.getenv("CI") != null
+
+develocity {
+    server = "https://community.develocity.cloud"
+    projectId = "meshtastic"
+    buildScan {
+        uploadInBackground = !isCI
+        // Unauthenticated builds (fork PRs, developers who never provisioned a key)
+        // publish nothing rather than failing.
+        publishing.onlyIf { it.authenticated }
+        // Fingerprints power cache-miss comparison (CI debugging); skip the payload locally.
+        capture { fileFingerprints = isCI }
+        // Public instance: no machine identity. Constants on purpose — scans already
+        // record OS/CPU and CCUD adds CI metadata. Keep the `if` OUTSIDE the closures:
+        // capture-free closures are what the configuration cache can serialize.
+        obfuscation {
+            ipAddresses { addresses -> addresses.collect { "0.0.0.0" } }
+            externalProcessName { "external-process" }
+            if (isCI) {
+                username { "ci" }
+                hostname { "ci-runner" }
+            } else {
+                username { "local-dev" }
+                hostname { "local-machine" }
+            }
+        }
+    }
+}
+
+// Resolved outside the buildCache block: inside it the closure delegate is
+// BuildCacheConfiguration, which has no `develocity` property.
+def develocityBuildCache = develocity.buildCache
+def accessKey = System.getenv("DEVELOCITY_ACCESS_KEY")?.trim()
+
+buildCache {
+    // Off on CI: runners are ephemeral and every hit comes from the remote anyway.
+    local {
+        enabled = !isCI
+    }
+    remote(develocityBuildCache) {
+        enabled = true
+        // Only authenticated CI writes, so unmerged and fork code cannot poison the cache.
+        push = isCI && accessKey != null && !accessKey.isEmpty()
+    }
+}
