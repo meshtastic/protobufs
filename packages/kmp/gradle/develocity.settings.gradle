@@ -50,7 +50,13 @@ buildCache {
     }
     remote(develocityBuildCache) {
         enabled = true
-        // Only authenticated CI writes, so unmerged and fork code cannot poison the cache.
-        push = isCI && accessKey != null && !accessKey.isEmpty()
+        // Write only from trusted events. Local dev is excluded by isCI, and
+        // pull_request runs are excluded here: a same-repository PR DOES receive
+        // repository secrets, so gating on the access key alone would let
+        // unmerged code write entries into the shared cache. Fork PRs have no
+        // key and are excluded twice over.
+        def eventName = System.getenv("GITHUB_EVENT_NAME")
+        def trustedForPush = eventName == "push" || eventName == "merge_group"
+        push = isCI && trustedForPush && accessKey != null && !accessKey.isEmpty()
     }
 }
