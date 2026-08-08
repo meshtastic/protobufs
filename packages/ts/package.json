@@ -3,6 +3,10 @@
   "description": "Protobuf definitions for the Meshtastic project",
   "version": "__PACKAGE_VERSION__",
   "homepage": "https://github.com/meshtastic/protobufs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meshtastic/protobufs.git"
+  },
   "license": "GPLV3",
   "publishConfig": {
     "access": "public"
@@ -16,7 +20,7 @@
   },
   "devDependencies": {
     "tsdown": "^0.13.4",
-    "typescript": "^5.8.3"
+    "typescript": "^7.0.0"
   },
   "scripts": {
     "build": "tsdown"
