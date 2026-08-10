@@ -887,7 +887,7 @@ message SEN6X_config {
   optional bool set_asc = 4;
 
   /*
-   * Recalibration target CO2 concentration in ppm (FRC or ASC), CO2-capable variants only
+   * Recalibration target CO2 concentration in ppm (FRC only), CO2-capable variants only
    */
   optional uint32 set_target_co2_conc = 5;
 
@@ -902,7 +902,7 @@ message SEN6X_config {
   optional uint32 set_ambient_pressure = 7;
 
   /*
-   * Perform a factory reset of the CO2 sensor's calibration history, CO2-capable variants only
+   * Perform a factory reset of the CO2 sensor's calibration, CO2-capable variants only
    */
   optional bool factory_reset = 8;
 }
