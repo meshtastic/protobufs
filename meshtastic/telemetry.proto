@@ -373,6 +373,14 @@ message AirQualityMetrics {
    * Typical Particle Size in um
    */
   optional float particles_tps = 25;
+
+  /*
+   * Raw PM sensor device status/error register bitmask, as defined by the sensor's own datasheet
+   * (currently populated by the SEN6X family: bit 4 fan error, bit 6 RH&T error, bit 7 gas/VOC-NOx
+   * error, bit 9 CO2 error (SEN66), bit 10 HCHO error, bit 11 PM error, bit 12 CO2 error (SEN63C/SEN69C),
+   * bit 21 fan speed warning)
+   */
+  optional uint32 pm_status_flags = 26;
 }
 
 /*
@@ -901,6 +909,11 @@ enum TelemetrySensorType {
    * HM330X PM SENSOR
    */
   HM330X = 55;
+
+  /*
+   * Sensirion SEN6X PM/RHT/VOC/NOx/CO2/HCHO sensor family (SEN62, SEN63C, SEN65, SEN66, SEN68, SEN69C)
+   */
+  SEN6X = 56;
 }
 
 /*
@@ -919,7 +932,7 @@ message Nau7802Config {
 }
 
 /*
- * SEN5X State, for saving to flash
+ * SEN5X State, for saving to flash (to be merged with SEN6XState)
  */
 message SEN5XState {
   /*
@@ -949,6 +962,41 @@ message SEN5XState {
 
   /*
    * VOC state array (8x uint8t) for SEN55
+   */
+  optional fixed64 voc_state_array = 6;
+}
+
+/*
+ * SEN6X State, for saving to flash
+ */
+message SEN6XState {
+  /*
+   * Last cleaning time for SEN6X
+   */
+  uint32 last_cleaning_time = 1;
+
+  /*
+   * Last cleaning time for SEN6X - valid flag
+   */
+  bool last_cleaning_valid = 2;
+
+  /*
+   * Config flag for one-shot mode (see admin.proto)
+   */
+  bool one_shot_mode = 3;
+
+  /*
+   * Last VOC state time, for models with a VOC sensor (SEN65, SEN66, SEN68, SEN69C)
+   */
+  optional uint32 voc_state_time = 4;
+
+  /*
+   * Last VOC state validity flag, for models with a VOC sensor (SEN65, SEN66, SEN68, SEN69C)
+   */
+  optional bool voc_state_valid = 5;
+
+  /*
+   * VOC state array (8x uint8t), for models with a VOC sensor (SEN65, SEN66, SEN68, SEN69C)
    */
   optional fixed64 voc_state_array = 6;
 }
