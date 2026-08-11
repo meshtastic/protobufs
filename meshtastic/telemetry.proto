@@ -238,7 +238,6 @@ message EnvironmentMetrics {
    * Multi-channel One-Wire Temperature Channel 7 (*C)
    */
   optional float one_wire_temperature_ch7 = 39;
-
 }
 
 /*
