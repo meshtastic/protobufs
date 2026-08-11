@@ -479,6 +479,13 @@ message AdminMessage {
     KeyVerificationAdmin key_verification = 67;
 
     /*
+     * Request an immediate GPS sampling cycle. This does not change the
+     * configured GPS or position broadcast intervals. Requests received
+     * within 10 seconds are coalesced and use the most recent fix.
+     */
+    bool request_position_update = 70;
+
+    /*
      * Tell the node to factory reset config everything; all device state and configuration will be returned to factory defaults and BLE bonds will be cleared.
      */
     int32 factory_reset_device = 94;
