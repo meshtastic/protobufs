@@ -806,9 +806,14 @@ message SensorConfig {
   SHTXX_config shtxx_config = 4;
 
   /*
+   * DS248X-800 temperature sensor configuration
+   */
+  DS248X_config ds248x_config = 5;
+   
+  /*
    * SEN6X PM/RHT/VOC/NOx/CO2/HCHO Sensor configuration
    */
-  SEN6X_config sen6x_config = 5;
+  SEN6X_config sen6x_config = 6;
 }
 
 message SCD4X_config {
@@ -944,4 +949,11 @@ message SHTXX_config {
    * Accuracy mode (0 = low, 1 = medium, 2 = high)
    */
   optional uint32 set_accuracy = 1;
+}
+
+message DS248X_config {
+  /*
+   * Main channel for temperature reporting (0-7)
+   */
+  optional uint32 main_temperature_channel = 1;
 }
