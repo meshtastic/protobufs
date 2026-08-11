@@ -155,84 +155,89 @@ message EnvironmentMetrics {
   optional float soil_temperature = 22;
 
   /*
+   * Never implemented, but Voltage may be mis-interpreted by old clients as temperature
+   */
+  repeated float one_wire_temperature = 23 [deprecated = true]
+
+  /*
    * Multi-channel ADC Voltage Channel 0 (V)
    */
-  optional float adc_voltage_ch0 = 23;
+  optional float adc_voltage_ch0 = 24;
 
   /*
    * Multi-channel ADC Voltage Channel 1 (V)
    */
-  optional float adc_voltage_ch1 = 24;
+  optional float adc_voltage_ch1 = 25;
 
   /*
    * Multi-channel ADC Voltage Channel 2 (V)
    */
-  optional float adc_voltage_ch2 = 25;
+  optional float adc_voltage_ch2 = 26;
 
   /*
    * Multi-channel ADC Voltage Channel 3 (V)
    */
-  optional float adc_voltage_ch3 = 26;
+  optional float adc_voltage_ch3 = 27;
 
   /*
    * Multi-channel ADC Voltage Channel 4 (V)
    */
-  optional float adc_voltage_ch4 = 27;
+  optional float adc_voltage_ch4 = 28;
 
   /*
    * Multi-channel ADC Voltage Channel 5 (V)
    */
-  optional float adc_voltage_ch5 = 28;
+  optional float adc_voltage_ch5 = 29;
 
   /*
    * Multi-channel ADC Voltage Channel 6 (V)
    */
-  optional float adc_voltage_ch6 = 29;
+  optional float adc_voltage_ch6 = 30;
 
   /*
    * Multi-channel ADC Voltage Channel 7 (V)
    */
-  optional float adc_voltage_ch7 = 30;
+  optional float adc_voltage_ch7 = 31;
 
   /*
    * Multi-channel One-Wire Temperature Channel 0 (*C)
    */
-  optional float one_wire_temperature_ch0 = 31;
+  optional float one_wire_temperature_ch0 = 32;
 
   /*
    * Multi-channel One-Wire Temperature Channel 1 (*C)
    */
-  optional float one_wire_temperature_ch1 = 32;
+  optional float one_wire_temperature_ch1 = 33;
 
   /*
    * Multi-channel One-Wire Temperature Channel 2 (*C)
    */
-  optional float one_wire_temperature_ch2 = 33;
+  optional float one_wire_temperature_ch2 = 34;
 
   /*
    * Multi-channel One-Wire Temperature Channel 3 (*C)
    */
-  optional float one_wire_temperature_ch3 = 34;
+  optional float one_wire_temperature_ch3 = 35;
 
   /*
    * Multi-channel One-Wire Temperature Channel 4 (*C)
    */
-  optional float one_wire_temperature_ch4 = 35;
+  optional float one_wire_temperature_ch4 = 36;
 
   /*
    * Multi-channel One-Wire Temperature Channel 5 (*C)
    */
-  optional float one_wire_temperature_ch5 = 36;
+  optional float one_wire_temperature_ch5 = 37;
 
   /*
    * Multi-channel One-Wire Temperature Channel 6 (*C)
    */
-  optional float one_wire_temperature_ch6 = 37;
+  optional float one_wire_temperature_ch6 = 38;
 
   /*
    * Multi-channel One-Wire Temperature Channel 7 (*C)
    */
-  optional float one_wire_temperature_ch7 = 38;
+  optional float one_wire_temperature_ch7 = 39;
 
 }
 
