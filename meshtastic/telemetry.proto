@@ -157,7 +157,7 @@ message EnvironmentMetrics {
   /*
    * Never implemented, but Voltage may be mis-interpreted by old clients as temperature
    */
-  repeated float one_wire_temperature = 23 [deprecated = true]
+  repeated float one_wire_temperature = 23 [deprecated = true];
 
   /*
    * Multi-channel ADC Voltage Channel 0 (V)
