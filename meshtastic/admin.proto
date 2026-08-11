@@ -809,7 +809,7 @@ message SensorConfig {
    * DS248X-800 temperature sensor configuration
    */
   DS248X_config ds248x_config = 5;
-   
+
   /*
    * SEN6X PM/RHT/VOC/NOx/CO2/HCHO Sensor configuration
    */
