@@ -1004,7 +1004,7 @@ enum TelemetrySensorType {
    * Sensirion SEN6X PM/RHT/VOC/NOx/CO2/HCHO sensor family (SEN62, SEN63C, SEN65, SEN66, SEN68, SEN69C)
    */
   SEN6X = 56;
-  
+
   /*
    * AS3935 Franklin lightning sensor
    */
