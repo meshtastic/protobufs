@@ -15,6 +15,20 @@ on:
         required: false
         type: boolean
         default: false
+  # Called by create_tag.yml right after a release tag is cut. Tags created
+  # with GITHUB_TOKEN do not fire the `push: tags` trigger above (GitHub's
+  # recursion guard), so the release flow invokes this workflow directly.
+  workflow_call:
+    inputs:
+      version:
+        description: "Version to publish (e.g. v1.2.3)."
+        required: true
+        type: string
+      dry_run:
+        description: "Dry run mode - generate artifacts without publishing"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -28,7 +42,7 @@ jobs:
       tag: ${{ steps.version.outputs.TAG }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -88,7 +102,7 @@ jobs:
         run: cp LICENSE README.md packages/ts/
 
       - name: Upload TypeScript code
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ts_code
           path: packages/ts
@@ -98,7 +112,7 @@ jobs:
     needs: codegen
     steps:
       - name: Download TypeScript code
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ts_code
 
@@ -111,7 +125,7 @@ jobs:
           echo "=== lib/ contents ==="
           ls -la lib/ || echo "lib folder not found"
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
 
@@ -127,7 +141,7 @@ jobs:
           ls -la
           ls -la dist/
       - name: Upload built NPM package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: npm_package
           path: |
@@ -136,7 +150,7 @@ jobs:
             LICENSE
             README.md
       - name: Upload JSR package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: jsr_package
           path: |
@@ -150,13 +164,13 @@ jobs:
     needs: [codegen, build-typescript]
     steps:
       - name: Download NPM package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: npm_package
           path: npm_package
 
       - name: Download JSR package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: jsr_package
           path: jsr_package
@@ -166,7 +180,7 @@ jobs:
           cd npm_package && zip -r ../meshtastic-protobufs-npm.zip . && cd ..
           cd jsr_package && zip -r ../meshtastic-protobufs-jsr.zip . && cd ..
       - name: Upload release zips
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release_zips
           path: |
@@ -178,12 +192,12 @@ jobs:
     if: ${{ !inputs.dry_run }}
     steps:
       - name: Download release zips
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: release_zips
 
       - name: Upload assets to GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.codegen.outputs.tag }}
           files: |
@@ -195,7 +209,7 @@ jobs:
     if: ${{ !inputs.dry_run }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Buf
         uses: bufbuild/buf-setup-action@v1.50.0
@@ -213,12 +227,12 @@ jobs:
     if: ${{ !inputs.dry_run }}
     steps:
       - name: Download NPM package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: npm_package
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
@@ -237,12 +251,12 @@ jobs:
       id-token: write
     steps:
       - name: Download JSR package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: jsr_package
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
 

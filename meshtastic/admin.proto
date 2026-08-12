@@ -804,6 +804,16 @@ message SensorConfig {
    * SHTXX temperature and relative humidity sensor configuration
    */
   SHTXX_config shtxx_config = 4;
+
+  /*
+   * DS248X-800 temperature sensor configuration
+   */
+  DS248X_config ds248x_config = 5;
+
+  /*
+   * SEN6X PM/RHT/VOC/NOx/CO2/HCHO Sensor configuration
+   */
+  SEN6X_config sen6x_config = 6;
 }
 
 message SCD4X_config {
@@ -853,6 +863,53 @@ message SEN5X_config {
    * One-shot mode (true for low power - one-shot mode, false for normal - continuous mode)
    */
   optional bool set_one_shot_mode = 2;
+
+  /*
+   * Trigger a fan cleaning cycle
+   */
+  optional bool start_fan_cleaning = 3;
+}
+
+message SEN6X_config {
+  /*
+   * Reference temperature in degC
+   */
+  optional float set_temperature = 1;
+
+  /*
+   * One-shot mode (true for low power - one-shot mode, false for normal - continuous mode)
+   */
+  optional bool set_one_shot_mode = 2;
+
+  /*
+   * Trigger a fan cleaning cycle
+   */
+  optional bool start_fan_cleaning = 3;
+
+  /*
+   * Set Automatic self-calibration enabled (CO2-capable variants only: SEN63C, SEN66, SEN69C)
+   */
+  optional bool set_asc = 4;
+
+  /*
+   * Recalibration target CO2 concentration in ppm (FRC only), CO2-capable variants only
+   */
+  optional uint32 set_target_co2_conc = 5;
+
+  /*
+   * Altitude of sensor in meters above sea level. 0 - 3000m (overrides ambient pressure), CO2-capable variants only
+   */
+  optional uint32 set_altitude = 6;
+
+  /*
+   * Sensor ambient pressure in Pa. 70000 - 120000 Pa (overrides altitude), CO2-capable variants only
+   */
+  optional uint32 set_ambient_pressure = 7;
+
+  /*
+   * Perform a factory reset of the CO2 sensor's calibration, CO2-capable variants only
+   */
+  optional bool factory_reset = 8;
 }
 
 message SCD30_config {
@@ -892,4 +949,11 @@ message SHTXX_config {
    * Accuracy mode (0 = low, 1 = medium, 2 = high)
    */
   optional uint32 set_accuracy = 1;
+}
+
+message DS248X_config {
+  /*
+   * Main channel for temperature reporting (0-7)
+   */
+  optional uint32 main_temperature_channel = 1;
 }
