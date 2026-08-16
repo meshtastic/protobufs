@@ -1080,3 +1080,42 @@ message SEN6XState {
    */
   optional fixed64 voc_state_array = 6;
 }
+
+message TelemetryRecord {
+  /*
+   * Telemetry variant in telemetry record
+   */
+  oneof telemetry_variant {
+    /*
+     * Environment Telemetry variant
+     */
+    EnvironmentMetrics environment_metrics = 1;
+
+    /*
+     * Power Telemetry variant
+     */
+    PowerMetrics power_metrics = 2;
+
+    /*
+     * Air quality Telemetry variant
+     */
+    AirQualityMetrics air_quality_metrics = 3;
+  }
+
+  /*
+   * Seconds since 1970 - or 0 for unknown/unset
+   */
+  fixed32 time = 4;
+}
+
+message TelemetryRecordHistory {
+  /*
+   * Interval in seconds between consecutive readings in this batch
+   */
+  uint32 interval_sec = 1;
+
+  /*
+   * Telemetry readings, oldest first
+   */
+  repeated TelemetryRecord readings = 2;
+}
