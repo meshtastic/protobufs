@@ -84,6 +84,11 @@ message ModuleConfig {
      * Settings for reporting information about our node to a map via MQTT
      */
     MapReportSettings map_report_settings = 11;
+
+    /*
+     * If true, we will always upload telemetry via MQTT at reading interval if connected
+     */
+    bool telemetry_uplink_enabled = 12;
   }
 
   /*
