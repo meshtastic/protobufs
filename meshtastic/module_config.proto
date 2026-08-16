@@ -970,6 +970,21 @@ message ModuleConfig {
       description: "Display air quality measurements on device"
       since_firmware: "2.7.18"
     }];
+
+    /*
+     * Power telemetry read interval
+     */
+    uint32 power_telemetry_read_interval = 16;
+
+    /*
+     * Environment telemetry read interval
+     */
+    uint32 environment_telemetry_read_interval = 17;
+
+    /*
+     * Air quality telemetry read interval
+     */
+    uint32 air_quality_telemetry_read_interval = 18;
   }
 
   /*
