@@ -1027,6 +1027,17 @@ message Nau7802Config {
 }
 
 /*
+ * AS3935 lightning sensor configuration, for saving to flash
+ */
+message AS3935Config {
+  /*
+   * Antenna tuning capacitance in pF, 0 to 120 in steps of 8. The chip does not retain
+   * this across power loss, so it is stored here and re-applied on every boot.
+   */
+  uint32 tuning_cap_pf = 1;
+}
+
+/*
  * SEN5X State, for saving to flash (to be merged with SEN6XState)
  */
 message SEN5XState {
