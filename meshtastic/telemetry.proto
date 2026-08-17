@@ -238,6 +238,16 @@ message EnvironmentMetrics {
    * Multi-channel One-Wire Temperature Channel 7 (*C)
    */
   optional float one_wire_temperature_ch7 = 39;
+
+  /*
+   * Lightning strikes detected in the last hour
+   */
+  optional uint32 lightning_strike_count_1h = 40;
+
+  /*
+   * Estimated distance to the leading edge of the storm, in km
+   */
+  optional float lightning_distance_km = 41;
 }
 
 /*
@@ -994,6 +1004,11 @@ enum TelemetrySensorType {
    * Sensirion SEN6X PM/RHT/VOC/NOx/CO2/HCHO sensor family (SEN62, SEN63C, SEN65, SEN66, SEN68, SEN69C)
    */
   SEN6X = 56;
+
+  /*
+   * AS3935 Franklin lightning sensor
+   */
+  AS3935 = 57;
 }
 
 /*
@@ -1009,6 +1024,17 @@ message Nau7802Config {
    * The calibration factor for the NAU7802
    */
   float calibrationFactor = 2;
+}
+
+/*
+ * AS3935 lightning sensor configuration, for saving to flash
+ */
+message AS3935Config {
+  /*
+   * Antenna tuning capacitance in pF, 0 to 120 in steps of 8. The chip does not retain
+   * this across power loss, so it is stored here and re-applied on every boot.
+   */
+  uint32 tuning_cap_pf = 1;
 }
 
 /*

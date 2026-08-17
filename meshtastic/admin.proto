@@ -814,6 +814,11 @@ message SensorConfig {
    * SEN6X PM/RHT/VOC/NOx/CO2/HCHO Sensor configuration
    */
   SEN6X_config sen6x_config = 6;
+
+  /*
+   * AS3935 lightning sensor configuration
+   */
+  AS3935_config as3935_config = 7;
 }
 
 message SCD4X_config {
@@ -956,4 +961,12 @@ message DS248X_config {
    * Main channel for temperature reporting (0-7)
    */
   optional uint32 main_temperature_channel = 1;
+}
+
+message AS3935_config {
+  /*
+   * Antenna tuning capacitance in pF, 0 to 120 in steps of 8. The antenna tank must
+   * resonate within 3.5% of 500kHz; the correct trim is specific to the sensor board.
+   */
+  optional uint32 set_tuning_cap_pf = 1;
 }
