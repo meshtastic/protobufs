@@ -1103,19 +1103,19 @@ message TelemetryRecord {
   }
 
   /*
-   * Seconds since 1970 - or 0 for unknown/unset
+   * Seconds since 1970. Unset if the sender had no real time source.
    */
-  fixed32 time = 4;
+  optional fixed32 time = 4;
+
+  /*
+   * Seconds since the previous reading in this node's history was captured
+   */
+  optional uint32 delta_secs = 5;
 }
 
 message TelemetryRecordHistory {
   /*
-   * Interval in seconds between consecutive readings in this batch
-   */
-  uint32 interval_sec = 1;
-
-  /*
    * Telemetry readings, oldest first
    */
-  repeated TelemetryRecord readings = 2;
+  repeated TelemetryRecord readings = 1;
 }
