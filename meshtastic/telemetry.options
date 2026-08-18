@@ -18,4 +18,6 @@
 *HostMetrics.load15 int_size:16
 *HostMetrics.user_string max_size:200
 
+# Nanopb storage limit. The actual count/size per publication limit is enforced
+# at runtime which shrinks the batch until it fits the 233-byte meshtastic_Data.payload limit.
 *TelemetryRecordHistory.readings max_count:16

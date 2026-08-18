@@ -1103,12 +1103,16 @@ message TelemetryRecord {
   }
 
   /*
-   * Seconds since 1970. Unset if the sender had no real time source.
+   * Seconds since 1970. Unset if the sender had no real time source when captured.
+   * Takes priority when set. A reading never has both time and delta_secs.
    */
   optional fixed32 time = 4;
 
   /*
-   * Seconds since the previous reading in this node's history was captured
+   * Seconds since the node's previous history record was captured. Set only
+   * when time is unset. To reconstruct a time, check the nearest reading in either direction
+   * with a real timestamp and sum deltas between.
+   * If no reading with real timestamp is reachable, mark the last reading's timestamp as reception time.
    */
   optional uint32 delta_secs = 5;
 }
