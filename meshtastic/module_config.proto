@@ -84,6 +84,11 @@ message ModuleConfig {
      * Settings for reporting information about our node to a map via MQTT
      */
     MapReportSettings map_report_settings = 11;
+
+    /*
+     * If true, we will always upload telemetry via MQTT at reading interval if connected
+     */
+    bool telemetry_uplink_enabled = 12;
   }
 
   /*
@@ -679,6 +684,21 @@ message ModuleConfig {
      * Enable/Disable the air quality telemetry measurement module on-device display
      */
     bool air_quality_screen_enabled = 15;
+
+    /*
+     * Power telemetry read interval
+     */
+    uint32 power_telemetry_read_interval = 16;
+
+    /*
+     * Environment telemetry read interval
+     */
+    uint32 environment_telemetry_read_interval = 17;
+
+    /*
+     * Air quality telemetry read interval
+     */
+    uint32 air_quality_telemetry_read_interval = 18;
   }
 
   /*

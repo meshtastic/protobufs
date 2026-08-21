@@ -273,6 +273,13 @@ enum PortNum {
   LORA_OTA_APP = 79;
 
   /*
+   * Batched telemetry readings accumulated between publishes, sent as a
+   * TelemetryRecordHistory by SENSOR-role nodes
+   * ENCODING: Protobuf
+   */
+  TELEMETRY_HISTORY_APP = 80;
+
+  /*
    * GroupAlarm integration
    * Used for transporting GroupAlarm-related messages between Meshtastic nodes
    * and companion applications/services.
