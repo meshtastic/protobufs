@@ -17,6 +17,8 @@
 *LoRaConfig.channel_num int_size:16
 
 *PowerConfig.device_battery_ina_address int_size:8
+*PowerConfig.ocv max_count:11
+*PowerConfig.ocv int_size:16
 
 *SecurityConfig.public_key max_size:32
 *SecurityConfig.private_key max_size:32
