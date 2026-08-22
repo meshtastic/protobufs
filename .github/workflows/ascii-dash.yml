@@ -1,0 +1,44 @@
+name: ascii-dash
+
+# Fails a PR that introduces non-ASCII dashes (Unicode General Punctuation
+# U+2010-U+2015: hyphen, non-breaking hyphen, figure dash, en dash, em dash,
+# horizontal bar) in comments. These should be a plain ASCII '-'. buf format
+# only normalizes proto syntax, not comment text, so this is a separate gate.
+#
+# Runs from the base branch on every PR (including forks), so contributors
+# cannot disable it within their own PR. Needs no secrets or write access.
+
+on: pull_request
+
+permissions:
+  contents: read
+
+jobs:
+  ascii-dash:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # No authenticated git operations follow, so don't leave the token
+          # in the local git config for later steps.
+          persist-credentials: false
+
+      - name: Reject non-ASCII dashes
+        run: |
+          # git grep exits 0 when it finds a match (which is the failure case
+          # here), 1 when it finds none (the pass case), and anything else on
+          # tool error, which must also fail the check rather than silently
+          # pass. LC_ALL=C forces byte-wise matching so the \x escapes refer
+          # to raw UTF-8 bytes rather than being reinterpreted as codepoints.
+          status=0
+          LC_ALL=C git grep -nP '\xe2\x80[\x90-\x95]' -- \
+              '*.proto' '*.options' '*.md' '*.yml' '*.yaml' '*.kts' || status=$?
+          if [ "$status" -eq 0 ]; then
+            echo "::error::Non-ASCII dash (U+2010-U+2015) found above. Replace it with an ASCII '-'."
+            exit 1
+          elif [ "$status" -ne 1 ]; then
+            echo "::error::git grep failed with exit code $status; cannot verify dashes."
+            exit "$status"
+          fi
+          echo "No non-ASCII dashes found."

@@ -13,7 +13,7 @@ This package publishes Kotlin Multiplatform models generated from the protobuf s
 
 ## Versioning
 
-The SDK version is derived automatically from the latest git tag — no manual version file to maintain.
+The SDK version is derived automatically from the latest git tag - no manual version file to maintain.
 
 | Context | Version | Source |
 |---------|---------|--------|
@@ -26,8 +26,8 @@ CI snapshots keep the tag and append the commit count since it (`N`) plus the
 SHA; local builds instead patch-bump. The count goes after a *dot* (`{tag}.{N}`),
 which is deliberate: in Maven's ordering a dot-separated numeric segment outranks
 any hyphen-nested token, so a newer commit's higher count sorts above older
-snapshots — including legacy `{tag}-{sha}-SNAPSHOT` builds still in the repo whose
-SHA can tokenize to a large integer — while the whole coordinate still sorts
+snapshots - including legacy `{tag}-{sha}-SNAPSHOT` builds still in the repo whose
+SHA can tokenize to a large integer - while the whole coordinate still sorts
 *above* its base release and *below* the next one. Dependency bots therefore pick
 the newest. A *bare* `-SNAPSHOT` sorts *below* its base, so the local fallback
 names the next version to stay ahead of the last release. Both land between the
@@ -64,11 +64,11 @@ implementation("org.meshtastic:protobufs:2.7.23")
 
 Every push to `master` publishes a snapshot under a unique coordinate of the
 form `{latest-tag}.{N}-g{short-sha}-SNAPSHOT` (e.g. `2.7.23.42-g497cd88-SNAPSHOT`):
-`git describe --tags --long` with the `v` stripped — the latest release tag, the
+`git describe --tags --long` with the `v` stripped - the latest release tag, the
 commit count `N` since that tag (after a **dot**), and the 7-char commit SHA. The
 dot-separated numeric `N` outranks any hyphen-nested token in Maven's ordering, so
-newer commits sort *above* older snapshots — including legacy `{tag}-{sha}` builds
-still in the repo — letting dependency bots pick the newest and never downgrade,
+newer commits sort *above* older snapshots - including legacy `{tag}-{sha}` builds
+still in the repo - letting dependency bots pick the newest and never downgrade,
 while each snapshot still sorts *above* the release it was built from yet *below*
 the next release. They live in the Central Portal snapshots repository,
 not on the main Maven Central CDN. To consume them, add that repository
@@ -83,7 +83,7 @@ repositories {
   }
 }
 
-// build.gradle.kts — pin a specific published snapshot
+// build.gradle.kts - pin a specific published snapshot
 implementation("org.meshtastic:protobufs:2.7.23.42-g497cd88-SNAPSHOT")
 ```
 
