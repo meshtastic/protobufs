@@ -592,6 +592,16 @@ message Config {
        */
       UDP_BROADCAST = 0x0001;
     }
+
+    /*
+     * Enable rebroadcasting mesh packets via UDP
+     */
+    bool udp_rebroadcast = 12;
+
+    /*
+     * Enable skipping LoRa for locally generated packets sent via UDP
+     */
+    bool udp_skip_lora = 13;
   }
 
   /*
