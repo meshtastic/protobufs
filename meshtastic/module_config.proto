@@ -679,6 +679,17 @@ message ModuleConfig {
      * Enable/Disable the air quality telemetry measurement module on-device display
      */
     bool air_quality_screen_enabled = 15;
+
+    /*
+     * Enable/disable Cellular (modem) diagnostic metrics
+     */
+    bool cellular_measurement_enabled = 16;
+
+    /*
+     * Interval in seconds of how often we should try to send our
+     * cellular diagnostic metrics to the mesh
+     */
+    uint32 cellular_update_interval = 17;
   }
 
   /*
