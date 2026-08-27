@@ -273,6 +273,16 @@ enum PortNum {
   LORA_OTA_APP = 79;
 
   /*
+   * PRIVEU end-to-end-encrypted messenger.
+   * Carries a self-contained authenticated, forward-secret envelope inside
+   * Data.payload; Meshtastic is used as transport only. Messages larger than
+   * one frame are fragmented with a 6-byte reassembly header.
+   *
+   * ENCODING: binary (canonical CBOR)
+   */
+  PRIVEU_APP = 80;
+
+  /*
    * GroupAlarm integration
    * Used for transporting GroupAlarm-related messages between Meshtastic nodes
    * and companion applications/services.
