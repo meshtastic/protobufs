@@ -868,14 +868,12 @@ message ModuleConfig {
      */
     uint32 flags = 1;
 
-    /*
-     * Optional: node ID to send beacon messages AS.
-     * When set, the `from` field of outgoing beacon packets is set to this node ID,
-     * making beacons appear to originate from that node.
-     * When unset (0), beacons are sent as the local node.
-     * A remote admin can only set this field to their own node ID.
-     */
-    uint32 broadcast_send_as_node = 3;
+    // Tag 3 was broadcast_send_as_node, a node-ID override that rewrote the `from` field of
+    // outgoing beacon packets so they appeared to originate from another node. Firmware never
+    // applied it (the assignment was left commented out) and it never reached a tagged release,
+    // so it is removed rather than kept as a settable no-op. Reserved to prevent reuse.
+    reserved 3;
+    reserved "broadcast_send_as_node";
 
     /*
      * Message to include in each beacon broadcast. Max 100 bytes enforced by firmware.
