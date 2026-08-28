@@ -3,7 +3,6 @@ syntax = "proto3";
 package meshtastic;
 
 import "meshtastic/atak.proto";
-import "meshtastic/channel.proto";
 import "meshtastic/config.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
@@ -880,10 +879,18 @@ message ModuleConfig {
      */
     string broadcast_message = 4;
 
+    // Tag 5 was broadcast_offer_channel, an inline ChannelSettings. Replaced by
+    // broadcast_offer_channel_index (tag 12): one entry point for channel data, and the
+    // admin message no longer carries a second copy of a name and PSK.
+    reserved 5;
+    reserved "broadcast_offer_channel";
+
     /*
-     * Optional channel (name + PSK) to advertise in the MeshBeacon offer_channel field.
+     * Index into the device's channel table of the channel to advertise. The slot must be
+     * configured and NOT Role_DISABLED - a disabled slot retains the settings of a deleted
+     * channel, and advertising it would broadcast a retired PSK.
      */
-    ChannelSettings broadcast_offer_channel = 5;
+    optional uint32 broadcast_offer_channel_index = 12;
 
     /*
      * Optional region to advertise in the MeshBeacon offer_region field.
@@ -909,6 +916,7 @@ message ModuleConfig {
      */
     uint32 broadcast_interval_secs = 11;
 
+
     /*
      * One entry in the broadcast destination list.
      * Each entry names one set of radio settings to send a beacon copy on.
@@ -925,16 +933,29 @@ message ModuleConfig {
        */
       Config.LoRaConfig.RegionCode region = 2;
 
-      // Tag 3 was an embedded ChannelSettings; replaced by channel_index (tag 4) to keep
-      // ModuleConfig within the BLE FromRadio size budget. Branch unreleased, so tag 3 is a gap.
+      // Tag 3 was an embedded ChannelSettings; replaced by channel_index (tag 4).
+      reserved 3;
 
       /*
        * Index into the device's channel table (0..MAX_NUM_CHANNELS-1) of the channel to
        * transmit this target's beacon on. The referenced channel must already be configured
-       * on the node (its key is needed to encrypt). If unset, the default channel for the
+       * on the node (its key is needed to encrypt) and must NOT be Role_DISABLED - a disabled
+       * slot retains the settings of a deleted channel. If unset, the default channel for the
        * preset is used.
        */
       optional uint32 channel_index = 4;
+
+      /*
+       * Frequency slot to transmit this target's beacon on, 1-based, matching
+       * Config.LoRaConfig.channel_num. Unset means derive it the way any node on this
+       * channel would: the region's override slot if it has one, otherwise the hash of the
+       * target channel's name. Do not send 0 - it is the same as unset.
+       * Explicit modem parameters and a verbatim override frequency are deliberately not
+       * offered here; if they are added later this field becomes one arm of a oneof with
+       * override_frequency, which keeps the tag and wire format but changes the C API.
+       */
+      optional uint32 frequency_slot = 5;
+
     }
 
     /*
@@ -946,6 +967,14 @@ message ModuleConfig {
      * Entries that resolve to the same effective preset, region and channel are deduplicated, so
      * a duplicate entry does not produce a second transmission.
      */
+    /*
+     * Frequency slot to advertise, 1-based, matching Config.LoRaConfig.channel_num.
+     * Unset means the receiver can derive it from the advertised region, channel name and
+     * preset - which covers a region that mandates a slot, and a mesh on the default hash.
+     * Set it only where the mesh deliberately pins a non-default slot. Do not send 0.
+     */
+    optional uint32 broadcast_offer_frequency_slot = 14;
+
     repeated BroadcastTarget broadcast_targets = 13;
   }
 

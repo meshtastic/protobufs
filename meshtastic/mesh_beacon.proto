@@ -39,4 +39,15 @@ message MeshBeacon {
    * Combined with offer_region, tells a client "there is a mesh on this preset/region".
    */
   optional Config.LoRaConfig.ModemPreset offer_preset = 4;
+
+  /*
+   * Frequency slot this mesh uses, 1-based, matching Config.LoRaConfig.channel_num.
+   * OMITTED when a receiver can derive the slot itself from offer_region, offer_channel's
+   * name and offer_preset - an unset offer_preset means the region's default preset. That
+   * covers both a region with a mandated slot and a mesh on the default name hash.
+   * PRESENT means this mesh deliberately deviates from what derivation would produce; a
+   * client should still validate the result against its own region before offering to join.
+   * Do not send 0 - it is the same as omitting the field.
+   */
+  optional uint32 offer_frequency_slot = 5;
 }
