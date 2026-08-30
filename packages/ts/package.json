@@ -19,7 +19,7 @@
     "@bufbuild/protobuf": "^2.2.3"
   },
   "devDependencies": {
-    "tsdown": "^0.13.4",
+    "tsdown": "^0.22.14",
     "typescript": "^7.0.0"
   },
   "scripts": {
@@ -31,6 +31,7 @@
     "format": [
       "esm"
     ],
-    "splitting": false
+    "splitting": false,
+    "fixedExtension": false
   }
 }
