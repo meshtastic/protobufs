@@ -2508,6 +2508,13 @@ message DisplayFrame {
      * byte index = x + (y / 8) * width, bit index = y % 8.
      */
     MONO_VLSB = 1;
+
+    /*
+     * 16 bits per pixel, RGB565 in little-endian byte order, rows tightly
+     * packed. Used with the partial-update rect fields: data covers only
+     * the rectangle. Streamed by LVGL-based color UIs.
+     */
+    RGB565 = 2;
   }
 
   /*
@@ -2549,12 +2556,12 @@ message DisplayFrame {
   bytes data = 7;
 
   /*
-   * Optional partial-update rectangle, reserved for richer formats (e.g.
-   * dirty-rect RGB565 streaming from LVGL-based UIs). When rect_width > 0,
-   * data carries only the rectangle's pixels and offset/total_size describe
-   * the rectangle's own buffer; width/height above always remain the full
-   * display dimensions. Firmware currently sends only full frames (all four
-   * fields unset).
+   * Optional partial-update rectangle (dirty-rect streaming from LVGL-based
+   * color UIs, format RGB565). When rect_width > 0, data carries only the
+   * rectangle's pixels and offset/total_size describe the rectangle's own
+   * buffer; width/height above always remain the full display dimensions,
+   * and each rectangle is an independently completed unit under its own
+   * frame_id. MONO_VLSB frames never set these fields.
    */
   uint32 rect_x = 8;
 
