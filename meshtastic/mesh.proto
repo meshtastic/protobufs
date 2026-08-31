@@ -2540,6 +2540,31 @@ message DisplayFrame {
    * The framebuffer bytes for this chunk.
    */
   bytes data = 7;
+
+  /*
+   * Optional partial-update rectangle, reserved for richer formats (e.g.
+   * dirty-rect RGB565 streaming from LVGL-based UIs). When rect_width > 0,
+   * data carries only the rectangle's pixels and offset/total_size describe
+   * the rectangle's own buffer; width/height above always remain the full
+   * display dimensions. Firmware currently sends only full frames (all four
+   * fields unset).
+   */
+  uint32 rect_x = 8;
+
+  /*
+   * See rect_x.
+   */
+  uint32 rect_y = 9;
+
+  /*
+   * See rect_x.
+   */
+  uint32 rect_width = 10;
+
+  /*
+   * See rect_x.
+   */
+  uint32 rect_height = 11;
 }
 
 /*
@@ -2883,6 +2908,83 @@ message DeviceMetadata {
    * This is a read-only capability and must be false when XEdDSA is not compiled in.
    */
   bool has_xeddsa = 14;
+
+  /*
+   * Describes the device's screen when one is present; absent on display-less
+   * builds. Lets clients gate display-mirroring UI (see DisplayFrame) and
+   * adapt to the panel — e.g. expect slow refresh from EINK, or offer
+   * tap-to-touch when has_touch is set.
+   */
+  DisplayInfo display = 15;
+}
+
+/*
+ * Static description of a device's display, sent inside DeviceMetadata
+ * during the connection handshake.
+ */
+message DisplayInfo {
+  /*
+   * Physical panel technology, as a hint for client rendering and refresh
+   * expectations.
+   */
+  enum PanelClass {
+    /*
+     * Default; should not be sent.
+     */
+    PANEL_CLASS_UNSPECIFIED = 0;
+
+    /*
+     * Monochrome OLED (SSD1306/SH1106 family).
+     */
+    OLED = 1;
+
+    /*
+     * Monochrome LCD (ST7567 family).
+     */
+    LCD = 2;
+
+    /*
+     * Color TFT (currently rendering the 1bpp base UI).
+     */
+    TFT = 3;
+
+    /*
+     * E-ink panel: refresh is slow and full-screen; clients should prefer
+     * one-shot frame requests over continuous mirroring.
+     */
+    EINK = 4;
+
+    /*
+     * LED matrix (HUB75).
+     */
+    HUB75 = 5;
+  }
+
+  /*
+   * Display width in pixels.
+   */
+  uint32 width = 1;
+
+  /*
+   * Display height in pixels.
+   */
+  uint32 height = 2;
+
+  /*
+   * Pixel encoding that DisplayFrame streams from this device will use.
+   */
+  DisplayFrame.Format format = 3;
+
+  /*
+   * Physical panel technology.
+   */
+  PanelClass panel_class = 4;
+
+  /*
+   * True when the panel accepts touch input; clients may map taps on a
+   * mirrored frame to AdminMessage.send_input_event touch coordinates.
+   */
+  bool has_touch = 5;
 }
 
 /*

@@ -117,6 +117,12 @@
 *DisplayFrame.data max_size:384
 *DisplayFrame.width int_size:16
 *DisplayFrame.height int_size:16
+*DisplayFrame.rect_x int_size:16
+*DisplayFrame.rect_y int_size:16
+*DisplayFrame.rect_width int_size:16
+*DisplayFrame.rect_height int_size:16
+*DisplayInfo.width int_size:16
+*DisplayInfo.height int_size:16
 
 *MqttClientProxyMessage.topic max_size:60
 *MqttClientProxyMessage.data max_size:435
