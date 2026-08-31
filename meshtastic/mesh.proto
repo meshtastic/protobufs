@@ -2481,6 +2481,10 @@ message FromRadio {
  * A chunk of the device's display framebuffer, streamed to the local client
  * over BLE/serial/TCP. Frames larger than one chunk are split by byte offset;
  * a chunk with offset + data length == total_size completes the frame.
+ * Chunks of one frame arrive contiguously and in offset order (FromRadio is
+ * a reliable ordered stream), so clients may reassemble into a single buffer
+ * without reordering. A frame whose streaming has begun is always drained to
+ * completion, even if mirroring is disabled mid-frame.
  */
 message DisplayFrame {
   /*
@@ -2488,10 +2492,15 @@ message DisplayFrame {
    */
   enum Format {
     /*
+     * Default; should not be sent.
+     */
+    FORMAT_UNSPECIFIED = 0;
+
+    /*
      * 1 bit per pixel, vertical LSB-first pages (SSD1306/OLEDDisplay layout):
      * byte index = x + (y / 8) * width, bit index = y % 8.
      */
-    MONO_VLSB = 0;
+    MONO_VLSB = 1;
   }
 
   /*
@@ -2510,8 +2519,10 @@ message DisplayFrame {
   Format format = 3;
 
   /*
-   * Monotonically increasing frame counter, constant across the chunks of
-   * one frame so the client can detect interleaving or loss.
+   * Frame counter, constant across the chunks of one frame so the client
+   * can detect interleaving or loss. Increments per captured frame, wraps
+   * at uint32 range, and restarts from 1 on device reboot — treat any
+   * change as "a new frame", not as an ordering guarantee.
    */
   uint32 frame_id = 4;
 
