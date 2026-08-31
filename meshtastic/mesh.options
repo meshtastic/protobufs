@@ -110,10 +110,13 @@
 *LoRaRegionPresets.group_index     int_size:8
 
 # Display mirroring (FromRadio.display_frame). 384 keeps FromRadio under the
-# 512-byte MAX_TO_FROM_RADIO_SIZE cap (data 384+3, six varint fields <=30, oneof
-# and submessage headers <=10, FromRadio.id <=6) and splits the common 128x64
-# 1bpp frame (1024 bytes) into three chunks aligned on whole page rows.
+# 512-byte MAX_TO_FROM_RADIO_SIZE cap (data 384+3, five uint32 varints <=30 plus
+# format <=2, oneof and submessage headers <=10, FromRadio.id <=6) and splits the
+# common 128x64 1bpp frame (1024 bytes) into three chunks aligned on whole page
+# rows. width/height are panel dimensions, always < 65536.
 *DisplayFrame.data max_size:384
+*DisplayFrame.width int_size:16
+*DisplayFrame.height int_size:16
 
 *MqttClientProxyMessage.topic max_size:60
 *MqttClientProxyMessage.data max_size:435
