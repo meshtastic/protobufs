@@ -44,7 +44,6 @@
 # / fill_argb are fixed32 (always 4 bytes on the wire). Vertex pool is 32
 # entries x ~12B each ~= 384B worst case. Telestrations beyond 32 vertices
 # MUST be pre-truncated by the sender with `truncated = true`.
-*DrawnShape.vertices max_count:32
 *DrawnShape.major_cm int_size:32
 *DrawnShape.minor_cm int_size:32
 *DrawnShape.angle_deg int_size:16

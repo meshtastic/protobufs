@@ -15,6 +15,20 @@ on:
         required: false
         type: boolean
         default: false
+  # Called by create_tag.yml right after a release tag is cut. Tags created
+  # with GITHUB_TOKEN do not fire the `push: tags` trigger above (GitHub's
+  # recursion guard), so the release flow invokes this workflow directly.
+  workflow_call:
+    inputs:
+      version:
+        description: "Version to publish (e.g. v1.2.3)."
+        required: true
+        type: string
+      dry_run:
+        description: "Dry run mode - generate artifacts without publishing"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -28,7 +42,7 @@ jobs:
       tag: ${{ steps.version.outputs.TAG }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -48,9 +62,8 @@ jobs:
           echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
           echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
           echo "Resolved VERSION=$VERSION, TAG=$TAG"
-
       - name: Setup Buf
-        uses: bufbuild/buf-setup-action@main
+        uses: bufbuild/buf-setup-action@v1.50.0
         with:
           github_token: ${{ github.token }}
 
@@ -62,17 +75,14 @@ jobs:
           set -euo pipefail
           src_dir="packages/ts/lib/meshtastic"
           dest_dir="packages/ts/lib"
-
           if [ ! -d "$src_dir" ]; then
             echo "Expected source directory '$src_dir' does not exist. 'buf generate' may have failed or changed its output paths." >&2
             exit 1
           fi
-
           if ! compgen -G "$src_dir"/*_pb.ts > /dev/null; then
             echo "No '*_pb.ts' files found in '$src_dir'. 'buf generate' may have produced no TypeScript files or changed their naming." >&2
             exit 1
           fi
-
           mv "$src_dir"/*_pb.ts "$dest_dir"/
       - name: Show generated files
         run: |
@@ -80,7 +90,6 @@ jobs:
           ls -la packages/ts/
           echo "=== packages/ts/lib contents ==="
           ls -la packages/ts/lib/ || echo "lib folder not found"
-
       - name: Set package versions
         run: |
           set -euo pipefail
@@ -89,12 +98,11 @@ jobs:
             test -f "$f" || { echo "Missing $f" >&2; exit 1; }
             sed -i "s/__PACKAGE_VERSION__/${VERSION}/g" "$f"
           done
-
       - name: Copy license & README
         run: cp LICENSE README.md packages/ts/
 
       - name: Upload TypeScript code
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ts_code
           path: packages/ts
@@ -104,7 +112,7 @@ jobs:
     needs: codegen
     steps:
       - name: Download TypeScript code
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ts_code
 
@@ -116,11 +124,10 @@ jobs:
           ls -la
           echo "=== lib/ contents ==="
           ls -la lib/ || echo "lib folder not found"
-
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "24"
 
       - name: Install dependencies
         run: npm install
@@ -133,9 +140,8 @@ jobs:
           echo "=== Build output ==="
           ls -la
           ls -la dist/
-
       - name: Upload built NPM package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: npm_package
           path: |
@@ -143,9 +149,8 @@ jobs:
             package.json
             LICENSE
             README.md
-
       - name: Upload JSR package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: jsr_package
           path: |
@@ -154,19 +159,18 @@ jobs:
             deno.json
             LICENSE
             README.md
-
   create-release-zips:
     runs-on: ubuntu-24.04
     needs: [codegen, build-typescript]
     steps:
       - name: Download NPM package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: npm_package
           path: npm_package
 
       - name: Download JSR package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: jsr_package
           path: jsr_package
@@ -175,43 +179,40 @@ jobs:
         run: |
           cd npm_package && zip -r ../meshtastic-protobufs-npm.zip . && cd ..
           cd jsr_package && zip -r ../meshtastic-protobufs-jsr.zip . && cd ..
-
       - name: Upload release zips
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release_zips
           path: |
             meshtastic-protobufs-npm.zip
             meshtastic-protobufs-jsr.zip
-
   upload-release-assets:
     runs-on: ubuntu-24.04
     needs: [codegen, create-release-zips]
     if: ${{ !inputs.dry_run }}
     steps:
       - name: Download release zips
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: release_zips
 
       - name: Upload assets to GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.codegen.outputs.tag }}
           files: |
             meshtastic-protobufs-npm.zip
             meshtastic-protobufs-jsr.zip
-
   push-buf-registry:
     runs-on: ubuntu-24.04
     needs: codegen
     if: ${{ !inputs.dry_run }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Buf
-        uses: bufbuild/buf-setup-action@main
+        uses: bufbuild/buf-setup-action@v1.50.0
         with:
           github_token: ${{ github.token }}
 
@@ -224,26 +225,22 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [codegen, build-typescript]
     if: ${{ !inputs.dry_run }}
-    permissions:
-      contents: read
-      id-token: write
     steps:
       - name: Download NPM package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: npm_package
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "24"
           registry-url: "https://registry.npmjs.org"
 
-      - name: Install NPM CLI
-        run: npm install -g npm@latest
-
       - name: Publish to NPM
-        run: npm publish
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-jsr:
     runs-on: ubuntu-24.04
@@ -254,14 +251,14 @@ jobs:
       id-token: write
     steps:
       - name: Download JSR package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: jsr_package
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "24"
 
       - name: Publish to JSR
-        run: npx jsr publish
+        run: npx jsr publish --allow-dirty

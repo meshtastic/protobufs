@@ -18,6 +18,7 @@
 
 *HamParameters.call_sign max_size:8
 *HamParameters.short_name max_size:5
+*HamParameters.long_name max_size:15
 *NodeRemoteHardwarePinsResponse.node_remote_hardware_pins max_count:16
 
 *LockdownAuth.passphrase max_size:32

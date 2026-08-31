@@ -2,4 +2,6 @@
 
 # Generated protobuf files
 packages/ts/lib/
+packages/kmp/.gradle/
+packages/kmp/build/
 .bin/
