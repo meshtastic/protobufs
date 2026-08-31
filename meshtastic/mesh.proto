@@ -2487,9 +2487,10 @@ message FromRadio {
  * A chunk of the device's display framebuffer, streamed to the local client
  * over BLE/serial/TCP. Frames larger than one chunk are split by byte offset;
  * a chunk with offset + data length == total_size completes the frame.
- * Chunks of one frame arrive contiguously and in offset order (FromRadio is
- * a reliable ordered stream), so clients may reassemble into a single buffer
- * without reordering. A frame whose streaming has begun is always drained to
+ * Chunks of one frame arrive contiguously (no other display_frame between
+ * them; display_palette messages may interleave) and in offset order
+ * (FromRadio is a reliable ordered stream), so clients may reassemble into
+ * a single buffer without reordering. A frame whose streaming has begun is always drained to
  * completion, even if mirroring is disabled mid-frame.
  */
 message DisplayFrame {
@@ -2588,9 +2589,11 @@ message DisplayFrame {
  * render the mirror in the panel's true colors at 1bpp bandwidth.
  * Sent as FromRadio.display_palette, split by region index when the table
  * exceeds one message; re-sent only when the region layout or theme changes
- * (the signature changes with it). Within a chunk regions are ordered by
- * their table index; a later region overrides earlier ones where they
- * overlap. All colors are RGB565 in logical bit layout (RRRRRGGGGGGBBBBB).
+ * (the signature changes with it). Regions are ordered by table index; a
+ * region with a higher table index overrides lower-indexed ones where they
+ * overlap, regardless of chunk boundaries. A client holding partial chunks
+ * of a signature that no longer matches incoming chunks should discard
+ * them. All colors are RGB565 in logical bit layout (RRRRRGGGGGGBBBBB).
  */
 message DisplayPalette {
   /*
@@ -3038,7 +3041,7 @@ message DisplayInfo {
     LCD = 2;
 
     /*
-     * Color TFT (currently rendering the 1bpp base UI).
+     * Color TFT.
      */
     TFT = 3;
 
