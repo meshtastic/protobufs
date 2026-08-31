@@ -124,6 +124,20 @@
 *DisplayInfo.width int_size:16
 *DisplayInfo.height int_size:16
 
+# Colorization palette (FromRadio.display_palette). 16 regions/chunk keeps the
+# encoded message comfortably under the 512-byte cap (16 regions x <=26 bytes
+# plus <=25 bytes of header fields); the firmware's table caps at 48 regions,
+# so a full palette is at most 3 chunks, re-sent only on signature change.
+*DisplayPalette.regions max_count:16
+*DisplayPalette.region_offset int_size:8
+*DisplayPalette.region_total int_size:8
+*DisplayPalette.ColorRegion.x int_size:16
+*DisplayPalette.ColorRegion.y int_size:16
+*DisplayPalette.ColorRegion.width int_size:16
+*DisplayPalette.ColorRegion.height int_size:16
+*DisplayPalette.ColorRegion.on_color int_size:16
+*DisplayPalette.ColorRegion.off_color int_size:16
+
 *MqttClientProxyMessage.topic max_size:60
 *MqttClientProxyMessage.data max_size:435
 *MqttClientProxyMessage.text max_size:435
