@@ -458,6 +458,20 @@ message AdminMessage {
     uint32 toggle_muted_node = 49;
 
     /*
+     * Request a single frame of the device's display framebuffer.
+     * The frame is delivered to the local client as FromRadio.display_frame
+     * chunks (see DisplayFrame in mesh.proto).
+     */
+    bool get_display_frame_request = 50;
+
+    /*
+     * Enable or disable continuous mirroring of the device display.
+     * While enabled, the device sends a DisplayFrame after each screen
+     * redraw that changed the framebuffer, as FromRadio.display_frame chunks.
+     */
+    bool set_display_mirror = 51;
+
+    /*
      * Begins an edit transaction for config, module config, owner, and channel settings changes
      * This will delay the standard *implicit* save to the file system and subsequent reboot behavior until committed (commit_edit_settings)
      */

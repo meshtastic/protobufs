@@ -2467,7 +2467,68 @@ message FromRadio {
      * any group carries no constraint info and should not be restricted.
      */
     LoRaRegionPresetMap region_presets = 19;
+
+    /*
+     * One chunk of the device's display framebuffer, sent while display
+     * mirroring is active (see AdminMessage.set_display_mirror and
+     * AdminMessage.get_display_frame_request).
+     */
+    DisplayFrame display_frame = 20;
   }
+}
+
+/*
+ * A chunk of the device's display framebuffer, streamed to the local client
+ * over BLE/serial/TCP. Frames larger than one chunk are split by byte offset;
+ * a chunk with offset + data length == total_size completes the frame.
+ */
+message DisplayFrame {
+  /*
+   * Pixel encodings of the framebuffer bytes.
+   */
+  enum Format {
+    /*
+     * 1 bit per pixel, vertical LSB-first pages (SSD1306/OLEDDisplay layout):
+     * byte index = x + (y / 8) * width, bit index = y % 8.
+     */
+    MONO_VLSB = 0;
+  }
+
+  /*
+   * Display width in pixels.
+   */
+  uint32 width = 1;
+
+  /*
+   * Display height in pixels.
+   */
+  uint32 height = 2;
+
+  /*
+   * Pixel encoding of data.
+   */
+  Format format = 3;
+
+  /*
+   * Monotonically increasing frame counter, constant across the chunks of
+   * one frame so the client can detect interleaving or loss.
+   */
+  uint32 frame_id = 4;
+
+  /*
+   * Byte offset of this chunk within the full frame buffer.
+   */
+  uint32 offset = 5;
+
+  /*
+   * Total size in bytes of the full frame buffer.
+   */
+  uint32 total_size = 6;
+
+  /*
+   * The framebuffer bytes for this chunk.
+   */
+  bytes data = 7;
 }
 
 /*
