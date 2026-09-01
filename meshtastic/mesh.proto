@@ -1757,6 +1757,11 @@ message MeshPacket {
      * Arrived via Unicast UDP
      */
     TRANSPORT_UNICAST_UDP = 8;
+
+    /*
+     * Arrived via a connectionless BLE 5 extended advertisement
+     */
+    TRANSPORT_BLE_ADV = 9;
   }
 
   /*
