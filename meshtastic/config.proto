@@ -591,6 +591,11 @@ message Config {
        * Enable broadcasting packets via UDP over the local network
        */
       UDP_BROADCAST = 0x0001;
+
+      /*
+       * Enable broadcasting packets via connectionless BLE extended advertisements
+       */
+      BLE_BROADCAST = 0x0002;
     }
   }
 
