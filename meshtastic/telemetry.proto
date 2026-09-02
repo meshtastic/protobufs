@@ -238,7 +238,7 @@ message EnvironmentMetrics {
    * Multi-channel One-Wire Temperature Channel 7 (*C)
    */
   optional float one_wire_temperature_ch7 = 39;
-  
+
   /*
    * Lightning strikes detected in the last hour
    */
@@ -248,7 +248,7 @@ message EnvironmentMetrics {
    * Estimated distance to the leading edge of the storm, in km
    */
   optional float lightning_distance_km = 41;
-  
+
   /*
    * Soil pH, 0-14
    */
