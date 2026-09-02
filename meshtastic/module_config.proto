@@ -868,14 +868,12 @@ message ModuleConfig {
      */
     uint32 flags = 1;
 
-    /*
-     * Optional: node ID to send beacon messages AS.
-     * When set, the `from` field of outgoing beacon packets is set to this node ID,
-     * making beacons appear to originate from that node.
-     * When unset (0), beacons are sent as the local node.
-     * A remote admin can only set this field to their own node ID.
-     */
-    uint32 broadcast_send_as_node = 3;
+    // Tag 3 was broadcast_send_as_node, a node-ID override that rewrote the `from` field of
+    // outgoing beacon packets so they appeared to originate from another node. Firmware never
+    // applied it (the assignment was left commented out) and it never reached a tagged release,
+    // so it is removed rather than kept as a settable no-op. Reserved to prevent reuse.
+    reserved 3;
+    reserved "broadcast_send_as_node";
 
     /*
      * Message to include in each beacon broadcast. Max 100 bytes enforced by firmware.
@@ -897,25 +895,14 @@ message ModuleConfig {
      */
     optional Config.LoRaConfig.ModemPreset broadcast_offer_preset = 7;
 
-    /*
-     * Single-target TX channel: channel settings (name + PSK) to send beacons on.
-     * If unset, beacons go out on the primary channel. Used only when broadcast_targets is empty.
-     * NOTE: the single-target path embeds the ChannelSettings inline here, whereas a
-     * broadcast_targets entry references a channel-table slot by channel_index instead — see
-     * BroadcastTarget. The two paths are equal, first-class options; only this representation differs.
-     */
-    ChannelSettings broadcast_on_channel = 8;
-
-    /*
-     * Region to use when sending beacons on broadcast_on_preset.
-     */
-    Config.LoRaConfig.RegionCode broadcast_on_region = 9;
-
-    /*
-     * Modem preset to use when sending beacons.
-     * If different from current config, the radio is temporarily switched for TX.
-     */
-    optional Config.LoRaConfig.ModemPreset broadcast_on_preset = 10;
+    // Tags 8, 9 and 10 were broadcast_on_channel / broadcast_on_region / broadcast_on_preset: a
+    // second way to describe a single beacon destination, used only when broadcast_targets was
+    // empty. Consolidated onto broadcast_targets so there is one way to name a destination.
+    // broadcast_on_channel embedded a ChannelSettings inline, which allowed transmitting on a
+    // channel absent from the node's channel table; that is no longer supported - the channel must
+    // exist on the node. Never in a tagged release. Reserved to prevent reuse.
+    reserved 8, 9, 10;
+    reserved "broadcast_on_channel", "broadcast_on_region", "broadcast_on_preset";
 
     /*
      * How often to broadcast, in seconds. Min 3600 (1 h), default 3600.
@@ -923,8 +910,8 @@ message ModuleConfig {
     uint32 broadcast_interval_secs = 11;
 
     /*
-     * One entry in the multi-target broadcast list.
-     * The broadcaster transmits one beacon copy per entry, each on its own radio settings.
+     * One entry in the broadcast destination list.
+     * Each entry names one set of radio settings to send a beacon copy on.
      */
     message BroadcastTarget {
       /*
@@ -951,15 +938,13 @@ message ModuleConfig {
     }
 
     /*
-     * Multi-target broadcast list.
-     * When non-empty the broadcaster transmits one beacon copy per entry in sequence,
-     * each temporarily switching the radio to that entry's preset/region/channel.
-     * When empty, the broadcaster uses the scalar broadcast_on_preset / broadcast_on_region /
-     * broadcast_on_channel fields instead (the single-target path).
-     * Single- and multi-target are equal, first-class options — neither is preferred or
-     * deprecated. They differ only in how the TX channel is named: broadcast_on_channel embeds a
-     * ChannelSettings inline, while a target references an existing channel-table slot by
-     * channel_index (see BroadcastTarget).
+     * Broadcast destination list.
+     * The broadcaster sends one beacon copy per distinct destination, in sequence, temporarily
+     * switching the radio to that entry's preset/region/channel for each.
+     * When empty, a single beacon is sent on the node's running preset and region over the
+     * primary channel.
+     * Entries that resolve to the same effective preset, region and channel are deduplicated, so
+     * a duplicate entry does not produce a second transmission.
      */
     repeated BroadcastTarget broadcast_targets = 13;
   }

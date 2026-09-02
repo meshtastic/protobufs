@@ -157,7 +157,7 @@ message Position {
   uint32 gps_accuracy = 14;
 
   /*
-   * Ground speed in m/s and True North TRACK in 1/100 degrees
+   * Ground speed in km/h and True North TRACK in 1/100 degrees
    * Clarification of terms:
    * - "track" is the direction of motion (measured in horizontal plane)
    * - "heading" is where the fuselage points (measured in horizontal plane)
@@ -947,6 +947,21 @@ enum HardwareModel {
    * Heltec ESP32C6 + SX1262
    */
   HELTEC_RCC6 = 143;
+
+  /*
+   * Seeed Wio Tracker L1 Pro 1W, nRF52840 + SX1262 with 1 W external PA
+   */
+  SEEED_WIO_TRACKER_L1_PRO_1W = 144;
+
+  /*
+   * Meshnology W12
+   */
+  MESHNOLOGY_W12 = 145;
+
+  /*
+   * Seeed Studio MeshPager X2
+   */
+  MESHPAGER_X2 = 146;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
@@ -2184,6 +2199,16 @@ enum FirmwareEdition {
    * FAB, the international Fab Lab digital fabrication conference
    */
   FAB = 20;
+
+  /*
+   * Dragon Con, the yearly pop culture convention in Atlanta, GA
+   */
+  DRAGON_CON = 21;
+
+  /*
+   * Chaos Communication Congress, the hacker conference held yearly in Germany
+   */
+  CCC = 22;
 
   /*
    * Placeholder for DIY and unofficial events
