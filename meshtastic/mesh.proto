@@ -2811,6 +2811,11 @@ message DeviceMetadata {
    * This is a read-only capability and must be false when XEdDSA is not compiled in.
    */
   bool has_xeddsa = 14;
+
+  /*
+   * Indicates that the device has a cellular (modem) peripheral
+   */
+  bool hasCellular = 15;
 }
 
 /*
