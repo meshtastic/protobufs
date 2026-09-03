@@ -566,8 +566,11 @@ message ModuleConfig {
 
   /*
    * Preferences for the RangeTestModule
+   * Deprecated in 2.8: the Range Test module is compiled out of every firmware target and no longer acts on this config.
    */
   message RangeTestConfig {
+    option deprecated = true;
+
     /*
      * Enable the Range Test Module
      */
@@ -974,9 +977,9 @@ message ModuleConfig {
     StoreForwardConfig store_forward = 4;
 
     /*
-     * TODO: REPLACE
+     * Deprecated in 2.8: the Range Test module is compiled out of every firmware target.
      */
-    RangeTestConfig range_test = 5;
+    RangeTestConfig range_test = 5 [deprecated = true];
 
     /*
      * TODO: REPLACE
