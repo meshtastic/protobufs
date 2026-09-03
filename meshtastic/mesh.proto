@@ -2467,7 +2467,208 @@ message FromRadio {
      * any group carries no constraint info and should not be restricted.
      */
     LoRaRegionPresetMap region_presets = 19;
+
+    /*
+     * One chunk of the device's display framebuffer, sent while display
+     * mirroring is active (see AdminMessage.set_display_mirror and
+     * AdminMessage.get_display_frame_request).
+     */
+    DisplayFrame display_frame = 20;
+
+    /*
+     * One chunk of the color palette referenced by display_frame's
+     * palette_signature (see DisplayPalette).
+     */
+    DisplayPalette display_palette = 21;
   }
+}
+
+/*
+ * A chunk of the device's display framebuffer, streamed to the local client
+ * over BLE/serial/TCP. Frames larger than one chunk are split by byte offset;
+ * a chunk with offset + data length == total_size completes the frame.
+ * Chunks of one frame arrive contiguously (no other display_frame between
+ * them; display_palette messages may interleave) and in offset order
+ * (FromRadio is a reliable ordered stream), so clients may reassemble into
+ * a single buffer without reordering. A frame whose streaming has begun is always drained to
+ * completion, even if mirroring is disabled mid-frame.
+ */
+message DisplayFrame {
+  /*
+   * Pixel encodings of the framebuffer bytes.
+   */
+  enum Format {
+    /*
+     * Default; should not be sent.
+     */
+    FORMAT_UNSPECIFIED = 0;
+
+    /*
+     * 1 bit per pixel, vertical LSB-first pages (SSD1306/OLEDDisplay layout):
+     * byte index = x + (y / 8) * width, bit index = y % 8.
+     */
+    MONO_VLSB = 1;
+
+    /*
+     * 16 bits per pixel, RGB565 in little-endian byte order, rows tightly
+     * packed. Used with the partial-update rect fields: data covers only
+     * the rectangle. Streamed by LVGL-based color UIs.
+     */
+    RGB565 = 2;
+  }
+
+  /*
+   * Display width in pixels.
+   */
+  uint32 width = 1;
+
+  /*
+   * Display height in pixels.
+   */
+  uint32 height = 2;
+
+  /*
+   * Pixel encoding of data.
+   */
+  Format format = 3;
+
+  /*
+   * Frame counter, constant across the chunks of one frame so the client
+   * can detect interleaving or loss. Increments per captured frame, wraps
+   * at uint32 range, and restarts from 1 on device reboot — treat any
+   * change as "a new frame", not as an ordering guarantee.
+   */
+  uint32 frame_id = 4;
+
+  /*
+   * Byte offset of this chunk within the full frame buffer.
+   */
+  uint32 offset = 5;
+
+  /*
+   * Total size in bytes of the full frame buffer.
+   */
+  uint32 total_size = 6;
+
+  /*
+   * The framebuffer bytes for this chunk.
+   */
+  bytes data = 7;
+
+  /*
+   * Optional partial-update rectangle (dirty-rect streaming from LVGL-based
+   * color UIs, format RGB565). When rect_width > 0, data carries only the
+   * rectangle's pixels and offset/total_size describe the rectangle's own
+   * buffer; width/height above always remain the full display dimensions,
+   * and each rectangle is an independently completed unit under its own
+   * frame_id. MONO_VLSB frames never set these fields.
+   */
+  uint32 rect_x = 8;
+
+  /*
+   * See rect_x.
+   */
+  uint32 rect_y = 9;
+
+  /*
+   * See rect_x.
+   */
+  uint32 rect_width = 10;
+
+  /*
+   * See rect_x.
+   */
+  uint32 rect_height = 11;
+
+  /*
+   * Identity of the DisplayPalette that colorizes this frame, matching
+   * DisplayPalette.signature. 0 when the device renders monochrome (no
+   * color panel); clients without the referenced palette yet should render
+   * monochrome until its chunks arrive.
+   */
+  uint32 palette_signature = 12;
+}
+
+/*
+ * Colorization palette for DisplayFrame streams from devices that paint the
+ * 1bpp base UI onto a color panel. The panel applies per-region on/off
+ * colors at flush time; streaming the same region table lets a client
+ * render the mirror in the panel's true colors at 1bpp bandwidth.
+ * Sent as FromRadio.display_palette, split by region index when the table
+ * exceeds one message; re-sent only when the region layout or theme changes
+ * (the signature changes with it). Regions are ordered by table index; a
+ * region with a higher table index overrides lower-indexed ones where they
+ * overlap, regardless of chunk boundaries. A client holding partial chunks
+ * of a signature that no longer matches incoming chunks should discard
+ * them. All colors are RGB565 in logical bit layout (RRRRRGGGGGGBBBBB).
+ */
+message DisplayPalette {
+  /*
+   * One colorized rectangle of the display.
+   */
+  message ColorRegion {
+    /*
+     * Region origin and size in pixels.
+     */
+    uint32 x = 1;
+
+    /*
+     * See x.
+     */
+    uint32 y = 2;
+
+    /*
+     * See x.
+     */
+    uint32 width = 3;
+
+    /*
+     * See x.
+     */
+    uint32 height = 4;
+
+    /*
+     * RGB565 drawn for set (1) pixels inside this region.
+     */
+    uint32 on_color = 5;
+
+    /*
+     * RGB565 drawn for clear (0) pixels inside this region.
+     */
+    uint32 off_color = 6;
+  }
+
+  /*
+   * Identity of this palette; DisplayFrame.palette_signature references it.
+   * Changes whenever the region table or theme changes.
+   */
+  uint32 signature = 1;
+
+  /*
+   * RGB565 for set pixels outside all regions.
+   */
+  uint32 default_on_color = 2;
+
+  /*
+   * RGB565 for clear pixels outside all regions.
+   */
+  uint32 default_off_color = 3;
+
+  /*
+   * Table index of the first region in this chunk.
+   */
+  uint32 region_offset = 4;
+
+  /*
+   * Total regions in the complete palette; region_offset + regions length
+   * == region_total completes it.
+   */
+  uint32 region_total = 5;
+
+  /*
+   * The regions of this chunk, in table order.
+   */
+  repeated ColorRegion regions = 6;
 }
 
 /*
@@ -2811,6 +3012,83 @@ message DeviceMetadata {
    * This is a read-only capability and must be false when XEdDSA is not compiled in.
    */
   bool has_xeddsa = 14;
+
+  /*
+   * Describes the device's screen when one is present; absent on display-less
+   * builds. Lets clients gate display-mirroring UI (see DisplayFrame) and
+   * adapt to the panel — e.g. expect slow refresh from EINK, or offer
+   * tap-to-touch when has_touch is set.
+   */
+  DisplayInfo display = 15;
+}
+
+/*
+ * Static description of a device's display, sent inside DeviceMetadata
+ * during the connection handshake.
+ */
+message DisplayInfo {
+  /*
+   * Physical panel technology, as a hint for client rendering and refresh
+   * expectations.
+   */
+  enum PanelClass {
+    /*
+     * Default; should not be sent.
+     */
+    PANEL_CLASS_UNSPECIFIED = 0;
+
+    /*
+     * Monochrome OLED (SSD1306/SH1106 family).
+     */
+    OLED = 1;
+
+    /*
+     * Monochrome LCD (ST7567 family).
+     */
+    LCD = 2;
+
+    /*
+     * Color TFT.
+     */
+    TFT = 3;
+
+    /*
+     * E-ink panel: refresh is slow and full-screen; clients should prefer
+     * one-shot frame requests over continuous mirroring.
+     */
+    EINK = 4;
+
+    /*
+     * LED matrix (HUB75).
+     */
+    HUB75 = 5;
+  }
+
+  /*
+   * Display width in pixels.
+   */
+  uint32 width = 1;
+
+  /*
+   * Display height in pixels.
+   */
+  uint32 height = 2;
+
+  /*
+   * Pixel encoding that DisplayFrame streams from this device will use.
+   */
+  DisplayFrame.Format format = 3;
+
+  /*
+   * Physical panel technology.
+   */
+  PanelClass panel_class = 4;
+
+  /*
+   * True when the panel accepts touch input; clients may map taps on a
+   * mirrored frame to AdminMessage.send_input_event touch coordinates.
+   */
+  bool has_touch = 5;
 }
 
 /*
