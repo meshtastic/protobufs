@@ -901,7 +901,7 @@ message ModuleConfig {
     /*
      * Optional region to advertise in the MeshBeacon offer_region field.
      */
-    optional Config.LoRaConfig.RegionCode broadcast_offer_region = 6;
+    Config.LoRaConfig.RegionCode broadcast_offer_region = 6;
 
     /*
      * Optional modem preset to advertise in the MeshBeacon offer_preset field.
@@ -923,7 +923,7 @@ message ModuleConfig {
     /*
      * Region for the explicit target. UNSET means the running config region.
      */
-    optional Config.LoRaConfig.RegionCode broadcast_on_region = 9;
+    Config.LoRaConfig.RegionCode broadcast_on_region = 9;
 
     /*
      * Modem preset for the explicit target. Unset means the running config preset.
@@ -954,9 +954,9 @@ message ModuleConfig {
       optional Config.LoRaConfig.ModemPreset preset = 1;
 
       /*
-       * Region to use for this target. Unset means use the running config region.
+       * Region to use for this target. UNSET means use the running config region.
        */
-      optional Config.LoRaConfig.RegionCode region = 2;
+      Config.LoRaConfig.RegionCode region = 2;
 
       /*
        * Index into the device's channel table (0..MAX_NUM_CHANNELS-1) of the channel to
