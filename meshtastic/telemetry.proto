@@ -248,6 +248,81 @@ message EnvironmentMetrics {
    * Estimated distance to the leading edge of the storm, in km
    */
   optional float lightning_distance_km = 41;
+
+  /*
+   * Soil pH, 0-14
+   */
+  optional float soil_ph = 42;
+
+  /*
+   * pH of water or other solution, 0-14
+   */
+  optional float ph = 43;
+
+  /*
+   * Electrical conductivity in mS/cm
+   */
+  optional float electrical_conductivity = 44;
+
+  /*
+   * Salinity in mg/l
+   */
+  optional float salinity = 45;
+
+  /*
+   * Nitrogen concentration in mg/kg
+   */
+  optional float nitrogen = 46;
+
+  /*
+   * Phosphorus concentration in mg/kg
+   */
+  optional float phosphorus = 47;
+
+  /*
+   * Potassium concentration in mg/kg
+   */
+  optional float potassium = 48;
+
+  /*
+   * Dissolved oxygen in mg/l
+   */
+  optional float dissolved_oxygen = 49;
+
+  /*
+   * Oxidation-reduction potential (ORP) in mV
+   */
+  optional float orp = 50;
+
+  /*
+   * Chemical oxygen demand in mg/l
+   */
+  optional float chemical_oxygen_demand = 51;
+
+  /*
+   * Turbidity in NTU
+   */
+  optional float turbidity = 52;
+
+  /*
+   * Nitrate concentration in ppm
+   */
+  optional float nitrate = 53;
+
+  /*
+   * Ammonium concentration in ppm
+   */
+  optional float ammonium = 54;
+
+  /*
+   * Biochemical oxygen demand in mg/l
+   */
+  optional float biochemical_oxygen_demand = 55;
+
+  /*
+   * Solar irradiance in W/m^2 (distinct from the radiation field's uR/h)
+   */
+  optional float solar_irradiance = 56;
 }
 
 /*
