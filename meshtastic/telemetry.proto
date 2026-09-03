@@ -1181,3 +1181,46 @@ message SEN6XState {
    */
   optional fixed64 voc_state_array = 6;
 }
+
+message TelemetryRecord {
+  /*
+   * Telemetry variant in telemetry record
+   */
+  oneof telemetry_variant {
+    /*
+     * Environment Telemetry variant
+     */
+    EnvironmentMetrics environment_metrics = 1;
+
+    /*
+     * Power Telemetry variant
+     */
+    PowerMetrics power_metrics = 2;
+
+    /*
+     * Air quality Telemetry variant
+     */
+    AirQualityMetrics air_quality_metrics = 3;
+  }
+
+  /*
+   * Seconds since 1970. Unset if the sender had no real time source when captured.
+   * Takes priority when set. A reading never has both time and delta_secs.
+   */
+  optional fixed32 time = 4;
+
+  /*
+   * Seconds since the node's previous history record was captured. Set only
+   * when time is unset. To reconstruct a time, check the nearest reading in either direction
+   * with a real timestamp and sum deltas between.
+   * If no reading with real timestamp is reachable, mark the last reading's timestamp as reception time.
+   */
+  optional uint32 delta_secs = 5;
+}
+
+message TelemetryRecordHistory {
+  /*
+   * Telemetry readings, oldest first
+   */
+  repeated TelemetryRecord readings = 1;
+}
