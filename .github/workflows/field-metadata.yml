@@ -1,0 +1,56 @@
+name: field-metadata
+
+# Guards the field-metadata generators (see tools/protoc-gen-fieldmeta and
+# tools/protoc-gen-fieldmeta-swift). The Go plugin's tests aren't otherwise run
+# in CI, and the Go/Swift "byte-identical" promise was previously hand-checked
+# only — this workflow enforces both.
+on:
+  pull_request:
+    paths:
+      - "meshtastic/**/*.proto"
+      - "tools/protoc-gen-fieldmeta/**"
+      - "tools/protoc-gen-fieldmeta-swift/**"
+      - ".github/workflows/field-metadata.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  go-plugin-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: tools/protoc-gen-fieldmeta/go.mod
+
+      - name: Test
+        run: go -C tools/protoc-gen-fieldmeta test ./...
+
+      - name: Vet
+        run: go -C tools/protoc-gen-fieldmeta vet ./...
+
+  generator-parity:
+    # protoc-gen-fieldmeta (Go, target=swift) and protoc-gen-fieldmeta-swift are
+    # advertised as interchangeable; assert their output stays byte-identical.
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: tools/protoc-gen-fieldmeta/go.mod
+
+      - name: Setup buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          version: 1.71.0 # renovate: datasource=github-releases depName=bufbuild/buf
+          github_token: ${{ github.token }}
+
+      - name: Verify Go/Swift generator parity
+        run: tools/protoc-gen-fieldmeta-swift/scripts/verify-parity.sh
