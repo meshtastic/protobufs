@@ -3,6 +3,7 @@ syntax = "proto3";
 package meshtastic;
 
 import "meshtastic/atak.proto";
+import "meshtastic/channel.proto";
 import "meshtastic/config.proto";
 
 option csharp_namespace = "Meshtastic.Protobufs";
@@ -867,6 +868,14 @@ message ModuleConfig {
      */
     uint32 flags = 1;
 
+    /*
+     * Frequency slot to advertise, 1-based, matching Config.LoRaConfig.channel_num.
+     * Unset means the receiver derives it from the advertised region, channel name and preset,
+     * which covers a region that mandates a slot and a mesh on the default hash. Set it only
+     * where the mesh deliberately pins a non-default slot. Do not send 0.
+     */
+    optional uint32 broadcast_offer_frequency_slot = 2;
+
     // Tag 3 was broadcast_send_as_node, a node-ID override that rewrote the `from` field of
     // outgoing beacon packets so they appeared to originate from another node. Firmware never
     // applied it (the assignment was left commented out) and it never reached a tagged release,
@@ -879,42 +888,58 @@ message ModuleConfig {
      */
     string broadcast_message = 4;
 
-    // Tag 5 was broadcast_offer_channel, an inline ChannelSettings. Replaced by
-    // broadcast_offer_channel_index (tag 12): one entry point for channel data, and the
-    // admin message no longer carries a second copy of a name and PSK.
-    reserved 5;
-    reserved "broadcast_offer_channel";
-
     /*
-     * Index into the device's channel table of the channel to advertise. The slot must be
-     * configured and NOT Role_DISABLED - a disabled slot retains the settings of a deleted
-     * channel, and advertising it would broadcast a retired PSK.
+     * Channel to advertise, by value. Named explicitly rather than by table index because a
+     * remote administrator cannot read the channel table and so cannot know what an index
+     * resolves to. Upserted into the channel table on write: matched by name and PSK, else
+     * placed in a disabled slot, else the offer is withheld. Never overwrites a live channel.
+     * ChannelIdentity is a wire-compatible subset of the ChannelSettings this tag carried in
+     * v2.8.0, so a v2.8.0 client's write still decodes correctly here.
      */
-    optional uint32 broadcast_offer_channel_index = 12;
+    ChannelIdentity broadcast_offer_channel = 5;
 
     /*
      * Optional region to advertise in the MeshBeacon offer_region field.
      */
-    Config.LoRaConfig.RegionCode broadcast_offer_region = 6;
+    optional Config.LoRaConfig.RegionCode broadcast_offer_region = 6;
 
     /*
      * Optional modem preset to advertise in the MeshBeacon offer_preset field.
      */
     optional Config.LoRaConfig.ModemPreset broadcast_offer_preset = 7;
 
-    // Tags 8, 9 and 10 were broadcast_on_channel / broadcast_on_region / broadcast_on_preset: a
-    // second way to describe a single beacon destination, used only when broadcast_targets was
-    // empty. Consolidated onto broadcast_targets so there is one way to name a destination.
-    // broadcast_on_channel embedded a ChannelSettings inline, which allowed transmitting on a
-    // channel absent from the node's channel table; that is no longer supported - the channel must
-    // exist on the node. Never in a tagged release. Reserved to prevent reuse.
-    reserved 8, 9, 10;
-    reserved "broadcast_on_channel", "broadcast_on_region", "broadcast_on_preset";
+    /*
+     * The single explicit broadcast target, named by value. This is the remote-administration
+     * path: an administrator that cannot read the channel table states the channel outright.
+     * Upserted into the channel table exactly as broadcast_offer_channel is.
+     * Mutually exclusive with broadcast_targets (tag 13), which is the local-administration path.
+     * If both arrive in one message the indexed list wins and these fields are cleared, because
+     * an index cannot mutate the channel table and a by-value entry can.
+     * Unset while broadcast_on_region / _preset / _frequency_slot are set means the node's
+     * primary channel, retuned - the same meaning the v2.8.0 broadcast_on_channel had.
+     */
+    ChannelIdentity broadcast_on_channel = 8;
+
+    /*
+     * Region for the explicit target. UNSET means the running config region.
+     */
+    optional Config.LoRaConfig.RegionCode broadcast_on_region = 9;
+
+    /*
+     * Modem preset for the explicit target. Unset means the running config preset.
+     */
+    optional Config.LoRaConfig.ModemPreset broadcast_on_preset = 10;
 
     /*
      * How often to broadcast, in seconds. Min 3600 (1 h), default 3600.
      */
     uint32 broadcast_interval_secs = 11;
+
+    /*
+     * Frequency slot for the explicit target, 1-based, matching Config.LoRaConfig.channel_num.
+     * Unset means derive it the way any node on that channel would. Do not send 0.
+     */
+    optional uint32 broadcast_on_frequency_slot = 12;
 
 
     /*
@@ -929,12 +954,9 @@ message ModuleConfig {
       optional Config.LoRaConfig.ModemPreset preset = 1;
 
       /*
-       * Region to use for this target. UNSET means use the running config region.
+       * Region to use for this target. Unset means use the running config region.
        */
-      Config.LoRaConfig.RegionCode region = 2;
-
-      // Tag 3 was an embedded ChannelSettings; replaced by channel_index (tag 4).
-      reserved 3;
+      optional Config.LoRaConfig.RegionCode region = 2;
 
       /*
        * Index into the device's channel table (0..MAX_NUM_CHANNELS-1) of the channel to
@@ -967,14 +989,6 @@ message ModuleConfig {
      * Entries that resolve to the same effective preset, region and channel are deduplicated, so
      * a duplicate entry does not produce a second transmission.
      */
-    /*
-     * Frequency slot to advertise, 1-based, matching Config.LoRaConfig.channel_num.
-     * Unset means the receiver can derive it from the advertised region, channel name and
-     * preset - which covers a region that mandates a slot, and a mesh on the default hash.
-     * Set it only where the mesh deliberately pins a non-default slot. Do not send 0.
-     */
-    optional uint32 broadcast_offer_frequency_slot = 14;
-
     repeated BroadcastTarget broadcast_targets = 13;
   }
 
