@@ -596,6 +596,12 @@ message Config {
        * Enable broadcasting packets via connectionless BLE extended advertisements
        */
       BLE_BROADCAST = 0x0002;
+
+      /*
+       * Serve BLE GATT mesh peers: phones connect to this node's mesh-peer service and exchange
+       * mesh packets with it directly, without a phone-API session
+       */
+      BLE_GATT_PEER = 0x0004;
     }
   }
 

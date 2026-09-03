@@ -1762,6 +1762,11 @@ message MeshPacket {
      * Arrived via a connectionless BLE 5 extended advertisement
      */
     TRANSPORT_BLE_ADV = 9;
+
+    /*
+     * Arrived via a BLE GATT mesh-peer connection (a phone connected to this node as a mesh peer)
+     */
+    TRANSPORT_BLE_GATT = 10;
   }
 
   /*
