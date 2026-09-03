@@ -26,8 +26,12 @@ message MeshBeacon {
   /*
    * Optional channel (name + PSK) being advertised to listening clients.
    * A client app may offer to switch the user to this channel; firmware never applies it automatically.
+   * ChannelIdentity rather than ChannelSettings: only the name and PSK are needed to join, and the
+   * rest of a ChannelSettings - id, uplink_enabled, downlink_enabled, module_settings - described
+   * the advertising node's own posture and had no business on the air. Wire compatible with the
+   * ChannelSettings this tag carried in v2.8.0, in both directions.
    */
-  ChannelSettings offer_channel = 2;
+  ChannelIdentity offer_channel = 2;
 
   /*
    * Optional region being advertised alongside offer_preset.
