@@ -19,7 +19,7 @@ option swift_prefix = "";
  */
 message MeshBeacon {
   /*
-   * Human-readable beacon message. Max 100 bytes enforced by firmware on send.
+   * Human-readable beacon message. Max 60 bytes enforced by firmware on send.
    */
   string message = 1;
 
