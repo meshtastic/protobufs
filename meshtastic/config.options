@@ -15,6 +15,7 @@
 *LoRaConfig.bandwidth int_size:16
 *LoRaConfig.coding_rate int_size:8
 *LoRaConfig.channel_num int_size:16
+*LoRaConfig.fem_lna_mode int_size:8
 
 *PowerConfig.device_battery_ina_address int_size:8
 
@@ -22,5 +23,6 @@
 *SecurityConfig.private_key max_size:32
 *SecurityConfig.admin_key max_size:32
 *SecurityConfig.admin_key max_count:3
+*SecurityConfig.packet_signature_policy int_size:8
 
 *ConfigPayload.payload_variant anonymous_oneof:true

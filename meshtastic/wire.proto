@@ -101,7 +101,7 @@ message Position {
   uint32 gps_accuracy = 14;
 
   /*
-   * Ground speed in m/s and True North TRACK in 1/100 degrees
+   * Ground speed in km/h and True North TRACK in 1/100 degrees
    * Clarification of terms:
    * - "track" is the direction of motion (measured in horizontal plane)
    * - "heading" is where the fuselage points (measured in horizontal plane)
@@ -172,6 +172,9 @@ message User {
 
   /*
    * A full name for this user, i.e. "Kevin Hester"
+   * Limited to 24 bytes of UTF-8: longer names are accepted from senders
+   * built against the older 39-byte limit, but devices truncate them before
+   * storing or rebroadcasting. Clients should enforce 24 bytes in their UI.
    */
   string long_name = 2;
 
@@ -423,6 +426,11 @@ message Data {
    * Bitfield for extra flags. First use is to indicate that user approves the packet being uploaded to MQTT.
    */
   optional uint32 bitfield = 9;
+
+  /*
+   * XEdDSA signature for the payload
+   */
+  bytes xeddsa_signature = 10;
 }
 
 /*
@@ -537,6 +545,116 @@ message StoreForwardPlusPlus {
 }
 
 /*
+ * The actual over-the-mesh message doing RemoteShell
+ */
+message RemoteShell {
+  /*
+   * Frame op code for PTY session control and stream transport.
+   *
+   * Values 1-63 are client->server requests.
+   * Values 64-127 are server->client responses/events.
+   */
+  enum OpCode {
+    OP_UNSET = 0;
+
+    /* Client -> server */
+    OPEN = 1;
+    INPUT = 2;
+    RESIZE = 3;
+    CLOSE = 4;
+    PING = 5;
+    ACK = 6;
+
+    /* Server -> client */
+    OPEN_OK = 64;
+    OUTPUT = 65;
+    CLOSED = 66;
+    ERROR = 67;
+    PONG = 68;
+  }
+
+  /*
+   * Structured frame operation.
+   */
+  OpCode op = 1;
+
+  /*
+   * Logical PTY session identifier.
+   */
+  uint32 session_id = 2;
+
+  /*
+   * Monotonic sequence number for this frame.
+   */
+  uint32 seq = 3;
+
+  /*
+   * Cumulative ack sequence number.
+   */
+  uint32 ack_seq = 4;
+
+  /*
+   * Opaque bytes payload for INPUT/OUTPUT/ERROR and other frame bodies.
+   */
+  bytes payload = 5;
+
+  /*
+   * Terminal size columns used for OPEN/RESIZE signaling.
+   */
+  uint32 cols = 6;
+
+  /*
+   * Terminal size rows used for OPEN/RESIZE signaling.
+   */
+  uint32 rows = 7;
+
+  /*
+   * Bit flags for protocol extensions.
+   */
+  uint32 flags = 8;
+
+  /*
+   * The last sequence number TX'd.
+   */
+  uint32 last_tx_seq = 9;
+
+  /*
+   * The last sequence number RX'd.
+   */
+  uint32 last_rx_seq = 10;
+}
+
+/*
+ * A rectangular, axis-aligned geographic bounding box.
+ * Used to define a rectangular geofence region for a Waypoint.
+ * Fields are ordered west, south, east, north to match the standard bounding box
+ * convention used by GeoJSON and PMTiles (min longitude, min latitude, max longitude, max latitude),
+ * so the box can drive an offline map extract directly.
+ * All coordinates are in degrees scaled by 1e-7 (same convention as Position and Waypoint).
+ */
+message BoundingBox {
+  /*
+   * Western edge of the box - minimum longitude (south-west corner)
+   */
+  sfixed32 longitude_west_i = 1;
+
+  /*
+   * Southern edge of the box - minimum latitude (south-west corner)
+   */
+  sfixed32 latitude_south_i = 2;
+
+  /*
+   * Eastern edge of the box - maximum longitude (north-east corner)
+   */
+  sfixed32 longitude_east_i = 3;
+
+  /*
+   * Northern edge of the box - maximum latitude (north-east corner)
+   */
+  sfixed32 latitude_north_i = 4;
+}
+
+/*
  * Waypoint message, used to share arbitrary locations across the mesh
  */
 message Waypoint {
@@ -581,6 +699,31 @@ message Waypoint {
    * Wire encoding: uint32 (W4 fix, was fixed32)
    */
   uint32 icon = 8;
+
+  /*
+   * If greater than zero, defines a circular geofence centred on this waypoint's
+   * location (latitude_i / longitude_i) with this radius in meters.
+   * Zero means the waypoint has no circular geofence.
+   */
+  uint32 geofence_radius = 9;
+
+  /*
+   * Optional rectangular geofence region for this waypoint.
+   * May be used instead of, or in addition to, geofence_radius.
+   */
+  optional BoundingBox bounding_box = 10;
+
+  /*
+   * Bitfield packing of the geofence notification flags:
+   *   bit 0: notify_on_enter - raise a notification when a tracked node enters this
+   *          waypoint's geofence (the circular radius and/or the bounding box)
+   *   bit 1: notify_on_exit - raise a notification when a tracked node exits it
+   *   bit 2: notify_favorites_only - only raise enter/exit notifications for nodes
+   *          marked as favorites on the receiving device; applies to both of the
+   *          above. Favorite status is resolved locally per receiver, so the same
+   *          waypoint alerts each node only for its own favorites.
+   */
+  uint32 notify_flags = 11;
 }
 
 /*

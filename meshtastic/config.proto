@@ -513,6 +513,11 @@ message DisplayConfig {
      * Can not be auto detected but set by proto. Used for 128x128 screens
      */
     OLED_SH1107_128_128 = 4;
+
+    /*
+     * Can not be auto detected but set by proto. Used for 64x128 rotated screens
+     */
+    OLED_SH1107_ROTATED = 5;
   }
 
   /*
@@ -648,6 +653,26 @@ message DisplayConfig {
  */
 message LoRaConfig {
   /*
+   * Whether a front-end module / low-noise amplifier is fitted and in use
+   */
+  enum FEM_LNA_Mode {
+    /*
+     * FEM_LNA is present but disabled
+     */
+    DISABLED = 0;
+
+    /*
+     * FEM_LNA is present and enabled
+     */
+    ENABLED = 1;
+
+    /*
+     * FEM_LNA is not present on the device
+     */
+    NOT_PRESENT = 2;
+  }
+
+  /*
    * When enabled, the `modem_preset` fields will be adhered to, else the `bandwidth`/`spread_factor`/`coding_rate`
    * will be taked from their respective manually defined fields
    */
@@ -769,6 +794,16 @@ message LoRaConfig {
    * Sets the ok_to_mqtt bit on outgoing packets
    */
   bool config_ok_to_mqtt = 18;
+
+  /*
+   * Set where LORA FEM is enabled, disabled, or not present
+   */
+  FEM_LNA_Mode fem_lna_mode = 19;
+
+  /*
+   * Don't use radiolib to initialize the radio, instead listen for a serialHal connection
+   */
+  bool serial_hal_only = 20;
 }
 
 message BluetoothConfig {
@@ -807,6 +842,29 @@ message BluetoothConfig {
 
 message SecurityConfig {
   /*
+   * Controls how the device authenticates remotely received mesh packets.
+   */
+  enum PacketSignaturePolicy {
+    /*
+     * Accept unsigned packets for maximum compatibility while still rejecting malformed or invalid signatures.
+     * This is the default to avoid legacy nodes dropping signed packets during rebroadcast.
+     */
+    PACKET_SIGNATURE_POLICY_COMPATIBLE = 0;
+
+    /*
+     * Prefer authenticated packets while retaining compatibility with unsigned packets from nodes not known to sign.
+     * Rejects unsigned, signable broadcasts from nodes that have previously signed.
+     */
+    PACKET_SIGNATURE_POLICY_BALANCED = 1;
+
+    /*
+     * Accept only packets authenticated by a verified XEdDSA signature or successful PKI decryption.
+     * Unsigned, malformed, invalid, or unverifiable packets are ignored.
+     */
+    PACKET_SIGNATURE_POLICY_STRICT = 2;
+  }
+
+  /*
    * The public key of the user's device.
    * Sent out to other nodes on the mesh to allow them to compute a shared secret key.
    */
@@ -844,6 +902,11 @@ message SecurityConfig {
    * Allow incoming device control over the insecure legacy admin channel.
    */
   bool admin_channel_enabled = 8;
+
+  /*
+   * Determines the packet signature policy applied to remotely received mesh packets.
+   */
+  PacketSignaturePolicy packet_signature_policy = 9;
 }
 
 /*

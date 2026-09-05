@@ -14,7 +14,7 @@ option swift_prefix = "";
  * Region Registry
  *
  * NOT used on-wire; consumed by clients/apps and optionally embedded in firmware.
- * Centralizes the 27 regulatory region definitions with their parameters and
+ * Centralizes the regulatory region definitions with their parameters and
  * legal modem preset mappings.
  *
  * Shipped as a serialized .pb data file alongside the proto schema.

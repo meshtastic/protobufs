@@ -143,6 +143,175 @@ message EnvironmentMetrics {
    * Soil temperature in centi-degrees Celsius
    */
   optional sint32 soil_temperature = 22;
+
+  /*
+   * 23 was one_wire_temperature: never implemented, superseded by one_wire_temperature_ch0..7
+   */
+
+  /*
+   * Multi-channel ADC voltage in mV (Channel 0)
+   */
+  optional uint32 adc_voltage_ch0 = 24;
+
+  /*
+   * Multi-channel ADC voltage in mV (Channel 1)
+   */
+  optional uint32 adc_voltage_ch1 = 25;
+
+  /*
+   * Multi-channel ADC voltage in mV (Channel 2)
+   */
+  optional uint32 adc_voltage_ch2 = 26;
+
+  /*
+   * Multi-channel ADC voltage in mV (Channel 3)
+   */
+  optional uint32 adc_voltage_ch3 = 27;
+
+  /*
+   * Multi-channel ADC voltage in mV (Channel 4)
+   */
+  optional uint32 adc_voltage_ch4 = 28;
+
+  /*
+   * Multi-channel ADC voltage in mV (Channel 5)
+   */
+  optional uint32 adc_voltage_ch5 = 29;
+
+  /*
+   * Multi-channel ADC voltage in mV (Channel 6)
+   */
+  optional uint32 adc_voltage_ch6 = 30;
+
+  /*
+   * Multi-channel ADC voltage in mV (Channel 7)
+   */
+  optional uint32 adc_voltage_ch7 = 31;
+
+  /*
+   * Multi-channel one-wire temperature in centi-degrees Celsius (Channel 0, e.g. 2350 = 23.50 C)
+   */
+  optional sint32 one_wire_temperature_ch0 = 32;
+
+  /*
+   * Multi-channel one-wire temperature in centi-degrees Celsius (Channel 1)
+   */
+  optional sint32 one_wire_temperature_ch1 = 33;
+
+  /*
+   * Multi-channel one-wire temperature in centi-degrees Celsius (Channel 2)
+   */
+  optional sint32 one_wire_temperature_ch2 = 34;
+
+  /*
+   * Multi-channel one-wire temperature in centi-degrees Celsius (Channel 3)
+   */
+  optional sint32 one_wire_temperature_ch3 = 35;
+
+  /*
+   * Multi-channel one-wire temperature in centi-degrees Celsius (Channel 4)
+   */
+  optional sint32 one_wire_temperature_ch4 = 36;
+
+  /*
+   * Multi-channel one-wire temperature in centi-degrees Celsius (Channel 5)
+   */
+  optional sint32 one_wire_temperature_ch5 = 37;
+
+  /*
+   * Multi-channel one-wire temperature in centi-degrees Celsius (Channel 6)
+   */
+  optional sint32 one_wire_temperature_ch6 = 38;
+
+  /*
+   * Multi-channel one-wire temperature in centi-degrees Celsius (Channel 7)
+   */
+  optional sint32 one_wire_temperature_ch7 = 39;
+
+  /*
+   * Lightning strikes detected in the last hour
+   */
+  optional uint32 lightning_strike_count_1h = 40;
+
+  /*
+   * Estimated distance to the leading edge of the storm, in km
+   */
+  optional uint32 lightning_distance_km = 41;
+
+  /*
+   * Soil pH x100, 0-1400 (e.g. 725 = pH 7.25)
+   */
+  optional uint32 soil_ph = 42;
+
+  /*
+   * pH of water or other solution x100, 0-1400 (e.g. 725 = pH 7.25)
+   */
+  optional uint32 ph = 43;
+
+  /*
+   * Electrical conductivity in uS/cm (e.g. 1500 = 1.5 mS/cm)
+   */
+  optional uint32 electrical_conductivity = 44;
+
+  /*
+   * Salinity in mg/l
+   */
+  optional uint32 salinity = 45;
+
+  /*
+   * Nitrogen concentration in mg/kg
+   */
+  optional uint32 nitrogen = 46;
+
+  /*
+   * Phosphorus concentration in mg/kg
+   */
+  optional uint32 phosphorus = 47;
+
+  /*
+   * Potassium concentration in mg/kg
+   */
+  optional uint32 potassium = 48;
+
+  /*
+   * Dissolved oxygen x100 in mg/l (e.g. 850 = 8.50 mg/l)
+   */
+  optional uint32 dissolved_oxygen = 49;
+
+  /*
+   * Oxidation-reduction potential (ORP) in mV, may be negative
+   */
+  optional sint32 orp = 50;
+
+  /*
+   * Chemical oxygen demand in mg/l
+   */
+  optional uint32 chemical_oxygen_demand = 51;
+
+  /*
+   * Turbidity x100 in NTU (e.g. 1250 = 12.50 NTU)
+   */
+  optional uint32 turbidity = 52;
+
+  /*
+   * Nitrate concentration x100 in ppm (e.g. 250 = 2.50 ppm)
+   */
+  optional uint32 nitrate = 53;
+
+  /*
+   * Ammonium concentration x100 in ppm (e.g. 250 = 2.50 ppm)
+   */
+  optional uint32 ammonium = 54;
+
+  /*
+   * Biochemical oxygen demand in mg/l
+   */
+  optional uint32 biochemical_oxygen_demand = 55;
+
+  /*
+   * Solar irradiance in W/m^2 (distinct from the radiation field's uR/h)
+   */
+  optional uint32 solar_irradiance = 56;
 }
 
 /*
@@ -180,54 +349,8 @@ message PowerMetrics {
   optional sint32 ch3_current = 6;
 
   /*
-   * Voltage in mV (Ch4)
+   * 7-16 were ch4..ch8 voltage/current, removed in 3.0 (deprecated upstream)
    */
-  optional uint32 ch4_voltage = 7;
-
-  /*
-   * Current in mA (signed, negative = discharging) (Ch4)
-   */
-  optional sint32 ch4_current = 8;
-
-  /*
-   * Voltage in mV (Ch5)
-   */
-  optional uint32 ch5_voltage = 9;
-
-  /*
-   * Current in mA (signed, negative = discharging) (Ch5)
-   */
-  optional sint32 ch5_current = 10;
-
-  /*
-   * Voltage in mV (Ch6)
-   */
-  optional uint32 ch6_voltage = 11;
-
-  /*
-   * Current in mA (signed, negative = discharging) (Ch6)
-   */
-  optional sint32 ch6_current = 12;
-
-  /*
-   * Voltage in mV (Ch7)
-   */
-  optional uint32 ch7_voltage = 13;
-
-  /*
-   * Current in mA (signed, negative = discharging) (Ch7)
-   */
-  optional sint32 ch7_current = 14;
-
-  /*
-   * Voltage in mV (Ch8)
-   */
-  optional uint32 ch8_voltage = 15;
-
-  /*
-   * Current in mA (signed, negative = discharging) (Ch8)
-   */
-  optional sint32 ch8_current = 16;
 }
 
 /*
@@ -358,6 +481,14 @@ message AirQualityMetrics {
    * Typical particle size in nm (nanometers)
    */
   optional uint32 particles_tps = 25;
+
+  /*
+   * Raw PM sensor device status/error register bitmask, as defined by the sensor's own datasheet
+   * (currently populated by the SEN6X family: bit 4 fan error, bit 6 RH&T error, bit 7 gas/VOC-NOx
+   * error, bit 9 CO2 error (SEN66), bit 10 HCHO error, bit 11 PM error, bit 12 CO2 error (SEN63C/SEN69C),
+   * bit 21 fan speed warning)
+   */
+  optional uint32 pm_status_flags = 26;
 }
 
 /*
@@ -643,9 +774,8 @@ enum TelemetrySensorType {
   BMP280 = 6;
 
   /*
-   * High accuracy temperature and humidity
+   * 7 was SHTC3: superseded by SHTXX, which covers the whole SHT family
    */
-  SHTC3 = 7;
 
   /*
    * High accuracy pressure
@@ -668,9 +798,8 @@ enum TelemetrySensorType {
   QMC5883L = 11;
 
   /*
-   * High accuracy temperature and humidity
+   * 12 was SHT31: superseded by SHTXX, which covers the whole SHT family
    */
-  SHT31 = 12;
 
   /*
    * PM2.5 air quality sensor
@@ -693,9 +822,8 @@ enum TelemetrySensorType {
   RCWL9620 = 16;
 
   /*
-   * Sensirion High accuracy temperature and humidity
+   * 17 was SHT4X: superseded by SHTXX, which covers the whole SHT family
    */
-  SHT4X = 17;
 
   /*
    * VEML7700 high accuracy ambient light(Lux) digital 16-bit resolution sensor.
@@ -843,9 +971,8 @@ enum TelemetrySensorType {
   HDC1080 = 46;
 
   /*
-   * STH21 Temperature and R. Humidity sensor
+   * 47 was SHT21: superseded by SHTXX, which covers the whole SHT family
    */
-  SHT21 = 47;
 
   /*
    * Sensirion STC31 CO2 sensor
@@ -856,6 +983,46 @@ enum TelemetrySensorType {
    * SCD30 CO2, humidity, temperature sensor
    */
   SCD30 = 49;
+
+  /*
+   * SHT family of sensors for temperature and humidity
+   */
+  SHTXX = 50;
+
+  /*
+   * DS248X Bridge for one-wire temperature sensors
+   */
+  DS248X = 51;
+
+  /*
+   * MMC5983MA 3-Axis Digital Magnetic Sensor
+   */
+  MMC5983MA = 52;
+
+  /*
+   * ICM-42607-P 6‑Axis IMU
+   */
+  ICM42607P = 53;
+
+  /*
+   * SPA06 pressure and temperature
+   */
+  SPA06 = 54;
+
+  /*
+   * HM330X PM SENSOR
+   */
+  HM330X = 55;
+
+  /*
+   * Sensirion SEN6X PM/RHT/VOC/NOx/CO2/HCHO sensor family (SEN62, SEN63C, SEN65, SEN66, SEN68, SEN69C)
+   */
+  SEN6X = 56;
+
+  /*
+   * AS3935 Franklin lightning sensor
+   */
+  AS3935 = 57;
 }
 
 /*
@@ -874,7 +1041,18 @@ message Nau7802Config {
 }
 
 /*
- * SEN5X State, for saving to flash
+ * AS3935 lightning sensor configuration, for saving to flash
+ */
+message AS3935Config {
+  /*
+   * Antenna tuning capacitance in pF, 0 to 120 in steps of 8. The chip does not retain
+   * this across power loss, so it is stored here and re-applied on every boot.
+   */
+  uint32 tuning_cap_pf = 1;
+}
+
+/*
+ * SEN5X State, for saving to flash (to be merged with SEN6XState)
  */
 message SEN5XState {
   /*
@@ -904,6 +1082,41 @@ message SEN5XState {
 
   /*
    * VOC state array (8x uint8t) for SEN55
+   */
+  optional fixed64 voc_state_array = 6;
+}
+
+/*
+ * SEN6X State, for saving to flash
+ */
+message SEN6XState {
+  /*
+   * Last cleaning time for SEN6X
+   */
+  uint32 last_cleaning_time = 1;
+
+  /*
+   * Last cleaning time for SEN6X - valid flag
+   */
+  bool last_cleaning_valid = 2;
+
+  /*
+   * Config flag for one-shot mode (see admin.proto)
+   */
+  bool one_shot_mode = 3;
+
+  /*
+   * Last VOC state time, for models with a VOC sensor (SEN65, SEN66, SEN68, SEN69C)
+   */
+  optional uint32 voc_state_time = 4;
+
+  /*
+   * Last VOC state validity flag, for models with a VOC sensor (SEN65, SEN66, SEN68, SEN69C)
+   */
+  optional bool voc_state_valid = 5;
+
+  /*
+   * VOC state array (8x uint8t), for models with a VOC sensor (SEN65, SEN66, SEN68, SEN69C)
    */
   optional fixed64 voc_state_array = 6;
 }

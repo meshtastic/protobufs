@@ -36,3 +36,21 @@
 *ChunkedPayload.payload_chunk max_size:228
 
 *ChunkedPayloadResponse.payload_variant anonymous_oneof:true
+
+# Region->preset compatibility map (FromRadio.region_presets). Bounds chosen
+# above the current table (6 groups / 9 presets in the largest group / 32 regions)
+# so LoRaRegionPresetMap stays small enough that FromRadio_size does not grow past
+# the 512-byte MAX_TO_FROM_RADIO_SIZE cap. nanopb sizes repeated enums unpacked
+# (~2 bytes/element), so the flat groups + region_groups layout keeps cost additive
+# rather than groups*regions. See bin/regen-protos.sh output for the actual size.
+# region_groups capped at 38 = the number of RegionCode enum values, so it can
+# never overflow regardless of how many regions gain a firmware table entry.
+*LoRaRegionPresetMap.groups        max_count:8
+*LoRaRegionPresetMap.region_groups max_count:38
+*LoRaPresetGroup.presets           max_count:11
+*LoRaRegionPresets.group_index     int_size:8
+
+# Longest documented value is "token_wrong_size" (16 chars); 32 leaves room
+# for future short reasons without forcing nanopb to use callbacks.
+*LockdownStatus.lock_reason max_size:32
+*LockdownStatus.state int_size:8

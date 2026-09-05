@@ -1,0 +1,130 @@
+name: Publish KMP package
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (e.g. v1.2.3). Used when manually dispatching."
+        required: false
+        type: string
+      dry_run:
+        description: "Dry run mode - build and publish to Maven Local only"
+        required: false
+        type: boolean
+        default: false
+  # Called by create_tag.yml right after a release tag is cut. Tags created
+  # with GITHUB_TOKEN do not fire the `push: tags` trigger above (GitHub's
+  # recursion guard), so the release flow invokes this workflow directly.
+  workflow_call:
+    inputs:
+      version:
+        description: "Version to publish (e.g. v1.2.3)."
+        required: true
+        type: string
+      dry_run:
+        description: "Dry run mode - build and publish to Maven Local only"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  GRADLE_CACHE_URL: ${{ secrets.GRADLE_CACHE_URL }}
+  GRADLE_CACHE_USERNAME: ${{ secrets.GRADLE_CACHE_USERNAME }}
+  GRADLE_CACHE_PASSWORD: ${{ secrets.GRADLE_CACHE_PASSWORD }}
+
+jobs:
+  build-kmp:
+    runs-on: macos-latest
+    outputs:
+      version: ${{ steps.version.outputs.VERSION }}
+      tag: ${{ steps.version.outputs.TAG }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Determine version
+        id: version
+        run: |
+          set -euo pipefail
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            TAG="${{ github.ref_name }}"
+          elif [ -n "${{ inputs.version || '' }}" ]; then
+            TAG="${{ inputs.version }}"
+          else
+            echo "No tag ref and no 'version' input. Provide a tag or pass inputs.version." >&2
+            exit 1
+          fi
+          VERSION="${TAG#v}"
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Cache Konan (Kotlin/Native toolchain)
+        uses: actions/cache@v6
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ hashFiles('packages/kmp/build.gradle.kts', 'packages/kmp/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            konan-${{ runner.os }}-
+
+      - name: Build KMP package
+        run: packages/kmp/gradlew --no-daemon -p packages/kmp clean build -PVERSION_NAME=${{ steps.version.outputs.VERSION }}
+
+      - name: Publish to Maven Local
+        run: packages/kmp/gradlew --no-daemon -p packages/kmp publishToMavenLocal -PVERSION_NAME=${{ steps.version.outputs.VERSION }}
+
+  publish-kmp:
+    runs-on: macos-latest
+    needs: build-kmp
+    if: ${{ !inputs.dry_run }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Cache Konan (Kotlin/Native toolchain)
+        uses: actions/cache@v6
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ hashFiles('packages/kmp/build.gradle.kts', 'packages/kmp/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            konan-${{ runner.os }}-
+
+      - name: Publish to Maven Central
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.MAVEN_SIGNING_KEY }}
+        run: packages/kmp/gradlew --no-daemon -p packages/kmp publishAllPublicationsToMavenCentralRepository -PVERSION_NAME=${{ needs.build-kmp.outputs.version }}

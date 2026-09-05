@@ -4,6 +4,10 @@
 *id max_size:16 # node id strings
 *public_key max_size:32 # public key
 
+# Decode width stays 40 so NodeInfo/set_owner from senders built against the
+# old 39-byte limit still parse (nanopb halts on string overflow rather than
+# truncating). Firmware clamps everything it stores or transmits to 24 bytes -
+# see NodeInfoLite.long_name in deviceonly.options.
 *User.long_name max_size:40
 *User.short_name max_size:5
 
@@ -18,6 +22,7 @@
 # outside of this envelope
 *Data.payload max_size:233
 *Data.bitfield int_size:8
+*Data.xeddsa_signature max_size:64
 
 *Routing.variant anonymous_oneof:true
 
@@ -35,6 +40,8 @@
 *StoreForwardPlusPlus.root_hash max_size:32
 *StoreForwardPlusPlus.message max_size:240
 
+*RemoteShell.payload max_size:200
+
 *StatusMessage.status max_size:80
 
 #This value may want to be a few bytes smaller to compensate for the parent fields.
@@ -42,6 +49,7 @@
 
 *Waypoint.name         max_size:30
 *Waypoint.description  max_size:100
+*Waypoint.notify_flags int_size:8
 
 *NeighborInfo.neighbors max_count:10
 *Neighbor.node_broadcast_interval_secs int_size:16
