@@ -30,5 +30,5 @@
 
 *StatusMessageConfig.node_status max_size:80
 
-*MeshBeaconConfig.broadcast_message max_size:101
+*MeshBeaconConfig.broadcast_message max_size:61
 *MeshBeaconConfig.broadcast_targets max_count:4

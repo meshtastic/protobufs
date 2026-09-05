@@ -884,7 +884,7 @@ message ModuleConfig {
     reserved "broadcast_send_as_node";
 
     /*
-     * Message to include in each beacon broadcast. Max 100 bytes enforced by firmware.
+     * Message to include in each beacon broadcast. Max 60 bytes enforced by firmware.
      */
     string broadcast_message = 4;
 
