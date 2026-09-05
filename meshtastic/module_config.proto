@@ -868,6 +868,14 @@ message ModuleConfig {
      */
     uint32 flags = 1;
 
+    /*
+     * Frequency slot to advertise, 1-based, matching Config.LoRaConfig.channel_num.
+     * Unset means the receiver derives it from the advertised region, channel name and
+     * preset, which covers a region that mandates a slot and a mesh on the default hash.
+     * Set it only where the mesh deliberately pins a non-default slot. Do not send 0.
+     */
+    optional uint32 broadcast_offer_frequency_slot = 2;
+
     // Tag 3 was broadcast_send_as_node, a node-ID override that rewrote the `from` field of
     // outgoing beacon packets so they appeared to originate from another node. Firmware never
     // applied it (the assignment was left commented out) and it never reached a tagged release,
@@ -876,7 +884,11 @@ message ModuleConfig {
     reserved "broadcast_send_as_node";
 
     /*
-     * Message to include in each beacon broadcast. Max 100 bytes enforced by firmware.
+     * Message to include in each beacon broadcast.
+     * Every beacon copy carries this on the air, so it is the largest single cost in both
+     * this config and the packet it produces. Held to 60 bytes for that reason. The nanopb
+     * max_size is 61 because it counts the terminator, which is what leaves a client a
+     * round 60.
      */
     string broadcast_message = 4;
 
@@ -935,6 +947,14 @@ message ModuleConfig {
        * preset is used.
        */
       optional uint32 channel_index = 4;
+
+      /*
+       * Frequency slot to transmit this target's beacon on, 1-based, matching
+       * Config.LoRaConfig.channel_num. Unset means derive it the way any node on this
+       * channel would: the region's override slot if it has one, otherwise the hash of the
+       * target channel's name. Do not send 0 - it is the same as unset.
+       */
+      optional uint32 frequency_slot = 5;
     }
 
     /*
