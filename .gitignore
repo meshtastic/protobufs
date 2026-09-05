@@ -5,3 +5,9 @@ packages/ts/lib/
 packages/kmp/.gradle/
 packages/kmp/build/
 .bin/
+
+# Python bytecode and local artifacts from tools/
+__pycache__/
+*.pyc
+.venv/
+descriptor.binpb

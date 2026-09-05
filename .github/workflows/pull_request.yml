@@ -22,3 +22,27 @@ jobs:
           format: true
           lint: true
           breaking: true
+
+  bitfields:
+    name: Bitfield masks
+    runs-on: ubuntu-latest
+
+    # Packed booleans are declared as an enum of hex masks beside a uint32 field.
+    # protoc rejects two enum values sharing a *number*, but nothing in buf lint
+    # knows a mask must be a single bit, so 0x06 for what should be one flag passes
+    # every other check and silently breaks every consumer that masks with it.
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Install buf
+        uses: bufbuild/buf-setup-action@v1.50.0
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Validate bitfield masks
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install --quiet protobuf
+          buf build -o descriptor.binpb
+          .venv/bin/python tools/gen_bitfield_accessors.py descriptor.binpb --check
