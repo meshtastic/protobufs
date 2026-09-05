@@ -40,9 +40,13 @@ jobs:
         with:
           github_token: ${{ github.token }}
 
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+
       - name: Validate bitfield masks
         run: |
-          python3 -m venv .venv
-          .venv/bin/pip install --quiet protobuf
+          pip install --quiet protobuf
           buf build -o descriptor.binpb
-          .venv/bin/python tools/gen_bitfield_accessors.py descriptor.binpb --check
+          python tools/gen_bitfield_accessors.py descriptor.binpb --check
