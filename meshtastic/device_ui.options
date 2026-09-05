@@ -10,3 +10,8 @@
 *NodeHighlight.node_name max_size:16
 *GeoPoint.zoom int_size:8
 *Map.style max_size:20
+
+# Packed boolean flags, all inside a byte.
+*DeviceUIConfig.flags int_size:8
+*NodeFilter.flags int_size:8
+*NodeHighlight.flags int_size:8

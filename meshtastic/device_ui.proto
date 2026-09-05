@@ -29,70 +29,83 @@ message DeviceUIConfig {
   uint32 screen_timeout = 3;
 
   /*
-   * Screen/Settings lock enabled
+   * Device UI toggles: a bitwise OR of Flags values.
    */
-  bool screen_lock = 4;
-  bool settings_lock = 5;
-  uint32 pin_code = 6;
+  enum Flags {
+    /* Nothing enabled */
+    UI_NONE = 0x00;
+    /* The screen is locked */
+    UI_SCREEN_LOCK = 0x01;
+    /* The settings are locked */
+    UI_SETTINGS_LOCK = 0x02;
+    /* Audible message alerts are enabled */
+    UI_ALERT_ENABLED = 0x04;
+    /* Banners are enabled */
+    UI_BANNER_ENABLED = 0x08;
+    /* Draw the clockface as analog rather than digital */
+    UI_IS_CLOCKFACE_ANALOG = 0x10;
+  }
+
+  /*
+   * Bitwise OR of Flags values.
+   */
+  uint32 flags = 4;
+
+  /*
+   * Screen/Settings unlock code
+   */
+  uint32 pin_code = 5;
 
   /*
    * Color theme
    */
-  Theme theme = 7;
+  Theme theme = 6;
 
   /*
-   * Audible message, banner and ring tone
+   * Ring tone selection
    */
-  bool alert_enabled = 8;
-  bool banner_enabled = 9;
-  uint32 ring_tone_id = 10;
+  uint32 ring_tone_id = 7;
 
   /*
    * Localization
    */
-  Language language = 11;
+  Language language = 8;
 
   /*
    * Node list filter
    */
-  NodeFilter node_filter = 12;
+  NodeFilter node_filter = 9;
 
   /*
    * Node list highlightening
    */
-  NodeHighlight node_highlight = 13;
+  NodeHighlight node_highlight = 10;
 
   /*
    * 8 integers for screen calibration data
    */
-  bytes calibration_data = 14;
+  bytes calibration_data = 11;
 
   /*
    * Map related data
    */
-  Map map_data = 15;
+  Map map_data = 12;
 
   /*
    * Compass mode
    */
-  CompassMode compass_mode = 16;
+  CompassMode compass_mode = 13;
 
   /*
    * RGB color for BaseUI
    * 0xRRGGBB format, e.g. 0xFF0000 for red
    */
-  uint32 screen_rgb_color = 17;
-
-  /*
-   * Clockface analog style
-   * true for analog clockface, false for digital clockface
-   */
-  bool is_clockface_analog = 18;
+  uint32 screen_rgb_color = 14;
 
   /*
    * How the GPS coordinates are formatted on the OLED screen.
    */
-  GpsCoordinateFormat gps_format = 19;
+  GpsCoordinateFormat gps_format = 15;
 
   /*
    * How the GPS coordinates are displayed on the OLED screen.
@@ -145,66 +158,68 @@ message DeviceUIConfig {
 
 message NodeFilter {
   /*
-   * Filter unknown nodes
+   * Which node classes pass the filter: a bitwise OR of Flags values.
    */
-  bool unknown_switch = 1;
+  enum Flags {
+    /* Nothing filtered in */
+    FILTER_NONE = 0x00;
+    /* Include unknown nodes */
+    FILTER_UNKNOWN = 0x01;
+    /* Include offline nodes */
+    FILTER_OFFLINE = 0x02;
+    /* Include nodes without a public key */
+    FILTER_PUBLIC_KEY = 0x04;
+    /* Include nodes without a position */
+    FILTER_POSITION = 0x08;
+  }
 
   /*
-   * Filter offline nodes
+   * Bitwise OR of Flags values.
    */
-  bool offline_switch = 2;
-
-  /*
-   * Filter nodes w/o public key
-   */
-  bool public_key_switch = 3;
+  uint32 flags = 1;
 
   /*
    * Filter based on hops away
    */
-  int32 hops_away = 4;
-
-  /*
-   * Filter nodes w/o position
-   */
-  bool position_switch = 5;
+  int32 hops_away = 2;
 
   /*
    * Filter nodes by matching name string
    */
-  string node_name = 6;
+  string node_name = 3;
 
   /*
    * Filter based on channel
    */
-  int32 channel = 7;
+  int32 channel = 4;
 }
 
 message NodeHighlight {
   /*
-   * Hightlight nodes w/ active chat
+   * Which node activity to highlight: a bitwise OR of Flags values.
    */
-  bool chat_switch = 1;
+  enum Flags {
+    /* Nothing highlighted */
+    HIGHLIGHT_NONE = 0x00;
+    /* Highlight nodes with active chat */
+    HIGHLIGHT_CHAT = 0x01;
+    /* Highlight nodes with a position */
+    HIGHLIGHT_POSITION = 0x02;
+    /* Highlight nodes with telemetry data */
+    HIGHLIGHT_TELEMETRY = 0x04;
+    /* Highlight nodes with IAQ data */
+    HIGHLIGHT_IAQ = 0x08;
+  }
 
   /*
-   * Highlight nodes w/ position
+   * Bitwise OR of Flags values.
    */
-  bool position_switch = 2;
-
-  /*
-   * Highlight nodes w/ telemetry data
-   */
-  bool telemetry_switch = 3;
-
-  /*
-   * Highlight nodes w/ iaq data
-   */
-  bool iaq_switch = 4;
+  uint32 flags = 1;
 
   /*
    * Highlight nodes by matching name string
    */
-  string node_name = 5;
+  string node_name = 2;
 }
 
 message GeoPoint {

@@ -3,6 +3,8 @@
 
 *NodeInfo.channel int_size:8
 *NodeInfo.hops_away int_size:8
+# NodeFlags reaches bit 9 (NODE_FLAG_HAS_XEDDSA_SIGNED) here, so 16 bits.
+*NodeInfo.flags int_size:16
 
 *MyNodeInfo.device_id max_size:16
 *MyNodeInfo.pio_env max_size:40
@@ -24,12 +26,15 @@
 *ClientNotification.message max_size:400
 *ClientNotification.payload_variant anonymous_oneof:true
 
-*KeyVerificationNumberInform.remote_longname max_size:40
-*KeyVerificationNumberRequest.remote_longname max_size:40
-*KeyVerificationFinal.remote_longname max_size:40
+# Mirrors User.long_name, which these carry a copy of.
+*KeyVerificationNumberInform.remote_longname max_size:25
+*KeyVerificationNumberRequest.remote_longname max_size:25
+*KeyVerificationFinal.remote_longname max_size:25
 *KeyVerificationFinal.verification_characters max_size:10
 
 *DeviceMetadata.firmware_version max_size:18
+*DeviceMetadata.capabilities int_size:8
+*DeviceMetadata.role int_size:8
 
 *ChunkedPayload.chunk_count int_size:16
 *ChunkedPayload.chunk_index int_size:16
@@ -37,20 +42,16 @@
 
 *ChunkedPayloadResponse.payload_variant anonymous_oneof:true
 
-# Region->preset compatibility map (FromRadio.region_presets). Bounds chosen
-# above the current table (6 groups / 9 presets in the largest group / 32 regions)
-# so LoRaRegionPresetMap stays small enough that FromRadio_size does not grow past
-# the 512-byte MAX_TO_FROM_RADIO_SIZE cap. nanopb sizes repeated enums unpacked
-# (~2 bytes/element), so the flat groups + region_groups layout keeps cost additive
-# rather than groups*regions. See bin/regen-protos.sh output for the actual size.
-# region_groups capped at 38 = the number of RegionCode enum values, so it can
-# never overflow regardless of how many regions gain a firmware table entry.
+# Region->preset compatibility map (FromRadio.region_presets). groups is capped
+# above the current table (6 distinct preset groups); region_groups at 38 = the
+# number of RegionCode values, so it can never overflow however many regions gain
+# a firmware table entry. Worst case is ~120 bytes, well inside the 512-byte
+# MAX_TO_FROM_RADIO_SIZE cap on FromRadio.
 *LoRaRegionPresetMap.groups        max_count:8
 *LoRaRegionPresetMap.region_groups max_count:38
-*LoRaPresetGroup.presets           max_count:11
-*LoRaRegionPresets.group_index     int_size:8
+*LoRaRegionPresetMap.region_groups int_size:8
+*LoRaPresetGroup.default_preset    int_size:8
 
-# Longest documented value is "token_wrong_size" (16 chars); 32 leaves room
-# for future short reasons without forcing nanopb to use callbacks.
-*LockdownStatus.lock_reason max_size:32
 *LockdownStatus.state int_size:8
+*LockdownStatus.lock_reason int_size:8
+*LockdownStatus.boots_remaining int_size:16

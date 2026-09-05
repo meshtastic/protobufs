@@ -33,3 +33,19 @@
 *MeshBeaconConfig.broadcast_offer_channel.name max_size:12
 *MeshBeaconConfig.broadcast_offer_channel.psk max_size:32
 *MeshBeaconConfig.broadcast_targets max_count:4
+*MeshBeaconConfig.flags int_size:8
+*MeshBeaconConfig.broadcast_offer_region int_size:8
+*MeshBeaconConfig.broadcast_offer_preset int_size:8
+*MeshBeaconConfig.BroadcastTarget.region int_size:8
+*MeshBeaconConfig.BroadcastTarget.preset int_size:8
+*MeshBeaconConfig.BroadcastTarget.channel_index int_size:8
+
+# Packed boolean flags. TelemetryConfig reaches bit 9 so it needs 16 bits; the
+# rest stay inside a byte.
+*TelemetryConfig.flags int_size:16
+*MQTTConfig.flags int_size:8
+*DetectionSensorConfig.flags int_size:8
+*SerialConfig.flags int_size:8
+*StoreForwardConfig.flags int_size:8
+*RangeTestConfig.flags int_size:8
+*CannedMessageConfig.flags int_size:8

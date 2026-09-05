@@ -156,35 +156,35 @@ message I2CResult {
 message InterdeviceMessage {
   // Correlates a response with its request: responses echo the id of the
   // request they answer. 0 for unsolicited messages (e.g. the nmea stream).
-  uint32 id = 15;
+  uint32 id = 1;
   // The message data
   oneof data {
-    string nmea = 1;
-    uint32 beep = 2;
-    I2CTransaction i2c_transaction = 3;
-    I2CResult i2c_result = 4;
-    bool i2c_scan = 5; // Request: scan the secondary I2C bus
-    bytes i2c_scan_result = 6; // Response: 7-bit addresses of discovered devices
-    FileTransfer file_transfer = 7;
-    DirectoryListing directory_listing = 8;
-    bool get_sd_info = 9; // Request: SD card statistics
-    SdCardInfo sd_info = 10; // Response
+    string nmea = 2;
+    uint32 beep = 3;
+    I2CTransaction i2c_transaction = 4;
+    I2CResult i2c_result = 5;
+    bool i2c_scan = 6; // Request: scan the secondary I2C bus
+    bytes i2c_scan_result = 7; // Response: 7-bit addresses of discovered devices
+    FileTransfer file_transfer = 8;
+    DirectoryListing directory_listing = 9;
+    bool get_sd_info = 10; // Request: SD card statistics
+    SdCardInfo sd_info = 11; // Response
     // Link liveness probe and version handshake. The receiver answers ping
     // with pong, echoing the id. Touches no peripherals, so it works with
     // nothing attached. Both carry the version the sender speaks; a peer
     // that answers with a different one speaks another protocol and must
     // not be used.
-    InterdeviceVersion ping = 11;
-    InterdeviceVersion pong = 12;
+    InterdeviceVersion ping = 12;
+    InterdeviceVersion pong = 13;
     // Response: the request could not be decoded or is of an unhandled
     // type, so the requester fails fast instead of burning its timeout.
     // Echoes the id when known, 0 when the frame was undecodable. Never
     // sent in reaction to a nack.
-    bool nack = 13;
+    bool nack = 14;
     // Request: mount the card, or release it so it can be pulled safely. The
     // co-processor answers with sd_info. Without an eject the card is mounted
     // on its own and kept mounted; after one it stays released until a mount
     // is asked for.
-    SdCommand sd_command = 14;
+    SdCommand sd_command = 15;
   }
 }

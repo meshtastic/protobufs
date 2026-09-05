@@ -9,7 +9,6 @@ export * as Common from "./lib/common_pb.ts";
 export * as Config from "./lib/config_pb.ts";
 export * as ConnectionStatus from "./lib/connection_status_pb.ts";
 export * as DeviceUI from "./lib/device_ui_pb.ts";
-export * as DeviceOnlyLegacy from "./lib/deviceonly_legacy_pb.ts";
 export * as DeviceOnly from "./lib/deviceonly_pb.ts";
 export * as HwDeviceRegistry from "./lib/hw_device_registry_pb.ts";
 export * as HwVendorRegistry from "./lib/hw_vendor_registry_pb.ts";

@@ -16,125 +16,155 @@ option swift_prefix = "";
  */
 message Position {
   /*
-   * The new preferred location encoding, multiply by 1e-7 to get degrees
-   * in floating point
+   * Latitude, in one of two forms.
+   *
+   * Over the air a coordinate is scaled: the 1e-7 degree value shifted right by
+   * (32 - precision_bits) and zigzag encoded, so it costs bytes in proportion to the
+   * precision actually being shared rather than four bytes of mostly-zero. Reduced
+   * precision is the normal case on the mesh.
+   *
+   * On the client link the device sends the reconstructed full-precision value
+   * instead, so an app never has to undo the shift.
+   *
+   *   precision_bits   scaled cost   scale
+   *   32               5 B           full (send `latitude` instead)
+   *   21               3 B           ~20 m
+   *   14               2 B           ~2.5 km
+   *
+   * Sender must use the same form for latitude and longitude.
    */
-  optional sfixed32 latitude_i = 1;
+  oneof latitude_variant {
+    /*
+     * Scaled: latitude_i >> (32 - precision_bits). Reconstruct with
+     * latitude_i = latitude_scaled << (32 - precision_bits).
+     */
+    sint32 latitude_scaled = 1;
+
+    /*
+     * Full precision, multiply by 1e-7 to get degrees.
+     */
+    sfixed32 latitude = 2;
+  }
 
   /*
-   * The new preferred location encoding, multiply by 1e-7 to get degrees
-   * in floating point
+   * Longitude, in the same form as latitude.
    */
-  optional sfixed32 longitude_i = 2;
+  oneof longitude_variant {
+    /*
+     * Scaled: longitude_i >> (32 - precision_bits).
+     */
+    sint32 longitude_scaled = 3;
+
+    /*
+     * Full precision, multiply by 1e-7 to get degrees.
+     */
+    sfixed32 longitude = 4;
+  }
+
+  /*
+   * Bits of precision retained, 1 to 32.
+   * Required with the scaled form: it cannot be reconstructed without this.
+   */
+  uint32 precision_bits = 5;
+
+  /*
+   * Epoch seconds of this position.
+   * Where a GPS supplied the fix this is the timestamp of the GPS solution, otherwise
+   * when the position was recorded.
+   */
+  fixed32 time = 6;
 
   /*
    * In meters above MSL (but see issue #359)
-   * Wire encoding: sint32 (W1 fix, was int32)
    */
-  optional sint32 altitude = 3;
-
-  /*
-   * This is usually not sent over the mesh (to save space), but it is sent
-   * from the phone so that the local device can set its time if it is sent over
-   * the mesh (because there are devices on the mesh without GPS or RTC).
-   * seconds since 1970
-   */
-  fixed32 time = 4;
+  optional sint32 altitude = 7;
 
   /*
    * How the location was acquired: manual, onboard GPS, external (EUD) GPS
-   * Uses top-level LocSource enum from common.proto (was nested enum in 2.x)
    */
-  LocSource location_source = 5;
+  LocSource location_source = 8;
 
   /*
-   * How the altitude was acquired: manual, GPS int/ext, etc
-   * Default: same as location_source if present
-   * Uses top-level AltSource enum from common.proto (was nested enum in 2.x)
+   * Ground speed in km/h.
+   * Clarification of terms:
+   * - "track" is the direction of motion (measured in horizontal plane)
+   * - "heading" is where the fuselage points (measured in horizontal plane)
+   * - "yaw" indicates a relative rotation about the vertical axis
    */
-  AltSource altitude_source = 6;
+  optional uint32 ground_speed = 9;
 
   /*
-   * Positional timestamp (actual timestamp of GPS solution) in integer epoch seconds
+   * True North TRACK in 1/100 degrees
    */
-  fixed32 timestamp = 7;
+  optional uint32 ground_track = 10;
 
   /*
-   * Pos. timestamp milliseconds adjustment (rarely available or required)
-   * Wire encoding: sint32 (W1 fix, was int32)
+   * GPS "Satellites in View" number
    */
-  sint32 timestamp_millis_adjust = 8;
+  uint32 sats_in_view = 11;
+
+  /*
+   * Position Dilution of Precision, in 1/100 units.
+   * Sufficient for most cases; for higher precision scenarios send HDOP and VDOP
+   * instead, which makes this redundant (PDOP = sqrt(HDOP^2 + VDOP^2)).
+   */
+  uint32 PDOP = 12;
 
   /*
    * HAE altitude in meters - can be used instead of MSL altitude
    */
-  optional sint32 altitude_hae = 9;
+  optional sint32 altitude_hae = 13;
 
   /*
    * Geoidal separation in meters
    */
-  optional sint32 altitude_geoidal_separation = 10;
+  optional sint32 altitude_geoidal_separation = 14;
 
   /*
-   * Horizontal, Vertical and Position Dilution of Precision, in 1/100 units
-   * - PDOP is sufficient for most cases
-   * - for higher precision scenarios, HDOP and VDOP can be used instead,
-   *   in which case PDOP becomes redundant (PDOP=sqrt(HDOP^2 + VDOP^2))
+   * A sequence number, incremented with each Position message to help
+   *   detect lost updates if needed
    */
-  uint32 PDOP = 11;
+  uint32 seq_number = 15;
+
+  // Fields 16+ use 2-byte protobuf tags; less-critical fields go here
+
+  /*
+   * GPS fix quality (from NMEA GxGGA statement or similar)
+   */
+  uint32 fix_quality = 16;
+
+  /*
+   * GPS fix type 2D/3D (from NMEA GxGSA statement)
+   */
+  uint32 fix_type = 17;
 
   /*
    * Horizontal Dilution of Precision, in 1/100 units
    */
-  uint32 HDOP = 12;
+  uint32 HDOP = 18;
 
   /*
    * Vertical Dilution of Precision, in 1/100 units
    */
-  uint32 VDOP = 13;
+  uint32 VDOP = 19;
 
   /*
    * GPS accuracy (a hardware specific constant) in mm
    *   multiplied with DOP to calculate positional accuracy
    * Default: "'bout three meters-ish" :)
    */
-  uint32 gps_accuracy = 14;
+  uint32 gps_accuracy = 20;
 
   /*
-   * Ground speed in km/h and True North TRACK in 1/100 degrees
-   * Clarification of terms:
-   * - "track" is the direction of motion (measured in horizontal plane)
-   * - "heading" is where the fuselage points (measured in horizontal plane)
-   * - "yaw" indicates a relative rotation about the vertical axis
+   * How the altitude was acquired: manual, GPS int/ext, etc
+   * Default: same as location_source if present
    */
-  optional uint32 ground_speed = 15;
-
-  // Fields 16+ use 2-byte protobuf tags; less-critical fields go here
-
-  /*
-   * True North TRACK in 1/100 degrees
-   */
-  optional uint32 ground_track = 16;
-
-  /*
-   * GPS fix quality (from NMEA GxGGA statement or similar)
-   */
-  uint32 fix_quality = 17;
-
-  /*
-   * GPS fix type 2D/3D (from NMEA GxGSA statement)
-   */
-  uint32 fix_type = 18;
-
-  /*
-   * GPS "Satellites in View" number
-   */
-  uint32 sats_in_view = 19;
+  AltSource altitude_source = 21;
 
   /*
    * Sensor ID - in case multiple positioning sensors are being used
    */
-  uint32 sensor_id = 20;
+  uint32 sensor_id = 22;
 
   /*
    * Estimated/expected time (in seconds) until next update:
@@ -142,18 +172,7 @@ message Position {
    * - if we update at dynamic intervals (based on relative movement etc),
    *   but "AT LEAST every Y seconds", use Y
    */
-  uint32 next_update = 21;
-
-  /*
-   * A sequence number, incremented with each Position message to help
-   *   detect lost updates if needed
-   */
-  uint32 seq_number = 22;
-
-  /*
-   * Indicates the bits of precision set by the sending node
-   */
-  uint32 precision_bits = 23;
+  uint32 next_update = 23;
 }
 
 /*
@@ -172,9 +191,9 @@ message User {
 
   /*
    * A full name for this user, i.e. "Kevin Hester"
-   * Limited to 24 bytes of UTF-8: longer names are accepted from senders
-   * built against the older 39-byte limit, but devices truncate them before
-   * storing or rebroadcasting. Clients should enforce 24 bytes in their UI.
+   * Limited to 24 bytes of UTF-8. Clients should enforce that in their UI; a
+   * device truncates anything longer before storing or rebroadcasting, with
+   * sanitizeUtf8 cleaning up a partial multi-byte sequence at the boundary.
    */
   string long_name = 2;
 
@@ -423,7 +442,20 @@ message Data {
   uint32 emoji = 8;
 
   /*
-   * Bitfield for extra flags. First use is to indicate that user approves the packet being uploaded to MQTT.
+   * Extra per-payload flags: a bitwise OR of Bitfield values.
+   * Values match BITFIELD_* in the firmware's src/mesh/Router.h.
+   */
+  enum Bitfield {
+    /* No flags set */
+    BITFIELD_NONE = 0x00;
+    /* The sender approves this packet being uploaded to MQTT */
+    BITFIELD_OK_TO_MQTT = 0x01;
+    /* The sender wants a response to this packet */
+    BITFIELD_WANT_RESPONSE = 0x02;
+  }
+
+  /*
+   * Bitwise OR of Bitfield values.
    */
   optional uint32 bitfield = 9;
 
@@ -545,6 +577,51 @@ message StoreForwardPlusPlus {
 }
 
 /*
+ * The immutable extension block of the v3 on-air header.
+ *
+ * The header is split by mutability rather than by meaning: a fixed core that relays
+ * rewrite at known offsets, this block which no relay may touch, and an append-only
+ * path at the frame tail. A relay never decodes this message - it copies the bytes
+ * verbatim - so it cannot strip a field it does not understand. That is the property
+ * a schema-driven format without tags cannot offer, and it is why the header stays
+ * protobuf.
+ *
+ * The whole encoded block is covered by the AEAD AAD and by the XEdDSA signature, so
+ * an attacker cannot add, drop or reorder fields without failing the tag even though
+ * every relay on the route forwards them unverified.
+ *
+ * Field numbering is load-bearing:
+ *   1-15  one-byte protobuf key. Hop-by-hop. A relay MAY read these; on an unknown
+ *         tag it forwards verbatim and acts on nothing.
+ *   16+   two-byte key. End-to-end. Relays never look.
+ *
+ * Never decode and re-encode this message in transit. nanopb drops unknown fields on
+ * decode, so a re-encode silently strips exactly the forward compatibility this
+ * design exists to provide.
+ */
+message HeaderExt {
+  /*
+   * Fragmentation state, packed as msg_id(8) | index(4) | total(4).
+   *
+   * total travels on every fragment rather than only the last: a receiver that gets
+   * fragment 3 first can size its buffer immediately and knows what is missing, which
+   * an end-marker scheme cannot express when the lost fragment is the final one.
+   *
+   * Reassembly is endpoint-only; relays treat fragments as independent packets and
+   * hold no state. Each fragment is an ordinary packet, so want_ack and ReliableRouter
+   * already provide per-fragment retransmission - there is no separate ARQ.
+   * msg_id is a per-sender counter and wraps after 16 concurrent fragmented messages.
+   */
+  uint32 fragment = 1;
+
+  /*
+   * An explicit path supplied by the endpoint, one NodeNum suffix per hop.
+   * Distinct from the mutable path recorded at the frame tail, which relays append to.
+   */
+  bytes source_route = 2;
+}
+
+/*
  * The actual over-the-mesh message doing RemoteShell
  */
 message RemoteShell {
@@ -579,17 +656,21 @@ message RemoteShell {
   OpCode op = 1;
 
   /*
-   * Logical PTY session identifier.
+   * Logical PTY session identifier, a random non-zero 31-bit value chosen by
+   * whichever side opens the session. fixed32 because it is random: a varint
+   * would average 5 bytes, and this field is on every frame of an interactive
+   * session.
    */
-  uint32 session_id = 2;
+  fixed32 session_id = 2;
 
   /*
-   * Monotonic sequence number for this frame.
+   * Monotonic per-session sequence number for this frame.
+   * Zero on unsequenced control frames (ACK, turn grant, RTS).
    */
   uint32 seq = 3;
 
   /*
-   * Cumulative ack sequence number.
+   * Cumulative ack: the highest contiguous `seq` received from the peer.
    */
   uint32 ack_seq = 4;
 
@@ -609,17 +690,36 @@ message RemoteShell {
   uint32 rows = 7;
 
   /*
-   * Bit flags for protocol extensions.
+   * Half-duplex turn-taking control: a bitwise OR of Flags values.
+   * Values match TURN_FLAG_* in the firmware's DMShell module.
+   */
+  enum Flags {
+    /* No flags set */
+    FLAG_NONE = 0x00;
+    /* Handing the turn to the peer; it may transmit now */
+    FLAG_GRANT = 0x01;
+    /* Yielded under a budget but still has data queued; grant back promptly */
+    FLAG_MORE = 0x02;
+    /* Has output but no turn; requesting one */
+    FLAG_RTS = 0x04;
+  }
+
+  /*
+   * Bitwise OR of Flags values.
    */
   uint32 flags = 8;
 
   /*
-   * The last sequence number TX'd.
+   * Highest `seq` the sender has transmitted so far. Lets the receiver notice
+   * frames lost off the tail of the stream, which a cumulative ack alone cannot
+   * reveal because it never saw them.
    */
   uint32 last_tx_seq = 9;
 
   /*
-   * The last sequence number RX'd.
+   * Selective resend request: the peer should retransmit from last_rx_seq + 1.
+   * Zero means no resend is being requested. Distinct from ack_seq, which
+   * reports progress; this asks for repair, and takes precedence when set.
    */
   uint32 last_rx_seq = 10;
 }
@@ -714,14 +814,26 @@ message Waypoint {
   optional BoundingBox bounding_box = 10;
 
   /*
-   * Bitfield packing of the geofence notification flags:
-   *   bit 0: notify_on_enter - raise a notification when a tracked node enters this
-   *          waypoint's geofence (the circular radius and/or the bounding box)
-   *   bit 1: notify_on_exit - raise a notification when a tracked node exits it
-   *   bit 2: notify_favorites_only - only raise enter/exit notifications for nodes
-   *          marked as favorites on the receiving device; applies to both of the
-   *          above. Favorite status is resolved locally per receiver, so the same
-   *          waypoint alerts each node only for its own favorites.
+   * Geofence notification behaviour: a bitwise OR of NotifyFlags values.
+   * The geofence is the circular radius and/or the bounding box.
+   */
+  enum NotifyFlags {
+    /* No notifications */
+    NOTIFY_NONE = 0x00;
+    /* Raise a notification when a tracked node enters the geofence */
+    NOTIFY_ON_ENTER = 0x01;
+    /* Raise a notification when a tracked node exits the geofence */
+    NOTIFY_ON_EXIT = 0x02;
+    /*
+     * Only notify for nodes marked as favorites on the receiving device. Applies to
+     * both ON_ENTER and ON_EXIT. Favorite status resolves locally per receiver, so
+     * the same waypoint alerts each node only for its own favorites.
+     */
+    NOTIFY_FAVORITES_ONLY = 0x04;
+  }
+
+  /*
+   * Bitwise OR of NotifyFlags values.
    */
   uint32 notify_flags = 11;
 }

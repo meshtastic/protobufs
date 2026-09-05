@@ -1,3 +1,5 @@
 *MeshBeacon.message max_size:101
 *MeshBeacon.offer_channel.name max_size:12
 *MeshBeacon.offer_channel.psk max_size:32
+*MeshBeacon.offer_region int_size:8
+*MeshBeacon.offer_preset int_size:8

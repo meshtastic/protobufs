@@ -159,109 +159,61 @@ message MeshPacket {
   fixed32 to = 2;
 
   /*
+   * A unique ID for this packet.
+   * Useful for flooding algorithms, and for matching a response to its request.
+   */
+  fixed32 id = 3;
+
+  /*
    * (Usually) If set, this indicates the index in the secondary_channels table that this packet was sent/received on.
    * If unset, packet was on the primary channel.
    * A particular node might know only a subset of channels in use on the mesh.
-   * Therefore channel_index is inherently a local concept and meaningless to send between nodes.
-   * Very briefly, while sending and receiving deep inside the device Router code, this field instead
-   * contains the 'channel hash' instead of the index.
-   * This 'trick' is only used while the payload_variant is an 'encrypted'.
+   * Therefore channel_index is inherently a local concept.
    */
-  uint32 channel = 3;
+  uint32 channel = 4;
 
   /*
-   * Internally to the mesh radios we will route SubPackets encrypted per the docs.
-   * However, when a particular node has the correct
-   * key to decode a particular packet, it will decode the payload into a SubPacket protobuf structure.
-   * Software outside of the device nodes will never encounter a packet where
-   * "decoded" is not populated (i.e. any encryption/decryption happens before reaching the applications).
+   * Neither is set on the wire simultaneously: a packet is either decoded locally
+   * or carried as ciphertext.
    */
   oneof payload_variant {
     /*
-     * The decoded application-layer payload
+     * TODO: REPLACE
      */
-    Data decoded = 4;
+    Data decoded = 5;
 
     /*
-     * The encrypted raw bytes of the payload
+     * TODO: REPLACE
      */
-    bytes encrypted = 5;
+    bytes encrypted = 6;
   }
 
   /*
-   * A unique ID for this packet.
-   * Always 0 for no-ack packets or non broadcast packets (and therefore take zero bytes of space).
-   * Otherwise a unique ID for this packet, useful for flooding algorithms.
-   * ID only needs to be unique on a _per sender_ basis, and it only
-   * needs to be unique for a few minutes (long enough to last for the length of
-   * any ACK or the completion of a mesh broadcast flood).
-   * Note: Our crypto implementation uses this id as well.
-   * See [crypto](/docs/overview/encryption) for details.
+   * Packet-level boolean flags: a bitwise OR of Flags values.
    */
-  fixed32 id = 6;
+  enum Flags {
+    /* Nothing set */
+    PACKET_NONE = 0x00;
+    /* The sender wants this packet acknowledged */
+    PACKET_WANT_ACK = 0x01;
+    /* This packet passed via MQTT somewhere along the path it took */
+    PACKET_VIA_MQTT = 0x02;
+    /* The packet was en/decrypted using PKI */
+    PACKET_PKI_ENCRYPTED = 0x04;
+    /* The packet carries a valid XEdDSA signature */
+    PACKET_XEDDSA_SIGNED = 0x08;
+  }
 
   /*
-   * The time this message was received by the esp32 (secs since 1970).
-   * Note: this field is _never_ sent on the radio link itself (to save space). Times
-   * are typically not sent over the mesh, but they will be added to any Packet
-   * sent to the phone (so the phone can know exact time of reception).
-   * Explicit presence: firmware cannot always attach a trustworthy wall-clock timestamp at the
-   * moment of reception - a node with no GPS and no phone connected yet has no time source at
-   * all. has_rx_time disambiguates that state from a genuine (if coincidental) 1970-01-01
-   * reading. A packet delivered with this field absent may still be re-timestamped once a valid
-   * clock becomes available, before the phone ever sees it - "absent" is not guaranteed
-   * permanent, only "not yet known at last observation".
+   * Bitwise OR of Flags values.
    */
-  optional fixed32 rx_time = 7;
+  uint32 flags = 7;
 
   /*
-   * *Never* sent over the radio links.
-   * Set during reception to indicate the SNR of this packet.
-   * Used to collect statistics on current link quality.
-   * Value is in dB, scaled by 4 (i.e. multiply raw dB by 4 before storing).
-   */
-  sint32 rx_snr = 8;
-
-  /*
-   * If unset treated as zero (no forwarding, send to direct neighbor nodes only).
+   * If unset treated as zero (no forwarding, send to direct neighbor nodes only)
    * if 1, allow hopping through one node, etc...
-   * For our usecase real world topologies probably have a max of about 3.
-   * This field is normally placed into a few of bits in the header.
    */
-  uint32 hop_limit = 9;
-
-  /*
-   * This packet is being sent as a reliable message, we would prefer it to arrive at the destination.
-   * We would like to receive a ack packet in response.
-   * Broadcasts messages treat this flag specially: Since acks for broadcasts would
-   * rapidly flood the channel, the normal ack behavior is suppressed.
-   * Instead, the original sender listens to see if at least one node is rebroadcasting this packet (because naive flooding algorithm).
-   * If it hears that the odds (given typical LoRa topologies) the odds are very high that every node should eventually receive the message.
-   * So FloodingRouter.cpp generates an implicit ack which is delivered to the original sender.
-   * If after some time we don't hear anyone rebroadcast our packet, we will timeout and retransmit, using the regular resend logic.
-   * Note: This flag is normally sent in a flag bit in the header when sent over the wire.
-   */
-  bool want_ack = 10;
-
-  /*
-   * The priority of this message for sending.
-   * See MeshPacket.Priority description for more details.
-   */
-  Priority priority = 11;
-
-  /*
-   * RSSI of received packet. Only sent to phone for display purposes.
-   * Value is in dBm (negative for all but the strongest received signals).
-   * Explicit presence: rssi 0 is a legitimate reading on some radios (SX126x can report exactly
-   * 0 dBm; SX127x's formula can even go positive). has_rx_rssi disambiguates; a replayed packet
-   * built from history should leave this field absent rather than emitting 0.
-   */
-  optional sint32 rx_rssi = 12;
-
-  /*
-   * Describes whether this packet passed via MQTT somewhere along the path it currently took.
-   */
-  bool via_mqtt = 13;
+  uint32 hop_limit = 8;
 
   /*
    * Hop limit with which the original packet started. Sent via LoRa using three bits in the unencrypted header.
@@ -271,44 +223,77 @@ message MeshPacket {
    * decoded the packet and confirmed the sender's bitfield is present (added in 2.5.0). Until then,
    * or for a sender that never sets that bitfield, treat hop_start == 0 as unknown, not direct.
    */
-  uint32 hop_start = 14;
+  uint32 hop_start = 9;
+
+  /*
+   * Last byte of the node number of the node that should be used as the next hop in routing.
+   * Set by the firmware internally, clients are not supposed to set this.
+   */
+  uint32 next_hop = 10;
+
+  /*
+   * Last byte of the node number of the node that will relay/relayed this packet.
+   * Set by the firmware internally, clients are not supposed to set this.
+   */
+  uint32 relay_node = 11;
+
+  /*
+   * The time this message was received by the esp32 (secs since 1970).
+   * Note: this field is _never_ sent on the radio link itself (to save space).
+   * Explicit presence: firmware cannot always attach a trustworthy wall-clock timestamp at the
+   * moment of reception - a node with no GPS and no phone connected yet has no time source at
+   * all. has_rx_time disambiguates that state from a genuine (if coincidental) 1970-01-01 reading.
+   */
+  optional fixed32 rx_time = 12;
+
+  /*
+   * *Never* sent over the radio links.
+   * Set during reception to indicate the SNR of this packet.
+   * Value is in dB, scaled by 4 (i.e. multiply raw dB by 4 before storing).
+   */
+  sint32 rx_snr = 13;
+
+  /*
+   * RSSI of received packet. Only sent to phone for display purposes.
+   * Value is in dBm (negative for all but the strongest received signals).
+   * Explicit presence: rssi 0 is a legitimate reading on some radios (SX126x can report exactly
+   * 0 dBm; SX127x's formula can even go positive). has_rx_rssi disambiguates; a replayed packet
+   * built from history should leave this field absent rather than emitting 0.
+   */
+  optional sint32 rx_rssi = 14;
 
   /*
    * Records the public key the packet was encrypted with, if applicable.
    */
   bytes public_key = 15;
 
-  /*
-   * Indicates whether the packet was en/decrypted using PKI
-   */
-  bool pki_encrypted = 16;
+  // Fields 16+ use 2-byte protobuf tags; less-critical fields go here
 
   /*
-   * Last byte of the node number of the node that should be used as the next hop in routing.
-   * Set by the firmware internally, clients are not supposed to set this.
+   * The priority of this message for sending.
+   * See MeshPacket.Priority description for more details.
    */
-  uint32 next_hop = 17;
-
-  /*
-   * Last byte of the node number of the node that will relay/relayed this packet.
-   * Set by the firmware internally, clients are not supposed to set this.
-   */
-  uint32 relay_node = 18;
+  Priority priority = 16;
 
   /*
    * *Never* sent over the radio links.
    * Timestamp after which this packet may be sent.
    * Set by the firmware internally, clients are not supposed to set this.
    */
-  uint32 tx_after = 19;
+  uint32 tx_after = 17;
 
   /*
    * Indicates which transport mechanism this packet arrived over
    */
-  TransportMechanism transport_mechanism = 20;
+  TransportMechanism transport_mechanism = 18;
 
   /*
-   * Indicates whether the packet has a valid signature
+   * The v3 header's extension block, exactly as it appeared on air.
+   *
+   * Carried through opaquely so the phone API and MQTT deliver a packet's extensions
+   * intact, including fields this build does not know. Encodes a HeaderExt
+   * (wire.proto). Never re-encode it: decoding and re-encoding drops unknown fields
+   * and defeats the point of the block.
    */
-  bool xeddsa_signed = 21;
+  bytes header_ext = 19;
 }

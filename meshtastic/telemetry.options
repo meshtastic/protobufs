@@ -1,21 +1,11 @@
 # options for nanopb
 # https://jpa.kapsi.fi/nanopb/docs/reference.html#proto-file-options
 
-*EnvironmentMetrics.iaq int_size:16
-*EnvironmentMetrics.wind_direction int_size:16
-*EnvironmentMetrics.soil_moisture int_size:8
-*EnvironmentMetrics.lightning_distance_km int_size:8
-*EnvironmentMetrics.soil_ph int_size:16
-*EnvironmentMetrics.ph int_size:16
-*EnvironmentMetrics.turbidity int_size:16
-*EnvironmentMetrics.solar_irradiance int_size:16
+# 8 channels each: matches the widest multi-channel ADC / one-wire bridge in use.
 
 *LocalStats.num_online_nodes int_size:16
 *LocalStats.num_total_nodes int_size:16
 *LocalStats.num_tx_dropped int_size:16
-
-*HealthMetrics.heart_bpm int_size:8
-*HealthMetrics.spO2 int_size:8
 
 *Telemetry.variant anonymous_oneof:true
 
@@ -27,3 +17,15 @@
 *HostMetrics.load5 int_size:16
 *HostMetrics.load15 int_size:16
 *HostMetrics.user_string max_size:200
+
+# Sensor readings. 24 entries is what fits a Data payload comfortably; a node with
+# more to say sends another message. The parallel arrays are indexed together, so
+# they share a bound.
+# values must stay 32-bit: barometric pressure in pascals already exceeds 16 bits.
+*SensorReadings.keys max_count:24
+*SensorReadings.keys int_size:16
+*SensorReadings.values max_count:24
+*SensorReadings.time_offsets max_count:24
+*SensorReadings.time_offsets int_size:16
+*SensorReadings.sensors max_count:24
+*SensorReadings.sensors int_size:8

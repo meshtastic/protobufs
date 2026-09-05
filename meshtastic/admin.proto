@@ -572,7 +572,7 @@ message LockdownAuth {
    * applies). On boot, if the device RTC is set and now > this value,
    * the token is treated as expired.
    */
-  uint32 valid_until_epoch = 3;
+  fixed32 valid_until_epoch = 3;
 
   /*
    * If true, ignore passphrase fields, immediately revoke all
@@ -677,7 +677,7 @@ message HamParameters {
   /*
    * Transmit power in dBm at the LoRA transceiver, not including any amplification
    */
-  int32 tx_power = 2;
+  sint32 tx_power = 2;
 
   /*
    * Frequency in Hz

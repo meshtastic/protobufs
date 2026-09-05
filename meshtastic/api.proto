@@ -62,13 +62,11 @@ message NodeInfo {
   uint32 channel = 7;
 
   /*
-   * Bitfield packing of boolean node flags:
-   *   bit 0: via_mqtt - True if we witnessed the node over MQTT instead of LoRa transport
-   *   bit 1: is_favorite - True if node is in our favorites list (persists between NodeDB cleanups)
-   *   bit 2: is_ignored - True if node is in our ignored list (persists between NodeDB cleanups)
-   *   bit 3: is_key_manually_verified - True if node public key has been verified (persists between NodeDB cleanups)
-   *   bit 4: is_muted - True if node has been muted (persists between NodeDB cleanups)
-   *   bit 5: has_xeddsa_signed - True if node is signing its packets via XEdDSA (persists between NodeDB cleanups)
+   * Per-node boolean flags: a bitwise OR of NodeFlags values (common.proto).
+   * Shares its definition with the stored NodeInfoLite.bitfield, so the two words
+   * are interchangeable. The HAS_USER, HAS_IS_UNMESSAGABLE and HAS_SNR presence
+   * bits are storage-only and are not set here.
+   * All of these persist across NodeDB cleanups.
    */
   uint32 flags = 8;
 
@@ -233,15 +231,30 @@ message DeviceMetadata {
   uint32 device_state_version = 2;
 
   /*
-   * Bitfield packing of device capability booleans:
-   *   bit 0: canShutdown - Indicates whether the device can shutdown CPU natively or via power management chip
-   *   bit 1: hasWifi - Indicates that the device has native wifi capability
-   *   bit 2: hasBluetooth - Indicates that the device has native bluetooth capability
-   *   bit 3: hasEthernet - Indicates that the device has an ethernet peripheral
-   *   bit 4: hasRemoteHardware - Has Remote Hardware enabled
-   *   bit 5: hasPKC - Has PKC capabilities
-   *   bit 6: hasXeddsa - Build includes XEdDSA packet signature verification. Read-only
-   *          capability; must be clear when XEdDSA is not compiled in.
+   * What this device and firmware build can do: a bitwise OR of Capabilities values.
+   * Read-only; a client must not attempt to set these.
+   */
+  enum Capabilities {
+    /* No capabilities reported */
+    CAPABILITY_NONE = 0x0000;
+    /* Can shut the CPU down natively or via a power management chip */
+    CAPABILITY_CAN_SHUTDOWN = 0x0001;
+    /* Has native wifi */
+    CAPABILITY_HAS_WIFI = 0x0002;
+    /* Has native bluetooth */
+    CAPABILITY_HAS_BLUETOOTH = 0x0004;
+    /* Has an ethernet peripheral */
+    CAPABILITY_HAS_ETHERNET = 0x0008;
+    /* Remote Hardware is enabled */
+    CAPABILITY_HAS_REMOTE_HARDWARE = 0x0010;
+    /* Has public key cryptography */
+    CAPABILITY_HAS_PKC = 0x0020;
+    /* Build includes XEdDSA packet signature verification; clear when not compiled in */
+    CAPABILITY_HAS_XEDDSA = 0x0040;
+  }
+
+  /*
+   * Bitwise OR of Capabilities values.
    */
   uint32 capabilities = 3;
 
@@ -251,7 +264,8 @@ message DeviceMetadata {
   Role role = 4;
 
   /*
-   * Indicates the device's current enabled position flags
+   * The device's currently enabled position flags:
+   * a bitwise OR of PositionConfig.PositionFlags values (config.proto).
    */
   uint32 position_flags = 5;
 
@@ -261,8 +275,8 @@ message DeviceMetadata {
   uint32 hw_model = 6;
 
   /*
-   * Bit field of boolean for excluded modules
-   * (bitwise OR of ExcludedModules)
+   * Modules excluded from this device's configuration:
+   * a bitwise OR of ExcludedModules values.
    */
   uint32 excluded_modules = 7;
 }
@@ -531,25 +545,70 @@ message LockdownStatus {
   }
 
   /*
+   * Why the device is locked, when state is LOCKED.
+   */
+  enum LockReason {
+    /*
+     * Not reported / state is not LOCKED.
+     */
+    LOCK_REASON_UNSPECIFIED = 0;
+
+    /*
+     * Storage is already unlocked, but this client must authenticate.
+     */
+    LOCK_REASON_NEEDS_AUTH = 1;
+
+    /*
+     * No boot token on flash.
+     */
+    LOCK_REASON_TOKEN_MISSING = 2;
+
+    /*
+     * Boot token wall-clock TTL elapsed.
+     */
+    LOCK_REASON_TOKEN_EXPIRED = 3;
+
+    /*
+     * Boot token boot-count TTL exhausted.
+     */
+    LOCK_REASON_TOKEN_BOOTS_ZERO = 4;
+
+    /*
+     * Token tampered with, or issued for a different device.
+     */
+    LOCK_REASON_TOKEN_HMAC_FAIL = 5;
+
+    /*
+     * Token DEK decrypt failed.
+     */
+    LOCK_REASON_TOKEN_DEK_FAIL = 6;
+
+    /*
+     * Token file corrupted: wrong size.
+     */
+    LOCK_REASON_TOKEN_WRONG_SIZE = 7;
+
+    /*
+     * Token file corrupted: bad magic.
+     */
+    LOCK_REASON_TOKEN_BAD_MAGIC = 8;
+
+    /*
+     * No passphrase provisioned. Prefer the NEEDS_PROVISION state over this.
+     */
+    LOCK_REASON_NOT_PROVISIONED = 9;
+  }
+
+  /*
    * Current lockdown state being reported.
    */
   State state = 1;
 
   /*
-   * For LOCKED: machine-readable reason. Known values:
-   *   "needs_auth"        - storage already unlocked, client must auth
-   *   "token_missing"     - no boot token on flash
-   *   "token_expired"     - boot token wall-clock TTL elapsed
-   *   "token_boots_zero"  - boot token boot-count TTL exhausted
-   *   "token_hmac_fail"   - token tampered or wrong device
-   *   "token_dek_fail"    - token DEK decrypt failed
-   *   "token_wrong_size"  - token file corrupted
-   *   "token_bad_magic"   - token file corrupted
-   *   "not_provisioned"   - should generally use NEEDS_PROVISION state instead
-   * Other values may be added; clients should treat unknown values as
-   * "locked, ask for passphrase".
+   * For LOCKED: machine-readable reason. Values may be added; clients must treat
+   * an unrecognised one as "locked, ask for passphrase".
    */
-  string lock_reason = 2;
+  LockReason lock_reason = 2;
 
   /*
    * For UNLOCKED: remaining boots on the issued session token.
@@ -561,7 +620,7 @@ message LockdownStatus {
    * For UNLOCKED: wall-clock expiry of the issued session token,
    * absolute Unix-epoch seconds. 0 = no time limit.
    */
-  uint32 valid_until_epoch = 4;
+  fixed32 valid_until_epoch = 4;
 
   /*
    * For UNLOCK_FAILED: seconds the client must wait before another
@@ -575,19 +634,26 @@ message LockdownStatus {
  * A distinct set of legal modem presets shared by one or more LoRa regions.
  * Regions that have an identical preset list / default / licensing reference
  * the same group (by index) via LoRaRegionPresetMap.region_groups. This keeps
- * the whole map small enough to fit in a single FromRadio packet, since most
- * regions share the one standard preset list.
+ * the whole map small, since most regions share the one standard preset list.
  */
 message LoRaPresetGroup {
   /*
-   * The modem presets that are legal for every region referencing this group.
+   * Bitmask of the modem presets legal for every region referencing this group:
+   * bit N is set when ModemPreset value N is legal. Bit 0 is MODEM_LONG_FAST,
+   * bit 16 is MODEM_MEDIUM_TURBO. Bits 1 and 2 are never set (the LONG_SLOW and
+   * VERY_LONG_SLOW presets they stood for were removed in 3.0).
+   *
+   * A bitmask rather than a repeated enum: nanopb sizes repeated enums unpacked
+   * at ~2 bytes per element, so an 11-preset list cost ~22 bytes where the mask
+   * costs 4, and the whole map has to fit inside the FromRadio size cap.
    */
-  repeated ModemPreset presets = 1;
+  uint32 legal_presets = 1;
 
   /*
    * The firmware's default modem preset for regions in this group.
-   * Always one of `presets`. Clients should select this when switching to one
-   * of these regions, or when the current preset is not legal in the new region.
+   * Always one of the presets set in `legal_presets`. Clients should select this
+   * when switching to one of these regions, or when the current preset is not
+   * legal in the new region.
    */
   ModemPreset default_preset = 2;
 
@@ -599,44 +665,34 @@ message LoRaPresetGroup {
 }
 
 /*
- * Associates a single LoRa region with its preset group.
- */
-message LoRaRegionPresets {
-  /*
-   * The LoRa region this entry describes.
-   */
-  RegionCode region = 1;
-
-  /*
-   * Index into LoRaRegionPresetMap.groups for the preset list that is legal
-   * in `region`.
-   */
-  uint32 group_index = 2;
-}
-
-/*
  * Map describing which modem presets are valid for each LoRa region. Sent by
  * the firmware during the want_config handshake (as FromRadio.region_presets)
  * so that client UIs can prevent illegal region+preset selections.
  *
  * Delivery is grouped to save space: `groups` holds each distinct preset list,
- * and `region_groups` maps every known region to one of those groups by index.
- * A region that does NOT appear in `region_groups` carries no constraint
- * information and should not be restricted by the client (e.g. firmware that
- * predates this message, or a region with no firmware table entry). Clients
- * must also tolerate this whole message being absent.
+ * and `region_groups` maps every known region to one of those groups.
+ * Clients must tolerate this whole message being absent (firmware that predates
+ * it), and must not restrict a region that carries no constraint entry.
  */
 message LoRaRegionPresetMap {
   /*
-   * One entry per distinct (preset-list, default, licensing) combination.
-   * Referenced by index from `region_groups`.
+   * One entry per distinct (preset-mask, default, licensing) combination.
+   * Referenced by position from `region_groups`.
    */
   repeated LoRaPresetGroup groups = 1;
 
   /*
-   * One entry per known LoRa region, pointing at its preset group.
+   * Region to group lookup, indexed by RegionCode value: element N describes the
+   * region whose enum value is N. The element holds the `groups` index plus one,
+   * so 0 means "no constraint information for this region" and the client must
+   * not restrict it. Trailing regions with no entry are equally unconstrained,
+   * so firmware only sends up to its highest constrained region.
+   *
+   * Packed varints rather than a repeated (region, index) message: the pair form
+   * cost ~6 bytes per region against ~1 here, and the region is already implied
+   * by position.
    */
-  repeated LoRaRegionPresets region_groups = 2;
+  repeated uint32 region_groups = 2;
 }
 
 /*
@@ -718,15 +774,15 @@ message ClientNotification {
    */
   oneof payload_variant {
     /* Informs the client of a security number for key verification */
-    KeyVerificationNumberInform key_verification_number_inform = 11;
+    KeyVerificationNumberInform key_verification_number_inform = 5;
     /* Requests the client to provide a security number for key verification */
-    KeyVerificationNumberRequest key_verification_number_request = 12;
+    KeyVerificationNumberRequest key_verification_number_request = 6;
     /* Final result of a key verification exchange */
-    KeyVerificationFinal key_verification_final = 13;
+    KeyVerificationFinal key_verification_final = 7;
     /* Notification that a duplicated public key was detected */
-    DuplicatedPublicKey duplicated_public_key = 14;
+    DuplicatedPublicKey duplicated_public_key = 8;
     /* Notification that a low-entropy (weak) key was detected */
-    LowEntropyKey low_entropy_key = 15;
+    LowEntropyKey low_entropy_key = 9;
   }
 }
 

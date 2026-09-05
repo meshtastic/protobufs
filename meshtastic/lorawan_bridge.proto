@@ -53,22 +53,22 @@ message LoRaWANBridge {
      * FSK bit rate in bits per second. Non-zero only for an FSK frame, in which
      * case radio_params does not apply. Fits unsigned 16 bit.
      */
-    uint32 fsk_bitrate = 9;
+    uint32 fsk_bitrate = 6;
 
     /*
      * PHY payload, or its first part when chunk_count is 2.
      */
-    bytes payload = 6;
+    bytes payload = 7;
 
     /*
      * Groups this head with its continuation. 1 to 255, or 0 when not chunked.
      */
-    uint32 payload_id = 7;
+    uint32 payload_id = 8;
 
     /*
      * 0 when the frame fits one packet, otherwise 2.
      */
-    uint32 chunk_count = 8;
+    uint32 chunk_count = 9;
   }
 
   /*
@@ -97,45 +97,45 @@ message LoRaWANBridge {
     uint32 power_dbm = 4;
 
     /*
-     * Transmit as soon as possible instead of at tmst. Used for Class C.
+     * Downlink transmit options: a bitwise OR of Flags values.
      */
-    bool immediate = 5;
+    enum Flags {
+      /* Nothing set */
+      DOWNLINK_NONE = 0x00;
+      /* Transmit as soon as possible instead of at tmst. Used for Class C. */
+      DOWNLINK_IMMEDIATE = 0x01;
+      /* Invert LoRa polarity. Set on every LoRaWAN downlink. */
+      DOWNLINK_INVERT_POLARITY = 0x02;
+      /* Transmit without a CRC */
+      DOWNLINK_NO_CRC = 0x04;
+      /* The transmission may be deferred */
+      DOWNLINK_MAY_DEFER = 0x08;
+    }
 
     /*
-     * Invert LoRa polarity. True for every LoRaWAN downlink.
+     * Bitwise OR of Flags values.
      */
-    bool invert_polarity = 6;
-
-    /*
-     * Disable the physical layer CRC.
-     */
-    bool no_crc = 7;
-
-    /*
-     * Allow the gateway to send this in a later receive window if it arrives too
-     * late. Leave clear for anything tied to a specific uplink.
-     */
-    bool may_defer = 8;
+    uint32 flags = 5;
 
     /*
      * Identifies this downlink so its TxResult can be matched to it. 1 to 255.
      */
-    uint32 request_id = 12;
+    uint32 request_id = 6;
 
     /*
      * PHY payload, or its first part when chunk_count is 2.
      */
-    bytes payload = 9;
+    bytes payload = 7;
 
     /*
      * Groups this head with its continuation. 1 to 255, or 0 when not chunked.
      */
-    uint32 payload_id = 10;
+    uint32 payload_id = 8;
 
     /*
      * 0 when the frame fits one packet, otherwise 2.
      */
-    uint32 chunk_count = 11;
+    uint32 chunk_count = 9;
   }
 
   /*

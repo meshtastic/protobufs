@@ -100,50 +100,54 @@ message DeviceConfig {
    * For boards without a hard wired button, this is the pin number that will be used
    * Boards that have more than one button can swap the function with this one. defaults to BUTTON_PIN if defined.
    */
-  uint32 button_gpio = 4;
+  uint32 button_gpio = 2;
 
   /*
    * For boards without a PWM buzzer, this is the pin number that will be used
    * Defaults to PIN_BUZZER if defined.
    */
-  uint32 buzzer_gpio = 5;
+  uint32 buzzer_gpio = 3;
 
   /*
    * Sets the role of node
    */
-  RebroadcastMode rebroadcast_mode = 6;
+  RebroadcastMode rebroadcast_mode = 4;
 
   /*
    * Send our nodeinfo this often
    * Defaults to 900 Seconds (15 minutes)
    */
-  uint32 node_info_broadcast_secs = 7;
+  uint32 node_info_broadcast_secs = 5;
 
   /*
-   * Treat double tap interrupt on supported accelerometers as a button press if set to true
+   * Device behaviour toggles: a bitwise OR of Flags values.
    */
-  bool double_tap_as_button_press = 8;
+  enum Flags {
+    /* Nothing enabled */
+    DEVICE_NONE = 0x00;
+    /* Treat a double tap on a supported accelerometer as a button press */
+    DEVICE_DOUBLE_TAP_AS_BUTTON_PRESS = 0x01;
+    /* Disable the triple-press of the user button that toggles GPS */
+    DEVICE_DISABLE_TRIPLE_CLICK = 0x02;
+    /* Disable the default blinking LED (LED_PIN) behaviour */
+    DEVICE_LED_HEARTBEAT_DISABLED = 0x04;
+  }
 
   /*
-   * Disables the triple-press of user button to enable or disable GPS
+   * Bitwise OR of Flags values.
    */
-  bool disable_triple_click = 10;
+  uint32 flags = 6;
 
   /*
    * POSIX Timezone definition string from https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv.
    */
-  string tzdef = 11;
-
-  /*
-   * If true, disable the default blinking LED (LED_PIN) behavior on the device
-   */
-  bool led_heartbeat_disabled = 12;
+  string tzdef = 7;
 
   /*
    * Controls buzzer behavior for audio feedback
    * Defaults to ENABLED
    */
-  BuzzerMode buzzer_mode = 13;
+  BuzzerMode buzzer_mode = 8;
 }
 
 /*
@@ -259,43 +263,43 @@ message PositionConfig {
    * or zero for the default of once every 30 seconds
    * or a very large value (maxint) to update only once at boot.
    */
-  uint32 gps_update_interval = 5;
+  uint32 gps_update_interval = 4;
 
   /*
-   * Bit field of boolean configuration options for POSITION messages
-   * (bitwise OR of PositionFlags)
+   * Which optional fields to include when assembling POSITION messages:
+   * a bitwise OR of PositionFlags values.
    */
-  uint32 position_flags = 7;
+  uint32 position_flags = 5;
 
   /*
    * (Re)define GPS_RX_PIN for your board.
    */
-  uint32 rx_gpio = 8;
+  uint32 rx_gpio = 6;
 
   /*
    * (Re)define GPS_TX_PIN for your board.
    */
-  uint32 tx_gpio = 9;
+  uint32 tx_gpio = 7;
 
   /*
    * The minimum distance in meters traveled (since the last send) before we can send a position to the mesh if position_broadcast_smart_enabled
    */
-  uint32 broadcast_smart_minimum_distance = 10;
+  uint32 broadcast_smart_minimum_distance = 8;
 
   /*
    * The minimum number of seconds (since the last send) before we can send a position to the mesh if position_broadcast_smart_enabled
    */
-  uint32 broadcast_smart_minimum_interval_secs = 11;
+  uint32 broadcast_smart_minimum_interval_secs = 9;
 
   /*
    * (Re)define PIN_GPS_EN for your board.
    */
-  uint32 gps_en_gpio = 12;
+  uint32 gps_en_gpio = 10;
 
   /*
    * Set where GPS is enabled, disabled, or not present
    */
-  GpsMode gps_mode = 13;
+  GpsMode gps_mode = 11;
 }
 
 /*
@@ -335,30 +339,31 @@ message PowerConfig {
    * for this value (default 1 year) or a button press
    * 0 for default of one year
    */
-  uint32 sds_secs = 6;
+  uint32 sds_secs = 5;
 
   /*
    * Description: In light sleep the CPU is suspended, LoRa radio is on, BLE is off an GPS is on
    * Technical Details: ESP32 Only 0 for default of 300
    */
-  uint32 ls_secs = 7;
+  uint32 ls_secs = 6;
 
   /*
    * Description: While in light sleep when we receive packets on the LoRa radio we will wake and handle them and stay awake in no BLE mode for this value
    * Technical Details: ESP32 Only 0 for default of 10 seconds
    */
-  uint32 min_wake_secs = 8;
+  uint32 min_wake_secs = 7;
 
   /*
    * I2C address of INA_2XX to use for reading device battery voltage
    */
-  uint32 device_battery_ina_address = 9;
+  uint32 device_battery_ina_address = 8;
 
   /*
-   * If non-zero, we want powermon log outputs.  With the particular (bitfield) sources enabled.
+   * If non-zero, we want powermon log outputs, with the particular sources enabled:
+   * a bitwise OR of PowerMon.State values (powermon.proto).
    * Note: we picked an ID of 32 so that lower more efficient IDs can be used for more frequently used options.
    */
-  uint64 powermon_enables = 32;
+  uint64 powermon_enables = 9;
 }
 
 /*
@@ -400,55 +405,60 @@ message NetworkConfig {
   }
 
   /*
-   * Enable WiFi (disables Bluetooth)
+   * Network interface toggles: a bitwise OR of Flags values.
+   * Distinct from enabled_protocols, which selects mesh transport protocols.
    */
-  bool wifi_enabled = 1;
+  enum Flags {
+    /* Nothing enabled */
+    NETWORK_NONE = 0x00;
+    /* Enable WiFi, which disables Bluetooth */
+    NETWORK_WIFI = 0x01;
+    /* Enable Ethernet */
+    NETWORK_ETH = 0x02;
+    /* Enable IPv6 support */
+    NETWORK_IPV6 = 0x04;
+  }
+
+  /*
+   * Bitwise OR of Flags values.
+   */
+  uint32 flags = 1;
 
   /*
    * If set, this node will try to join the specified wifi network and
    * acquire an address via DHCP
    */
-  string wifi_ssid = 3;
+  string wifi_ssid = 2;
 
   /*
    * If set, will be use to authenticate to the named wifi
    */
-  string wifi_psk = 4;
+  string wifi_psk = 3;
 
   /*
    * NTP server to use if WiFi is conneced, defaults to `meshtastic.pool.ntp.org`
    */
-  string ntp_server = 5;
-
-  /*
-   * Enable Ethernet
-   */
-  bool eth_enabled = 6;
+  string ntp_server = 4;
 
   /*
    * acquire an address via DHCP or assign static
    */
-  AddressMode address_mode = 7;
+  AddressMode address_mode = 5;
 
   /*
    * struct to keep static address
    */
-  IpV4Config ipv4_config = 8;
+  IpV4Config ipv4_config = 6;
 
   /*
    * rsyslog Server and Port
    */
-  string rsyslog_server = 9;
+  string rsyslog_server = 7;
 
   /*
    * Flags for enabling/disabling network protocols
    */
-  uint32 enabled_protocols = 10;
-
-  /*
-   * Enable/Disable ipv6 support
-   */
-  bool ipv6_enabled = 11;
+  uint32 enabled_protocols = 8;
 
   /*
    * Available flags auxiliary network protocols
@@ -530,22 +540,42 @@ message DisplayConfig {
    * Automatically toggles to the next page on the screen like a carousel, based the specified interval in seconds.
    * Potentially useful for devices without user buttons.
    */
-  uint32 auto_screen_carousel_secs = 3;
+  uint32 auto_screen_carousel_secs = 2;
 
   /*
-   * Flip screen vertically, for cases that mount the screen upside down
+   * Display toggles: a bitwise OR of Flags values.
    */
-  bool flip_screen = 5;
+  enum Flags {
+    /* Nothing enabled */
+    DISPLAY_NONE = 0x00;
+    /* Flip the screen vertically, for mountings that invert it */
+    DISPLAY_FLIP_SCREEN = 0x01;
+    /* Print the first line in pseudo-bold rather than the original style */
+    DISPLAY_HEADING_BOLD = 0x02;
+    /* Wake the screen on accelerometer-detected motion or tap */
+    DISPLAY_WAKE_ON_TAP_OR_MOTION = 0x04;
+    /* Show the time in 12-hour format rather than 24-hour */
+    DISPLAY_USE_12H_CLOCK = 0x08;
+    /* Show node names in long format rather than short */
+    DISPLAY_USE_LONG_NODE_NAME = 0x10;
+    /* Draw message bubbles on screen */
+    DISPLAY_ENABLE_MESSAGE_BUBBLES = 0x20;
+  }
+
+  /*
+   * Bitwise OR of Flags values.
+   */
+  uint32 flags = 3;
 
   /*
    * Perferred display units
    */
-  DisplayUnits units = 6;
+  DisplayUnits units = 4;
 
   /*
    * Override auto-detect in screen
    */
-  OledType oled = 7;
+  OledType oled = 5;
 
   enum DisplayMode {
     /*
@@ -571,17 +601,7 @@ message DisplayConfig {
   /*
    * Display Mode
    */
-  DisplayMode displaymode = 8;
-
-  /*
-   * Print first line in pseudo-bold? FALSE is original style, TRUE is bold
-   */
-  bool heading_bold = 9;
-
-  /*
-   * Should we wake the screen up on accelerometer detected motion or tap
-   */
-  bool wake_on_tap_or_motion = 10;
+  DisplayMode displaymode = 6;
 
   enum CompassOrientation {
     /*
@@ -628,24 +648,7 @@ message DisplayConfig {
   /*
    * Indicates how to rotate or invert the compass output to accurate display on the display.
    */
-  CompassOrientation compass_orientation = 11;
-
-  /*
-   * If false (default), the device will display the time in 24-hour format on screen.
-   * If true, the device will display the time in 12-hour format on screen.
-   */
-  bool use_12h_clock = 12;
-
-  /*
-   * If false (default), the device will use short names for various display screens.
-   * If true, node names will show in long format
-   */
-  bool use_long_node_name = 13;
-
-  /*
-   * If true, the device will display message bubbles on screen.
-   */
-  bool enable_message_bubbles = 14;
+  CompassOrientation compass_orientation = 7;
 }
 
 /*
@@ -673,10 +676,48 @@ message LoRaConfig {
   }
 
   /*
-   * When enabled, the `modem_preset` fields will be adhered to, else the `bandwidth`/`spread_factor`/`coding_rate`
-   * will be taked from their respective manually defined fields
+   * LoRa radio toggles: a bitwise OR of Flags values.
    */
-  bool use_preset = 1;
+  enum Flags {
+    /* Nothing enabled */
+    LORA_NONE = 0x00;
+    /*
+     * Adhere to the modem_preset field. When clear, bandwidth, spread_factor and
+     * coding_rate are taken from their manually defined fields instead.
+     */
+    LORA_USE_PRESET = 0x01;
+    /*
+     * Allow the LoRa radio to transmit. Clearing this disables TX, which is useful
+     * for hot-swapping antennas and other tests.
+     */
+    LORA_TX_ENABLED = 0x02;
+    /*
+     * Exceed duty cycle limits. You are then possibly not following local
+     * regulations unless you are a HAM. No effect where the region duty cycle is 100%.
+     */
+    LORA_OVERRIDE_DUTY_CYCLE = 0x04;
+    /* Set RX boosted gain mode on SX126X-based radios */
+    LORA_SX126X_RX_BOOSTED_GAIN = 0x08;
+    /* Disable the built-in PA fan driven by the pin defined in RF95_FAN_EN */
+    LORA_PA_FAN_DISABLED = 0x10;
+    /*
+     * Drop packets received over LoRa that passed via MQTT anywhere on the path
+     * towards this node.
+     */
+    LORA_IGNORE_MQTT = 0x20;
+    /* Set the ok_to_mqtt bit on outgoing packets */
+    LORA_CONFIG_OK_TO_MQTT = 0x40;
+    /*
+     * Do not use radiolib to initialize the radio; listen for a serialHal
+     * connection instead.
+     */
+    LORA_SERIAL_HAL_ONLY = 0x80;
+  }
+
+  /*
+   * Bitwise OR of Flags values.
+   */
+  uint32 flags = 1;
 
   /*
    * Either modem_config or bandwidth/spreading/coding will be specified - NOT BOTH.
@@ -727,18 +768,12 @@ message LoRaConfig {
   uint32 hop_limit = 8;
 
   /*
-   * Disable TX from the LoRa radio. Useful for hot-swapping antennas and other tests.
-   * Defaults to false
-   */
-  bool tx_enabled = 9;
-
-  /*
    * If zero, then use default max legal continuous power (ie. something that won't
    * burn out the radio hardware)
    * In most cases you should use zero here.
    * Units are in dBm.
    */
-  int32 tx_power = 10;
+  sint32 tx_power = 9;
 
   /*
    * This controls the actual hardware frequency the radio transmits on.
@@ -749,19 +784,7 @@ message LoRaConfig {
    * If using the hash algorithm the channel number will be: hash(channel_name) %
    * NUM_CHANNELS (Where num channels depends on the regulatory region).
    */
-  uint32 channel_num = 11;
-
-  /*
-   * If true, duty cycle limits will be exceeded and thus you're possibly not following
-   * the local regulations if you're not a HAM.
-   * Has no effect if the duty cycle of the used region is 100%.
-   */
-  bool override_duty_cycle = 12;
-
-  /*
-   * If true, sets RX boosted gain mode on SX126X based radios
-   */
-  bool sx126x_rx_boosted_gain = 13;
+  uint32 channel_num = 10;
 
   /*
    * This parameter is for advanced users and licensed HAM radio operators.
@@ -771,39 +794,19 @@ message LoRaConfig {
    * enable HAM mode and turn off encryption.
    * Units are in Hz.
    */
-  uint32 override_frequency = 14;
-
-  /*
-   * If true, disable the build-in PA FAN using pin define in RF95_FAN_EN.
-   */
-  bool pa_fan_disabled = 15;
+  uint32 override_frequency = 11;
 
   /*
    * For testing it is useful sometimes to force a node to never listen to
    * particular other nodes (simulating radio out of range). All nodenums listed
    * in ignore_incoming will have packets they send dropped on receive (by router.cpp)
    */
-  repeated uint32 ignore_incoming = 16;
-
-  /*
-   * If true, the device will not process any packets received via LoRa that passed via MQTT anywhere on the path towards it.
-   */
-  bool ignore_mqtt = 17;
-
-  /*
-   * Sets the ok_to_mqtt bit on outgoing packets
-   */
-  bool config_ok_to_mqtt = 18;
+  repeated uint32 ignore_incoming = 12;
 
   /*
    * Set where LORA FEM is enabled, disabled, or not present
    */
-  FEM_LNA_Mode fem_lna_mode = 19;
-
-  /*
-   * Don't use radiolib to initialize the radio, instead listen for a serialHal connection
-   */
-  bool serial_hal_only = 20;
+  FEM_LNA_Mode fem_lna_mode = 13;
 }
 
 message BluetoothConfig {
@@ -882,31 +885,33 @@ message SecurityConfig {
   repeated bytes admin_key = 3;
 
   /*
-   * If true, device is considered to be "managed" by a mesh administrator via admin messages
-   * Device is managed by a mesh administrator.
+   * Security toggles: a bitwise OR of Flags values.
    */
-  bool is_managed = 4;
+  enum Flags {
+    /* Nothing enabled */
+    SECURITY_NONE = 0x00;
+    /* The device is managed by a mesh administrator via admin messages */
+    SECURITY_IS_MANAGED = 0x01;
+    /* Serial console over the Stream API */
+    SECURITY_SERIAL_ENABLED = 0x02;
+    /*
+     * Keep live debug logging on over serial or bluetooth. By default logging stops
+     * as soon as an API client connects, to keep a shared serial link quiet.
+     */
+    SECURITY_DEBUG_LOG_API_ENABLED = 0x04;
+    /* Allow incoming device control over the insecure legacy admin channel */
+    SECURITY_ADMIN_CHANNEL_ENABLED = 0x08;
+  }
 
   /*
-   * Serial Console over the Stream API."
+   * Bitwise OR of Flags values.
    */
-  bool serial_enabled = 5;
-
-  /*
-   * By default we turn off logging as soon as an API client connects (to keep shared serial link quiet).
-   * Output live debug logging over serial or bluetooth is set to true.
-   */
-  bool debug_log_api_enabled = 6;
-
-  /*
-   * Allow incoming device control over the insecure legacy admin channel.
-   */
-  bool admin_channel_enabled = 8;
+  uint32 flags = 4;
 
   /*
    * Determines the packet signature policy applied to remotely received mesh packets.
    */
-  PacketSignaturePolicy packet_signature_policy = 9;
+  PacketSignaturePolicy packet_signature_policy = 5;
 }
 
 /*

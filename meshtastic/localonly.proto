@@ -104,57 +104,57 @@ message LocalModuleConfig {
   /*
    * The part of the config that is specific to the Audio module
    */
-  AudioConfig audio = 9;
+  AudioConfig audio = 8;
 
   /*
    * The part of the config that is specific to the Remote Hardware module
    */
-  RemoteHardwareConfig remote_hardware = 10;
+  RemoteHardwareConfig remote_hardware = 9;
 
   /*
    * The part of the config that is specific to the Neighbor Info module
    */
-  NeighborInfoConfig neighbor_info = 11;
+  NeighborInfoConfig neighbor_info = 10;
 
   /*
    * The part of the config that is specific to the Ambient Lighting module
    */
-  AmbientLightingConfig ambient_lighting = 12;
+  AmbientLightingConfig ambient_lighting = 11;
 
   /*
    * The part of the config that is specific to the Detection Sensor module
    */
-  DetectionSensorConfig detection_sensor = 13;
+  DetectionSensorConfig detection_sensor = 12;
 
   /*
    * Paxcounter Config
    */
-  PaxcounterConfig paxcounter = 14;
+  PaxcounterConfig paxcounter = 13;
 
   /*
    * StatusMessage Config
    */
-  StatusMessageConfig statusmessage = 15;
+  StatusMessageConfig statusmessage = 14;
 
   /*
    * The part of the config that is specific to the Traffic Management module
    */
-  TrafficManagementConfig traffic_management = 16;
+  TrafficManagementConfig traffic_management = 15;
 
   /*
    * TAK Config
    */
-  TAKConfig tak = 17;
+  TAKConfig tak = 16;
 
   /*
    * MeshBeacon Config
    */
-  MeshBeaconConfig mesh_beacon = 18;
+  MeshBeaconConfig mesh_beacon = 17;
 
   /*
    * A version integer used to invalidate old save files when we make
    * incompatible changes This integer is set at build time and is private to
    * NodeDB.cpp in the device code.
    */
-  uint32 version = 8;
+  uint32 version = 18;
 }

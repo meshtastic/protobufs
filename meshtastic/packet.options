@@ -12,3 +12,7 @@
 *MeshPacket.next_hop int_size:8
 *MeshPacket.relay_node int_size:8
 *MeshPacket.priority int_size:8
+
+# Matches the on-air ext_len ceiling of one byte.
+*MeshPacket.header_ext max_size:255
+*MeshPacket.flags int_size:8

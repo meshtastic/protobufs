@@ -24,16 +24,16 @@ option (nanopb_fileopt).include = "<vector>";
  */
 message PositionLite {
   /*
-   * The new preferred location encoding, multiply by 1e-7 to get degrees
-   * in floating point
+   * Latitude, scaled exactly as Position.latitude_scaled is, so a stored position
+   * keeps the encoding it arrived in and costs flash in proportion to the precision
+   * it actually carries. Storage never keeps the unpacked form.
    */
-  sfixed32 latitude_i = 1;
+  sint32 latitude_scaled = 1;
 
   /*
-   * The new preferred location encoding, multiply by 1e-7 to get degrees
-   * in floating point
+   * Longitude, scaled exactly as Position.longitude_scaled is.
    */
-  sfixed32 longitude_i = 2;
+  sint32 longitude_scaled = 2;
 
   /*
    * In meters above MSL (but see issue #359)
@@ -60,61 +60,22 @@ message PositionLite {
   uint32 precision_bits = 6;
 }
 
-message UserLite {
-  /*
-   * A full name for this user, i.e. "Kevin Hester"
-   */
-  string long_name = 2;
-
-  /*
-   * A VERY short name, ideally two characters.
-   * Suitable for a tiny OLED screen
-   */
-  string short_name = 3;
-
-  /*
-   * TBEAM, HELTEC, etc...
-   * Starting in 1.2.11 moved to hw_model enum in the NodeInfo object.
-   * Apps will still need the string here for older builds
-   * (so OTA update can find the right image), but if the enum is available it will be used instead.
-   */
-  uint32 hw_model = 4;
-
-  /*
-   * In some regions Ham radio operators have different bandwidth limitations than others.
-   * If this user is a licensed operator, set this flag.
-   * Also, "long_name" should be their licence number.
-   */
-  bool is_licensed = 5;
-
-  /*
-   * Indicates that the user's role in the mesh
-   */
-  Role role = 6;
-
-  /*
-   * The public key of the user's device.
-   * This is sent out to other nodes on the mesh to allow them to compute a shared secret key.
-   */
-  bytes public_key = 7;
-
-  /*
-   * Whether or not the node can be messaged
-   */
-  optional bool is_unmessagable = 9;
-}
-
 message NodeInfoLite {
   /*
    * The node number
    */
   uint32 num = 1;
 
-  // Tag 2 was UserLite user; flattened into tags 14..18 (presence via
-  //   NODEINFO_BITFIELD_HAS_USER).
-  // Tag 3 was PositionLite position; moved to NodeDatabase.positions.
-  reserved 2, 3;
-  reserved "user", "position";
+  /*
+   * Hardware model the user's device is running.
+   * Packed vendor/device id: (vendor_id << 8) | device_id. See hw_vendor_registry.proto.
+   */
+  uint32 hw_model = 2;
+
+  /*
+   * The user's role in the mesh.
+   */
+  Role role = 3;
 
   /*
    * SNR of the last received message: dB x 4, zigzag-encoded.
@@ -131,67 +92,43 @@ message NodeInfoLite {
    */
   fixed32 last_heard = 5;
 
-  // Tag 6 was DeviceMetrics device_metrics; moved to NodeDatabase.telemetry.
-  reserved 6;
-  reserved "device_metrics";
-
   /*
    * local channel index we heard that node on. Only populated if its not the default channel.
    */
-  uint32 channel = 7;
+  uint32 channel = 6;
 
-  // Tags 8/10/11 were via_mqtt/is_favorite/is_ignored bools; packed into bitfield.
-  reserved 8, 10, 11;
-  reserved "via_mqtt", "is_favorite", "is_ignored";
+  /*
+   * The public key of the user's device, for PKI-based encrypted DMs.
+   */
+  bytes public_key = 7;
 
   /*
    * Number of hops away from us this node is (0 if direct neighbor)
    */
-  optional uint32 hops_away = 9;
+  optional uint32 hops_away = 8;
 
   /*
    * Last byte of the node number of the node that should be used as the next hop to reach this node.
    */
-  uint32 next_hop = 12;
+  uint32 next_hop = 9;
 
   /*
-   * Bitfield for storing booleans. See NODEINFO_BITFIELD_* in src/mesh/NodeDB.h.
+   * Per-node boolean flags: a bitwise OR of NodeFlags values (common.proto).
+   * Shares its definition with NodeInfo.flags, so the stored and client-facing
+   * words are interchangeable.
    */
-  uint32 bitfield = 13;
-
-  // Flattened user fields (formerly UserLite). macaddr dropped (deprecated 1.2.11).
+  uint32 bitfield = 10;
 
   /*
    * A full name for this user, i.e. "Kevin Hester".
    */
-  string long_name = 14;
+  string long_name = 11;
 
   /*
    * A VERY short name, ideally two characters or an emoji.
    * Suitable for a tiny OLED screen.
    */
-  string short_name = 15;
-
-  /*
-   * Hardware model the user's device is running.
-   * Packed vendor/device id: (vendor_id << 8) | device_id. See hw_vendor_registry.proto.
-   */
-  uint32 hw_model = 16;
-
-  /*
-   * The user's role in the mesh.
-   */
-  Role role = 17;
-
-  /*
-   * The public key of the user's device, for PKI-based encrypted DMs.
-   */
-  bytes public_key = 18;
-
-  // Tag 19 was snr_q4, the on-disk Q4 companion to a float snr. Tag 4 is already
-  // sint32 Q4 here, so the split is unnecessary.
-  reserved 19;
-  reserved "snr_q4";
+  string short_name = 12;
 }
 
 /*
@@ -205,43 +142,43 @@ message DeviceState {
   /*
    * Read only settings/info about this node
    */
-  MyNodeInfo my_node = 2;
+  MyNodeInfo my_node = 1;
 
   /*
    * My owner info
    */
-  User owner = 3;
+  User owner = 2;
 
   /*
    * Received packets saved for delivery to the phone
    */
-  repeated MeshPacket receive_queue = 5;
+  repeated MeshPacket receive_queue = 3;
 
   /*
    * A version integer used to invalidate old save files when we make
    * incompatible changes This integer is set at build time and is private to
    * NodeDB.cpp in the device code.
    */
-  uint32 version = 8;
+  uint32 version = 4;
 
   /*
    * We keep the last received text message (only) stored in the device flash,
    * so we can show it on the screen.
    * Might be null
    */
-  MeshPacket rx_text_message = 7;
+  MeshPacket rx_text_message = 5;
 
   /*
    * We keep the last received waypoint stored in the device flash,
    * so we can show it on the screen.
    * Might be null
    */
-  MeshPacket rx_waypoint = 12;
+  MeshPacket rx_waypoint = 6;
 
   /*
    * The mesh's nodes with their available gpio pins for RemoteHardware module
    */
-  repeated NodeRemoteHardwarePin node_remote_hardware_pins = 13;
+  repeated NodeRemoteHardwarePin node_remote_hardware_pins = 7;
 }
 
 // Satellite per-node entries; stored alongside the slim NodeInfoLite so nodes
@@ -257,9 +194,9 @@ message NodeTelemetryEntry {
   DeviceMetrics device_metrics = 2;
 }
 
-message NodeEnvironmentEntry {
+message NodeReadingsEntry {
   uint32 num = 1;
-  EnvironmentMetrics environment_metrics = 2;
+  SensorReadings readings = 2;
 }
 
 message NodeStatusEntry {
@@ -285,7 +222,7 @@ message NodeDatabase {
   repeated NodePositionEntry positions = 3 [(nanopb).callback_datatype = "std::vector<meshtastic_NodePositionEntry>"];
   repeated NodeTelemetryEntry telemetry = 4 [(nanopb).callback_datatype = "std::vector<meshtastic_NodeTelemetryEntry>"];
   repeated NodeStatusEntry status = 5 [(nanopb).callback_datatype = "std::vector<meshtastic_NodeStatusEntry>"];
-  repeated NodeEnvironmentEntry environment = 6 [(nanopb).callback_datatype = "std::vector<meshtastic_NodeEnvironmentEntry>"];
+  repeated NodeReadingsEntry readings = 6 [(nanopb).callback_datatype = "std::vector<meshtastic_NodeReadingsEntry>"];
 }
 
 /*

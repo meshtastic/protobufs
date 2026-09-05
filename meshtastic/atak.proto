@@ -1182,34 +1182,45 @@ message DrawnShape {
    *
    * Tag 12 (the old repeated-message field) is reserved to prevent reuse.
    */
-  reserved 12;
-  repeated sint32 vertex_lat_deltas = 18;
-  repeated sint32 vertex_lon_deltas = 19;
+  repeated sint32 vertex_lat_deltas = 12;
+  repeated sint32 vertex_lon_deltas = 13;
   /*
    * True if the sender truncated the vertex columns to fit the pool.
    */
-  bool truncated = 13;
+  bool truncated = 14;
   // --- Bullseye-only fields. All ignored unless kind == Kind_Bullseye. ---
   /*
    * Bullseye distance in meters * 10 (e.g. 3285 = 328.5 m). 0 = unset.
    */
-  uint32 bullseye_distance_dm = 14;
+  uint32 bullseye_distance_dm = 15;
   /*
    * Bullseye bearing reference: 0 unset, 1 Magnetic, 2 True, 3 Grid.
    */
-  uint32 bullseye_bearing_ref = 15;
+  uint32 bullseye_bearing_ref = 16;
   /*
-   * Bullseye attribute bit flags:
-   *   bit 0: rangeRingVisible
-   *   bit 1: hasRangeRings
-   *   bit 2: edgeToCenter
-   *   bit 3: mils
+   * Bullseye attributes: a bitwise OR of BullseyeFlags values.
    */
-  uint32 bullseye_flags = 16;
+  enum BullseyeFlags {
+    /* No attributes set */
+    BULLSEYE_NONE = 0x00;
+    /* Range ring is visible */
+    BULLSEYE_RANGE_RING_VISIBLE = 0x01;
+    /* Bullseye has range rings */
+    BULLSEYE_HAS_RANGE_RINGS = 0x02;
+    /* Measure edge to centre rather than centre to centre */
+    BULLSEYE_EDGE_TO_CENTER = 0x04;
+    /* Bearings are in mils rather than degrees */
+    BULLSEYE_MILS = 0x08;
+  }
+
+  /*
+   * Bitwise OR of BullseyeFlags values.
+   */
+  uint32 bullseye_flags = 17;
   /*
    * Bullseye reference UID (anchor marker). Empty = anchor is self.
    */
-  string bullseye_uid_ref = 17;
+  string bullseye_uid_ref = 18;
 }
 
 /*
@@ -1517,12 +1528,25 @@ message CasevacReport {
    */
   Precedence precedence = 1;
   /*
-   * Line 4: special equipment required, as a bitfield.
-   *   bit 0: none
-   *   bit 1: hoist
-   *   bit 2: extraction equipment
-   *   bit 3: ventilator
-   *   bit 4: blood
+   * Line 4: special equipment required, as a bitwise OR of EquipmentFlags values.
+   */
+  enum EquipmentFlags {
+    /* Not stated. Distinct from EQUIPMENT_NONE, which asserts none is needed. */
+    EQUIPMENT_UNSET = 0x00;
+    /* Explicitly no special equipment required */
+    EQUIPMENT_NONE = 0x01;
+    /* Hoist */
+    EQUIPMENT_HOIST = 0x02;
+    /* Extraction equipment */
+    EQUIPMENT_EXTRACTION = 0x04;
+    /* Ventilator */
+    EQUIPMENT_VENTILATOR = 0x08;
+    /* Blood */
+    EQUIPMENT_BLOOD = 0x10;
+  }
+
+  /*
+   * Bitwise OR of EquipmentFlags values.
    */
   uint32 equipment_flags = 2;
   /*
@@ -1554,13 +1578,27 @@ message CasevacReport {
   uint32 epw = 12; // enemy prisoner of war
   uint32 child = 13;
   /*
-   * Line 9: terrain and obstacles at the PZ, as a bitfield.
-   *   bit 0: slope
-   *   bit 1: rough
-   *   bit 2: loose
-   *   bit 3: trees
-   *   bit 4: wires
-   *   bit 5: other
+   * Line 9: terrain and obstacles at the PZ, as a bitwise OR of TerrainFlags values.
+   */
+  enum TerrainFlags {
+    /* Nothing noted */
+    TERRAIN_NONE = 0x00;
+    /* Sloping ground */
+    TERRAIN_SLOPE = 0x01;
+    /* Rough ground */
+    TERRAIN_ROUGH = 0x02;
+    /* Loose surface */
+    TERRAIN_LOOSE = 0x04;
+    /* Trees */
+    TERRAIN_TREES = 0x08;
+    /* Wires */
+    TERRAIN_WIRES = 0x10;
+    /* Other obstacle */
+    TERRAIN_OTHER = 0x20;
+  }
+
+  /*
+   * Bitwise OR of TerrainFlags values.
    */
   uint32 terrain_flags = 14;
   /*
@@ -2145,7 +2183,6 @@ message TAKPacketV2 {
    */
   optional SensorFov sensor_fov = 26;
 
-  reserved 27, 28, 30;
   // Tags 27, 28 reserved for future top-level annotations. Tag 29 is consumed
   // by `marti` below. Tag 30 was the former `bool pli` oneof arm — dropped
   // (PLI is now the implicit payload); reserved here at the message level
@@ -2161,7 +2198,7 @@ message TAKPacketV2 {
    *
    * See Marti.
    */
-  optional Marti marti = 29;
+  optional Marti marti = 27;
 
   /*
    * The payload of the packet
@@ -2176,58 +2213,58 @@ message TAKPacketV2 {
     /*
      * ATAK GeoChat message
      */
-    GeoChat chat = 31;
+    GeoChat chat = 28;
     /*
      * Aircraft track data (ADS-B, military air)
      */
-    AircraftTrack aircraft = 32;
+    AircraftTrack aircraft = 29;
     /*
      * Generic CoT detail XML for unmapped types. Kept as a fallback for CoT
      * types not yet promoted to a typed variant; drawings, markers, ranging
      * tools, and routes have dedicated variants below and should not land here.
      */
-    bytes raw_detail = 33;
+    bytes raw_detail = 30;
     /*
      * User-drawn tactical graphic: circle, rectangle, polygon, polyline,
      * telestration, ranging circle, or bullseye. See DrawnShape.
      */
-    DrawnShape shape = 34;
+    DrawnShape shape = 31;
     /*
      * Fixed point of interest: spot marker, waypoint, checkpoint, 2525
      * symbol, or custom icon. See Marker.
      */
-    Marker marker = 35;
+    Marker marker = 32;
     /*
      * Range and bearing measurement line. See RangeAndBearing.
      */
-    RangeAndBearing rab = 36;
+    RangeAndBearing rab = 33;
     /*
      * Named route with ordered waypoints and control points. See Route.
      */
-    Route route = 37;
+    Route route = 34;
     /*
      * 9-line MEDEVAC request. See CasevacReport.
      */
-    CasevacReport casevac = 38;
+    CasevacReport casevac = 35;
     /*
      * Emergency beacon / 911 alert. See EmergencyAlert.
      */
-    EmergencyAlert emergency = 39;
+    EmergencyAlert emergency = 36;
     /*
      * Task / engage request. See TaskRequest.
      */
-    TaskRequest task = 40;
+    TaskRequest task = 37;
     /*
      * TAKTALK chat message (CoT type m-t-t). See TakTalkMessage.
      * Voice audio itself rides UDP/RTP outside the mesh; this carries the
      * text envelope plus a from_voice marker for receiver UX.
      */
-    TakTalkMessage taktalk = 41;
+    TakTalkMessage taktalk = 38;
     /*
      * TAKTALK room/membership broadcast (CoT type y-). See TakTalkRoomData.
      * Resolves room UUIDs (used in TakTalkMessage.chatroom_id and
      * GeoChat.room_id) to display name + roster on receivers.
      */
-    TakTalkRoomData taktalk_room = 42;
+    TakTalkRoomData taktalk_room = 39;
   }
 }

@@ -4,11 +4,11 @@
 *id max_size:16 # node id strings
 *public_key max_size:32 # public key
 
-# Decode width stays 40 so NodeInfo/set_owner from senders built against the
-# old 39-byte limit still parse (nanopb halts on string overflow rather than
-# truncating). Firmware clamps everything it stores or transmits to 24 bytes -
-# see NodeInfoLite.long_name in deviceonly.options.
-*User.long_name max_size:40
+# 24 bytes is the name limit devices enforce, so 25 covers it with the terminator.
+# The old 40-byte decode width existed to accept names from 2.x senders built
+# against the 39-byte limit; 3.0 is wire-incompatible with 2.x anyway, so that
+# allowance bought nothing. Matches NodeInfoLite.long_name in deviceonly.options.
+*User.long_name max_size:25
 *User.short_name max_size:5
 
 *RouteDiscovery.route max_count:8
@@ -26,11 +26,14 @@
 
 *Routing.variant anonymous_oneof:true
 
+*Position.latitude_variant anonymous_oneof:true
+*Position.longitude_variant anonymous_oneof:true
 *Position.fix_quality int_size:8
 *Position.fix_type int_size:8
 *Position.sats_in_view int_size:8
 *Position.sensor_id int_size:8
 *Position.precision_bits int_size:8
+
 
 *KeyVerification.hash1 max_size:32
 *KeyVerification.hash2 max_size:32
@@ -41,6 +44,14 @@
 *StoreForwardPlusPlus.message max_size:240
 
 *RemoteShell.payload max_size:200
+*RemoteShell.op int_size:8
+# Turn-taking bits only (GRANT/MORE/RTS).
+*RemoteShell.flags int_size:8
+# cols/rows land in struct winsize, whose members are unsigned short.
+*RemoteShell.cols int_size:16
+*RemoteShell.rows int_size:16
+# seq, ack_seq, last_tx_seq and last_rx_seq stay 32-bit: they are monotonic
+# per-session counters and a long interactive session can pass 65535 frames.
 
 *StatusMessage.status max_size:80
 
@@ -58,3 +69,7 @@
 *MqttClientProxyMessage.data max_size:435
 *MqttClientProxyMessage.text max_size:435
 *MqttClientProxyMessage.payload_variant anonymous_oneof:true
+
+# ext_len is a single byte in the on-air header, so the encoded block cannot exceed
+# 255; keeping it one byte keeps the relay bounds check a single comparison.
+*HeaderExt.source_route max_size:7

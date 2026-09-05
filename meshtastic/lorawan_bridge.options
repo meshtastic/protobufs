@@ -25,3 +25,5 @@
 *LoRaWANBridge.PayloadChunk.payload_chunk max_size:183
 
 *LoRaWANBridge.variant anonymous_oneof:true
+
+*LoRaWANBridge.Downlink.flags int_size:8

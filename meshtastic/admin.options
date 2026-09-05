@@ -22,3 +22,8 @@
 *NodeRemoteHardwarePinsResponse.node_remote_hardware_pins max_count:16
 
 *LockdownAuth.passphrase max_size:32
+*LockdownAuth.boots_remaining int_size:16
+
+*SHTXX_config.set_accuracy int_size:8
+*DS248X_config.main_temperature_channel int_size:8
+*AS3935_config.set_tuning_cap_pf int_size:8

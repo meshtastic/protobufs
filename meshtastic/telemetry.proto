@@ -39,459 +39,6 @@ message DeviceMetrics {
 }
 
 /*
- * Weather station or other environmental metrics
- */
-message EnvironmentMetrics {
-  /*
-   * Temperature in centi-degrees Celsius (e.g. 2350 = 23.50°C)
-   */
-  optional sint32 temperature = 1;
-
-  /*
-   * Relative humidity x100 (e.g. 6550 = 65.50%)
-   */
-  optional uint32 relative_humidity = 2;
-
-  /*
-   * Barometric pressure in Pa (pascals, e.g. 101325)
-   */
-  optional uint32 barometric_pressure = 3;
-
-  /*
-   * Gas resistance in kOhm (e.g. 150 = 150 kOhm)
-   */
-  optional uint32 gas_resistance = 4;
-
-  /*
-   * relative scale IAQ value as measured by Bosch BME680 . value 0-500.
-   * Belongs to Air Quality but is not particle but VOC measurement. Other VOC values can also be put in here.
-   */
-  optional uint32 iaq = 7;
-
-  /*
-   * Distance in mm (e.g. RCWL9620 water level sensor)
-   */
-  optional uint32 distance = 8;
-
-  /*
-   * Ambient light in lux x100 (e.g. 54321 = 543.21 lux)
-   */
-  optional uint32 lux = 9;
-
-  /*
-   * White light irradiance in lux x100
-   */
-  optional uint32 white_lux = 10;
-
-  /*
-   * Infrared lux x100
-   */
-  optional uint32 ir_lux = 11;
-
-  /*
-   * Ultraviolet lux x100
-   */
-  optional uint32 uv_lux = 12;
-
-  /*
-   * Wind direction in degrees
-   * 0 degrees = North, 90 = East, etc...
-   */
-  optional uint32 wind_direction = 13;
-
-  /*
-   * Wind speed in cm/s (e.g. 1250 = 12.50 m/s)
-   */
-  optional uint32 wind_speed = 14;
-
-  /*
-   * Weight in grams
-   */
-  optional uint32 weight = 15;
-
-  /*
-   * Wind gust in cm/s
-   */
-  optional uint32 wind_gust = 16;
-
-  /*
-   * Wind lull in cm/s
-   */
-  optional uint32 wind_lull = 17;
-
-  /*
-   * Radiation in µR/h x100 (e.g. 1234 = 12.34 µR/h)
-   */
-  optional uint32 radiation = 18;
-
-  /*
-   * Rainfall last hour in mm x100 (e.g. 250 = 2.50mm)
-   */
-  optional uint32 rainfall_1h = 19;
-
-  /*
-   * Rainfall last 24h in mm x100
-   */
-  optional uint32 rainfall_24h = 20;
-
-  /*
-   * Soil moisture measured (% 1-100)
-   */
-  optional uint32 soil_moisture = 21;
-
-  /*
-   * Soil temperature in centi-degrees Celsius
-   */
-  optional sint32 soil_temperature = 22;
-
-  /*
-   * 23 was one_wire_temperature: never implemented, superseded by one_wire_temperature_ch0..7
-   */
-
-  /*
-   * Multi-channel ADC voltage in mV (Channel 0)
-   */
-  optional uint32 adc_voltage_ch0 = 24;
-
-  /*
-   * Multi-channel ADC voltage in mV (Channel 1)
-   */
-  optional uint32 adc_voltage_ch1 = 25;
-
-  /*
-   * Multi-channel ADC voltage in mV (Channel 2)
-   */
-  optional uint32 adc_voltage_ch2 = 26;
-
-  /*
-   * Multi-channel ADC voltage in mV (Channel 3)
-   */
-  optional uint32 adc_voltage_ch3 = 27;
-
-  /*
-   * Multi-channel ADC voltage in mV (Channel 4)
-   */
-  optional uint32 adc_voltage_ch4 = 28;
-
-  /*
-   * Multi-channel ADC voltage in mV (Channel 5)
-   */
-  optional uint32 adc_voltage_ch5 = 29;
-
-  /*
-   * Multi-channel ADC voltage in mV (Channel 6)
-   */
-  optional uint32 adc_voltage_ch6 = 30;
-
-  /*
-   * Multi-channel ADC voltage in mV (Channel 7)
-   */
-  optional uint32 adc_voltage_ch7 = 31;
-
-  /*
-   * Multi-channel one-wire temperature in centi-degrees Celsius (Channel 0, e.g. 2350 = 23.50 C)
-   */
-  optional sint32 one_wire_temperature_ch0 = 32;
-
-  /*
-   * Multi-channel one-wire temperature in centi-degrees Celsius (Channel 1)
-   */
-  optional sint32 one_wire_temperature_ch1 = 33;
-
-  /*
-   * Multi-channel one-wire temperature in centi-degrees Celsius (Channel 2)
-   */
-  optional sint32 one_wire_temperature_ch2 = 34;
-
-  /*
-   * Multi-channel one-wire temperature in centi-degrees Celsius (Channel 3)
-   */
-  optional sint32 one_wire_temperature_ch3 = 35;
-
-  /*
-   * Multi-channel one-wire temperature in centi-degrees Celsius (Channel 4)
-   */
-  optional sint32 one_wire_temperature_ch4 = 36;
-
-  /*
-   * Multi-channel one-wire temperature in centi-degrees Celsius (Channel 5)
-   */
-  optional sint32 one_wire_temperature_ch5 = 37;
-
-  /*
-   * Multi-channel one-wire temperature in centi-degrees Celsius (Channel 6)
-   */
-  optional sint32 one_wire_temperature_ch6 = 38;
-
-  /*
-   * Multi-channel one-wire temperature in centi-degrees Celsius (Channel 7)
-   */
-  optional sint32 one_wire_temperature_ch7 = 39;
-
-  /*
-   * Lightning strikes detected in the last hour
-   */
-  optional uint32 lightning_strike_count_1h = 40;
-
-  /*
-   * Estimated distance to the leading edge of the storm, in km
-   */
-  optional uint32 lightning_distance_km = 41;
-
-  /*
-   * Soil pH x100, 0-1400 (e.g. 725 = pH 7.25)
-   */
-  optional uint32 soil_ph = 42;
-
-  /*
-   * pH of water or other solution x100, 0-1400 (e.g. 725 = pH 7.25)
-   */
-  optional uint32 ph = 43;
-
-  /*
-   * Electrical conductivity in uS/cm (e.g. 1500 = 1.5 mS/cm)
-   */
-  optional uint32 electrical_conductivity = 44;
-
-  /*
-   * Salinity in mg/l
-   */
-  optional uint32 salinity = 45;
-
-  /*
-   * Nitrogen concentration in mg/kg
-   */
-  optional uint32 nitrogen = 46;
-
-  /*
-   * Phosphorus concentration in mg/kg
-   */
-  optional uint32 phosphorus = 47;
-
-  /*
-   * Potassium concentration in mg/kg
-   */
-  optional uint32 potassium = 48;
-
-  /*
-   * Dissolved oxygen x100 in mg/l (e.g. 850 = 8.50 mg/l)
-   */
-  optional uint32 dissolved_oxygen = 49;
-
-  /*
-   * Oxidation-reduction potential (ORP) in mV, may be negative
-   */
-  optional sint32 orp = 50;
-
-  /*
-   * Chemical oxygen demand in mg/l
-   */
-  optional uint32 chemical_oxygen_demand = 51;
-
-  /*
-   * Turbidity x100 in NTU (e.g. 1250 = 12.50 NTU)
-   */
-  optional uint32 turbidity = 52;
-
-  /*
-   * Nitrate concentration x100 in ppm (e.g. 250 = 2.50 ppm)
-   */
-  optional uint32 nitrate = 53;
-
-  /*
-   * Ammonium concentration x100 in ppm (e.g. 250 = 2.50 ppm)
-   */
-  optional uint32 ammonium = 54;
-
-  /*
-   * Biochemical oxygen demand in mg/l
-   */
-  optional uint32 biochemical_oxygen_demand = 55;
-
-  /*
-   * Solar irradiance in W/m^2 (distinct from the radiation field's uR/h)
-   */
-  optional uint32 solar_irradiance = 56;
-}
-
-/*
- * Power Metrics (voltage / current / etc)
- */
-message PowerMetrics {
-  /*
-   * Voltage in mV (Ch1)
-   */
-  optional uint32 ch1_voltage = 1;
-
-  /*
-   * Current in mA (signed, negative = discharging) (Ch1)
-   */
-  optional sint32 ch1_current = 2;
-
-  /*
-   * Voltage in mV (Ch2)
-   */
-  optional uint32 ch2_voltage = 3;
-
-  /*
-   * Current in mA (signed, negative = discharging) (Ch2)
-   */
-  optional sint32 ch2_current = 4;
-
-  /*
-   * Voltage in mV (Ch3)
-   */
-  optional uint32 ch3_voltage = 5;
-
-  /*
-   * Current in mA (signed, negative = discharging) (Ch3)
-   */
-  optional sint32 ch3_current = 6;
-
-  /*
-   * 7-16 were ch4..ch8 voltage/current, removed in 3.0 (deprecated upstream)
-   */
-}
-
-/*
- * Air quality metrics
- */
-message AirQualityMetrics {
-  /*
-   * Concentration Units Standard PM1.0 in ug/m3
-   */
-  optional uint32 pm10_standard = 1;
-
-  /*
-   * Concentration Units Standard PM2.5 in ug/m3
-   */
-  optional uint32 pm25_standard = 2;
-
-  /*
-   * Concentration Units Standard PM10.0 in ug/m3
-   */
-  optional uint32 pm100_standard = 3;
-
-  /*
-   * Concentration Units Environmental PM1.0 in ug/m3
-   */
-  optional uint32 pm10_environmental = 4;
-
-  /*
-   * Concentration Units Environmental PM2.5 in ug/m3
-   */
-  optional uint32 pm25_environmental = 5;
-
-  /*
-   * Concentration Units Environmental PM10.0 in ug/m3
-   */
-  optional uint32 pm100_environmental = 6;
-
-  /*
-   * 0.3um Particle Count in #/0.1l
-   */
-  optional uint32 particles_03um = 7;
-
-  /*
-   * 0.5um Particle Count in #/0.1l
-   */
-  optional uint32 particles_05um = 8;
-
-  /*
-   * 1.0um Particle Count in #/0.1l
-   */
-  optional uint32 particles_10um = 9;
-
-  /*
-   * 2.5um Particle Count in #/0.1l
-   */
-  optional uint32 particles_25um = 10;
-
-  /*
-   * 5.0um Particle Count in #/0.1l
-   */
-  optional uint32 particles_50um = 11;
-
-  /*
-   * 10.0um Particle Count in #/0.1l
-   */
-  optional uint32 particles_100um = 12;
-
-  /*
-   * CO2 concentration in ppm
-   */
-  optional uint32 co2 = 13;
-
-  /*
-   * CO2 sensor temperature in centi-degrees Celsius
-   */
-  optional sint32 co2_temperature = 14;
-
-  /*
-   * CO2 sensor humidity x100
-   */
-  optional uint32 co2_humidity = 15;
-
-  /*
-   * Formaldehyde concentration in ppb x100
-   */
-  optional uint32 form_formaldehyde = 16;
-
-  /*
-   * Formaldehyde sensor humidity x100
-   */
-  optional uint32 form_humidity = 17;
-
-  /*
-   * Formaldehyde sensor temperature in centi-degrees Celsius
-   */
-  optional sint32 form_temperature = 18;
-
-  /*
-   * Concentration Units Standard PM4.0 in ug/m3
-   */
-  optional uint32 pm40_standard = 19;
-
-  /*
-   * 4.0um Particle Count in #/0.1l
-   */
-  optional uint32 particles_40um = 20;
-
-  /*
-   * PM sensor temperature in centi-degrees Celsius
-   */
-  optional sint32 pm_temperature = 21;
-
-  /*
-   * PM sensor humidity x100
-   */
-  optional uint32 pm_humidity = 22;
-
-  /*
-   * PM sensor VOC index x100
-   */
-  optional uint32 pm_voc_idx = 23;
-
-  /*
-   * PM sensor NOx index x100
-   */
-  optional uint32 pm_nox_idx = 24;
-
-  /*
-   * Typical particle size in nm (nanometers)
-   */
-  optional uint32 particles_tps = 25;
-
-  /*
-   * Raw PM sensor device status/error register bitmask, as defined by the sensor's own datasheet
-   * (currently populated by the SEN6X family: bit 4 fan error, bit 6 RH&T error, bit 7 gas/VOC-NOx
-   * error, bit 9 CO2 error (SEN66), bit 10 HCHO error, bit 11 PM error, bit 12 CO2 error (SEN63C/SEN69C),
-   * bit 21 fan speed warning)
-   */
-  optional uint32 pm_status_flags = 26;
-}
-
-/*
  * Local device mesh statistics
  */
 message LocalStats {
@@ -612,26 +159,6 @@ message TrafficManagementStats {
 }
 
 /*
- * Health telemetry metrics
- */
-message HealthMetrics {
-  /*
-   * Heart rate (beats per minute)
-   */
-  optional uint32 heart_bpm = 1;
-
-  /*
-   * SpO2 (blood oxygen saturation) level
-   */
-  optional uint32 spO2 = 2;
-
-  /*
-   * Body temperature in centi-degrees Celsius
-   */
-  optional sint32 temperature = 3;
-}
-
-/*
  * Linux host metrics
  */
 message HostMetrics {
@@ -683,6 +210,240 @@ message HostMetrics {
 }
 
 /*
+ * A list of sensor readings.
+ *
+ * Replaces the fixed typed metric messages. Those declared one field per quantity,
+ * which meant most of the message was absent on any given node, a node could never
+ * report two of the same quantity, and every new sensor needed a schema change. Six
+ * separate temperature fields and three channel-indexed voltage pairs were the
+ * symptom.
+ *
+ * A reading is a (key, value) pair held in parallel packed arrays. `values`,
+ * `time_offsets` and `sensors` are indexed by the same position as `keys`; an array
+ * that is present must have the same length as `keys`.
+ *
+ * Send as many readings as the payload allows, then start another message.
+ *
+ * On size: a reading costs one key byte plus one to three value bytes, against a
+ * typed field's one to two tag bytes plus the same value. The generic form is
+ * therefore slightly larger for a three-reading BME280 broadcast and slightly
+ * smaller for anything that used to sit above field 15, which was most of the
+ * catalogue. What it actually buys is unbounded quantities, repeated quantities and
+ * no schema churn per sensor.
+ */
+message SensorReadings {
+  /*
+   * What a reading measures, including the unit and scale it is reported in.
+   *
+   * The unit is part of the quantity rather than a separate field: it costs nothing
+   * per reading, and two nodes can never report the same quantity in different
+   * units. Values are 1..127 so a key with ordinal 0 fits in a single byte.
+   *
+   * Every quantity names a fixed-point scale, so a value is always an integer and
+   * never a float. `_CENTI` means hundredths of the named unit: 23.50 C is 2350 under
+   * TEMPERATURE_C_CENTI. A quantity that needs no fraction, like CO2_PPM, is a plain
+   * integer. This is deliberate - a float is always four bytes on the wire where a
+   * scaled varint is one to three, spends its precision on significant digits no
+   * sensor has, and costs software floating point on an FPU-less MCU. If a quantity
+   * ever needs finer resolution, its enum value gets a finer scale; the encoding
+   * never changes per reading.
+   *
+   * Where a quantity is measured by several sensors on one node - air temperature
+   * from the BME280, the SCD4X and the PM sensor - use one quantity and distinguish
+   * them by ordinal, optionally naming each in `sensors`. Only a genuinely different
+   * measurand gets its own quantity, which is why soil and body temperature are
+   * separate from air temperature.
+   */
+  enum Quantity {
+    /* Not set; never valid in a key */
+    QUANTITY_UNSET = 0;
+
+    // --- Atmosphere ---
+    /* Air temperature, centi-degrees Celsius (2350 = 23.50 C) */
+    TEMPERATURE_C_CENTI = 1;
+    /* Relative humidity, centi-percent (6550 = 65.50 %) */
+    HUMIDITY_PCT_CENTI = 2;
+    /* Barometric pressure, pascals (101325) */
+    PRESSURE_PA = 3;
+    /* Gas resistance, kilo-ohms */
+    GAS_RESISTANCE_KOHM = 4;
+    /* Indoor air quality index, 0..500 */
+    IAQ = 5;
+
+    // --- Light ---
+    /* Ambient illuminance, centi-lux */
+    ILLUMINANCE_LUX_CENTI = 6;
+    /* White-channel illuminance, centi-lux */
+    ILLUMINANCE_WHITE_LUX_CENTI = 7;
+    /* Infrared illuminance, centi-lux */
+    ILLUMINANCE_IR_LUX_CENTI = 8;
+    /* Ultraviolet illuminance, centi-lux */
+    ILLUMINANCE_UV_LUX_CENTI = 9;
+    /* Solar irradiance, watts per square metre */
+    SOLAR_IRRADIANCE_WM2 = 10;
+
+    // --- Wind and rain ---
+    /* Wind direction, degrees true, 0..359 */
+    WIND_DIRECTION_DEG = 11;
+    /* Wind speed, centimetres per second */
+    WIND_SPEED_CMS = 12;
+    /* Wind gust, centimetres per second */
+    WIND_GUST_CMS = 13;
+    /* Wind lull, centimetres per second */
+    WIND_LULL_CMS = 14;
+    /* Rainfall in the last hour, millimetres */
+    RAINFALL_1H_MM = 15;
+    /* Rainfall in the last 24 hours, millimetres */
+    RAINFALL_24H_MM = 16;
+
+    // --- Electrical ---
+    /* Voltage, millivolts. Ordinal selects the channel. */
+    VOLTAGE_MV = 17;
+    /* Current, milliamps, negative when discharging. Ordinal selects the channel. */
+    CURRENT_MA = 18;
+
+    // --- Ranging and mass ---
+    /* Distance, millimetres */
+    DISTANCE_MM = 19;
+    /* Weight, grams */
+    WEIGHT_G = 20;
+
+    // --- Radiation and lightning ---
+    /* Ionising radiation, microroentgen per hour */
+    RADIATION_URH = 21;
+    /* Lightning strikes detected in the last hour */
+    LIGHTNING_STRIKES_1H = 22;
+    /* Distance to the leading edge of the storm, kilometres */
+    LIGHTNING_DISTANCE_KM = 23;
+
+    // --- Soil ---
+    /* Soil temperature, centi-degrees Celsius */
+    SOIL_TEMPERATURE_C_CENTI = 24;
+    /* Soil moisture, percent */
+    SOIL_MOISTURE_PCT = 25;
+    /* Soil pH, centi-pH (725 = pH 7.25) */
+    SOIL_PH_CENTI = 26;
+    /* Nitrogen, milligrams per kilogram */
+    NITROGEN_MGKG = 27;
+    /* Phosphorus, milligrams per kilogram */
+    PHOSPHORUS_MGKG = 28;
+    /* Potassium, milligrams per kilogram */
+    POTASSIUM_MGKG = 29;
+
+    // --- Water ---
+    /* pH of water or solution, centi-pH */
+    PH_CENTI = 30;
+    /* Electrical conductivity, microsiemens per centimetre */
+    CONDUCTIVITY_USCM = 31;
+    /* Salinity, milligrams per litre */
+    SALINITY_MGL = 32;
+    /* Dissolved oxygen, centi-milligrams per litre */
+    DISSOLVED_OXYGEN_MGL_CENTI = 33;
+    /* Oxidation-reduction potential, millivolts, may be negative */
+    ORP_MV = 34;
+    /* Chemical oxygen demand, milligrams per litre */
+    COD_MGL = 35;
+    /* Biochemical oxygen demand, milligrams per litre */
+    BOD_MGL = 36;
+    /* Turbidity, centi-NTU */
+    TURBIDITY_NTU_CENTI = 37;
+    /* Nitrate, centi-ppm */
+    NITRATE_PPM_CENTI = 38;
+    /* Ammonium, centi-ppm */
+    AMMONIUM_PPM_CENTI = 39;
+
+    // --- Particulate mass, micrograms per cubic metre ---
+    /* PM1.0, standard conditions */
+    PM1_0_STD_UGM3 = 40;
+    /* PM2.5, standard conditions */
+    PM2_5_STD_UGM3 = 41;
+    /* PM4.0, standard conditions */
+    PM4_0_STD_UGM3 = 42;
+    /* PM10.0, standard conditions */
+    PM10_0_STD_UGM3 = 43;
+    /* PM1.0, ambient conditions */
+    PM1_0_ENV_UGM3 = 44;
+    /* PM2.5, ambient conditions */
+    PM2_5_ENV_UGM3 = 45;
+    /* PM10.0, ambient conditions */
+    PM10_0_ENV_UGM3 = 46;
+
+    // --- Particle counts per decilitre, by size bin ---
+    /* Particles at least 0.3 um */
+    PARTICLES_0_3UM = 47;
+    /* Particles at least 0.5 um */
+    PARTICLES_0_5UM = 48;
+    /* Particles at least 1.0 um */
+    PARTICLES_1_0UM = 49;
+    /* Particles at least 2.5 um */
+    PARTICLES_2_5UM = 50;
+    /* Particles at least 4.0 um */
+    PARTICLES_4_0UM = 51;
+    /* Particles at least 5.0 um */
+    PARTICLES_5_0UM = 52;
+    /* Particles at least 10.0 um */
+    PARTICLES_10_0UM = 53;
+    /* Typical particle size, centi-micrometres */
+    PARTICLE_SIZE_UM_CENTI = 54;
+
+    // --- Gases and indices ---
+    /* Carbon dioxide, parts per million */
+    CO2_PPM = 55;
+    /* Formaldehyde, parts per billion */
+    FORMALDEHYDE_PPB = 56;
+    /* VOC index */
+    VOC_INDEX = 57;
+    /* NOx index */
+    NOX_INDEX = 58;
+    /*
+     * Raw PM sensor status/error register, as defined by the sensor's own datasheet.
+     * A bitmask rather than a measurement; see the sensor named in `sensors`.
+     */
+    PM_STATUS_FLAGS = 59;
+
+    // --- Body ---
+    /* Heart rate, beats per minute */
+    HEART_RATE_BPM = 60;
+    /* Blood oxygen saturation, percent */
+    SPO2_PCT = 61;
+    /* Body temperature, centi-degrees Celsius */
+    BODY_TEMPERATURE_C_CENTI = 62;
+  }
+
+  /*
+   * One key per reading: `(ordinal << 7) | quantity`.
+   *
+   * The ordinal distinguishes several sensors reporting the same quantity on one
+   * node and is 0 for the first or only one, so an ordinary reading's key is a
+   * single byte. A second sensor of the same quantity pushes its key to two.
+   */
+  repeated uint32 keys = 1;
+
+  /*
+   * One value per reading, in the unit and scale its quantity names.
+   */
+  repeated sint32 values = 2;
+
+  /*
+   * Optional, one per reading: seconds relative to Telemetry.time, signed.
+   *
+   * Omit entirely for live readings, which is the normal case and costs nothing.
+   * Populate it when replaying measurements a node buffered while it had no
+   * connectivity: a batch spanning an hour costs about two bytes per reading, where
+   * an absolute timestamp would cost four.
+   */
+  repeated sint32 time_offsets = 3;
+
+  /*
+   * Optional, one per reading: the TelemetrySensorType that produced it.
+   *
+   * Omit unless provenance matters - telling two temperature sensors apart, or
+   * attributing a calibration or a status register. Costs nothing when absent.
+   */
+  repeated uint32 sensors = 4;
+}
+
+/*
  * Types of Measurements the telemetry module is equipped to handle
  */
 message Telemetry {
@@ -698,39 +459,25 @@ message Telemetry {
     DeviceMetrics device_metrics = 2;
 
     /*
-     * Weather station or other environmental metrics
+     * Sensor readings: environment, air quality, power and health, as a list rather
+     * than four messages of fixed typed fields.
      */
-    EnvironmentMetrics environment_metrics = 3;
-
-    /*
-     * Air quality metrics
-     */
-    AirQualityMetrics air_quality_metrics = 4;
-
-    /*
-     * Power Metrics
-     */
-    PowerMetrics power_metrics = 5;
+    SensorReadings sensor_readings = 3;
 
     /*
      * Local device mesh statistics
      */
-    LocalStats local_stats = 6;
-
-    /*
-     * Health telemetry metrics
-     */
-    HealthMetrics health_metrics = 7;
+    LocalStats local_stats = 4;
 
     /*
      * Linux host metrics
      */
-    HostMetrics host_metrics = 8;
+    HostMetrics host_metrics = 5;
 
     /*
      * Traffic management statistics
      */
-    TrafficManagementStats traffic_management_stats = 9;
+    TrafficManagementStats traffic_management_stats = 6;
   }
 }
 
@@ -774,7 +521,7 @@ enum TelemetrySensorType {
   BMP280 = 6;
 
   /*
-   * 7 was SHTC3: superseded by SHTXX, which covers the whole SHT family
+   * Superseded by SHTXX, which covers the whole SHT family
    */
 
   /*

@@ -255,6 +255,45 @@ enum ModemPreset {
 }
 
 /*
+ * Per-node boolean flags, packed as a bitmask.
+ *
+ * One definition shared by the stored NodeInfoLite.bitfield and the client-facing
+ * NodeInfo.flags, so the two can never drift and firmware converts between them by
+ * copying the word rather than shuffling bits. Values match NODEINFO_BITFIELD_* in
+ * the firmware's src/mesh/NodeDB.h.
+ *
+ * The HAS_* entries are presence bits: they say a value was actually observed, which
+ * a plain false cannot express. HAS_SNR in particular distinguishes a genuine 0 dB
+ * reading from "never measured".
+ */
+enum NodeFlags {
+  /* No flags set */
+  NODE_FLAG_NONE = 0x0000;
+  /* The node's public key has been manually verified by the user */
+  NODE_FLAG_IS_KEY_MANUALLY_VERIFIED = 0x0001;
+  /* The node has been muted */
+  NODE_FLAG_IS_MUTED = 0x0002;
+  /* The node was witnessed over MQTT rather than LoRa */
+  NODE_FLAG_VIA_MQTT = 0x0004;
+  /* The node is in our favorites list */
+  NODE_FLAG_IS_FAVORITE = 0x0008;
+  /* The node is in our ignored list */
+  NODE_FLAG_IS_IGNORED = 0x0010;
+  /* User details for this node have been received (storage only) */
+  NODE_FLAG_HAS_USER = 0x0020;
+  /* The node is a licensed amateur operator */
+  NODE_FLAG_IS_LICENSED = 0x0040;
+  /* The node cannot be messaged */
+  NODE_FLAG_IS_UNMESSAGABLE = 0x0080;
+  /* IS_UNMESSAGABLE carries a real value rather than a default (storage only) */
+  NODE_FLAG_HAS_IS_UNMESSAGABLE = 0x0100;
+  /* The node signs its packets via XEdDSA */
+  NODE_FLAG_HAS_XEDDSA_SIGNED = 0x0200;
+  /* An SNR reading has been taken, so a stored 0 means 0 dB (storage only) */
+  NODE_FLAG_HAS_SNR = 0x0400;
+}
+
+/*
  * How the location was acquired: manual, onboard GPS, external (EUD) GPS
  */
 enum LocSource {
