@@ -868,6 +868,14 @@ message ModuleConfig {
      */
     uint32 flags = 1;
 
+    /*
+     * Frequency slot to advertise, 1-based, matching Config.LoRaConfig.channel_num.
+     * Unset means the receiver derives it from the advertised region, channel name and preset,
+     * which covers a region that mandates a slot and a mesh on the default hash. Set it only
+     * where the mesh deliberately pins a non-default slot. Do not send 0.
+     */
+    optional uint32 broadcast_offer_frequency_slot = 2;
+
     // Tag 3 was broadcast_send_as_node, a node-ID override that rewrote the `from` field of
     // outgoing beacon packets so they appeared to originate from another node. Firmware never
     // applied it (the assignment was left commented out) and it never reached a tagged release,
@@ -876,14 +884,19 @@ message ModuleConfig {
     reserved "broadcast_send_as_node";
 
     /*
-     * Message to include in each beacon broadcast. Max 100 bytes enforced by firmware.
+     * Message to include in each beacon broadcast. Max 60 bytes enforced by firmware.
      */
     string broadcast_message = 4;
 
     /*
-     * Optional channel (name + PSK) to advertise in the MeshBeacon offer_channel field.
+     * Channel to advertise, by value. Named explicitly rather than by table index because a
+     * remote administrator cannot read the channel table and so cannot know what an index
+     * resolves to. Upserted into the channel table on write: matched by name and PSK, else
+     * placed in a disabled slot, else the offer is withheld. Never overwrites a live channel.
+     * ChannelIdentity is a wire-compatible subset of the ChannelSettings this tag carried in
+     * v2.8.0, so a v2.8.0 client's write still decodes correctly here.
      */
-    ChannelSettings broadcast_offer_channel = 5;
+    ChannelIdentity broadcast_offer_channel = 5;
 
     /*
      * Optional region to advertise in the MeshBeacon offer_region field.
@@ -895,19 +908,30 @@ message ModuleConfig {
      */
     optional Config.LoRaConfig.ModemPreset broadcast_offer_preset = 7;
 
-    // Tags 8, 9 and 10 were broadcast_on_channel / broadcast_on_region / broadcast_on_preset: a
-    // second way to describe a single beacon destination, used only when broadcast_targets was
-    // empty. Consolidated onto broadcast_targets so there is one way to name a destination.
-    // broadcast_on_channel embedded a ChannelSettings inline, which allowed transmitting on a
-    // channel absent from the node's channel table; that is no longer supported - the channel must
-    // exist on the node. Never in a tagged release. Reserved to prevent reuse.
-    reserved 8, 9, 10;
-    reserved "broadcast_on_channel", "broadcast_on_region", "broadcast_on_preset";
+    /*
+     * Default channel for the broadcast targets, named by value. This is the remote-administration
+     * path: an administrator that cannot read the channel table states the channel outright.
+     * Upserted into the channel table exactly as broadcast_offer_channel is.
+     * A broadcast_targets entry that sets no channel_index transmits on this channel; an entry that
+     * sets one overrides it. With neither set a target uses the node's primary channel, which is
+     * the meaning the v2.8.0 broadcast_on_channel had.
+     */
+    ChannelIdentity broadcast_on_channel = 8;
+
+    // Tags 9 and 10 were broadcast_on_region and broadcast_on_preset, the region and preset of a
+    // single explicit target. Every target now states its own in BroadcastTarget, so both are
+    // reserved again, as they are in the last release.
+    reserved 9, 10;
+    reserved "broadcast_on_region", "broadcast_on_preset";
 
     /*
      * How often to broadcast, in seconds. Min 3600 (1 h), default 3600.
      */
     uint32 broadcast_interval_secs = 11;
+
+    // Tag 12 is free. It briefly held the offer's channel-table index, then the explicit target's
+    // frequency slot; neither reached a release and BroadcastTarget.frequency_slot replaced the
+    // second, so the tag is left available rather than reserved.
 
     /*
      * One entry in the broadcast destination list.
@@ -925,24 +949,37 @@ message ModuleConfig {
        */
       Config.LoRaConfig.RegionCode region = 2;
 
-      // Tag 3 was an embedded ChannelSettings; replaced by channel_index (tag 4) to keep
-      // ModuleConfig within the BLE FromRadio size budget. Branch unreleased, so tag 3 is a gap.
-
       /*
        * Index into the device's channel table (0..MAX_NUM_CHANNELS-1) of the channel to
        * transmit this target's beacon on. The referenced channel must already be configured
-       * on the node (its key is needed to encrypt). If unset, the default channel for the
-       * preset is used.
+       * on the node (its key is needed to encrypt) and must NOT be Role_DISABLED - a disabled
+       * slot retains the settings of a deleted channel.
+       * Unset falls back to broadcast_on_channel, the by-value default, and to the node's primary
+       * channel when that is unset too. A client that can read the channel table sets this; one
+       * that cannot - it has no remote channel query - sets broadcast_on_channel and leaves this
+       * blank. The firmware never fills it in, so a read back returns what was written.
        */
       optional uint32 channel_index = 4;
+
+      /*
+       * Frequency slot to transmit this target's beacon on, 1-based, matching
+       * Config.LoRaConfig.channel_num. Unset means derive it the way any node on this
+       * channel would: the region's override slot if it has one, otherwise the hash of the
+       * target channel's name. Do not send 0 - it is the same as unset.
+       * Explicit modem parameters and a verbatim override frequency are deliberately not
+       * offered here; if they are added later this field becomes one arm of a oneof with
+       * override_frequency, which keeps the tag and wire format but changes the C API.
+       */
+      optional uint32 frequency_slot = 5;
+
     }
 
     /*
-     * Broadcast destination list.
+     * Broadcast destination list, and the only way to name a destination.
      * The broadcaster sends one beacon copy per distinct destination, in sequence, temporarily
      * switching the radio to that entry's preset/region/channel for each.
-     * When empty, a single beacon is sent on the node's running preset and region over the
-     * primary channel.
+     * When empty, a single beacon is sent on the node's running preset and region, over
+     * broadcast_on_channel if that is set and the primary channel otherwise.
      * Entries that resolve to the same effective preset, region and channel are deduplicated, so
      * a duplicate entry does not produce a second transmission.
      */

@@ -155,3 +155,23 @@ message Channel {
    */
   Role role = 3;
 }
+
+/*
+ * The identity half of a ChannelSettings: the only fields needed to name a channel and decrypt it.
+ * Tag numbers deliberately match ChannelSettings (psk = 2, name = 3), so the two are wire
+ * compatible in both directions: a ChannelSettings decodes as a ChannelIdentity with the remaining
+ * fields skipped as unknown, and a ChannelIdentity decodes as a ChannelSettings with only these
+ * two set. Used where a channel must be named by value rather than by table index - a remote
+ * administrator cannot read the channel table, so an index means nothing to it.
+ */
+message ChannelIdentity {
+  /*
+   * Pre-shared key, same encoding as ChannelSettings.psk, including the 1-byte shorthands.
+   */
+  bytes psk = 2;
+
+  /*
+   * Channel name. Blank means the modem preset's display name, as everywhere else.
+   */
+  string name = 3;
+}
