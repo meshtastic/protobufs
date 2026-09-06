@@ -2926,6 +2926,7 @@ enum ExcludedModules {
 
   /*
    * Range Test module
+   * Always set by firmware 2.8 and later, where the module is compiled out of every target; clients hide the config when it is set.
    */
   RANGETEST_CONFIG = 0x0010;
 
