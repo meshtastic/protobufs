@@ -964,6 +964,11 @@ enum HardwareModel {
   MESHPAGER_X2 = 146;
 
   /*
+   * Lilygo T-CONNECT PRO
+   */
+  T_CONNECT_PRO = 147;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
