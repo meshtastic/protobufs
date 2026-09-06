@@ -740,6 +740,41 @@ message HostMetrics {
 }
 
 /*
+ * Cellular (modem) diagnostic metrics
+ */
+message CellularMetrics {
+  /*
+   * Reference Signal Received Power, in dBm
+   */
+  optional int32 rsrp = 1;
+
+  /*
+   * Reference Signal Received Quality, in dB
+   */
+  optional float rsrq = 2;
+
+  /*
+   * E-UTRA band number
+   */
+  optional uint32 band = 3;
+
+  /*
+   * Access technology, 7 = E-UTRAN
+   */
+  optional uint32 access_tech = 4;
+
+  /*
+   * Modem supply voltage, in millivolts
+   */
+  optional uint32 modem_voltage_mv = 5;
+
+  /*
+   * PLMN operator name, or the numeric MCC/MNC when unresolved
+   */
+  optional string operator_name = 6;
+}
+
+/*
  * Types of Measurements the telemetry module is equipped to handle
  */
 message Telemetry {
@@ -788,6 +823,11 @@ message Telemetry {
      * Traffic management statistics
      */
     TrafficManagementStats traffic_management_stats = 9;
+
+    /*
+     * Cellular (modem) diagnostic metrics
+     */
+    CellularMetrics cellular_metrics = 10;
   }
 }
 
