@@ -2076,6 +2076,18 @@ message NodeInfo {
    * LSB 1 of the bitfield
    */
   bool has_xeddsa_signed = 14;
+
+  /*
+   * True if we have heard this node over RF since our current LoRa
+   * configuration took effect. Cleared for every node whenever the region,
+   * modem preset (or the custom bandwidth/spread factor/coding rate when
+   * use_preset is false), override_frequency, channel_num or the primary
+   * channel name changes - the frequency slot is derived from that name.
+   * Not set for nodes heard over MQTT, which reach us over the internet
+   * rather than over our own radio - see via_mqtt.
+   * LSB 11 of the bitfield
+   */
+  bool heard_on_current_lora = 15;
 }
 
 /*
