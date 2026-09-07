@@ -375,6 +375,10 @@ Carried over from the 2.x notes and still open:
 - **`PositionLite` and `NodeInfoLite`** remain separate from `Position` and
   `NodeInfo`. Collapsing each pair is the same "one canonical representation"
   argument that retired the legacy nodedb types, and has not been settled.
-- **Corpus-driven field ordering.** Which fields deserve tags 1–15 in
-  `EnvironmentMetrics`-style messages was decided on judgement. A portnum-weighted
-  airtime histogram from a live mesh would settle it properly.
+- **Tag ordering in the large messages.** Which fields deserve tags 1–15 was decided
+  on judgement rather than on measured traffic. It costs most in `AdminMessage`, where
+  the whole config write path — `set_owner`, `set_channel`, `set_config`,
+  `set_module_config`, `begin_edit_settings`, `commit_edit_settings` — sits above 15
+  and pays a two-byte key, while the read path sits below it. `Position` and
+  `MeshPacket` were ordered the same way. A portnum-weighted airtime histogram from a
+  live mesh would settle all three.
