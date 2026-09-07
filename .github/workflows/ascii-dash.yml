@@ -33,7 +33,7 @@ jobs:
           # to raw UTF-8 bytes rather than being reinterpreted as codepoints.
           status=0
           LC_ALL=C git grep -nP '\xe2\x80[\x90-\x95]' -- \
-              '*.proto' '*.options' '*.md' '*.yml' '*.yaml' '*.kts' || status=$?
+              ':!*.jar' || status=$?
           if [ "$status" -eq 0 ]; then
             echo "::error::Non-ASCII dash (U+2010-U+2015) found above. Replace it with an ASCII '-'."
             exit 1
