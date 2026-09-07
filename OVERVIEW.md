@@ -127,8 +127,8 @@ costs software floating point on an MCU without an FPU.
 
 The layout is columnar and delta coded: the quantity set is named once, values run
 down a column per quantity as differences, and sample times are differenced twice so
-a fixed reporting cadence collapses to zeros. All of it is ordinary packed protobuf —
-no bit packing, no separate codec, nothing a generated decoder cannot already read.
+a fixed reporting cadence collapses to zeros. All of it is ordinary packed protobuf,
+which any generated decoder already reads.
 
 Measured against a 21-hour capture of the public MQTT broker, eight buffered samples:
 
@@ -170,15 +170,5 @@ Thanks to **NomDeTom** for sustained review of this work and for the idea behind
 telemetry encoding: the delta-coded columnar layout — lay a stack of readings on its
 side and send only what changed — is his, and it is worth more than every other
 byte-level change here combined. His prototype takes it further with bit packing and
-resolution shifting; 3.0 ships the delta coding alone, which carries the win inside
-plain protobuf and needs no separate codec.
-
----
-
-## What this does not change
-
-Protobuf stays. It was never the bottleneck — the encoding decisions inside it were.
-Schema evolution, multi-language code generation and nanopb's typed C structs are not
-things worth giving up for the remaining few per cent, and the header is the one place
-in the system where skippable unknown fields are structurally required rather than
-merely convenient.
+resolution shifting; 3.0 ships the delta coding alone, which carries the win in plain
+protobuf.

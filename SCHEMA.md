@@ -104,10 +104,6 @@ backend, an analytics pipeline — can compile the air layer alone and never pul
 schema into two published modules later a mechanical change rather than a redesign,
 without paying for that split now.
 
-Nothing enforces this automatically: `PACKAGE_NO_IMPORT_CYCLE` operates between
-protobuf packages, and there is only one here, so it cannot see file-level layering.
-Check it by hand, or with a CI grep, when adding an import.
-
 ### What to compile
 
 | building | files |
