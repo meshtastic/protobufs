@@ -218,12 +218,18 @@ message HostMetrics {
  * separate temperature fields and three channel-indexed voltage pairs were the
  * symptom.
  *
- * The layout is columnar. `keys` names the quantity set once; `values` holds one
- * entry per key per sample; `time_offsets` and `present` carry one entry per sample;
- * `sensors` carries one per key. Nothing repeats a quantity name or a timestamp per
- * reading, which is what makes replaying buffered samples cheap: a batch of eight
- * three-field samples costs one key list, eight deltas and twenty-four values.
+ * The layout is columnar and delta coded. `keys` names the quantity set once;
+ * `values` holds one column per key, each column delta coded down the samples;
+ * `time_offsets` carries the sample times differenced twice; `present` carries one
+ * bitmap per sample; `sensors` carries one entry per key. Nothing repeats a quantity
+ * name or a timestamp per reading.
  *
+ * That is the whole compression story, and it is ordinary packed protobuf: no bit
+ * packing, no separate codec, nothing a generated decoder cannot already read. On a
+ * captured 21-hour corpus of public broker traffic, eight buffered samples cost
+ * about 71 bytes here against 200 as one message per reading.
+ *
+ * A single sample is the live broadcast: one entry per column, no deltas, no times.
  * Send as many samples as the payload allows, then start another message.
  *
  * On size: a reading costs one key byte plus one to three value bytes, against a
@@ -423,33 +429,71 @@ message SensorReadings {
   repeated uint32 keys = 1;
 
   /*
-   * The readings, sample-major: every value a sample carries, in `keys` order, then
-   * the next sample's.
+   * The readings, quantity-major and delta coded.
    *
-   * A message holding one sample is the ordinary live broadcast and carries exactly
-   * one value per key. Several samples is a node replaying what it buffered while it
-   * had no connectivity; the sample count follows from `time_offsets`, or from
-   * values divided by keys when every sample is dense.
+   * Laid out one column per entry in `keys`, in that order. A column holds the
+   * samples that actually carry its quantity, oldest first: the first entry is the
+   * absolute value, and every entry after it is the difference from the previous
+   * entry *in the same column*.
+   *
+   * Column-major and not sample-major because consecutive numbers are then one
+   * sensor moving over time rather than unrelated quantities side by side, and a
+   * sensor moves slowly. Air temperature drifting 0.3 C between samples is one byte
+   * as a delta against two or three absolute. On a captured 21-hour corpus this is
+   * where nearly all of the batching win comes from.
+   *
+   * A message holding one sample has one entry per column and no deltas arise, so a
+   * live broadcast reads as plain values. Deltas only appear once a message carries
+   * a batch, which is the case that is already being reconstructed from
+   * `time_offsets` and `present`.
+   *
+   *   keys        = [TEMPERATURE_C_CENTI, PRESSURE_PA]
+   *   samples     = 3
+   *   temperature = 1582, 1548, 1514  ->  1582, -34, -34
+   *   pressure    = 98801, 98814, 98857  ->  98801, 13, 43
+   *   values      = [1582, -34, -34, 98801, 13, 43]
    */
   repeated sint32 values = 2;
 
   /*
-   * One entry per sample, not per reading: seconds of clock, as a running delta.
-   * The first is relative to Telemetry.time and each later one to the sample before
-   * it, so a node reporting on a fixed cadence spends the same two bytes per sample
-   * however far back the batch reaches.
+   * Sample times, one entry per sample after the first, differenced twice.
    *
-   * Absent means the message holds a single sample taken at Telemetry.time, which is
-   * the live case and costs nothing.
+   * `Telemetry.time` is the first sample's time. Entry 0 is the interval from the
+   * first sample to the second. Every entry after that is the change in interval:
+   * the gap before this sample minus the gap before the previous one.
+   *
+   * A node reporting on a fixed cadence therefore emits one interval and then zeros,
+   * one byte each, however far back the batch reaches and whatever the cadence is.
+   * Differencing once would spend two bytes per sample restating the same interval;
+   * not differencing at all would spend three once the batch spans more than a few
+   * hours.
+   *
+   * Absent means the message holds a single sample, taken at `Telemetry.time`. That
+   * is the live case and costs nothing.
+   *
+   *   Telemetry.time = 1000, samples at 1000, 4600, 8200, 11800 (hourly)
+   *   intervals      =        3600, 3600, 3600
+   *   time_offsets   = [3600, 0, 0]
+   *
+   *   the same node late by 40 s on the last sample:
+   *   intervals      =        3600, 3600, 3640
+   *   time_offsets   = [3600, 0, 40]
+   *
+   * Reconstruct by running both sums: interval += entry, time += interval.
    */
   repeated sint32 time_offsets = 3;
 
   /*
-   * One bitmap per sample: bit k set when that sample carries keys[k].
+   * One bitmap per sample, oldest first: bit k set when that sample carries keys[k].
    *
-   * Absent means every sample carries every key, which is the common case - a node's
-   * sensor set rarely changes between samples. Only a batch where some sample is
-   * missing a quantity pays for this.
+   * It is what tells a reader how long each column in `values` is, and which samples
+   * a column's deltas step between - a column skips absent samples rather than
+   * holding a gap, so "the previous entry in the column" is the previous sample that
+   * carried the quantity, not simply the sample before.
+   *
+   * Absent means every sample carries every key, which is the common case: a node's
+   * sensor set rarely changes between samples. Then every column is one entry per
+   * sample and the sample count is `values` length divided by `keys` length.
    */
   repeated uint32 present = 4;
 
