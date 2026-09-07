@@ -218,11 +218,13 @@ message HostMetrics {
  * separate temperature fields and three channel-indexed voltage pairs were the
  * symptom.
  *
- * A reading is a (key, value) pair held in parallel packed arrays. `values`,
- * `time_offsets` and `sensors` are indexed by the same position as `keys`; an array
- * that is present must have the same length as `keys`.
+ * The layout is columnar. `keys` names the quantity set once; `values` holds one
+ * entry per key per sample; `time_offsets` and `present` carry one entry per sample;
+ * `sensors` carries one per key. Nothing repeats a quantity name or a timestamp per
+ * reading, which is what makes replaying buffered samples cheap: a batch of eight
+ * three-field samples costs one key list, eight deltas and twenty-four values.
  *
- * Send as many readings as the payload allows, then start another message.
+ * Send as many samples as the payload allows, then start another message.
  *
  * On size: a reading costs one key byte plus one to three value bytes, against a
  * typed field's one to two tag bytes plus the same value. The generic form is
@@ -411,36 +413,55 @@ message SensorReadings {
   }
 
   /*
-   * One key per reading: `(ordinal << 7) | quantity`.
+   * The quantities this message carries, written once for the whole message rather
+   * than once per reading: `(ordinal << 7) | quantity` each.
    *
    * The ordinal distinguishes several sensors reporting the same quantity on one
-   * node and is 0 for the first or only one, so an ordinary reading's key is a
-   * single byte. A second sensor of the same quantity pushes its key to two.
+   * node and is 0 for the first or only one, so an ordinary quantity is a single
+   * byte. A second sensor of the same quantity pushes its key to two.
    */
   repeated uint32 keys = 1;
 
   /*
-   * One value per reading, in the unit and scale its quantity names.
+   * The readings, sample-major: every value a sample carries, in `keys` order, then
+   * the next sample's.
+   *
+   * A message holding one sample is the ordinary live broadcast and carries exactly
+   * one value per key. Several samples is a node replaying what it buffered while it
+   * had no connectivity; the sample count follows from `time_offsets`, or from
+   * values divided by keys when every sample is dense.
    */
   repeated sint32 values = 2;
 
   /*
-   * Optional, one per reading: seconds relative to Telemetry.time, signed.
+   * One entry per sample, not per reading: seconds of clock, as a running delta.
+   * The first is relative to Telemetry.time and each later one to the sample before
+   * it, so a node reporting on a fixed cadence spends the same two bytes per sample
+   * however far back the batch reaches.
    *
-   * Omit entirely for live readings, which is the normal case and costs nothing.
-   * Populate it when replaying measurements a node buffered while it had no
-   * connectivity: a batch spanning an hour costs about two bytes per reading, where
-   * an absolute timestamp would cost four.
+   * Absent means the message holds a single sample taken at Telemetry.time, which is
+   * the live case and costs nothing.
    */
   repeated sint32 time_offsets = 3;
 
   /*
-   * Optional, one per reading: the TelemetrySensorType that produced it.
+   * One bitmap per sample: bit k set when that sample carries keys[k].
    *
-   * Omit unless provenance matters - telling two temperature sensors apart, or
-   * attributing a calibration or a status register. Costs nothing when absent.
+   * Absent means every sample carries every key, which is the common case - a node's
+   * sensor set rarely changes between samples. Only a batch where some sample is
+   * missing a quantity pays for this.
    */
-  repeated uint32 sensors = 4;
+  repeated uint32 present = 4;
+
+  /*
+   * Optional, one per key rather than per reading: the TelemetrySensorType behind
+   * that quantity. Provenance belongs to the quantity and ordinal, not to each
+   * sample, so it is written once however many samples the message holds.
+   *
+   * Omit unless it matters - telling two temperature sensors apart, or attributing a
+   * calibration or a status register. Costs nothing when absent.
+   */
+  repeated uint32 sensors = 5;
 }
 
 /*
