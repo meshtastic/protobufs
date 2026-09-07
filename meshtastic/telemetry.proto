@@ -220,7 +220,7 @@ message HostMetrics {
  *
  * The layout is columnar and delta coded. `keys` names the quantity set once;
  * `values` holds one column per key, each column delta coded down the samples;
- * `time_offsets` carries the sample times differenced twice; `present` carries one
+ * `time_deltas` carries the sample times differenced twice; `present` carries one
  * bitmap per sample; `sensors` carries one entry per key. Nothing repeats a quantity
  * name or a timestamp per reading.
  *
@@ -445,7 +445,7 @@ message SensorReadings {
    * A message holding one sample has one entry per column and no deltas arise, so a
    * live broadcast reads as plain values. Deltas only appear once a message carries
    * a batch, which is the case that is already being reconstructed from
-   * `time_offsets` and `present`.
+   * `time_deltas` and `present`.
    *
    *   keys        = [TEMPERATURE_C_CENTI, PRESSURE_PA]
    *   samples     = 3
@@ -473,15 +473,15 @@ message SensorReadings {
    *
    *   Telemetry.time = 1000, samples at 1000, 4600, 8200, 11800 (hourly)
    *   intervals      =        3600, 3600, 3600
-   *   time_offsets   = [3600, 0, 0]
+   *   time_deltas    = [3600, 0, 0]
    *
    *   the same node late by 40 s on the last sample:
    *   intervals      =        3600, 3600, 3640
-   *   time_offsets   = [3600, 0, 40]
+   *   time_deltas    = [3600, 0, 40]
    *
    * Reconstruct by running both sums: interval += entry, time += interval.
    */
-  repeated sint32 time_offsets = 3;
+  repeated sint32 time_deltas = 3;
 
   /*
    * One bitmap per sample, oldest first: bit k set when that sample carries keys[k].

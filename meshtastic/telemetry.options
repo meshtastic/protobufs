@@ -19,14 +19,14 @@
 *HostMetrics.user_string max_size:200
 
 # Sensor readings. The arrays sit on three different axes now: keys and sensors are
-# per quantity, time_offsets and present are per sample, values is per reading. Bounds
+# per quantity, time_deltas and present are per sample, values is per reading. Bounds
 # are set so a full batch still fits a 233-byte Data payload.
 # values must stay 32-bit: barometric pressure in pascals already exceeds 16 bits.
 *SensorReadings.keys max_count:16
 *SensorReadings.keys int_size:16
 *SensorReadings.values max_count:64
-*SensorReadings.time_offsets max_count:24
-*SensorReadings.time_offsets int_size:32
+*SensorReadings.time_deltas max_count:24
+*SensorReadings.time_deltas int_size:32
 *SensorReadings.present max_count:24
 *SensorReadings.present int_size:32
 *SensorReadings.sensors max_count:16
