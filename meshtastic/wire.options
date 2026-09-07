@@ -62,8 +62,12 @@
 *Waypoint.description  max_size:100
 *Waypoint.notify_flags int_size:8
 
-*NeighborInfo.neighbors max_count:10
-*Neighbor.node_broadcast_interval_secs int_size:16
+# Two parallel columns, so both caps must match. max_count is also what makes
+# them packed: without it nanopb emits a callback, and a callback writes a tag
+# per element - the per-edge framing the columns exist to remove.
+*NeighborInfo.neighbor_ids max_count:10
+*NeighborInfo.neighbor_snr max_count:10
+*NeighborInfo.neighbor_snr int_size:8
 
 *MqttClientProxyMessage.topic max_size:60
 *MqttClientProxyMessage.data max_size:435

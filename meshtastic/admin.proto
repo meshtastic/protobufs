@@ -708,9 +708,11 @@ message NodeRemoteHardwarePinsResponse {
 
 message SharedContact {
   /*
-   * The node number of the contact
+   * The node number of the contact. fixed32 for the reason RouteDiscovery.route
+   * is: a NodeNum is uniformly distributed over 32 bits, so a varint costs five
+   * bytes 15 times in 16.
    */
-  uint32 node_num = 1;
+  fixed32 node_num = 1;
 
   /*
    * The User of the contact

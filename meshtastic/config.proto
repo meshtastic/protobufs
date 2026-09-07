@@ -801,7 +801,7 @@ message LoRaConfig {
    * particular other nodes (simulating radio out of range). All nodenums listed
    * in ignore_incoming will have packets they send dropped on receive (by router.cpp)
    */
-  repeated uint32 ignore_incoming = 12;
+  repeated fixed32 ignore_incoming = 12;
 
   /*
    * Set where LORA FEM is enabled, disabled, or not present

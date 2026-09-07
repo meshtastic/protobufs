@@ -26,7 +26,7 @@ graph TD
     end
 
     subgraph Wire["Wire - over the air"]
-        wire[wire.proto<br/><i>Position, User, Data, Routing,<br/>Waypoint, Neighbor, HeaderExt</i>]
+        wire[wire.proto<br/><i>Position, User, Data, Routing,<br/>Waypoint, NeighborInfo, HeaderExt</i>]
         packet[packet.proto<br/><i>MeshPacket</i>]
         beacon[mesh_beacon.proto]
         admin[admin.proto<br/><i>AdminMessage</i>]
@@ -190,6 +190,15 @@ Signed quantities use `sint32` (zigzag). A negative `int32` costs **ten bytes** 
 wire regardless of magnitude, which is why temperature, current, SNR and ORP are all
 `sint32`.
 
+**Match the scale to the instrument, not to a round number.** A scale finer than the
+sensor resolves buys no information and multiplies every delta, which costs a byte per
+sample as soon as the delta crosses 63. The four illuminance quantities are `_DECI` for
+this reason: the best ambient light sensors in use resolve about 0.004 lx at maximum
+gain and most resolve 1 lx, while daylight readings run to six figures. Centi-lux would
+have been ten times finer than any of them, paid for on every sample of a column that
+moves. Voltage in millivolts and pressure in pascals go the other way and are right for
+it — those are the hardware quanta.
+
 If a quantity ever needs finer resolution, its enum value gets a finer scale. The
 encoding never varies per reading.
 
@@ -208,14 +217,23 @@ repeated uint32 present     = 4;  // per sample    - bitmap, omitted when dense
 repeated uint32 sensors     = 5;  // per quantity  - optional provenance
 ```
 
-**`keys`** — `(ordinal << 7) | quantity`. The ordinal separates several sensors
-reporting the same quantity on one node, and is 0 for the first, so an ordinary key is
-one byte. Air temperature from three different chips is one quantity with three
-ordinals, not three fields.
+**`keys`** — `(ordinal << 8) | (constant << 7) | quantity`. The ordinal separates
+several sensors reporting the same quantity on one node, and is 0 for the first, so an
+ordinary key is one byte. Air temperature from three different chips is one quantity
+with three ordinals, not three fields.
+
+The `constant` bit says the column does not change across the batch, so it contributes
+one entry to `values` instead of one per sample. Rainfall, lightning counts, a status
+word and a wind vane in still air are all columns that otherwise spend a byte per
+sample saying nothing. Setting the bit costs one byte — it pushes the key above 127,
+which an ordinal of 1 or more does anyway — and saves one for every sample after the
+first, so it pays from three samples up. Measured on a sixteen-sample batch of two
+moving columns: one constant column alongside them is 18% smaller, three is 36%, six is
+49%. A single-sample message never sets it.
 
 **`values`** — one column per key, in `keys` order. Within a column, the first entry
 is absolute and each later entry is the difference from the previous entry *in that
-column*. Column-major because consecutive numbers are then one sensor moving over
+column*. A constant column is one entry and no deltas. Column-major because consecutive numbers are then one sensor moving over
 time, and a sensor moves slowly.
 
 ```
@@ -241,8 +259,63 @@ It also defines **where a column's deltas step**: a column skips absent samples 
 than holding a gap, so "the previous entry" means the previous sample that carried
 that quantity. Omitted entirely when every sample is dense, which is the common case.
 
+**The sample count is `time_deltas` length plus one**, or one when `time_deltas` is
+absent. Never divide `values` by `keys` to get it: that only holds for a dense batch of
+non-constant columns.
+
+**An unknown `Quantity` is skipped, not fatal.** A decoder meeting a quantity it does
+not know still knows how long that column is — one entry if the key sets `constant`,
+otherwise one per sample the `present` bitmap gives it — so it can step over the column
+and read the rest. Nothing needs to be refused, and a node running an older enum keeps
+reading the quantities it does understand.
+
 **A single sample** — the ordinary live broadcast — has one entry per column, no
 deltas, no times, no bitmap. It reads as plain values.
+
+**Sizing.** `keys` caps at 16, `time_deltas` and `present` at 24, `values` at 64. Those
+are independent to nanopb but not to the encoder: `values` is the product, so 16 columns
+caps the batch at 4 samples and 24 samples caps it at 2 columns. An encoder that fills
+both axes loses readings off the end of `values` without an error. Check the product.
+
+### The same techniques outside telemetry
+
+Three of the rules behind `SensorReadings` are not about telemetry at all, and apply
+wherever the shape recurs.
+
+**Parallel scalar columns instead of `repeated <submessage>`.** A submessage spends a
+tag and a length byte on every element, plus a tag on each field inside it. Two parallel
+`repeated` columns spend that framing once for the whole field and nothing per element.
+It wins whenever the element count exceeds the field count, which is the usual shape for
+a list of measurements or edges.
+
+| message | before | after | 
+|---|---|---|
+| `NeighborInfo.neighbor_ids` / `.neighbor_snr` | `repeated Neighbor` | 32% smaller at 4 edges, 40% at 10, 44% at 20 |
+| `DrawnShape.vertex_lat_deltas` / `.vertex_lon_deltas` | `repeated CotGeoPoint` | ~58 B on a 32-vertex telestration |
+
+Flattening `NeighborInfo` also removed two fields the submessage carried and the
+comments said were never transmitted — when the message *is* the columns, a local-only
+value has nowhere to hide.
+
+**`fixed32` for node numbers.** A NodeNum is the low 32 bits of a MAC, so it is
+uniformly distributed: 15 in 16 land above 2²⁸ and cost the full five varint bytes,
+against a flat four for `fixed32`. `RouteDiscovery.route` was already right; the rest
+now match — `NeighborInfo.node_id`, `last_sent_by_id` and `neighbor_ids`,
+`SharedContact.node_num`, `NodeRemoteHardwarePin.node_num`, `LoRaConfig.ignore_incoming`,
+and the five `num` fields in the node database. The last of those is per stored node,
+so it is flash rather than airtime.
+
+`next_hop` and `relay_node` stay `uint32`: they carry the last byte of a NodeNum, not
+the whole thing, so a varint is one byte where `fixed32` would be four.
+
+**`max_count`, or nothing is packed.** Proto3 packs a `repeated` scalar by default, but
+nanopb only honours that for a bounded field. Without `max_count` in the `.options` it
+emits a callback instead, and a callback writes a tag per element — exactly the
+per-element framing the columns exist to remove, silently, with the `.proto` still
+saying `repeated sint32`. `DrawnShape`'s vertex columns were in this state: the options
+comment described a 32-entry pool that had never been declared. Every `repeated` scalar
+in the tree now carries a bound except `resend_chunks.chunks`, which is unbounded by
+nature and client-facing.
 
 ---
 

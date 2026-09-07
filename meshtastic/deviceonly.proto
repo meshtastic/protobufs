@@ -63,9 +63,13 @@ message PositionLite {
 
 message NodeInfoLite {
   /*
-   * The node number
+   * The node number.
+   *
+   * fixed32 rather than a varint: a NodeNum is uniformly distributed over 32
+   * bits, so 15 in 16 of them cost the full five varint bytes where fixed32
+   * always costs four.
    */
-  uint32 num = 1;
+  fixed32 num = 1;
 
   /*
    * Hardware model the user's device is running.
@@ -186,22 +190,22 @@ message DeviceState {
 // that never report don't pay the embedded cost.
 
 message NodePositionEntry {
-  uint32 num = 1;
+  fixed32 num = 1;
   PositionLite position = 2;
 }
 
 message NodeTelemetryEntry {
-  uint32 num = 1;
+  fixed32 num = 1;
   DeviceMetrics device_metrics = 2;
 }
 
 message NodeReadingsEntry {
-  uint32 num = 1;
+  fixed32 num = 1;
   SensorReadings readings = 2;
 }
 
 message NodeStatusEntry {
-  uint32 num = 1;
+  fixed32 num = 1;
   StatusMessage status = 2;
 }
 

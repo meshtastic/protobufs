@@ -279,14 +279,22 @@ message SensorReadings {
     IAQ = 5;
 
     // --- Light ---
-    /* Ambient illuminance, centi-lux */
-    ILLUMINANCE_LUX_CENTI = 6;
-    /* White-channel illuminance, centi-lux */
-    ILLUMINANCE_WHITE_LUX_CENTI = 7;
-    /* Infrared illuminance, centi-lux */
-    ILLUMINANCE_IR_LUX_CENTI = 8;
-    /* Ultraviolet illuminance, centi-lux */
-    ILLUMINANCE_UV_LUX_CENTI = 9;
+    /*
+     * Ambient illuminance, deci-lux (12345 = 1234.5 lx).
+     *
+     * Deci and not centi: the best ambient light sensors in use resolve about
+     * 0.004 lx at maximum gain and most resolve 1 lx, while readings run to six
+     * figures in daylight. A hundredth of a lux is finer than any of them and
+     * multiplies every delta by ten for it, which costs a byte per sample on a
+     * column that moves at all.
+     */
+    ILLUMINANCE_LUX_DECI = 6;
+    /* White-channel illuminance, deci-lux */
+    ILLUMINANCE_WHITE_LUX_DECI = 7;
+    /* Infrared illuminance, deci-lux */
+    ILLUMINANCE_IR_LUX_DECI = 8;
+    /* Ultraviolet illuminance, deci-lux */
+    ILLUMINANCE_UV_LUX_DECI = 9;
     /* Solar irradiance, watts per square metre */
     SOLAR_IRRADIANCE_WM2 = 10;
 
@@ -420,11 +428,21 @@ message SensorReadings {
 
   /*
    * The quantities this message carries, written once for the whole message rather
-   * than once per reading: `(ordinal << 7) | quantity` each.
+   * than once per reading: `(ordinal << 8) | (constant << 7) | quantity` each.
    *
    * The ordinal distinguishes several sensors reporting the same quantity on one
    * node and is 0 for the first or only one, so an ordinary quantity is a single
    * byte. A second sensor of the same quantity pushes its key to two.
+   *
+   * `constant` says the column never changes across the batch, so it contributes
+   * exactly one entry to `values` instead of one per sample. A batch that carries
+   * rainfall, lightning counts or a status word usually carries several columns
+   * that never move, and each of them otherwise spends a byte per sample saying
+   * nothing. Setting the bit costs one byte on the key - it pushes the key above
+   * 127, which an ordinal of 1 or more does anyway - and saves one byte for every
+   * sample after the first, so it pays from three samples up.
+   *
+   * A single-sample message never sets it: there is nothing to collapse.
    */
   repeated uint32 keys = 1;
 
@@ -434,7 +452,8 @@ message SensorReadings {
    * Laid out one column per entry in `keys`, in that order. A column holds the
    * samples that actually carry its quantity, oldest first: the first entry is the
    * absolute value, and every entry after it is the difference from the previous
-   * entry *in the same column*.
+   * entry *in the same column*. A column whose key sets the constant bit holds one
+   * entry and no deltas.
    *
    * Column-major and not sample-major because consecutive numbers are then one
    * sensor moving over time rather than unrelated quantities side by side, and a
@@ -492,8 +511,12 @@ message SensorReadings {
    * carried the quantity, not simply the sample before.
    *
    * Absent means every sample carries every key, which is the common case: a node's
-   * sensor set rarely changes between samples. Then every column is one entry per
-   * sample and the sample count is `values` length divided by `keys` length.
+   * sensor set rarely changes between samples. Then every non-constant column is one
+   * entry per sample.
+   *
+   * The sample count is never derived from `values`. It is `time_deltas` length plus
+   * one, or one when `time_deltas` is absent, which stays true whatever mix of
+   * constant, ragged and ordinary columns the message holds.
    */
   repeated uint32 present = 4;
 

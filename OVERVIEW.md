@@ -141,6 +141,14 @@ A node replaying what it buffered while offline now costs roughly a third of wha
 did, and a node with an environment sensor and an air-quality sensor sends one packet
 instead of two.
 
+**The technique is not specific to telemetry.** Any list of small records has the same
+shape, and paying the framing once per column instead of once per element is worth as
+much there. `NeighborInfo` used to carry one submessage per edge, each with its own tag,
+length byte and inner field tags; as two parallel columns it is 40% smaller at ten
+neighbours and fits roughly twice as many edges in a packet. Node numbers moved to
+`fixed32` for a related reason — a NodeNum is uniformly random over 32 bits, so a varint
+costs five bytes fifteen times in sixteen.
+
 ---
 
 ## 4. Booleans are packed, and the packing is checked

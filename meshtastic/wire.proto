@@ -900,12 +900,12 @@ message NeighborInfo {
   /*
    * The node ID of the node sending info on its neighbors
    */
-  uint32 node_id = 1;
+  fixed32 node_id = 1;
 
   /*
    * Field to pass neighbor info for the next sending cycle
    */
-  uint32 last_sent_by_id = 2;
+  fixed32 last_sent_by_id = 2;
 
   /*
    * Broadcast interval of the represented node (in seconds)
@@ -913,35 +913,29 @@ message NeighborInfo {
   uint32 node_broadcast_interval_secs = 3;
 
   /*
-   * The list of out edges from this node
+   * The out edges from this node, as two parallel columns: edge N is
+   * (neighbor_ids[N], neighbor_snr[N]), and the two columns MUST stay the same
+   * length.
+   *
+   * Replaces the former `repeated Neighbor neighbors = 4`, one length-delimited
+   * submessage per edge. A submessage spent a tag and a length byte on every
+   * neighbour plus a tag on each of its two fields; the columns pay the field
+   * framing once and then nothing per edge, which is around a third of the
+   * message at ten neighbours and roughly doubles how many edges fit in a
+   * 233-byte payload.
+   *
+   * The old submessage also carried `last_rx_time` and the neighbour's own
+   * broadcast interval, both documented as local-only and never transmitted.
+   * They are not columns here: a node's view of when it last heard a neighbour
+   * belongs to that node's own table, not to a message about the edge.
    */
-  repeated Neighbor neighbors = 4;
-}
-
-/*
- * A single edge in the mesh
- */
-message Neighbor {
-  /*
-   * Node ID of neighbor
-   */
-  uint32 node_id = 1;
-
-  /*
-   * SNR of last heard message (in dB, scaled by 4)
-   * Wire encoding: sint32 (W3 fix, was float)
-   */
-  sint32 snr = 2;
+  repeated fixed32 neighbor_ids = 4;
 
   /*
-   * Reception time (in secs since 1970) of last message that was last sent by this ID.
-   * Note: this is for local storage only and will not be sent out over the mesh.
+   * SNR of the last message heard from each neighbour, in dB scaled by 4.
+   *
+   * Scaled by 4 because that is the radio's own quantum - the SX126x reports SNR
+   * in quarter-dB steps - so the scale is exact rather than a rounding choice.
    */
-  fixed32 last_rx_time = 3;
-
-  /*
-   * Broadcast interval of this neighbor (in seconds).
-   * Note: this is for local storage only and will not be sent out over the mesh.
-   */
-  uint32 node_broadcast_interval_secs = 4;
+  repeated sint32 neighbor_snr = 5;
 }

@@ -941,7 +941,7 @@ message NodeRemoteHardwarePin {
   /*
    * The node_num exposing the available gpio pin
    */
-  uint32 node_num = 1;
+  fixed32 node_num = 1;
 
   /*
    * The available gpio pin for usage with RemoteHardware module

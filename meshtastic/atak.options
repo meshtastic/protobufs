@@ -42,9 +42,17 @@
 #
 # DrawnShape pool sizing. `kind` and `style` are varint enums (no int_size
 # needed). stroke_color / fill_color are Team enum, also varint. stroke_argb
-# / fill_argb are fixed32 (always 4 bytes on the wire). Vertex pool is 32
-# entries x ~12B each ~= 384B worst case. Telestrations beyond 32 vertices
-# MUST be pre-truncated by the sender with `truncated = true`.
+# / fill_argb are fixed32 (always 4 bytes on the wire). Telestrations beyond
+# 32 vertices MUST be pre-truncated by the sender with `truncated = true`.
+#
+# max_count on the two vertex columns is what makes them packed. Without it
+# nanopb emits a callback field, and a callback writes a tag per element -
+# which is the per-vertex framing the columnar layout exists to remove. The
+# pool is 2 x 32 x 4B = 256B.
+*DrawnShape.vertex_lat_deltas max_count:32
+*DrawnShape.vertex_lat_deltas int_size:32
+*DrawnShape.vertex_lon_deltas max_count:32
+*DrawnShape.vertex_lon_deltas int_size:32
 *DrawnShape.major_cm int_size:32
 *DrawnShape.minor_cm int_size:32
 *DrawnShape.angle_deg int_size:16
