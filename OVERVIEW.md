@@ -127,8 +127,10 @@ costs software floating point on an MCU without an FPU.
 
 The layout is columnar and delta coded: the quantity set is named once, values run
 down a column per quantity as differences, and sample times are differenced twice so
-a fixed reporting cadence collapses to zeros. All of it is ordinary packed protobuf,
-which any generated decoder already reads.
+a fixed reporting cadence collapses to zeros. A column that does not move at all —
+rainfall, a lightning count, a wind vane in still air — says so in its key and is sent
+once instead of once per sample. All of it is ordinary packed protobuf, which any
+generated decoder already reads.
 
 Measured against a 21-hour capture of the public MQTT broker, eight buffered samples:
 

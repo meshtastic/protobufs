@@ -233,8 +233,8 @@ moving columns: one constant column alongside them is 18% smaller, three is 36%,
 
 **`values`** — one column per key, in `keys` order. Within a column, the first entry
 is absolute and each later entry is the difference from the previous entry *in that
-column*. A constant column is one entry and no deltas. Column-major because consecutive numbers are then one sensor moving over
-time, and a sensor moves slowly.
+column*. A constant column is one entry and no deltas. Column-major because
+consecutive numbers are then one sensor moving over time, and a sensor moves slowly.
 
 ```
 keys        = [TEMPERATURE_C_CENTI, PRESSURE_PA]
@@ -288,7 +288,7 @@ tag and a length byte on every element, plus a tag on each field inside it. Two 
 It wins whenever the element count exceeds the field count, which is the usual shape for
 a list of measurements or edges.
 
-| message | before | after | 
+| message | before | after |
 |---|---|---|
 | `NeighborInfo.neighbor_ids` / `.neighbor_snr` | `repeated Neighbor` | 32% smaller at 4 edges, 40% at 10, 44% at 20 |
 | `DrawnShape.vertex_lat_deltas` / `.vertex_lon_deltas` | `repeated CotGeoPoint` | ~58 B on a 32-vertex telestration |
@@ -300,8 +300,8 @@ value has nowhere to hide.
 **`fixed32` for node numbers.** Since 2.8 a NodeNum is a CRC over the node's public
 key, so it is uniformly distributed over 32 bits: 15 in 16 land above 2²⁸ and cost the
 full five varint bytes, against a flat four for `fixed32`. There is no low-magnitude
-population to make a varint pay, and never will be. `RouteDiscovery.route` was already right; the rest
-now match — `NeighborInfo.node_id`, `last_sent_by_id` and `neighbor_ids`,
+population to make a varint pay, and never will be. `RouteDiscovery.route` was already
+right; the rest now match — `NeighborInfo.node_id`, `last_sent_by_id` and `neighbor_ids`,
 `SharedContact.node_num`, `NodeRemoteHardwarePin.node_num`, `LoRaConfig.ignore_incoming`,
 and the five `num` fields in the node database. The last of those is per stored node,
 so it is flash rather than airtime.
@@ -314,9 +314,12 @@ nanopb only honours that for a bounded field. Without `max_count` in the `.optio
 emits a callback instead, and a callback writes a tag per element — exactly the
 per-element framing the columns exist to remove, silently, with the `.proto` still
 saying `repeated sint32`. `DrawnShape`'s vertex columns were in this state: the options
-comment described a 32-entry pool that had never been declared. Every `repeated` scalar
-in the tree now carries a bound except `resend_chunks.chunks`, which is unbounded by
-nature and client-facing.
+comment described a 32-entry pool that had never been declared. Bounding them also makes
+the message measurable — nanopb now emits `meshtastic_DrawnShape_size` at 490 where it
+previously reported "depends on runtime parameters", and the 256 B pool costs no RAM
+because `Route` is the larger arm of the same `oneof`. Every `repeated` scalar in the
+tree now carries a bound except `resend_chunks.chunks`, which is unbounded by nature and
+client-facing.
 
 ---
 
