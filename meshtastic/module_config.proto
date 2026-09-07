@@ -232,8 +232,23 @@ message ModuleConfig {
       CODEC2_1400 = 4;
       CODEC2_1300 = 5;
       CODEC2_1200 = 6;
-      CODEC2_700 = 7;
-      CODEC2_700B = 8;
+
+      /*
+       * Removed from libcodec2 upstream. A device configured to one of these
+       * falls back to CODEC2_700C.
+       */
+      CODEC2_700 = 7 [deprecated = true];
+      CODEC2_700B = 8 [deprecated = true];
+
+      /*
+       * Replaces CODEC2_700. Default for new configurations.
+       */
+      CODEC2_700C = 9;
+
+      /*
+       * Lowest rate, and the only one usable on slower modem presets.
+       */
+      CODEC2_450 = 10;
     }
 
     /*
@@ -247,7 +262,7 @@ message ModuleConfig {
     uint32 ptt_pin = 2;
 
     /*
-     * The audio sample rate to use for codec2
+     * The codec2 bitrate to encode at. Sample rate is always 8 kHz.
      */
     Audio_Baud bitrate = 3;
 
