@@ -5,10 +5,8 @@ Executive summary of the `trident` schema rework. The companion document,
 rules a client has to follow.
 
 3.0 is a deliberate break. Nothing here is backwards compatible, the sync word keeps
-2.x traffic off the air, and no stored data is migrated. That freedom is the point —
-it let us fix things that had been unfixable for years, and it means every decision
-below was made on merit rather than on what could be smuggled past a compatibility
-constraint.
+2.x traffic off the air, and no stored data is migrated. Field numbers, message shapes
+and encodings were therefore chosen freely, without regard to what 2.x had.
 
 Four changes carry almost all of the value.
 
@@ -147,22 +145,16 @@ passes every standard check and silently breaks every consumer that masks with i
 CI job now rejects it, and a generator emits named C++ accessors that compile to
 byte-identical instructions to the hand-written mask.
 
-Establishing the convention immediately found a real bug: the stored and client-facing
-node flags had drifted into **different bit orders for the same flags**, and both were
-pinned to eight bits while the field had grown to eleven, silently dropping three.
-
 ---
 
 ## Credit
 
-Thanks to **NomDeTom** for sustained, substantive review throughout this work, and in
-particular for the idea that became the telemetry encoding. The delta-coded columnar
-layout — lay a stack of readings on its side and send only what changed — is his, and
-it is worth more than every other byte-level change here combined. His prototype went
-further, adding bit packing and resolution shifting on top; measurement showed the
-delta coding alone captures the whole win inside plain protobuf, which is why 3.0
-ships the idea without the codec. Several of the corrections in this document exist
-because he pushed back on a first answer that was wrong.
+Thanks to **NomDeTom** for sustained review of this work and for the idea behind the
+telemetry encoding: the delta-coded columnar layout — lay a stack of readings on its
+side and send only what changed — is his, and it is worth more than every other
+byte-level change here combined. His prototype takes it further with bit packing and
+resolution shifting; 3.0 ships the delta coding alone, which carries the win inside
+plain protobuf and needs no separate codec.
 
 ---
 
