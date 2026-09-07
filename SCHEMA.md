@@ -301,9 +301,9 @@ value has nowhere to hide.
 key, so it is uniformly distributed over 32 bits: 15 in 16 land above 2²⁸ and cost the
 full five varint bytes, against a flat four for `fixed32`. There is no low-magnitude
 population to make a varint pay, and never will be. `RouteDiscovery.route` was already
-right; the rest now match — `NeighborInfo.node_id`, `last_sent_by_id` and `neighbor_ids`,
-`SharedContact.node_num`, `NodeRemoteHardwarePin.node_num`, `LoRaConfig.ignore_incoming`,
-and the five `num` fields in the node database. The last of those is per stored node,
+right; the rest now match — `NeighborInfo.node_id`, `last_sent_by_id` and
+`neighbor_ids`, `SharedContact.node_num`, `NodeRemoteHardwarePin.node_num`,
+`LoRaConfig.ignore_incoming`, and the five `num` fields in the node database. The last of those is per stored node,
 so it is flash rather than airtime.
 
 `next_hop` and `relay_node` stay `uint32`: they carry the last byte of a NodeNum, not
