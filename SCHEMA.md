@@ -15,7 +15,7 @@ Files are grouped by function. A file imports only from groups above it.
 ```mermaid
 graph TD
     subgraph Foundation["Foundation - no meshtastic imports"]
-        common[common.proto<br/><i>Role, RegionCode, ModemPreset,<br/>LocSource, NodeFlags, ErrorCode</i>]
+        common[common.proto<br/><i>Role, RegionCode, ModemPreset, LocSource,<br/>NodeFlags, ErrorCode, DeviceMetadata</i>]
         portnums[portnums.proto]
         channel[channel.proto]
         telemetry[telemetry.proto<br/><i>Telemetry, SensorReadings</i>]
@@ -29,6 +29,7 @@ graph TD
         wire[wire.proto<br/><i>Position, User, Data, Routing,<br/>Waypoint, Neighbor, HeaderExt</i>]
         packet[packet.proto<br/><i>MeshPacket</i>]
         beacon[mesh_beacon.proto]
+        admin[admin.proto<br/><i>AdminMessage</i>]
     end
 
     subgraph Config["Config - stored on flash"]
@@ -38,8 +39,7 @@ graph TD
     end
 
     subgraph Api["API - client facing"]
-        api[api.proto<br/><i>FromRadio, ToRadio, NodeInfo,<br/>DeviceMetadata</i>]
-        admin[admin.proto]
+        api[api.proto<br/><i>FromRadio, ToRadio, NodeInfo</i>]
     end
 
     subgraph Other["Storage, client, registry"]
@@ -69,13 +69,44 @@ graph TD
     api --> channel
     api --> telemetry
     api --> deviceui
-    admin --> api
+    admin --> config
+    admin --> common
+    admin --> deviceui
     deviceonly --> api
     deviceonly --> localonly
     mqtt --> packet
     apponly --> config
     clientonly --> localonly
 ```
+
+### Layering
+
+Imports run one way: **nothing in the air layer imports the client layer.** The air
+layer is everything that can appear in a `Data` payload — `common`, `portnums`,
+`channel`, `wire`, `packet`, `telemetry`, `config`, `module_config`, `device_ui`,
+`admin` and the module payloads: 24 files. The client layer is the eight that remain,
+`api`, `localonly`, `deviceonly`, `apponly`, `clientonly` and the registries.
+
+`admin` belongs to the air layer, which is easy to miss: remote administration means
+configuration travels over the mesh, so `AdminMessage` and everything it carries is
+an on-air payload rather than a phone-link one. `config`, `module_config` and
+`device_ui` are air for the same reason — a remote admin exchange carries them.
+
+Two types sit where they do because of this rule. `DeviceMetadata` is in
+`common.proto` rather than `api.proto` because both layers need it — `admin` returns
+it over the air, the phone API reports it — and it references nothing but `Role`.
+`NodeRemoteHardwarePin` is in `module_config.proto` next to the `RemoteHardwarePin`
+it wraps.
+
+What the rule buys: a consumer that only decodes mesh traffic — an MQTT bridge, a map
+backend, an analytics pipeline — can compile the air layer alone and never pull in
+`FromRadio`, `ToRadio` or the storage types. It also keeps the option of splitting the
+schema into two published modules later a mechanical change rather than a redesign,
+without paying for that split now.
+
+Nothing enforces this automatically: `PACKAGE_NO_IMPORT_CYCLE` operates between
+protobuf packages, and there is only one here, so it cannot see file-level layering.
+Check it by hand, or with a CI grep, when adding an import.
 
 ### What to compile
 

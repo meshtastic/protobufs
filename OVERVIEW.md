@@ -26,12 +26,13 @@ It is now split by what a file is *for*:
 | foundation | `common`, `portnums`, `channel`, `telemetry`, `device_ui` | everyone |
 | wire | `wire`, `packet` | anything touching the mesh |
 | config | `config`, `module_config`, `localonly` | devices and configurators |
-| API | `api`, `admin` | devices and client apps |
+| admin | `admin` | devices and configurators |
+| API | `api` | devices and client apps |
 | storage | `deviceonly` | firmware only |
 | registries | `hw_vendor`, `hw_device`, `region`, `modem_preset` | clients, for display |
 | modules | `atak`, `mqtt`, `storeforward`, `paxcount`, … | whoever enables them |
 
-Three consequences worth calling out:
+Four consequences worth calling out:
 
 **Shared enums moved to a leaf.** `Role`, `RegionCode`, `ModemPreset`, `LocSource`
 and friends live in `common.proto`, which imports nothing. Previously an
@@ -46,6 +47,22 @@ explicit `ConfigPayload`, and every other consumer gets a flat type.
 request per product. `hw_model` is a packed `uint32` — vendor in the high byte,
 device in the low — and the names live in registry data files that clients ship and
 firmware never needs. Adding a board no longer touches the schema at all.
+
+**Imports run one way.** Nothing in the air layer — everything that can appear in a
+`Data` payload — imports the client layer. That includes `admin`, which is easy to
+miss: remote administration means configuration travels over the mesh, so
+`AdminMessage` is an on-air payload rather than a phone-link one, and so are the
+`config`, `module_config` and `device_ui` types it carries. Two types moved to
+make this hold: `DeviceMetadata` into `common.proto`, since both layers need it and
+it depends on nothing but `Role`, and `NodeRemoteHardwarePin` into
+`module_config.proto` beside the pin type it wraps.
+
+The benefit is that a consumer decoding only mesh traffic — an MQTT bridge, a map
+backend, an analytics pipeline — can compile the air layer and never pull in
+`FromRadio`, `ToRadio` or the storage types. It also means splitting the schema into
+separately published air and client modules stays a mechanical change if it is ever
+wanted, without paying for that split now: one module, one artifact per language,
+unchanged.
 
 Field numbering was rebuilt from scratch across every message: no holes, no reserved
 tags, counting from 1, with the fields a message actually populates placed below tag

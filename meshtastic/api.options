@@ -32,9 +32,6 @@
 *KeyVerificationFinal.remote_longname max_size:25
 *KeyVerificationFinal.verification_characters max_size:10
 
-*DeviceMetadata.firmware_version max_size:18
-*DeviceMetadata.capabilities int_size:8
-*DeviceMetadata.role int_size:8
 
 *ChunkedPayload.chunk_count int_size:16
 *ChunkedPayload.chunk_index int_size:16

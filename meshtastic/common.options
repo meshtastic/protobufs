@@ -1,2 +1,6 @@
 # nanopb options for common.proto
 # Most enums here are small and benefit from int_size:8
+
+*DeviceMetadata.firmware_version max_size:18
+*DeviceMetadata.capabilities int_size:8
+*DeviceMetadata.role int_size:8
