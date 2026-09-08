@@ -358,6 +358,41 @@ message ModuleConfig {
      * 0 disables it.
      */
     uint32 unknown_packet_threshold = 11;
+
+    /* First-seen probation window in seconds. 0 disables. Default: 300. */
+    uint32 probation_window_secs = 15;
+    /* Self-reported attester uptime floor for KNOWN_SINCE. Default: 86400. */
+    uint32 attestation_min_tenure_secs = 16;
+    /* hop_limit on rebroadcasts from a node still in probation. Default: 2. */
+    uint32 probation_max_hop_limit = 17;
+    /* Honor neighbor top_senders as a rate-budget median. 0 disables. */
+    uint32 budget_gossip_enabled = 18;
+    /* Fresh IDs in one channel×RSSI cell that share a split budget. 0 disables. */
+    uint32 group_budget_enabled = 19;
+    /* Per-sender relayed-packet budget per window. 0 disables. Default: 0. */
+    uint32 relay_budget_max_packets = 20;
+    /* Channel-util percent that caps probation broadcasts at 1 hop. 0 disables. */
+    uint32 congestion_hop_cap_pct = 21;
+    /* Honor gossiped NO_RELAY only after local over-relay. Default: 1. */
+    uint32 no_relay_requires_local_exhaustion = 22;
+    /* Distinct NO_RELAY subjects one attester may mark per window. Default: 3. */
+    uint32 no_relay_max_subjects_per_window = 23;
+    /* Lifetime of one gossiped NO_RELAY claim in seconds. Default: 120. */
+    uint32 no_relay_ttl_secs = 24;
+    /* Locally observed attester age before a vouch is accepted. Default: 86400. */
+    uint32 attestation_min_observed_secs = 25;
+    /* Times per window one attester may vouch for one subject. Default: 1. */
+    uint32 vouch_max_per_subject_per_window = 26;
+    /* Distinct subjects one attester may vouch for per window. Default: 3. */
+    uint32 vouch_max_subjects_per_window = 27;
+    /* Distinct attesters required to end probation. Default: 2. */
+    uint32 attestation_min_distinct_attesters = 28;
+    /* Seconds a promotion lasts without a renewing vouch. 0 = permanent. */
+    uint32 attestation_promotion_ttl_secs = 29;
+    /* Observed attester age for a signed L2 upgrade. Default: 2592000. */
+    uint32 attestation_l2_min_tenure_secs = 30;
+    /* Distinct NO_RELAY claimers required (or local exhaustion). Default: 2. */
+    uint32 no_relay_min_claimers = 31;
   }
 
   /*
