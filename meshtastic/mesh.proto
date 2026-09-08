@@ -2490,13 +2490,13 @@ message FromRadio {
      * mirroring is active (see AdminMessage.set_display_mirror and
      * AdminMessage.get_display_frame_request).
      */
-    DisplayFrame display_frame = 20;
+    DisplayFrame display_frame = 21;
 
     /*
      * One chunk of the color palette referenced by display_frame's
      * palette_signature (see DisplayPalette).
      */
-    DisplayPalette display_palette = 21;
+    DisplayPalette display_palette = 22;
   }
 }
 
@@ -2504,6 +2504,13 @@ message FromRadio {
  * A chunk of the device's display framebuffer, streamed to the local client
  * over BLE/serial/TCP. Frames larger than one chunk are split by byte offset;
  * a chunk with offset + data length == total_size completes the frame.
+ * This is application-level chunking of a framebuffer into several complete
+ * FromRadio messages, and is unrelated to ClientApiChunkedPayload, which
+ * splits ONE serialized FromRadio across a small BLE MTU. A frame cannot ride
+ * that wrapper: FromRadio is statically capped at MAX_TO_FROM_RADIO_SIZE, far
+ * below a full framebuffer. The two compose - a chunked-transport client
+ * receives these frames through it.
+ *
  * Chunks of one frame arrive contiguously (no other display_frame between
  * them; display_palette messages may interleave) and in offset order, so a
  * client never has to reorder. It does have to check for loss: the queue to
@@ -3041,7 +3048,7 @@ message DeviceMetadata {
    * adapt to the panel, e.g. expect slow refresh from EINK, or offer
    * tap-to-touch when has_touch is set.
    */
-  DisplayInfo display = 15;
+  DisplayInfo display = 16;
 }
 
 /*
