@@ -969,6 +969,11 @@ enum HardwareModel {
   T_CONNECT_PRO = 147;
 
   /*
+   * LilyGo T5S3 E-Paper S3 Pro
+   */
+  T5S3_E_PAPER_S3_PRO = 148;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
