@@ -2505,10 +2505,13 @@ message FromRadio {
  * over BLE/serial/TCP. Frames larger than one chunk are split by byte offset;
  * a chunk with offset + data length == total_size completes the frame.
  * Chunks of one frame arrive contiguously (no other display_frame between
- * them; display_palette messages may interleave) and in offset order
- * (FromRadio is a reliable ordered stream), so clients may reassemble into
- * a single buffer without reordering. A frame whose streaming has begun is always drained to
- * completion, even if mirroring is disabled mid-frame.
+ * them; display_palette messages may interleave) and in offset order, so a
+ * client never has to reorder. It does have to check for loss: the queue to
+ * the client drops its oldest entry when full, and a frame in flight can be
+ * truncated when mirroring is disabled. A client MUST verify that offset
+ * equals the number of bytes it has already accumulated for this frame_id,
+ * and discard the partial frame on any gap or frame_id change. An incomplete
+ * frame must never be rendered.
  */
 message DisplayFrame {
   /*
@@ -2550,10 +2553,12 @@ message DisplayFrame {
   Format format = 3;
 
   /*
-   * Frame counter, constant across the chunks of one frame so the client
-   * can detect interleaving or loss. Increments per captured frame, wraps
-   * at uint32 range, and restarts from 1 on device reboot — treat any
-   * change as "a new frame", not as an ordering guarantee.
+   * Frame counter, constant across the chunks of one frame, so a change
+   * marks the start of a new frame. It cannot reveal loss WITHIN a frame,
+   * since every chunk of that frame carries the same value; only offset
+   * contiguity can. Increments per captured frame, wraps at uint32 range,
+   * and restarts from 1 on device reboot, so treat any change as "a new
+   * frame" rather than as an ordering guarantee.
    */
   uint32 frame_id = 4;
 
@@ -3033,7 +3038,7 @@ message DeviceMetadata {
   /*
    * Describes the device's screen when one is present; absent on display-less
    * builds. Lets clients gate display-mirroring UI (see DisplayFrame) and
-   * adapt to the panel — e.g. expect slow refresh from EINK, or offer
+   * adapt to the panel, e.g. expect slow refresh from EINK, or offer
    * tap-to-touch when has_touch is set.
    */
   DisplayInfo display = 15;
