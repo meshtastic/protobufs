@@ -69,7 +69,7 @@ jobs:
   # The tag above is created with GITHUB_TOKEN, which by design does NOT fire
   # the `push: tags` trigger on the publish workflows (GitHub's recursion
   # guard). Before this, publishing depended on someone manually dispatching
-  # each publish workflow — and when that was missed, an artifact silently
+  # each publish workflow - and when that was missed, an artifact silently
   # lagged its tag (org.meshtastic:protobufs sat at 2.7.25 while v2.7.26 was
   # tagged). Invoke the publishers directly instead so every tag publishes
   # every package. publish.yml also owns the Buf schema-registry push.
