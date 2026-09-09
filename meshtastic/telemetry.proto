@@ -249,80 +249,95 @@ message EnvironmentMetrics {
    */
   optional float lightning_distance_km = 41;
 
+  reserved 42 to 56;
+  reserved "soil_ph", "ph", "electrical_conductivity", "salinity", "nitrogen",
+           "phosphorus", "potassium", "dissolved_oxygen", "orp",
+           "chemical_oxygen_demand", "turbidity", "nitrate", "ammonium",
+           "biochemical_oxygen_demand", "solar_irradiance";
+}
+
+/*
+ * Soil and water probe metrics.
+ *
+ * Chemistry reported by soil probes (RS-485/SDI-12 NPK probes) and by
+ * water-quality sondes. Split out of EnvironmentMetrics so that message stays
+ * within the mesh payload budget.
+ */
+message SoilWaterMetrics {
   /*
    * Soil pH, 0-14
    */
-  optional float soil_ph = 42;
+  optional float soil_ph = 1;
 
   /*
    * pH of water or other solution, 0-14
    */
-  optional float ph = 43;
+  optional float ph = 2;
 
   /*
    * Electrical conductivity in mS/cm
    */
-  optional float electrical_conductivity = 44;
+  optional float electrical_conductivity = 3;
 
   /*
    * Salinity in mg/l
    */
-  optional float salinity = 45;
+  optional float salinity = 4;
 
   /*
    * Nitrogen concentration in mg/kg
    */
-  optional float nitrogen = 46;
+  optional float nitrogen = 5;
 
   /*
    * Phosphorus concentration in mg/kg
    */
-  optional float phosphorus = 47;
+  optional float phosphorus = 6;
 
   /*
    * Potassium concentration in mg/kg
    */
-  optional float potassium = 48;
+  optional float potassium = 7;
 
   /*
    * Dissolved oxygen in mg/l
    */
-  optional float dissolved_oxygen = 49;
+  optional float dissolved_oxygen = 8;
 
   /*
    * Oxidation-reduction potential (ORP) in mV
    */
-  optional float orp = 50;
+  optional float orp = 9;
 
   /*
    * Chemical oxygen demand in mg/l
    */
-  optional float chemical_oxygen_demand = 51;
+  optional float chemical_oxygen_demand = 10;
 
   /*
    * Turbidity in NTU
    */
-  optional float turbidity = 52;
+  optional float turbidity = 11;
 
   /*
    * Nitrate concentration in ppm
    */
-  optional float nitrate = 53;
+  optional float nitrate = 12;
 
   /*
    * Ammonium concentration in ppm
    */
-  optional float ammonium = 54;
+  optional float ammonium = 13;
 
   /*
    * Biochemical oxygen demand in mg/l
    */
-  optional float biochemical_oxygen_demand = 55;
+  optional float biochemical_oxygen_demand = 14;
 
   /*
    * Solar irradiance in W/m^2 (distinct from the radiation field's uR/h)
    */
-  optional float solar_irradiance = 56;
+  optional float solar_irradiance = 15;
 }
 
 /*
@@ -788,6 +803,11 @@ message Telemetry {
      * Traffic management statistics
      */
     TrafficManagementStats traffic_management_stats = 9;
+
+    /*
+     * Soil and water probe metrics
+     */
+    SoilWaterMetrics soil_water_metrics = 11;
   }
 }
 
