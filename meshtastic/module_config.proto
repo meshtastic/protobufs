@@ -912,6 +912,8 @@ message ModuleConfig {
      * remote administrator cannot read the channel table and so cannot know what an index
      * resolves to. Upserted into the channel table on write: matched by name and PSK, else
      * placed in a disabled slot, else the offer is withheld. Never overwrites a live channel.
+     * A withheld offer clears broadcast_offer_region, _preset and _frequency_slot with it, so a
+     * read back returns no offer rather than one naming a channel this node does not hold.
      * ChannelIdentity is a wire-compatible subset of the ChannelSettings this tag carried in
      * v2.8.0, so a v2.8.0 client's write still decodes correctly here.
      */
@@ -930,10 +932,14 @@ message ModuleConfig {
     /*
      * Default channel for the broadcast targets, named by value. This is the remote-administration
      * path: an administrator that cannot read the channel table states the channel outright.
-     * Upserted into the channel table exactly as broadcast_offer_channel is.
+     * Upserted into the channel table as broadcast_offer_channel is, but kept when the table is
+     * full: the entries inheriting it are skipped for want of a key, never redirected elsewhere.
      * A broadcast_targets entry that sets no channel_index transmits on this channel; an entry that
      * sets one overrides it. With neither set a target uses the node's primary channel, which is
      * the meaning the v2.8.0 broadcast_on_channel had.
+     * Naming this and broadcast_offer_channel by value on 32-byte keys can put the config past what
+     * one PKC-encrypted frame carries; such a write is refused TOO_LARGE from a remote administrator
+     * and warned about, but stored, from a local client.
      */
     ChannelIdentity broadcast_on_channel = 8;
 
