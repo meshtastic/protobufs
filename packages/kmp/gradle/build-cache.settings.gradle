@@ -49,7 +49,7 @@ buildCache {
                 }
             }
             // Write only from trusted events (local dev, push to a protected
-            // branch, or the merge queue) with credentials — never from
+            // branch, or the merge queue) with credentials - never from
             // pull_request runs, so unmerged code can't poison the cache.
             def eventName = System.getenv("GITHUB_EVENT_NAME")
             def trustedForPush = eventName == null || eventName == "push" || eventName == "merge_group"

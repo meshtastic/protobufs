@@ -10,8 +10,8 @@ version = providers.gradleProperty("VERSION_NAME").orElse(
     providers.provider {
         // Fallback for local builds with no -PVERSION_NAME (CI always passes it):
         // derive a snapshot version by patch-bumping the latest git tag. Any
-        // failure — git missing, shallow/tagless clone, or an unexpected tag
-        // format — degrades to 0.0.1-SNAPSHOT instead of breaking configuration.
+        // failure - git missing, shallow/tagless clone, or an unexpected tag
+        // format - degrades to 0.0.1-SNAPSHOT instead of breaking configuration.
         val tag = runCatching {
             val process = ProcessBuilder("git", "describe", "--tags", "--abbrev=0")
                 .directory(rootDir)
@@ -102,7 +102,7 @@ wire {
 
         // Flatten oneof fields into nullable properties on the parent message
         // class instead of generating intermediate sealed classes. All consumers
-        // (Meshtastic-Android, TAKPacket-SDK) are written against this shape —
+        // (Meshtastic-Android, TAKPacket-SDK) are written against this shape -
         // e.g. `packet.decoded`, `packet.chat`, `takPacketV2.shape` are all
         // nullable top-level properties, not sealed-class arms.
         boxOneOfsMinSize = 5000

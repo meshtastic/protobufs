@@ -291,6 +291,16 @@ enum NodeFlags {
   NODE_FLAG_HAS_XEDDSA_SIGNED = 0x0200;
   /* An SNR reading has been taken, so a stored 0 means 0 dB (storage only) */
   NODE_FLAG_HAS_SNR = 0x0400;
+  /*
+   * Heard over our own radio since the current LoRa configuration took effect.
+   * Cleared for every node when the region, modem preset (or the custom
+   * bandwidth, spread factor and coding rate when use_preset is false),
+   * override_frequency, channel_num or the primary channel name changes, since
+   * the frequency slot derives from that name. Never set for a node heard only
+   * over MQTT, which reaches us over the internet rather than over the air -
+   * see NODE_FLAG_VIA_MQTT.
+   */
+  NODE_FLAG_HEARD_ON_CURRENT_LORA = 0x0800;
 }
 
 /*

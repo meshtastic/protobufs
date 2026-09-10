@@ -99,7 +99,7 @@ python tools/schema_lint.py --list-allowed                   # exemptions, with 
 
 | rule | what it rejects |
 |---|---|
-| `signed` | a plain `int32`/`int64`. A negative one sign-extends to 64 bits and costs ten bytes whatever its magnitude — the largest single encoding mistake 2.x carried. |
+| `signed` | a plain `int32`/`int64`. A negative one sign-extends to 64 bits and costs ten bytes whatever its magnitude - the largest single encoding mistake 2.x carried. |
 | `float` | a `float`/`double`. Four fixed bytes on the wire where a scaled integer is one to three, and software floating point on an MCU without an FPU. |
 | `packed` | a `repeated` scalar with no `max_count` in the matching `.options`. nanopb honours proto3 packing only for a bounded field; without the bound it emits a callback that writes a tag per element while the `.proto` still reads `repeated`. |
 | `layering` | an air-layer file importing the client layer, which is what lets an MQTT bridge or a map backend compile the air layer alone. |

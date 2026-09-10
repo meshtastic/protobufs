@@ -1,4 +1,4 @@
-# Meshtastic 3.0 Protobufs — What Changed and Why
+# Meshtastic 3.0 Protobufs - What Changed and Why
 
 Executive summary of the schema rework on the `trident` branch, which has been
 accepted as the basis for Meshtastic 3.0. The companion document,
@@ -37,7 +37,7 @@ Four consequences worth calling out:
 
 **Shared enums moved to a leaf.** `Role`, `RegionCode`, `ModemPreset`, `LocSource`
 and friends live in `common.proto`, which imports nothing. Previously an
-over-the-air message like `User` reached into `Config.DeviceConfig.Role` — a wire
+over-the-air message like `User` reached into `Config.DeviceConfig.Role` - a wire
 type depending on the entire configuration tree.
 
 **Config messages are top level.** `Config.DeviceConfig` is now `DeviceConfig`. The
@@ -45,12 +45,12 @@ wrapper existed only to carry a `oneof` for admin transport; that role is now an
 explicit `ConfigPayload`, and every other consumer gets a flat type.
 
 **The hardware enum is gone.** It grew with every new board and forced a schema pull
-request per product. `hw_model` is a packed `uint32` — vendor in the high byte,
-device in the low — and the names live in registry data files that clients ship and
+request per product. `hw_model` is a packed `uint32` - vendor in the high byte,
+device in the low - and the names live in registry data files that clients ship and
 firmware never needs. Adding a board no longer touches the schema at all.
 
-**Imports run one way.** Nothing in the air layer — everything that can appear in a
-`Data` payload — imports the client layer. That includes `admin`, which is easy to
+**Imports run one way.** Nothing in the air layer - everything that can appear in a
+`Data` payload - imports the client layer. That includes `admin`, which is easy to
 miss: remote administration means configuration travels over the mesh, so
 `AdminMessage` is an on-air payload rather than a phone-link one, and so are the
 `config`, `module_config` and `device_ui` types it carries. Two types moved to
@@ -58,8 +58,8 @@ make this hold: `DeviceMetadata` into `common.proto`, since both layers need it 
 it depends on nothing but `Role`, and `NodeRemoteHardwarePin` into
 `module_config.proto` beside the pin type it wraps.
 
-The benefit is that a consumer decoding only mesh traffic — an MQTT bridge, a map
-backend, an analytics pipeline — can compile the air layer and never pull in
+The benefit is that a consumer decoding only mesh traffic - an MQTT bridge, a map
+backend, an analytics pipeline - can compile the air layer and never pull in
 `FromRadio`, `ToRadio` or the storage types. It also means splitting the schema into
 separately published air and client modules stays a mechanical change if it is ever
 wanted, without paying for that split now: one module, one artifact per language,
@@ -76,7 +76,7 @@ tags, counting from 1, with the fields a message actually populates placed below
 The on-air header was 16 fixed bytes, and any new field meant paying for it on every
 packet forever. The 3.0 header is split by **who is allowed to write to it**:
 
-- a small **core** that relays rewrite at fixed offsets — hop limit, next hop, relay
+- a small **core** that relays rewrite at fixed offsets - hop limit, next hop, relay
 - an **extension block** that no relay may touch, and therefore cannot strip
 - an append-only **path** at the frame tail
 
@@ -92,11 +92,11 @@ replace:
 
 | profile | bytes | vs today |
 |---|--:|--:|
-| minimal — nonce, blob, tag | 5 | −11 |
+| minimal - nonce, blob, tag | 5 | −11 |
 | broadcast | 12 | −4 |
 | unicast | 16 | same |
 
-Broadcast — the dominant traffic class — gets cheaper because it stops sending four
+Broadcast - the dominant traffic class - gets cheaper because it stops sending four
 bytes of `0xFFFFFFFF` to say "everyone". Unicast reaches parity by dropping the
 channel hash, which a direct message never has: a DM is always PKI, so the byte was
 carrying one bit of information that the profile now encodes structurally.
@@ -108,7 +108,7 @@ future field costs bytes only on the packets that carry it.
 
 ## 3. Telemetry became a list of readings
 
-Four message types — environment, air quality, power, health — declared **74 fields**
+Four message types - environment, air quality, power, health - declared **74 fields**
 between them, one per quantity. The consequences were all bad:
 
 - most of the message was absent on any given node
@@ -122,14 +122,14 @@ between them, one per quantity. The consequences were all bad:
 They are replaced by one `SensorReadings` message: a list of quantities, a list of
 values, and optional per-sample times. 62 quantities cover what the 74 fields did,
 with room to grow to 127 before anything gets more expensive. The unit and scale are
-part of the quantity, so a value is always an integer and never a float — a float is
+part of the quantity, so a value is always an integer and never a float - a float is
 four fixed bytes on the wire, spends its precision on digits no sensor resolves, and
 costs software floating point on an MCU without an FPU.
 
 The layout is columnar and delta coded: the quantity set is named once, values run
 down a column per quantity as differences, and sample times are differenced twice so
-a fixed reporting cadence collapses to zeros. A column that does not move at all —
-rainfall, a lightning count, a wind vane in still air — says so in its key and is sent
+a fixed reporting cadence collapses to zeros. A column that does not move at all - 
+rainfall, a lightning count, a wind vane in still air - says so in its key and is sent
 once instead of once per sample. All of it is ordinary packed protobuf, which any
 generated decoder already reads.
 
@@ -149,7 +149,7 @@ shape, and paying the framing once per column instead of once per element is wor
 much there. `NeighborInfo` used to carry one submessage per edge, each with its own tag,
 length byte and inner field tags; as two parallel columns it is 40% smaller at ten
 neighbours and fits roughly twice as many edges in a packet. Node numbers moved to
-`fixed32` for a related reason — a NodeNum is uniformly random over 32 bits, so a varint
+`fixed32` for a related reason - a NodeNum is uniformly random over 32 bits, so a varint
 costs five bytes fifteen times in sixteen.
 
 ---
@@ -159,7 +159,7 @@ costs five bytes fifteen times in sixteen.
 A `bool` costs a tag plus a byte every time it is true. Messages had accumulated ten
 and twelve of them; `TelemetryConfig` alone carried ten. Seventeen messages now pack
 their booleans into a single integer, which is worth about 80 bytes across the
-configuration surface — bytes that live in flash on every device and travel on every
+configuration surface - bytes that live in flash on every device and travel on every
 admin exchange.
 
 The important part is not the packing but the **convention**. Bit meanings are
@@ -168,7 +168,7 @@ TypeScript, Kotlin, Swift and C# for free. Previously they lived as `#define`s i
 firmware header, invisible to every other language and kept in step by hand.
 
 That convention is enforced. `protoc` rejects two enum values sharing a *number*, but
-nothing in it knows a mask must be a single bit — `0x06` for what should be one flag
+nothing in it knows a mask must be a single bit - `0x06` for what should be one flag
 passes every standard check and silently breaks every consumer that masks with it. A
 CI job now rejects it, and a generator emits named C++ accessors that compile to
 byte-identical instructions to the hand-written mask.
@@ -178,7 +178,7 @@ byte-identical instructions to the hand-written mask.
 ## 5. Why it is still protobuf
 
 A break this size is the moment to ask whether protobuf is the right frame at all. It
-was asked, and the answer is that **the protocol was never the bottleneck — the
+was asked, and the answer is that **the protocol was never the bottleneck - the
 encoding choices inside it were.** A single `int32` to `sint32` correction recovers up
 to 150 bytes on an eight-hop traceroute, because a negative `int32` costs ten bytes
 whatever its magnitude. That is more than any realistic protocol switch would have
@@ -187,7 +187,7 @@ returned, and it was a mistake rather than a limitation.
 **ASN.1 UPER** is the theoretically correct answer for a radio link, and 3GPP uses it in
 LTE for exactly this reason: a range-constrained field packs to its true bit width, so
 an altitude bounded to −1000..8848 is 14 bits rather than a varint. Against the
-corrected protobuf the remaining gap is real but modest — roughly 7 bytes on a basic
+corrected protobuf the remaining gap is real but modest - roughly 7 bytes on a basic
 position, 18 on a traceroute, 6 on device metrics. It loses on the thing that matters
 more: with no field tags there is no forward or backward compatibility, so a node on
 older firmware receiving a newer message gets garbage rather than a partial read. A
@@ -197,11 +197,11 @@ stack, and none of them would be nanopb.
 **CBOR** keeps self-describing semantics and comparable schema evolution, but its
 map and array framing costs about a byte per message against a well-tuned protobuf, so
 it is not a density win, and no CBOR toolchain generates typed C structs the way nanopb
-does. **FlatBuffers and Cap'n Proto** are larger on the wire, not smaller — they
+does. **FlatBuffers and Cap'n Proto** are larger on the wire, not smaller - they
 serialise defaults for zero-copy access, which is the right trade at high bandwidth and
 the wrong one inside a 233-byte payload. **A bespoke bit-packed format** reaches maximum
-density and gives up schema evolution entirely, and every client — firmware, the Go
-services, the Python CLI, iOS, Android, the web — reimplements the bit-fiddling and
+density and gives up schema evolution entirely, and every client - firmware, the Go
+services, the Python CLI, iOS, Android, the web - reimplements the bit-fiddling and
 keeps it in step by hand.
 
 None of that forecloses a compact encoding where one is genuinely earned, because the
@@ -221,8 +221,8 @@ are §1.
 ## Credit
 
 Thanks to **NomDeTom** for sustained review of this work and for the idea behind the
-telemetry encoding: the delta-coded columnar layout — lay a stack of readings on its
-side and send only what changed — is his, and it is worth more than every other
+telemetry encoding: the delta-coded columnar layout - lay a stack of readings on its
+side and send only what changed - is his, and it is worth more than every other
 byte-level change here combined. His prototype takes it further with bit packing and
 resolution shifting; 3.0 ships the delta coding alone, which carries the win in plain
 protobuf.

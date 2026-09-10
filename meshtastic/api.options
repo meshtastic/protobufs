@@ -3,7 +3,7 @@
 
 *NodeInfo.channel int_size:8
 *NodeInfo.hops_away int_size:8
-# NodeFlags reaches bit 9 (NODE_FLAG_HAS_XEDDSA_SIGNED) here, so 16 bits.
+# NodeFlags reaches bit 11 (NODE_FLAG_HEARD_ON_CURRENT_LORA), so 16 bits.
 *NodeInfo.flags int_size:16
 
 *MyNodeInfo.device_id max_size:16

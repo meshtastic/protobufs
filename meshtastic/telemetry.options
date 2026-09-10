@@ -16,7 +16,8 @@
 *HostMetrics.load1 int_size:16
 *HostMetrics.load5 int_size:16
 *HostMetrics.load15 int_size:16
-*HostMetrics.user_string max_size:200
+# 161 keeps a full HostMetrics inside the 233-byte Data payload.
+*HostMetrics.user_string max_size:161
 
 # Sensor readings. The arrays sit on three different axes now: keys and sensors are
 # per quantity, time_deltas and present are per sample, values is per reading. Bounds

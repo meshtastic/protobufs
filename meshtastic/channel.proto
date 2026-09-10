@@ -82,6 +82,19 @@ message ChannelSettings {
    * Per-channel module settings.
    */
   ModuleSettings module_settings = 6;
+
+  /*
+   * Enable authenticated encryption (AES-CCM) for this channel.
+   * When true, messages carry a 12-byte authentication tag that prevents
+   * forgery and bit-flipping attacks. All nodes on the channel must have this
+   * enabled - unauthenticated (AES-CTR) packets are rejected.
+   * Default: false (standard AES-CTR encryption).
+   *
+   * This becomes redundant once the v3 header lands, which authenticates every
+   * packet against an AAD covering the immutable header fields. Until then it
+   * is the per-channel opt-in.
+   */
+  bool use_aead = 7;
 }
 
 /*
