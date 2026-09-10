@@ -107,9 +107,20 @@ wire {
         // nullable top-level properties, not sealed-class arms.
         boxOneOfsMinSize = 5000
 
-        // Skip defensive immutable copies of repeated/map fields on decode.
-        // Reduces allocations on high-frequency decode paths (mesh packets).
-        makeImmutableCopies = false
+        // Required by buildersOnly on Wire 6.4.7: with copies off, a repeated
+        // field initialises from the bare field name, which resolves to itself
+        // once the constructor takes a Builder - 32 uncompilable initialisers.
+        // Costs nothing on the hot paths, which have no repeated fields at all:
+        // MeshPacket, Data, Position, NodeInfo, Telemetry, FromRadio and ToRadio
+        // are all scalar/message only, so this touches config and bulk types.
+        makeImmutableCopies = true
+
+        // Construct through Builder only, so the generated types stay binary
+        // compatible across an added proto field. The all-args constructor and
+        // `copy()` encode every field in their signature, so a consumer compiled
+        // against a different `protobufs` version fails at runtime with
+        // NoSuchMethodError; a Builder property does not move.
+        buildersOnly = true
     }
 }
 
