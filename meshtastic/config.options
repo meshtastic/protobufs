@@ -8,6 +8,11 @@
 *NetworkConfig.ntp_server max_size:33
 *NetworkConfig.rsyslog_server max_size:33
 
+# APN is up to 100 octets per 3GPP TS 23.003
+*NetworkConfig.cell_apn max_size:101
+*NetworkConfig.cell_apn_user max_size:65
+*NetworkConfig.cell_apn_pass max_size:65
+
 # Max of three ignored nodes for our testing
 *LoRaConfig.ignore_incoming max_count:3
 
