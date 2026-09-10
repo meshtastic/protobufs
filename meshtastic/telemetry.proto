@@ -366,20 +366,20 @@ message SensorReadings {
     WATER_AMMONIUM_PPM_CENTI = 39;
 
     // --- Air Quality ---
-    /* PM1.0, standard conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
-    PM1_0_STD_UGM3_DECI = 40;
-    /* PM2.5, standard conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
-    PM2_5_STD_UGM3_DECI = 41;
-    /* PM4.0, standard conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
-    PM4_0_STD_UGM3_DECI = 42;
-    /* PM10.0, standard conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
-    PM10_0_STD_UGM3_DECI = 43;
-    /* PM1.0, ambient conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
-    PM1_0_ENV_UGM3_DECI = 44;
-    /* PM2.5, ambient conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
-    PM2_5_ENV_UGM3_DECI = 45;
-    /* PM10.0, ambient conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
-    PM10_0_ENV_UGM3_DECI = 46;
+    /* PM1.0, standard conditions centi-ug/m3 (235 = 2.35 ug/m3)*/
+    PM1_0_STD_UGM3_CENTI = 40;
+    /* PM2.5, standard conditions centi-ug/m3 (235 = 2.35 ug/m3)*/
+    PM2_5_STD_UGM3_CENTI = 41;
+    /* PM4.0, standard conditions centi-ug/m3 (235 = 2.35 ug/m3)*/
+    PM4_0_STD_UGM3_CENTI = 42;
+    /* PM10.0, standard conditions centi-ug/m3 (235 = 2.35 ug/m3)*/
+    PM10_0_STD_UGM3_CENTI = 43;
+    /* PM1.0, ambient conditions centi-ug/m3 (235 = 2.35 ug/m3)*/
+    PM1_0_ENV_UGM3_CENTI = 44;
+    /* PM2.5, ambient conditions centi-ug/m3 (235 = 2.35 ug/m3)*/
+    PM2_5_ENV_UGM3_CENTI = 45;
+    /* PM10.0, ambient conditions centi-ug/m3 (235 = 2.35 ug/m3)*/
+    PM10_0_ENV_UGM3_CENTI = 46;
 
     /* Particles at least 0.3 um (#/0.1l) */
     PARTICLES_0_3UM = 47;
