@@ -9,6 +9,18 @@ option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
 /*
+ * One of the top senders this rate window (DeviceMetrics.top_senders).
+ */
+message TopSender {
+  /* Sender node number. 0 is an unused slot. */
+  uint32 node = 1;
+  /* Packets observed this window. Saturates at 255. */
+  uint32 packets_this_window = 2;
+  /* RSSI class 0..3, or 255 if no usable reading. */
+  uint32 rssi_class = 3;
+}
+
+/*
  * Key native device metrics such as battery level
  */
 message DeviceMetrics {
@@ -36,6 +48,9 @@ message DeviceMetrics {
    * How long the device has been running since the last reboot (in seconds)
    */
   optional uint32 uptime_seconds = 5;
+
+  /* Top-3 senders this window when budget gossip is enabled. */
+  repeated TopSender top_senders = 6;
 }
 
 /*
@@ -666,6 +681,17 @@ message TrafficManagementStats {
    * Number of times router hop preservation was applied
    */
   uint32 router_hops_preserved = 7;
+
+  /* Drops while the sender was in probation and over its rate budget. */
+  uint32 probation_budget_drops = 8;
+  /* Relays skipped due to relay budget or a gossiped NO_RELAY bit. */
+  uint32 no_relay_skips = 9;
+  /* Probation windows shortened by an accepted KNOWN_SINCE vouch. */
+  uint32 attestation_promotions = 10;
+  /* NO_RELAY gossip packets this node emitted. */
+  uint32 no_relay_gossips_sent = 11;
+  /* Relays whose hop_limit was clamped by probation or congestion. */
+  uint32 relay_hop_caps_applied = 12;
 }
 
 /*

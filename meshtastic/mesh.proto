@@ -1583,6 +1583,28 @@ message StatusMessage {
 }
 
 /*
+ * Greylist gossip on ID_ATTESTATION_APP (80). One record per packet.
+ * Unsigned on mixed meshes; signed vouches are a later trust-ladder step.
+ */
+message IdAttestation {
+  enum Kind {
+    UNSPECIFIED = 0;
+    /* End a subject's probation window. */
+    KNOWN_SINCE = 1;
+    /* Stop relaying subject this window; still deliver locally. */
+    NO_RELAY = 2;
+  }
+
+  Kind kind = 1;
+  /* Node the record is about. 0 is ignored. */
+  uint32 subject = 2;
+  /* KNOWN_SINCE: last-heard truncated to the hour; 0 means no clock. */
+  uint32 known_since_secs = 3;
+  /* KNOWN_SINCE: attester uptime in seconds; 0 means no clock. */
+  uint32 attester_tenure_secs = 4;
+}
+
+/*
  * This message will be proxied over the PhoneAPI for the client to deliver to the MQTT server
  */
 message MqttClientProxyMessage {

@@ -282,6 +282,12 @@ enum PortNum {
   LORA_OTA_APP = 79;
 
   /*
+   * ID attestation / greylist gossip. Carries IdAttestation: KNOWN_SINCE
+   * promotion or a gossiped NO_RELAY bit. ENCODING: nanopb IdAttestation.
+   */
+  ID_ATTESTATION_APP = 80;
+
+  /*
    * GroupAlarm integration
    * Used for transporting GroupAlarm-related messages between Meshtastic nodes
    * and companion applications/services.
