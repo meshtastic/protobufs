@@ -250,10 +250,7 @@ message EnvironmentMetrics {
   optional float lightning_distance_km = 41;
 
   reserved 42 to 56;
-  reserved "soil_ph", "ph", "electrical_conductivity", "salinity", "nitrogen",
-           "phosphorus", "potassium", "dissolved_oxygen", "orp",
-           "chemical_oxygen_demand", "turbidity", "nitrate", "ammonium",
-           "biochemical_oxygen_demand", "solar_irradiance";
+  reserved "soil_ph", "ph", "electrical_conductivity", "salinity", "nitrogen", "phosphorus", "potassium", "dissolved_oxygen", "orp", "chemical_oxygen_demand", "turbidity", "nitrate", "ammonium", "biochemical_oxygen_demand", "solar_irradiance";
 }
 
 /*
