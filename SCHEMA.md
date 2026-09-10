@@ -1,7 +1,9 @@
 # Meshtastic 3.0 Protobufs — Developer Reference
 
-Conventions and encodings for anyone implementing against this schema. For why the
-rework happened, see [OVERVIEW.md](OVERVIEW.md).
+Conventions and encodings for anyone implementing against this schema. It is the
+accepted 3.0 schema rather than a proposal, so the rules below are what a client has
+to follow, not options under discussion. For why the rework happened, see
+[OVERVIEW.md](OVERVIEW.md).
 
 Everything here is a hard break from 2.x. Field numbers, message shapes and encodings
 all changed; nothing decodes across the boundary, and nothing is expected to.
@@ -452,6 +454,17 @@ Carried over from the 2.x notes and still open:
 - **`PositionLite` and `NodeInfoLite`** remain separate from `Position` and
   `NodeInfo`. Collapsing each pair is the same "one canonical representation"
   argument that retired the legacy nodedb types, and has not been settled.
+- **The v3 header's unsettled decisions.** Four choices in §8 were deferred rather
+  than made, and the firmware half cannot land without them. The nonce width in
+  profile 0: four bytes gives a birthday collision around 2^16 packets on a private
+  net, which may or may not be enough. Whether the mutable path records NodeNum
+  suffixes (one byte, collision-prone, matching today's `relay_node`) or full NodeNums
+  (four bytes, unaffordable). Whether `channel` stays a full byte on the broadcast
+  profiles, since a six-bit hash frees two bits at the cost of more decode attempts.
+  And whether there is a "critical extension" bit, IPv6 hop-by-hop style, letting a
+  future field say "drop me if you do not understand me" — it contradicts the rule
+  that a relay never has to understand the extension block, so it is currently absent
+  by omission rather than by decision.
 - **Tag ordering in the large messages.** Which fields deserve tags 1–15 was decided
   on judgement rather than on measured traffic. It costs most in `AdminMessage`, where
   the whole config write path — `set_owner`, `set_channel`, `set_config`,

@@ -1,6 +1,7 @@
 # Meshtastic 3.0 Protobufs — What Changed and Why
 
-Executive summary of the `trident` schema rework. The companion document,
+Executive summary of the schema rework on the `trident` branch, which has been
+accepted as the basis for Meshtastic 3.0. The companion document,
 [SCHEMA.md](SCHEMA.md), is the developer reference: conventions, encodings and the
 rules a client has to follow.
 
