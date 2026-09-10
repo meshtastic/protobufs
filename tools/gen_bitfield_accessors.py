@@ -2,7 +2,7 @@
 """Generate named C++ accessors for the schema's packed bitfields.
 
 Packed booleans live in the schema as an enum of hex masks beside a uint32 field
-(see the Bitfield Convention in ARCHITECTURE.md). That gets the bit meanings into
+(see the Bitfields section in SCHEMA.md). That gets the bit meanings into
 every generated language for free, but firmware still has to write `n->flags &
 MASK` by hand, which is where bit-assignment bugs come from.
 

@@ -387,11 +387,25 @@ Three regions, split by who may write to them.
 mapping to a drop — the profile field is attacker-controlled, so a partial `switch`
 with a fallthrough is a vulnerability.
 
-| # | profile | bytes |
-|--:|---|--:|
-| 0 | minimal — `ctrl` + nonce | 5 |
-| 2 | broadcast | 12 |
-| 3 | unicast | 16 |
+| # | profile | fields | bytes |
+|--:|---|---|--:|
+| 0 | `MINIMAL` | `ctrl nonce4` | 5 |
+| 1 | `BCAST` **(tbd)** | `ctrl flags from4 id4 ch` | 11 |
+| 2 | `BCAST_R` | `ctrl flags from4 id4 ch relay` | 12 |
+| 3 | `UNICAST` | `ctrl flags from4 id4 ch relay to4 next_hop` | 16 |
+| 4–6 | reserved **(tbd)** | | |
+| 7 | `EXT_CORE` **(tbd)** | TLV core, endpoints only | |
+| | today's fixed `PacketHeader` | | 16 |
+
+Three profiles ship: 0, 2 and 3. **(tbd)** marks the ones the design defines but the
+first release does not implement — 1 saves a byte over 2 by omitting the relay field,
+which only pays on a mesh dense enough that most broadcasts are never relayed, and 7 is
+the escape hatch for a core that outgrows a fixed table. Both need their `CORE_LEN`
+entries mapping to a drop until they exist, along with 4 to 6, for the reason above.
+
+**The expandable header is smaller than the fixed one on the dominant traffic class.**
+A broadcast `to` is four bytes of `0xFFFFFFFF` today, and the profile encodes it in
+zero bits, so expandability pays for itself before a single extension is added.
 
 Unicast carries no channel hash: a PSK is a channel key, so PSK traffic is inherently
 broadcast, and a DM is exclusively PKI — signed but unencrypted in HAM mode, encrypted

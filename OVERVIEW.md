@@ -175,6 +175,49 @@ byte-identical instructions to the hand-written mask.
 
 ---
 
+## 5. Why it is still protobuf
+
+A break this size is the moment to ask whether protobuf is the right frame at all. It
+was asked, and the answer is that **the protocol was never the bottleneck — the
+encoding choices inside it were.** A single `int32` to `sint32` correction recovers up
+to 150 bytes on an eight-hop traceroute, because a negative `int32` costs ten bytes
+whatever its magnitude. That is more than any realistic protocol switch would have
+returned, and it was a mistake rather than a limitation.
+
+**ASN.1 UPER** is the theoretically correct answer for a radio link, and 3GPP uses it in
+LTE for exactly this reason: a range-constrained field packs to its true bit width, so
+an altitude bounded to −1000..8848 is 14 bits rather than a varint. Against the
+corrected protobuf the remaining gap is real but modest — roughly 7 bytes on a basic
+position, 18 on a traceroute, 6 on device metrics. It loses on the thing that matters
+more: with no field tags there is no forward or backward compatibility, so a node on
+older firmware receiving a newer message gets garbage rather than a partial read. A
+mesh runs mixed firmware permanently. Every language would also need its own ASN.1
+stack, and none of them would be nanopb.
+
+**CBOR** keeps self-describing semantics and comparable schema evolution, but its
+map and array framing costs about a byte per message against a well-tuned protobuf, so
+it is not a density win, and no CBOR toolchain generates typed C structs the way nanopb
+does. **FlatBuffers and Cap'n Proto** are larger on the wire, not smaller — they
+serialise defaults for zero-copy access, which is the right trade at high bandwidth and
+the wrong one inside a 233-byte payload. **A bespoke bit-packed format** reaches maximum
+density and gives up schema evolution entirely, and every client — firmware, the Go
+services, the Python CLI, iOS, Android, the web — reimplements the bit-fiddling and
+keeps it in step by hand.
+
+None of that forecloses a compact encoding where one is genuinely earned, because the
+architecture already has the escape hatch: `PortNum` discriminates the payload encoding
+while the outer frame stays protobuf. Unishox2-compressed text and raw Codec2 audio
+both already travel that way. A message whose schema is stable and whose every byte
+matters can take a dedicated inner encoding inside `Data.payload` without touching the
+frame or breaking a single client.
+
+For flash storage the question barely arises. Flash is megabytes against a 233-byte air
+budget, schema evolution is what makes a firmware update survive a config change, and
+nanopb decodes straight into typed C structs. The wins there were structural, and they
+are §1.
+
+---
+
 ## Credit
 
 Thanks to **NomDeTom** for sustained review of this work and for the idea behind the
