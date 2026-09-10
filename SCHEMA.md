@@ -515,6 +515,51 @@ extension bit**: a field that can tell a relay to drop a packet it does not unde
 contradicts the one property the extension block exists to guarantee, so its absence is
 now a decision rather than an omission.
 
+### The extension block
+
+`ext` is a length byte followed by that many bytes of an encoded `HeaderExt`.
+
+```
+   ext_len (1) || <ext_len bytes of encoded HeaderExt>
+```
+
+It is not a bespoke TLV. It is an ordinary protobuf message in `wire.proto`, encoded
+with the nanopb already in the tree:
+
+```proto
+message HeaderExt {
+  /* Fragmentation state, packed as msg_id(8) | index(4) | total(4). */
+  uint32 fragment = 1;
+
+  /* An explicit path supplied by the endpoint, one NodeNum suffix per hop. */
+  bytes source_route = 2;
+}
+```
+
+Being real protobuf is the whole point. Unknown fields skip by protobuf's own rules,
+so a relay carrying a field its build has never heard of needs no new code. Third-party
+MQTT consumers decode it with generated code in every language. Field numbering and
+deprecation work as they do everywhere else.
+
+**Tags 1 to 15 are the hop-by-hop budget.** They cost a one-byte key and are the only
+ones a relay may ever read; an unknown one is forwarded verbatim and never acted on.
+Tags 16 and above cost two bytes and are end-to-end, so a relay has no business looking
+at them at all. Both current fields sit in the cheap range.
+
+What it costs, including the length byte:
+
+| ext block content | bytes |
+|---|--:|
+| none | 0 |
+| fragmentation state | 5 |
+| one future `uint16` field | 5 |
+| eight future bools as one bitfield | 4 |
+| fragment plus a 4-hop source route | 11 |
+
+A future field a relay carries blind costs **five bytes on the packets that carry it
+and nothing on the rest**. Growing the fixed header by one field instead costs every
+packet forever. That asymmetry is the argument for the whole design.
+
 **The relay fast path** is a version check, a table lookup and one bounds check. No
 loop over attacker-controlled bytes, and the TLV parse happens only in endpoints after
 AEAD verification.
