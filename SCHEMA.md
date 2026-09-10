@@ -533,6 +533,11 @@ Open work, and decisions deliberately not yet made.
 
 - **`DeviceState` is two files.** The static half and `DeviceStateVolatile` have to be
   saved and versioned separately, or the split buys nothing and the flash wear stays.
+- **`DeviceStateVolatile.receive_queue` is not implemented.** `NodeDB.cpp` zeroes the
+  count with a `FIXME`, and the only other reference is a commented-out `MAX_RX_TOPHONE`
+  in `mesh-pb-constants.h`. It is the sole field in the volatile half, so until it is
+  built that file is never written and the split has nothing to separate. Either
+  implement the queue or fold the message back into `DeviceState`.
 - **`RemoteHardware` authorisation.** `RemoteHardwareConfig.authorized_key` exists;
   the module must reject a `HardwareMessage` that did not arrive as a PKI direct
   message from a listed key, the way `AdminMessage` already does. Until that lands the
