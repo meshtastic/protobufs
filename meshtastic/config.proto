@@ -483,6 +483,12 @@ message Config {
     uint32 device_battery_ina_address = 9;
 
     /*
+     * Open circuit voltage array (in millivolts) for battery percentage estimation.
+     * Provide NUM_OCV_POINTS entries from full to empty. If unset, device defaults are used.
+     */
+    repeated uint32 ocv = 10;
+
+    /*
      * If non-zero, we want powermon log outputs.  With the particular (bitfield) sources enabled.
      * Note: we picked an ID of 32 so that lower more efficient IDs can be used for more frequently used options.
      */
