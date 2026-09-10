@@ -396,45 +396,113 @@ same form for latitude and longitude.**
 
 ## 8. The v3 header
 
-Three regions, split by who may write to them.
+The header is three regions, split by who may write to them rather than by what the
+fields mean. A relay rewrites only the mutable tail; everything before it is covered by
+the AEAD's additional authenticated data and cannot be touched in flight.
 
 ```
-        immutable (in AAD)            mutable
-   +---------------------------+   +-----------+
- | ctrl |flags| from | id | to | ch | ext |   | ciphertext |  path
- |  1   |  1  |  4   |  4 |0/4 | 1  | 1+n |   |   + tag    | 0..7
-   ^                            ^
-   +-- version, profile,        +-- protobuf HeaderExt, opaque to relays
-       hop limit (mutable)
+   +-----+-----+------+------+------+------+-------+   +------------+------+
+   |ctrl |flags| from |  id  |  to  | chan |  ext  |   | ciphertext | path |
+   |  1  |  1  |  4   |  4   | 0/4  | 0/1  |  1+n  |   |   + tag    | 0..7 |
+   +-----+-----+------+------+------+------+-------+   +------------+------+
+   |                                               |   |                   |
+   +------- immutable, covered by the AAD ---------+   +----- mutable -----+
+     |                                       |                        |
+     |                                       |                        +-- append-only,
+     |                                       |                            one byte per hop
+     |                                       +-- length-prefixed HeaderExt,
+     |                                           a real protobuf message
+     +-- version and profile, plus a mutable hop_limit excluded from the AAD
 ```
 
-**Profiles.** `CORE_LEN` must be a complete 8-entry table with reserved profiles
-mapping to a drop - the profile field is attacker-controlled, so a partial `switch`
-with a fallthrough is a vulnerability.
+Which of `to` and `chan` are present is what the profile selects. `ext` is absent when
+the length byte is zero.
+
+### The two always-present bytes
+
+`ctrl` is the one byte whose meaning can never change, because it is what says how to
+read everything after it.
+
+```
+     7  6      5   4  3      2   1  0
+   +-------+ +-----------+ +-----------+
+   |  ver  | | hop_limit | |  profile  |
+   +-------+ +-----------+ +-----------+
+       |           |             |
+       |           |             +-- selects the core layout, 8 values
+       |           +-- 0..7, MUTABLE, canonicalised to zero in the AAD
+       +-- 00 = v3. A major break uses the PHY syncword, not this field.
+```
+
+`flags` is present on profiles 1 to 3.
+
+```
+     7   6  5      4     3      2     1      0
+   +-----------+ +---+ +----+ +---+ +----+ +---+
+   | hop_start | |ack| |mqtt| |ext| |path| |rsv|
+   +-----------+ +---+ +----+ +---+ +----+ +---+
+                   |     |      |     |      |
+                   |     |      |     |      +-- reserved, must be 0
+                   |     |      |     +-- a path tail follows the ciphertext
+                   |     |      +-- an ext block is present
+                   |     +-- via_mqtt, MUTABLE, gateway-set, excluded from the AAD
+                   +-- want_ack
+```
+
+### Profiles
+
+`CORE_LEN` must be a complete 8-entry table with reserved profiles mapping to a drop -
+the profile field is attacker-controlled, so a partial `switch` with a fallthrough is a
+vulnerability.
 
 | # | profile | fields | bytes |
 |--:|---|---|--:|
 | 0 | `MINIMAL` | `ctrl nonce4` | 5 |
-| 1 | `BCAST` **(tbd)** | `ctrl flags from4 id4 ch` | 11 |
-| 2 | `BCAST_R` | `ctrl flags from4 id4 ch relay` | 12 |
-| 3 | `UNICAST` | `ctrl flags from4 id4 ch relay to4 next_hop` | 16 |
+| 1 | `BCAST` **(tbd)** | `ctrl flags from4 id4 chan` | 11 |
+| 2 | `BCAST_R` | `ctrl flags from4 id4 chan relay` | 12 |
+| 3 | `UNICAST` | `ctrl flags from4 id4 to4 relay next_hop` | 16 |
 | 4-6 | reserved **(tbd)** | | |
 | 7 | `EXT_CORE` **(tbd)** | TLV core, endpoints only | |
 | | today's fixed `PacketHeader` | | 16 |
 
-Three profiles ship: 0, 2 and 3. **(tbd)** marks the ones the design defines but the
-first release does not implement - 1 saves a byte over 2 by omitting the relay field,
-which only pays on a mesh dense enough that most broadcasts are never relayed, and 7 is
-the escape hatch for a core that outgrows a fixed table. Both need their `CORE_LEN`
-entries mapping to a drop until they exist, along with 4 to 6, for the reason above.
+```
+profile 0  MINIMAL   no addressing at all        5 bytes
+     0     1     2     3     4
+  +-----+-----------------------+
+  | ctrl|       nonce (4)       |
+  +-----+-----------------------+
+
+profile 1  BCAST     broadcast, never relayed   11 bytes
+     0     1     2     3     4     5     6     7     8     9     10
+  +-----+-----+-----------------------+-----------------------+-----+
+  | ctrl|flags|        from (4)       |         id (4)        | chan|
+  +-----+-----+-----------------------+-----------------------+-----+
+
+profile 2  BCAST_R   broadcast, relayed         12 bytes
+     0     1     2     3     4     5     6     7     8     9     10    11
+  +-----+-----+-----------------------+-----------------------+-----+-----+
+  | ctrl|flags|        from (4)       |         id (4)        | chan|relay|
+  +-----+-----+-----------------------+-----------------------+-----+-----+
+
+profile 3  UNICAST   addressed, PKI only        16 bytes
+     0     1     2     3     4     5     6     7     8     9     10    11    12    13    14    15
+  +-----+-----+-----------------------+-----------------------+-----------------------+-----+-----+
+  | ctrl|flags|        from (4)       |         id (4)        |         to (4)        |relay| nhop|
+  +-----+-----+-----------------------+-----------------------+-----------------------+-----+-----+
+```
+
+`nhop` is `next_hop`, and both it and `relay` carry the last byte of a NodeNum rather
+than the whole thing. Profiles 4 to 6 have no layout because they are unallocated, and
+7 has none because its core is a TLV read only by endpoints.
 
 **The expandable header is smaller than the fixed one on the dominant traffic class.**
-A broadcast `to` is four bytes of `0xFFFFFFFF` today, and the profile encodes it in
-zero bits, so expandability pays for itself before a single extension is added.
+A broadcast `to` is four bytes of `0xFFFFFFFF` today, and the broadcast profiles encode
+it in zero bits, so expandability pays for itself before a single extension is added.
 
-Unicast carries no channel hash: a PSK is a channel key, so PSK traffic is inherently
-broadcast, and a DM is exclusively PKI - signed but unencrypted in HAM mode, encrypted
-otherwise.
+**Unicast carries no channel hash.** A PSK is a channel key, so PSK traffic is
+inherently broadcast, and a DM is exclusively PKI - signed but unencrypted in HAM mode,
+encrypted otherwise. That is what buys back the byte `ctrl` costs and lands profile 3
+at exactly today's 16.
 
 **Four choices the design left open are settled.** The profile 0 nonce is **four
 bytes**: it collides at around 2^16 packets on a private net, which is above what a
