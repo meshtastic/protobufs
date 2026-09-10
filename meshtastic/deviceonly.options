@@ -2,8 +2,11 @@
 # https://jpa.kapsi.fi/nanopb/docs/reference.html#proto-file-options
 
 # This array IS the channel count. mesh-pb-constants.h derives MAX_NUM_CHANNELS
-# from sizeof(channels) / sizeof(channels[0]), so 16 here is what makes the
-# device a 16-channel device. 1096 bytes of RAM at 16, against 552 at 8.
+# from sizeof(channels) / sizeof(channels[0]), so the number here is what makes
+# the device a 16-channel device. 1096 bytes of RAM at 16, against 552 at 8 and
+# 1640 at 24. Firmware fills the array to capacity, so every node pays for all
+# sixteen whether it uses them or not - see the dynamic allocation note in
+# SCHEMA.md section 10.
 *ChannelFile.channels max_count:16
 
 *DeviceState.node_remote_hardware_pins max_count:12

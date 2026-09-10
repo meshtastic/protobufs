@@ -543,10 +543,18 @@ Open work, and decisions deliberately not yet made.
 - **Sixteen channels.** `MAX_NUM_CHANNELS` is not a firmware constant: `mesh-pb-constants.h`
   derives it from `sizeof(ChannelFile.channels) / sizeof(channels[0])`, so the count is set
   by `*ChannelFile.channels max_count` in `deviceonly.options` and by nothing else. It is
-  now 16, with `ChannelSet.settings` matched to it. `ChannelFile` costs 1096 bytes of RAM
-  at 16 against 552 at 8. `Channels.cpp` carries a `static_assert(MAX_NUM_CHANNELS == 8)`
+  16, with `ChannelSet.settings` matched to it. `ChannelFile` costs 1096 bytes of RAM at
+  16 against 552 at 8. `Channels.cpp` carries a `static_assert(MAX_NUM_CHANNELS == 8)`
   guarding a `userPrefs` switch that covers indices 0 to 7; that switch has to grow before
   the firmware will build.
+- **Channel storage should be allocated dynamically.** `Channels.cpp` sets
+  `channels_count = MAX_NUM_CHANNELS` and `NodeDB.cpp` validates that it equals the
+  maximum, so the table is always full: a node using two channels holds sixteen records
+  and pays 1096 bytes for them. A node should hold the channels it has. Note that this
+  is not purely a firmware change - `MAX_NUM_CHANNELS` is derived from
+  `sizeof(ChannelFile.channels)`, so a pointer-based field removes the thing that
+  defines it, and the limit has to be declared somewhere rather than inferred.
+  16 is the cap chosen for the fixed array; it is not a reason to keep one.
 - **The channel role enum is gone.** Index 0 is the primary channel and an absent
   `settings` disables one, so firmware and clients that switched on `Channel.role`
   need to read position and presence instead.
