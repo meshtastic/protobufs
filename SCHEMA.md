@@ -201,6 +201,11 @@ have been ten times finer than any of them, paid for on every sample of a column
 moves. Voltage in millivolts and pressure in pascals go the other way and are right for
 it — those are the hardware quanta.
 
+One field is exempt: `Nau7802Config.calibrationFactor` stays a `float`, because a
+load cell calibration factor is a scale rather than a reading, and quantising a scale
+quantises everything derived from it. The driver API is `float` on both sides, so a
+scaled integer would add two conversions and remove none.
+
 If a quantity ever needs finer resolution, its enum value gets a finer scale. The
 encoding never varies per reading.
 
@@ -446,6 +451,18 @@ probability is what kills you (a 7-fragment message is 48% likely to arrive whol
 validates every mask and generates header-only C++ accessors. CI runs the validation
 half on every pull request; header emission belongs downstream in firmware, which
 vendors this repo as a submodule. See `tools/README.md`.
+
+`tools/schema_lint.py` checks four of the rules stated above that nothing else can
+see: no plain `int32`/`int64` (§4), no `float`/`double` (§4), a `max_count` on every
+`repeated` scalar (§5), and no air-layer file importing the client layer (§1). A
+violation of any of them builds and lints clean, which is why each has been introduced
+at least once. It runs in the same CI job as the mask validation, and its two
+exemptions carry their reasons in the source.
+
+`tools/wire_size.py` computes what the 3.0 encoding costs against the 2.x shape for the
+messages whose encoding changed. It is a documentation generator, not a test: the field
+numbers in it are written down rather than read from the schema, so it cannot notice a
+regression. `schema_lint.py` is the one that can.
 
 `buf breaking` will fail against the registry baseline. That is the intended 3.0
 break, not a regression.

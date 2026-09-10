@@ -23,14 +23,18 @@ jobs:
           lint: true
           breaking: true
 
-  bitfields:
-    name: Bitfield masks
+  schema:
+    name: Schema rules
     runs-on: ubuntu-latest
 
-    # Packed booleans are declared as an enum of hex masks beside a uint32 field.
-    # protoc rejects two enum values sharing a *number*, but nothing in buf lint
-    # knows a mask must be a single bit, so 0x06 for what should be one flag passes
-    # every other check and silently breaks every consumer that masks with it.
+    # Rules the schema documents as invariants that buf lint cannot see. Packed
+    # booleans are an enum of hex masks beside a uint32 field, and protoc rejects
+    # two enum values sharing a *number* but does not know a mask must be a single
+    # bit, so 0x06 for what should be one flag passes every other check and
+    # silently breaks every consumer that masks with it. The same is true of a
+    # plain int32 that can go negative, a float where a scaled integer belongs, a
+    # repeated field with no nanopb bound, and an air-layer file reaching into the
+    # client layer: all four build and lint clean.
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -45,8 +49,13 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Validate bitfield masks
+      - name: Build descriptor
         run: |
           pip install --quiet protobuf
           buf build -o descriptor.binpb
-          python tools/gen_bitfield_accessors.py descriptor.binpb --check
+
+      - name: Validate bitfield masks
+        run: python tools/gen_bitfield_accessors.py descriptor.binpb --check
+
+      - name: Check schema rules
+        run: python tools/schema_lint.py descriptor.binpb

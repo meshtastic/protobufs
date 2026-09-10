@@ -84,6 +84,42 @@ read the descriptor - nothing at firmware build time does.
 
 ---
 
+## Schema rules
+
+`schema_lint.py` checks four rules the schema reference states as invariants and that
+nothing else enforces. Each has been broken at least once without anyone noticing,
+because a violation of any of them builds and lints clean.
+
+```sh
+buf build -o descriptor.binpb
+python tools/schema_lint.py descriptor.binpb
+python tools/schema_lint.py descriptor.binpb --rule packed   # one rule
+python tools/schema_lint.py --list-allowed                   # exemptions, with reasons
+```
+
+| rule | what it rejects |
+|---|---|
+| `signed` | a plain `int32`/`int64`. A negative one sign-extends to 64 bits and costs ten bytes whatever its magnitude — the largest single encoding mistake 2.x carried. |
+| `float` | a `float`/`double`. Four fixed bytes on the wire where a scaled integer is one to three, and software floating point on an MCU without an FPU. |
+| `packed` | a `repeated` scalar with no `max_count` in the matching `.options`. nanopb honours proto3 packing only for a bounded field; without the bound it emits a callback that writes a tag per element while the `.proto` still reads `repeated`. |
+| `layering` | an air-layer file importing the client layer, which is what lets an MQTT bridge or a map backend compile the air layer alone. |
+
+The first two read the descriptor; the last two read the `.proto` and `.options` files,
+since nanopb options do not reach the descriptor buf emits.
+
+Exemptions live in `ALLOWED` and carry their reason, so an entry is a decision on the
+record rather than a way to quieten the rule. There are two: `Nau7802Config.calibrationFactor`
+stays a `float` because quantising a calibration scale quantises every reading derived
+from it, and `resend_chunks.chunks` stays a callback because a resend list has no natural
+bound.
+
+Wired into CI as the `Schema rules` job in `.github/workflows/pull_request.yml`, beside
+the bitfield check and for the same reason: these are properties of the schema, not of
+any one generated language, so a Kotlin or Swift consumer is broken by them exactly as
+firmware is.
+
+---
+
 ## Wire size
 
 `wire_size.py` computes what the 3.0 encoding costs against the 2.x shape it replaced,

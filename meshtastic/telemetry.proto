@@ -865,9 +865,12 @@ enum TelemetrySensorType {
  */
 message Nau7802Config {
   /*
-   * The offset setting for the NAU7802
+   * The offset setting for the NAU7802.
+   *
+   * sint32 because a tare against a 24-bit ADC is routinely negative, and a
+   * negative plain int32 costs ten bytes whatever its magnitude.
    */
-  int32 zeroOffset = 1;
+  sint32 zeroOffset = 1;
 
   /*
    * The calibration factor for the NAU7802

@@ -44,3 +44,6 @@
 *SensorReadings.present int_size:32
 *SensorReadings.sensors max_count:16
 *SensorReadings.sensors int_size:8
+
+# A 24-bit ADC tare, signed: needs the full width.
+*Nau7802Config.zeroOffset int_size:32

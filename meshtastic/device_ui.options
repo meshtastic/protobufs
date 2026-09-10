@@ -8,6 +8,8 @@
 *NodeFilter.hops_away int_size:8
 *NodeFilter.channel int_size:8
 *NodeHighlight.node_name max_size:16
+# latitude and longitude are sfixed32: the wire type fixes the width, so no
+# int_size applies to them.
 *GeoPoint.zoom int_size:8
 *Map.style max_size:20
 
