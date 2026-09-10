@@ -256,11 +256,13 @@ message SensorReadings {
    * ever needs finer resolution, its enum value gets a finer scale; the encoding
    * never changes per reading.
    *
+   * Fields of measurement (AIR, WATER, SOIL, and more) are prefixes to the metric
+   * to indicate the field of application. This is important to distinguish between different
+   * fields and explicitly express what each quantity refers to.
+   *
    * Where a quantity is measured by several sensors on one node - air temperature
    * from the BME280, the SCD4X and the PM sensor - use one quantity and distinguish
-   * them by ordinal, optionally naming each in `sensors`. Only a genuinely different
-   * measurand gets its own quantity, which is why soil and body temperature are
-   * separate from air temperature.
+   * them by ordinal, optionally naming each in `sensors`.
    */
   enum Quantity {
     /* Not set; never valid in a key */
@@ -268,15 +270,29 @@ message SensorReadings {
 
     // --- Atmosphere ---
     /* Air temperature, centi-degrees Celsius (2350 = 23.50 C) */
-    TEMPERATURE_C_CENTI = 1;
+    AIR_TEMPERATURE_C_CENTI = 1;
     /* Relative humidity, centi-percent (6550 = 65.50 %) */
-    HUMIDITY_PCT_CENTI = 2;
+    AIR_HUMIDITY_PCT_CENTI = 2;
     /* Barometric pressure, pascals (101325) */
-    PRESSURE_PA = 3;
-    /* Gas resistance, kilo-ohms */
-    GAS_RESISTANCE_KOHM = 4;
-    /* Indoor air quality index, 0..500 */
-    IAQ = 5;
+    AIR_PRESSURE_PA = 3;
+    /* Wind direction, degrees true, 0..359 */
+    WIND_DIRECTION_DEG = 4;
+    /* Wind speed, centimetres per second */
+    WIND_SPEED_CMS = 5;
+    /* Wind gust, centimetres per second */
+    WIND_GUST_CMS = 6;
+    /* Wind lull, centimetres per second */
+    WIND_LULL_CMS = 7;
+    /* Rainfall in the last hour, millimetres */
+    RAINFALL_1H_MM = 8;
+    /* Rainfall in the last 24 hours, millimetres */
+    RAINFALL_24H_MM = 9;
+    /* Ionising radiation, microroentgen per hour */
+    RADIATION_URH = 10;
+    /* Lightning strikes detected in the last hour */
+    LIGHTNING_STRIKES_1H = 11;
+    /* Distance to the leading edge of the storm, kilometres */
+    LIGHTNING_DISTANCE_KM = 12;
 
     // --- Light ---
     /*
@@ -288,142 +304,145 @@ message SensorReadings {
      * multiplies every delta by ten for it, which costs a byte per sample on a
      * column that moves at all.
      */
-    ILLUMINANCE_LUX_DECI = 6;
+    ILLUMINANCE_LUX_DECI = 13;
     /* White-channel illuminance, deci-lux */
-    ILLUMINANCE_WHITE_LUX_DECI = 7;
+    ILLUMINANCE_WHITE_LUX_DECI = 14;
     /* Infrared illuminance, deci-lux */
-    ILLUMINANCE_IR_LUX_DECI = 8;
+    ILLUMINANCE_IR_LUX_DECI = 15;
     /* Ultraviolet illuminance, deci-lux */
-    ILLUMINANCE_UV_LUX_DECI = 9;
+    ILLUMINANCE_UV_LUX_DECI = 16;
     /* Solar irradiance, watts per square metre */
-    SOLAR_IRRADIANCE_WM2 = 10;
-
-    // --- Wind and rain ---
-    /* Wind direction, degrees true, 0..359 */
-    WIND_DIRECTION_DEG = 11;
-    /* Wind speed, centimetres per second */
-    WIND_SPEED_CMS = 12;
-    /* Wind gust, centimetres per second */
-    WIND_GUST_CMS = 13;
-    /* Wind lull, centimetres per second */
-    WIND_LULL_CMS = 14;
-    /* Rainfall in the last hour, millimetres */
-    RAINFALL_1H_MM = 15;
-    /* Rainfall in the last 24 hours, millimetres */
-    RAINFALL_24H_MM = 16;
+    SOLAR_IRRADIANCE_WM2 = 17;
 
     // --- Electrical ---
     /* Voltage, millivolts. Ordinal selects the channel. */
-    VOLTAGE_MV = 17;
+    VOLTAGE_MV = 18;
     /* Current, milliamps, negative when discharging. Ordinal selects the channel. */
-    CURRENT_MA = 18;
+    CURRENT_MA = 19;
+    /* Voltage, high-resolution microvolts. Ordinal selects the channel. */
+    VOLTAGE_UV = 20;
 
-    // --- Ranging and mass ---
+    // --- Distance and mass ---
     /* Distance, millimetres */
-    DISTANCE_MM = 19;
+    DISTANCE_MM = 21;
     /* Weight, grams */
-    WEIGHT_G = 20;
-
-    // --- Radiation and lightning ---
-    /* Ionising radiation, microroentgen per hour */
-    RADIATION_URH = 21;
-    /* Lightning strikes detected in the last hour */
-    LIGHTNING_STRIKES_1H = 22;
-    /* Distance to the leading edge of the storm, kilometres */
-    LIGHTNING_DISTANCE_KM = 23;
+    WEIGHT_G = 22;
 
     // --- Soil ---
     /* Soil temperature, centi-degrees Celsius */
-    SOIL_TEMPERATURE_C_CENTI = 24;
+    SOIL_TEMPERATURE_C_CENTI = 23;
     /* Soil moisture, percent */
-    SOIL_MOISTURE_PCT = 25;
+    SOIL_MOISTURE_PCT = 24;
     /* Soil pH, centi-pH (725 = pH 7.25) */
-    SOIL_PH_CENTI = 26;
+    SOIL_PH_CENTI = 25;
+    /* Electrical conductivity, microsiemens per centimetre */
+    SOIL_CONDUCTIVITY_USCM = 26;
     /* Nitrogen, milligrams per kilogram */
-    NITROGEN_MGKG = 27;
+    SOIL_NITROGEN_MGKG = 27;
     /* Phosphorus, milligrams per kilogram */
-    PHOSPHORUS_MGKG = 28;
+    SOIL_PHOSPHORUS_MGKG = 28;
     /* Potassium, milligrams per kilogram */
-    POTASSIUM_MGKG = 29;
+    SOIL_POTASSIUM_MGKG = 29;
 
     // --- Water ---
     /* pH of water or solution, centi-pH */
-    PH_CENTI = 30;
+    WATER_PH_CENTI = 30;
     /* Electrical conductivity, microsiemens per centimetre */
-    CONDUCTIVITY_USCM = 31;
+    WATER_CONDUCTIVITY_USCM = 31;
     /* Salinity, milligrams per litre */
-    SALINITY_MGL = 32;
+    WATER_SALINITY_MGL = 32;
     /* Dissolved oxygen, centi-milligrams per litre */
-    DISSOLVED_OXYGEN_MGL_CENTI = 33;
+    WATER_DISSOLVED_OXYGEN_MGL_CENTI = 33;
     /* Oxidation-reduction potential, millivolts, may be negative */
-    ORP_MV = 34;
+    WATER_ORP_MV = 34;
     /* Chemical oxygen demand, milligrams per litre */
-    COD_MGL = 35;
+    WATER_COD_MGL = 35;
     /* Biochemical oxygen demand, milligrams per litre */
-    BOD_MGL = 36;
+    WATER_BOD_MGL = 36;
     /* Turbidity, centi-NTU */
-    TURBIDITY_NTU_CENTI = 37;
+    WATER_TURBIDITY_NTU_CENTI = 37;
     /* Nitrate, centi-ppm */
-    NITRATE_PPM_CENTI = 38;
+    WATER_NITRATE_PPM_CENTI = 38;
     /* Ammonium, centi-ppm */
-    AMMONIUM_PPM_CENTI = 39;
+    WATER_AMMONIUM_PPM_CENTI = 39;
 
-    // --- Particulate mass, micrograms per cubic metre ---
-    /* PM1.0, standard conditions */
-    PM1_0_STD_UGM3 = 40;
-    /* PM2.5, standard conditions */
-    PM2_5_STD_UGM3 = 41;
-    /* PM4.0, standard conditions */
-    PM4_0_STD_UGM3 = 42;
-    /* PM10.0, standard conditions */
-    PM10_0_STD_UGM3 = 43;
-    /* PM1.0, ambient conditions */
-    PM1_0_ENV_UGM3 = 44;
-    /* PM2.5, ambient conditions */
-    PM2_5_ENV_UGM3 = 45;
-    /* PM10.0, ambient conditions */
-    PM10_0_ENV_UGM3 = 46;
+    // --- Air Quality ---
+    /* PM1.0, standard conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
+    PM1_0_STD_UGM3_DECI = 40;
+    /* PM2.5, standard conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
+    PM2_5_STD_UGM3_DECI = 41;
+    /* PM4.0, standard conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
+    PM4_0_STD_UGM3_DECI = 42;
+    /* PM10.0, standard conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
+    PM10_0_STD_UGM3_DECI = 43;
+    /* PM1.0, ambient conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
+    PM1_0_ENV_UGM3_DECI = 44;
+    /* PM2.5, ambient conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
+    PM2_5_ENV_UGM3_DECI = 45;
+    /* PM10.0, ambient conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
+    PM10_0_ENV_UGM3_DECI = 46;
 
-    // --- Particle counts per decilitre, by size bin ---
-    /* Particles at least 0.3 um */
+    /* Particles at least 0.3 um (#/0.1l) */
     PARTICLES_0_3UM = 47;
-    /* Particles at least 0.5 um */
+    /* Particles at least 0.5 um (#/0.1l) */
     PARTICLES_0_5UM = 48;
-    /* Particles at least 1.0 um */
+    /* Particles at least 1.0 um (#/0.1l) */
     PARTICLES_1_0UM = 49;
-    /* Particles at least 2.5 um */
+    /* Particles at least 2.5 um (#/0.1l) */
     PARTICLES_2_5UM = 50;
-    /* Particles at least 4.0 um */
+    /* Particles at least 4.0 um (#/0.1l) */
     PARTICLES_4_0UM = 51;
-    /* Particles at least 5.0 um */
+    /* Particles at least 5.0 um (#/0.1l) */
     PARTICLES_5_0UM = 52;
-    /* Particles at least 10.0 um */
+    /* Particles at least 10.0 um (#/0.1l) */
     PARTICLES_10_0UM = 53;
-    /* Typical particle size, centi-micrometres */
+    /* Typical particle size, centi-micrometres (235 = 2.35 um)*/
     PARTICLE_SIZE_UM_CENTI = 54;
 
-    // --- Gases and indices ---
     /* Carbon dioxide, parts per million */
     CO2_PPM = 55;
     /* Formaldehyde, parts per billion */
-    FORMALDEHYDE_PPB = 56;
+    HCHO_PPB = 56;
     /* VOC index */
     VOC_INDEX = 57;
     /* NOx index */
     NOX_INDEX = 58;
+    /* Indoor air quality index, 0..500 */
+    IAQ_INDEX = 59;
+    /* Metal Oxyde Sensor Gas resistance, kilo-ohms */
+    SENSOR_GAS_RESISTANCE_KOHM = 60;
     /*
      * Raw PM sensor status/error register, as defined by the sensor's own datasheet.
      * A bitmask rather than a measurement; see the sensor named in `sensors`.
      */
-    PM_STATUS_FLAGS = 59;
+    PM_STATUS_FLAGS = 61;
+
+    // --- Multi-sensor nodes additional metrics ---
+    /*
+     * Separated out from atmospheric values as these sensors are generally
+     * embedded in a box and not fully representative of temperature or relative humidity.
+     * These values are generally used for correcting readings from the same sensor.
+     */
+    /* Carbon dioxide sensor temperature, centi-degrees Celsius (2350 = 23.50 C) */
+    CO2_TEMPERATURE_C_CENTI = 62;
+    /* Carbon dioxide sensor humidity, centi-percent (6550 = 65.50 %) */
+    CO2_HUMIDITY_PCT_CENTI = 63;
+    /* Formaldehyde sensor temperature, centi-degrees Celsius (2350 = 23.50 C) */
+    HCHO_TEMPERATURE_C_CENTI = 64;
+    /* Formaldehyde sensor humidity, centi-percent (6550 = 65.50 %) */
+    HCHO_HUMIDITY_PCT_CENTI = 65;
+    /* PM sensor temperature, centi-degrees Celsius (2350 = 23.50 C) */
+    PM_TEMPERATURE_C_CENTI = 66;
+    /* PM sensor humidity, centi-percent (6550 = 65.50 %) */
+    PM_HUMIDITY_PCT_CENTI = 67;
 
     // --- Body ---
     /* Heart rate, beats per minute */
-    HEART_RATE_BPM = 60;
+    HEART_RATE_BPM = 68;
     /* Blood oxygen saturation, percent */
-    SPO2_PCT = 61;
+    BLOOD_SPO2_PCT = 69;
     /* Body temperature, centi-degrees Celsius */
-    BODY_TEMPERATURE_C_CENTI = 62;
+    BODY_TEMPERATURE_C_CENTI = 70;
   }
 
   /*
