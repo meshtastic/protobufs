@@ -116,6 +116,21 @@ message RemoteHardwareConfig {
    * Exposes the available pins to the mesh for reading and writing
    */
   repeated RemoteHardwarePin available_pins = 3;
+
+  /*
+   * Public keys authorized to drive this node's GPIO.
+   *
+   * The module was off by default in 2.x because it was not securable: any node
+   * that had the channel key could read and write pins, since a channel key is
+   * shared by everyone on the channel. 3.0 gives it the same treatment as
+   * AdminMessage - a HardwareMessage is accepted only as a PKI direct message
+   * from a key in this list, so authority belongs to a named entity rather than
+   * to whoever holds the channel.
+   *
+   * Empty means no remote entity is authorized, which is what an enabled module
+   * with no configuration should do.
+   */
+  repeated bytes authorized_key = 4;
 }
 
 /*

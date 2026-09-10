@@ -49,3 +49,8 @@
 *StoreForwardConfig.flags int_size:8
 *RangeTestConfig.flags int_size:8
 *CannedMessageConfig.flags int_size:8
+
+# Mirrors SecurityConfig.admin_key: same shape, same purpose, one list per
+# authority rather than one shared secret.
+*RemoteHardwareConfig.authorized_key max_size:32
+*RemoteHardwareConfig.authorized_key max_count:3

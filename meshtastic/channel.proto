@@ -82,19 +82,6 @@ message ChannelSettings {
    * Per-channel module settings.
    */
   ModuleSettings module_settings = 6;
-
-  /*
-   * Enable authenticated encryption (AES-CCM) for this channel.
-   * When true, messages carry a 12-byte authentication tag that prevents
-   * forgery and bit-flipping attacks. All nodes on the channel must have this
-   * enabled - unauthenticated (AES-CTR) packets are rejected.
-   * Default: false (standard AES-CTR encryption).
-   *
-   * This becomes redundant once the v3 header lands, which authenticates every
-   * packet against an AAD covering the immutable header fields. Until then it
-   * is the per-channel opt-in.
-   */
-  bool use_aead = 7;
 }
 
 /*
@@ -118,46 +105,19 @@ message ModuleSettings {
  */
 message Channel {
   /*
-   * How this channel is being used (or not).
-   * Note: this field is an enum to give us options for the future.
-   * In particular, someday we might make a 'SCANNING' option.
-   * SCANNING channels could have different frequencies and the radio would
-   * occasionally check that freq to see if anything is being transmitted.
-   * For devices that have multiple physical radios attached, we could keep multiple PRIMARY/SCANNING channels active at once to allow
-   * cross band routing as needed.
-   * If a device has only a single radio (the common case) only one channel can be PRIMARY at a time
-   * (but any number of SECONDARY channels can't be sent received on that common frequency)
-   */
-  enum Role {
-    /*
-     * This channel is not in use right now
-     */
-    DISABLED = 0;
-
-    /*
-     * This channel is used to set the frequency for the radio - all other enabled channels must be SECONDARY
-     */
-    PRIMARY = 1;
-
-    /*
-     * Secondary channels are only used for encryption/decryption/authentication purposes.
-     * Their radio settings (freq etc) are ignored, only psk is used.
-     */
-    SECONDARY = 2;
-  }
-
-  /*
-   * The index of this channel in the channel table (from 0 to MAX_NUM_CHANNELS-1)
+   * The index of this channel in the channel table, 0 to MAX_NUM_CHANNELS-1.
+   * MAX_NUM_CHANNELS is 16 in 3.0, up from 8.
+   *
+   * Index 0 is the primary channel: its name feeds the frequency slot hash, so
+   * it is the one that decides where the radio listens. Every other index is a
+   * key for decrypting traffic on that same frequency. 3.0 drops the PRIMARY /
+   * SECONDARY role enum that used to say this, because position already did.
    */
   uint32 index = 1;
 
   /*
-   * The new settings, or NULL to disable that channel
+   * The settings for this channel. Absent means the channel is disabled, which
+   * is what the DISABLED role used to mean.
    */
   ChannelSettings settings = 2;
-
-  /*
-   * Whether this channel is disabled, primary, or secondary
-   */
-  Role role = 3;
 }

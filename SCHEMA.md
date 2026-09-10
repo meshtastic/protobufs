@@ -106,6 +106,26 @@ backend, an analytics pipeline - can compile the air layer alone and never pull 
 schema into two published modules later a mechanical change rather than a redesign,
 without paying for that split now.
 
+### Compact and full representations
+
+Two representations of the same thing coexist deliberately, and which one you get
+depends on which side of the phone link you are on.
+
+**The compact form goes over the air and onto flash.** `PositionLite` and
+`NodeInfoLite` are what the node stores and what the mesh carries, and `Position`'s
+packed oneof arm is the same idea inside one message: a coordinate is a scaled `sint32`
+on the air and a full-precision `sfixed32` on the client link.
+
+**The full form goes to the client.** `FromRadio` hands the phone `NodeInfo` and
+`Position` with every field populated, computed from the stored compact values rather
+than relayed verbatim.
+
+This is not duplication left over from 2.x. The two sides optimise for opposite things:
+airtime and flash wear on one, and a decoder that a phone or a web app can read without
+knowing the encoding rules on the other. Collapsing each pair to one type would make one
+of those worse, so both stay. The same holds for the node database, which is stored in
+its compact form and served in a form a client can parse directly.
+
 ### What to compile
 
 | building | files |
@@ -416,6 +436,17 @@ Unicast carries no channel hash: a PSK is a channel key, so PSK traffic is inher
 broadcast, and a DM is exclusively PKI - signed but unencrypted in HAM mode, encrypted
 otherwise.
 
+**Four choices the design left open are settled.** The profile 0 nonce is **four
+bytes**: it collides at around 2^16 packets on a private net, which is above what a
+profile-0 deployment sends and below the point where the byte is worth spending. The
+mutable path records **one-byte NodeNum suffixes**, matching what `relay_node` already
+carries, rather than full NodeNums at four bytes each. `channel` stays a **full byte**
+on the broadcast profiles - a six-bit hash would free two bits in the core and buy them
+with extra decode attempts on every received packet. And there is **no critical
+extension bit**: a field that can tell a relay to drop a packet it does not understand
+contradicts the one property the extension block exists to guarantee, so its absence is
+now a decision rather than an omission.
+
 **The relay fast path** is a version check, a table lookup and one bounds check. No
 loop over attacker-controlled bytes, and the TLV parse happens only in endpoints after
 AEAD verification.
@@ -471,35 +502,50 @@ break, not a regression.
 
 ## 10. Known gaps
 
-Carried over from the 2.x notes and still open:
+Open work, and decisions deliberately not yet made.
 
-- **`DeviceState` flash wear.** The whole blob is rewritten on every deep sleep. An
-  append-only log for `receive_queue` plus a preferences store for the rest would cut
-  write amplification substantially.
-- **`RemoteHardware` authorisation.** `RemoteHardwareConfig.enabled` defaults false,
-  but the original code path may bypass it. Any node on the channel can otherwise
-  read and write GPIO on a remote node. Verify enforcement in firmware.
-- **Channel documentation.** `ChannelSettings` is the primary reference for client
-  developers and still does not explain primary versus secondary roles, how admin
-  messages are secured, or the well-known channel ids its comments refer to.
-- **`PositionLite` and `NodeInfoLite`** remain separate from `Position` and
-  `NodeInfo`. Collapsing each pair is the same "one canonical representation"
-  argument that retired the legacy nodedb types, and has not been settled.
-- **The v3 header's unsettled decisions.** Four choices in §8 were deferred rather
-  than made, and the firmware half cannot land without them. The nonce width in
-  profile 0: four bytes gives a birthday collision around 2^16 packets on a private
-  net, which may or may not be enough. Whether the mutable path records NodeNum
-  suffixes (one byte, collision-prone, matching today's `relay_node`) or full NodeNums
-  (four bytes, unaffordable). Whether `channel` stays a full byte on the broadcast
-  profiles, since a six-bit hash frees two bits at the cost of more decode attempts.
-  And whether there is a "critical extension" bit, IPv6 hop-by-hop style, letting a
-  future field say "drop me if you do not understand me" - it contradicts the rule
-  that a relay never has to understand the extension block, so it is currently absent
-  by omission rather than by decision.
+**Deferred, needs data:**
+
 - **Tag ordering in the large messages.** Which fields deserve tags 1-15 was decided
   on judgement rather than on measured traffic. It costs most in `AdminMessage`, where
   the whole config write path - `set_owner`, `set_channel`, `set_config`,
   `set_module_config`, `begin_edit_settings`, `commit_edit_settings` - sits above 15
   and pays a two-byte key, while the read path sits below it. `Position` and
   `MeshPacket` were ordered the same way. A portnum-weighted airtime histogram from a
-  live mesh would settle all three.
+  live mesh would settle all three, and nothing should move until one exists.
+
+**Deferred by scope:**
+
+- **Header profiles 1 and 7.** `BCAST` and `EXT_CORE` are defined in §8 and not
+  implemented in the first release, along with the reserved 4 to 6. Their `CORE_LEN`
+  entries must map to a drop meanwhile.
+
+**Stated but not built:**
+
+- **The "never re-encode `HeaderExt` in transit" test.** §8 requires it as a test
+  rather than a comment, because nanopb drops unknown fields on decode and a re-encode
+  silently strips exactly the forward compatibility the block exists to provide. Round
+  trip an unknown high tag through the relay path and assert the bytes are identical.
+- **Fragmentation off by default, opt-in per portnum.** §8 states the policy; nothing
+  implements the gate.
+
+**Firmware work the schema now assumes:**
+
+- **`DeviceState` is two files.** The static half and `DeviceStateVolatile` have to be
+  saved and versioned separately, or the split buys nothing and the flash wear stays.
+- **`RemoteHardware` authorisation.** `RemoteHardwareConfig.authorized_key` exists;
+  the module must reject a `HardwareMessage` that did not arrive as a PKI direct
+  message from a listed key, the way `AdminMessage` already does. Until that lands the
+  module stays off by default, because a channel key is shared by everyone on the
+  channel and so authorises everyone on it.
+- **Sixteen channels.** `MAX_NUM_CHANNELS` goes from 8 to 16. The nanopb caps here
+  were already 24, so this is a firmware constant and a UI change, not a schema one.
+- **The channel role enum is gone.** Index 0 is the primary channel and an absent
+  `settings` disables one, so firmware and clients that switched on `Channel.role`
+  need to read position and presence instead.
+
+**Documentation:**
+
+- **`ChannelSettings` still under-documents itself.** It no longer needs to explain
+  primary versus secondary, but it does not say how admin messages are secured, and
+  its `id` comment still refers to a "Well Known Channels" table that does not exist.

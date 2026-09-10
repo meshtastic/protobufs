@@ -369,11 +369,9 @@ message AdminMessage {
     User set_owner = 28;
 
     /*
-     * Set channels (using the new API).
-     * A special channel is the "primary channel".
-     * The other records are secondary channels.
-     * Note: only one channel can be marked as primary.
-     * If the client sets a particular channel to be primary, the previous channel will be set to SECONDARY automatically.
+     * Set one channel in the table, addressed by its index.
+     * Index 0 is the primary channel, whose name feeds the frequency slot hash.
+     * Sending a Channel with no settings disables that index.
      */
     Channel set_channel = 29;
 

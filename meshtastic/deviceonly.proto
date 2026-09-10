@@ -155,35 +155,58 @@ message DeviceState {
   User owner = 2;
 
   /*
-   * Received packets saved for delivery to the phone
+   * The mesh's nodes with their available gpio pins for RemoteHardware module
    */
-  repeated MeshPacket receive_queue = 3;
+  repeated NodeRemoteHardwarePin node_remote_hardware_pins = 3;
 
   /*
    * A version integer used to invalidate old save files when we make
-   * incompatible changes This integer is set at build time and is private to
-   * NodeDB.cpp in the device code.
+   * incompatible changes. Set at build time and private to NodeDB.cpp in the
+   * device code. DeviceStateVolatile carries its own.
    */
   uint32 version = 4;
+}
+
+/*
+ * The half of the device state that changes constantly.
+ *
+ * Split from DeviceState because the two have opposite write rates and were
+ * sharing a file: the owner, the node's own info and the GPIO pin table change
+ * when someone reconfigures the node, while the receive queue and the last
+ * message change on every packet, and every deep sleep rewrote all of it
+ * together. Saving them separately means a busy node stops rewriting its
+ * static settings, which is where the flash wear was coming from.
+ *
+ * Losing this file costs the phone a queued packet and the screen its last
+ * message. Losing DeviceState costs the node its identity, so the two want
+ * different write and integrity policies as well as different files.
+ */
+message DeviceStateVolatile {
+  /*
+   * Received packets saved for delivery to the phone
+   */
+  repeated MeshPacket receive_queue = 1;
 
   /*
    * We keep the last received text message (only) stored in the device flash,
    * so we can show it on the screen.
    * Might be null
    */
-  MeshPacket rx_text_message = 5;
+  MeshPacket rx_text_message = 2;
 
   /*
    * We keep the last received waypoint stored in the device flash,
    * so we can show it on the screen.
    * Might be null
    */
-  MeshPacket rx_waypoint = 6;
+  MeshPacket rx_waypoint = 3;
 
   /*
-   * The mesh's nodes with their available gpio pins for RemoteHardware module
+   * A version integer used to invalidate old save files, as in DeviceState.
+   * The two files are versioned independently so one can change shape without
+   * discarding the other.
    */
-  repeated NodeRemoteHardwarePin node_remote_hardware_pins = 7;
+  uint32 version = 4;
 }
 
 // Satellite per-node entries; stored alongside the slim NodeInfoLite so nodes
