@@ -8,7 +8,6 @@ import "meshtastic/channel.proto";
 import "meshtastic/common.proto";
 import "meshtastic/localonly.proto";
 import "meshtastic/module_config.proto";
-import "meshtastic/packet.proto";
 import "meshtastic/telemetry.proto";
 import "meshtastic/wire.proto";
 import "nanopb.proto";
@@ -144,6 +143,13 @@ message NodeInfoLite {
  * the receive queue and use the preferences store for the other stuff
  */
 message DeviceState {
+  // Everything here changes only when someone reconfigures the node, so the
+  // file is written on a configuration change rather than on every deep sleep.
+  // 2.x also kept the receive queue and the last received text message and
+  // waypoint in this blob, which is what made a deep sleep rewrite all of it
+  // and wore the flash. The queue was never implemented and the screen keeps
+  // its own message store, so all three are gone rather than split out.
+
   /*
    * Read only settings/info about this node
    */
@@ -162,41 +168,9 @@ message DeviceState {
   /*
    * A version integer used to invalidate old save files when we make
    * incompatible changes. Set at build time and private to NodeDB.cpp in the
-   * device code. DeviceStateVolatile carries its own.
+   * device code.
    */
   uint32 version = 4;
-}
-
-/*
- * The half of the device state that changes constantly.
- *
- * Split from DeviceState because the two have opposite write rates and were
- * sharing a file: the owner, the node's own info and the GPIO pin table change
- * when someone reconfigures the node, while the receive queue changes on every
- * packet, and every deep sleep rewrote all of it together. Saving them
- * separately means a busy node stops rewriting its static settings, which is
- * where the flash wear was coming from.
- *
- * The single rx_text_message and rx_waypoint slots are gone. Firmware keeps
- * many of each in its own store now, which persists them itself, so a field
- * holding one of each recorded nothing the store did not already hold.
- *
- * Losing this file costs the phone a queued packet. Losing DeviceState costs
- * the node its identity, so the two want different write and integrity
- * policies as well as different files.
- */
-message DeviceStateVolatile {
-  /*
-   * Received packets saved for delivery to the phone
-   */
-  repeated MeshPacket receive_queue = 1;
-
-  /*
-   * A version integer used to invalidate old save files, as in DeviceState.
-   * The two files are versioned independently so one can change shape without
-   * discarding the other.
-   */
-  uint32 version = 2;
 }
 
 // Satellite per-node entries; stored alongside the slim NodeInfoLite so nodes

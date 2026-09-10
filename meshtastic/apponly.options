@@ -1,1 +1,2 @@
-*ChannelSet.settings max_count:24
+# Matches MAX_NUM_CHANNELS, set by ChannelFile.channels in deviceonly.options.
+*ChannelSet.settings max_count:16

@@ -1,10 +1,10 @@
 # options for nanopb
 # https://jpa.kapsi.fi/nanopb/docs/reference.html#proto-file-options
 
-# FIXME - max_count is actually 32 but we save/load this as one long string of preencoded MeshPacket bytes - not a big array in RAM
-*DeviceStateVolatile.receive_queue max_count:1
-
-*ChannelFile.channels max_count:24
+# This array IS the channel count. mesh-pb-constants.h derives MAX_NUM_CHANNELS
+# from sizeof(channels) / sizeof(channels[0]), so 16 here is what makes the
+# device a 16-channel device. 1096 bytes of RAM at 16, against 552 at 8.
+*ChannelFile.channels max_count:16
 
 *DeviceState.node_remote_hardware_pins max_count:12
 

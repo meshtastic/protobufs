@@ -531,20 +531,22 @@ Open work, and decisions deliberately not yet made.
 
 **Firmware work the schema now assumes:**
 
-- **`DeviceState` is two files.** The static half and `DeviceStateVolatile` have to be
-  saved and versioned separately, or the split buys nothing and the flash wear stays.
-- **`DeviceStateVolatile.receive_queue` is not implemented.** `NodeDB.cpp` zeroes the
-  count with a `FIXME`, and the only other reference is a commented-out `MAX_RX_TOPHONE`
-  in `mesh-pb-constants.h`. It is the sole field in the volatile half, so until it is
-  built that file is never written and the split has nothing to separate. Either
-  implement the queue or fold the message back into `DeviceState`.
+- **`DeviceState` is written on configuration changes only.** The receive queue, the
+  last text message and the last waypoint are gone from it, so nothing in the message
+  changes per packet and a deep sleep no longer has a reason to rewrite it. Firmware
+  that still saves it on every sleep keeps the wear without the cause.
 - **`RemoteHardware` authorisation.** `RemoteHardwareConfig.authorized_key` exists;
   the module must reject a `HardwareMessage` that did not arrive as a PKI direct
   message from a listed key, the way `AdminMessage` already does. Until that lands the
   module stays off by default, because a channel key is shared by everyone on the
   channel and so authorises everyone on it.
-- **Sixteen channels.** `MAX_NUM_CHANNELS` goes from 8 to 16. The nanopb caps here
-  were already 24, so this is a firmware constant and a UI change, not a schema one.
+- **Sixteen channels.** `MAX_NUM_CHANNELS` is not a firmware constant: `mesh-pb-constants.h`
+  derives it from `sizeof(ChannelFile.channels) / sizeof(channels[0])`, so the count is set
+  by `*ChannelFile.channels max_count` in `deviceonly.options` and by nothing else. It is
+  now 16, with `ChannelSet.settings` matched to it. `ChannelFile` costs 1096 bytes of RAM
+  at 16 against 552 at 8. `Channels.cpp` carries a `static_assert(MAX_NUM_CHANNELS == 8)`
+  guarding a `userPrefs` switch that covers indices 0 to 7; that switch has to grow before
+  the firmware will build.
 - **The channel role enum is gone.** Index 0 is the primary channel and an absent
   `settings` disables one, so firmware and clients that switched on `Channel.role`
   need to read position and presence instead.
