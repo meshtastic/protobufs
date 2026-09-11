@@ -111,6 +111,17 @@ wire {
         // Reduces allocations on high-frequency decode paths (mesh packets).
         makeImmutableCopies = false
     }
+
+    // Generate a reflection-free `FieldMetadataRegistry` from the
+    // `(meshtastic.field_metadata)` field options. The custom SchemaHandler lives in
+    // `buildSrc`; the Wire plugin auto-registers this output dir into `commonMain` (with the
+    // generate-task dependency), so downstream consumers query field metadata on every KMP
+    // target with no reflection and no runtime cost. A distinct `out` dir avoids clobbering
+    // the `kotlin {}` target's generated sources.
+    custom {
+        schemaHandlerFactoryClass = "org.meshtastic.proto.build.FieldMetadataRegistryHandlerFactory"
+        out = "build/generated/source/wire-field-metadata"
+    }
 }
 
 // Ensure protos are synced before Wire generates code
