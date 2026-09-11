@@ -421,6 +421,9 @@ covered span is byte-for-byte immutable in flight.
 | `relay`, `next_hop` | every relay | no |
 | path bytes | every relay | no |
 
+`EXT` has no `flags` byte and no mutable core fields, so its AAD is `ctrl` with the hop
+bits zeroed plus its length byte and block: the whole header.
+
 ### The two always-present bytes
 
 `ctrl` is the one byte whose meaning can never change, because it is what says how to
@@ -472,7 +475,7 @@ partial `switch` with a fallthrough is a vulnerability.
 | 0 | `MINI` | `ctrl nonce4` | 5 |
 | 1 | `BCAST` | `ctrl flags from4 id4 chan relay` | 12 |
 | 2 | `UCAST` | `ctrl flags from4 id4 to4 relay next_hop` | 16 |
-| 3 | `EXT` **(tbd)** | TLV core, endpoints only | |
+| 3 | `EXT` **(tbd)** | `ctrl len block` | 2 + len |
 | | today's fixed `PacketHeader` | | 16 |
 
 ```
@@ -494,20 +497,42 @@ profile 2  UCAST  addressed to one, PKI only   16 bytes
   | ctrl|flags|        from (4)       |         id (4)        |         to (4)        |relay| nhop|
   +-----+-----+-----------------------+-----------------------+-----------------------+-----+-----+
 
-profile 3  EXT    TLV core, endpoints only     reserved
+profile 3  EXT    length-prefixed core         2 + len bytes
+     0     1     2                       1+len
+  +-----+-----+------- ... -------------+
+  | ctrl| len |    protobuf, len bytes  |
+  +-----+-----+------- ... -------------+
 ```
 
 `nhop` is `next_hop`. Both it and `relay` carry the last byte of a NodeNum rather than
 the whole thing: `relay` is the node this frame was last transmitted by, `next_hop` the
 node it is meant for next.
 
-Three profiles ship. `EXT` is the escape hatch for a core that outgrows a fixed table,
-reserved and not implemented, and its `CORE_LEN` entry maps to a drop.
+Three profiles ship. `EXT` is the escape hatch for a core that outgrows a fixed table:
+reserved, not implemented, and its `CORE_LEN` entry maps to a drop until it is.
 
-**A relay drops `EXT` by construction**, not only while it is unimplemented: its core is
-a TLV, so a relay cannot length it without parsing attacker-controlled bytes, which is
-the one thing the fast path may not do. `EXT` frames reach only nodes in direct radio
-range of the sender.
+**`EXT` uses the extension block's own mechanism as its core.** A length byte, then that
+many bytes of an encoded protobuf message. `ctrl` is present because the profile has to
+be read from somewhere, so a receiver always has a version, a profile and a length
+before it has anything variable. The message that goes in the block is deliberately not
+defined here - fixing the framing forever is what makes the hatch an escape hatch, and
+fixing the content would defeat it.
+
+So `CORE_LEN` holds a constant for profiles 0 to 2 and a rule for profile 3: the core is
+`2 + frame[1]` bytes, bounds-checked against the frame before anything reads past it.
+That keeps the relay fast path what it was - no loop over attacker-controlled bytes,
+one length and one comparison.
+
+**The block is immutable, so an `EXT` frame is never relayed.** Relaying means writing
+`relay` and appending to the path, and in this profile those live inside a block that
+cannot be re-encoded in flight without dropping the unknown fields it exists to carry.
+`hop_limit` is therefore zero on an `EXT` frame, and a receiver drops one that arrives
+with it set. `EXT` reaches nodes in direct radio range of the sender.
+
+**Everything except `hop_limit` is signed.** With no `flags` byte and no mutable core
+fields, the AAD over an `EXT` frame is `ctrl` with the hop bits canonicalised to zero,
+the length byte, and the whole block - which is the entire header. It is the only
+profile where that is true.
 
 Two profile bits rather than three, because four layouts is the useful space: no
 addressing, addressed to everyone, addressed to one, and an escape hatch. A broadcast
@@ -556,9 +581,10 @@ Two rules follow, both free on receive:
   seen, and rebroadcasting it - must first confirm the path tail is empty. The path is
   one byte per hop and is better evidence than the subtraction.
 
-Profile 0 has no `flags` byte and therefore no `hop_start`, so the first rule cannot be
-evaluated on it. `MINI` carries no hop accounting: `hop_limit` is zero and ignored,
-and a profile 0 frame is never relayed.
+Neither `MINI` nor `EXT` carries a `flags` byte, so neither has a `hop_start` and the
+first rule cannot be evaluated on them. Both carry `hop_limit` zero, are never relayed,
+and a receiver drops one that arrives with `hop_limit` set - which is the same check the
+first rule performs, reached by a different route.
 
 ### The path tail
 
@@ -652,8 +678,8 @@ and nothing on the rest**. Growing the fixed header by one field instead costs e
 packet forever. That asymmetry is the argument for the whole design.
 
 **The relay fast path** is a version check, a table lookup and one bounds check. No
-loop over attacker-controlled bytes, and the TLV parse happens only in endpoints after
-AEAD verification.
+loop over attacker-controlled bytes at any profile, and the block is parsed only in
+endpoints, after AEAD verification.
 
 **XEdDSA signs the same set the AAD covers**, canonicalised the same way, so a HAM
 mode frame and an encrypted one protect identical bytes.
@@ -734,8 +760,8 @@ Open work, and decisions deliberately not yet made.
 
 **Deferred by scope:**
 
-- **Header profile 3.** `EXT` is defined in §8 and not implemented. Its `CORE_LEN`
-  entry maps to a drop meanwhile, and at relays permanently.
+- **Header profile 3.** `EXT`'s framing is fixed in §8 and the message that goes in
+  its block is not defined. Its `CORE_LEN` entry maps to a drop until one exists.
 
 **Stated but not built:**
 
