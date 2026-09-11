@@ -395,7 +395,7 @@ The header is split by what the AEAD's additional authenticated data covers.
 ```
    +-----+-----+------+------+------+------+-------+   +------------+------+
    |ctrl |flags| from |  id  |  to  | chan |  ext  |   | ciphertext | path |
-   |  1  |  1  |  4   |  4   | 0/4  | 0/1  |  1+n  |   |   + tag    | 0..15|
+   |  1  |  1  |  4   |  4   | 0/4  | 0/1  |  1+n  |   |   + tag    | 0..14|
    +-----+-----+------+------+------+------+-------+   +------------+------+
    |                                               |                |
    +--------------- covered by the AAD ------------+                +-- appended,
@@ -529,8 +529,8 @@ Four sizing rules fix the rest of the layout:
 - **The `MINI` nonce is four bytes.** It collides at around 2^16 packets on a
   private net, above what a `MINI` deployment sends and below the point where a fifth
   byte is worth spending.
-- **The mutable path records one-byte NodeNum suffixes**, matching `relay_node`, not
-  full NodeNums at four bytes each.
+- **The tail records one-byte NodeNum suffixes**, matching `relay`, not full NodeNums
+  at four bytes each.
 - **`channel` is a full byte** on the broadcast profiles. A six-bit hash frees two bits
   in the core and pays for them with extra decode attempts on every received packet.
 - **There is no critical extension bit.** A field that tells a relay to drop a packet
@@ -562,36 +562,47 @@ and a profile 0 frame is never relayed.
 
 ### The path tail
 
-The path is one byte per hop taken, appended at the frame end, oldest first. It is
-optional: `flags.path` says whether a frame carries one.
-
-**Its length is not carried.** A hop costs one byte of budget and writes one byte of
-path, so a frame that has one is exactly `hop_start - hop_limit` bytes of it, never
-more than `hop_start`. The payload boundary follows from the same subtraction:
+A frame records the route it took as `from`, then the path tail, then `relay`:
 
 ```
-   path present:   payload_end = frame_len - (hop_start - hop_limit)
-   path absent:    payload_end = frame_len
+   from  ->  path[0]  ->  path[1]  ->  ...  ->  relay
+   origin     hop 1        hop 2                last hop
 ```
 
-On a frame that carries a path, the last byte is the previous hop, which is what `relay`
-in the core says; `relay` is kept at a fixed core offset so a node that wants only the
-previous hop can read it without consulting the tail, and so the value survives on
-frames with no path at all.
+`relay` is always the node the frame was last transmitted by, whether or not a tail is
+present, so anything that only wants the previous hop reads one byte at a fixed core
+offset and never looks at the tail. The tail is optional and `flags.path` says whether
+a frame carries one; without it the intermediate hops are simply not recorded.
 
-**On a frame that carries a path, `hop_limit` is tamper-evident without being in the
+**The tail's length is not carried.** Its two ends are already in the core, so it holds
+the hops between them - one fewer byte than the number of hops taken:
+
+```
+   path length = max(0, (hop_start - hop_limit) - 1)
+   payload_end = frame_len - path length      (path present, else frame_len)
+```
+
+**Relaying is two byte-writes and no memmove.** A relay appends the frame's current
+`relay` value to the tail, then writes its own suffix into `relay`. The first relay
+appends nothing, because the value it would append is the originator, which `from`
+already gives.
+
+**On a frame that carries a tail, `hop_limit` is tamper-evident without being in the
 AAD.** Altering it moves the payload boundary, which moves the ciphertext and tag, which
-fails verification, in either direction. That is no new capability for an attacker, who
-could always corrupt a ciphertext byte, but it does put budget inflation out of reach.
-**It does not hold when `flags.path` is clear**, where nothing ties `hop_limit` to the
-frame geometry and the two receive-side rules above are the only check. They are cheap
-and structural, and they run before any crypto.
+fails verification in either direction. That is no new capability for an attacker, who
+could always corrupt a ciphertext byte, but it puts budget inflation out of reach.
 
-**The invariant a relay must preserve is `path length == hop_start - hop_limit`.**
-Appending a byte and decrementing the budget together preserves it; doing neither also
-preserves it, at the cost of a path that omits that hop. Decrementing without
-appending, or setting `hop_limit` to zero in one step, breaks the frame for every node
-downstream.
+Two gaps in that, both of which the receive-side rules above cover. The property does
+not hold at all when `flags.path` is clear, since nothing then ties `hop_limit` to the
+frame geometry. And because the length floors at zero, moving a frame between zero and
+one hops taken leaves the boundary where it was - which is exactly the edit that makes a
+relayed frame read as an originator retransmission, and why that inference needs its own
+check rather than resting on the geometry.
+
+**The invariant a relay preserves is `path length == max(0, hops taken - 1)`.**
+Appending and decrementing together preserves it, and so does doing neither, at the
+cost of a tail that omits that hop. Decrementing without appending, or setting
+`hop_limit` to zero in one step, breaks the frame for every node downstream.
 
 ### The extension block
 
