@@ -395,7 +395,7 @@ The header is split by what the AEAD's additional authenticated data covers.
 ```
    +-----+-----+------+------+------+------+-------+   +------------+------+
    |ctrl |flags| from |  id  |  to  | chan |  ext  |   | ciphertext | path |
-   |  1  |  1  |  4   |  4   | 0/4  | 0/1  |  1+n  |   |   + tag    | 0..7 |
+   |  1  |  1  |  4   |  4   | 0/4  | 0/1  |  1+n  |   |   + tag    | 0..15|
    +-----+-----+------+------+------+------+-------+   +------------+------+
    |                                               |                |
    +--------------- covered by the AAD ------------+                +-- appended,
@@ -427,30 +427,40 @@ covered span is byte-for-byte immutable in flight.
 read everything after it.
 
 ```
-     7  6      5   4  3      2   1  0
-   +-------+ +-----------+ +-----------+
-   |  ver  | | hop_limit | |  profile  |
-   +-------+ +-----------+ +-----------+
-       |           |             |
-       |           |             +-- selects the core layout, 8 values
-       |           +-- 0..7, MUTABLE, canonicalised to zero in the AAD
-       +-- 00 = v3. A major break uses the PHY syncword, not this field.
+     7     6   5  4   3      2   1  0
+   +---+ +---------------+ +-----------+
+   |ver| |   hop_limit   | |  profile  |
+   +---+ +---------------+ +-----------+
+     |           |               |
+     |           |               +-- selects the core layout, 8 values
+     |           +-- 0..15, MUTABLE, canonicalised to zero in the AAD
+     +-- 0 = v3
 ```
+
+**One version bit, not two.** A firmware build carries at most two wire formats at
+once, because that is what a gradual migration needs and more than two is not
+maintainable. The bit distinguishes the format being migrated from the one being
+migrated to; once a conversion completes it flips back for the next one. A break that
+cannot be done gradually changes the PHY sync word instead, which is a different
+mechanism at a lower layer.
 
 `flags` is present on profiles 1 to 3.
 
 ```
-     7   6  5      4     3      2     1      0
-   +-----------+ +---+ +----+ +---+ +----+ +---+
-   | hop_start | |ack| |mqtt| |ext| |path| |rsv|
-   +-----------+ +---+ +----+ +---+ +----+ +---+
-                   |     |      |     |      |
-                   |     |      |     |      +-- reserved, must be 0
-                   |     |      |     +-- a path tail follows the ciphertext
-                   |     |      +-- an ext block is present
-                   |     +-- via_mqtt, MUTABLE, gateway-set, excluded from the AAD
-                   +-- want_ack
+     7   6  5   4      3     2      1     0
+   +---------------+ +---+ +----+ +---+ +----+
+   |   hop_start   | |ack| |mqtt| |ext| |path|
+   +---------------+ +---+ +----+ +---+ +----+
+           |           |     |      |     |
+           |           |     |      |     +-- a path tail follows the ciphertext
+           |           |     |      +-- an ext block is present
+           |           |     +-- via_mqtt, MUTABLE, gateway-set, not in the AAD
+           |           +-- want_ack
+           +-- 0..15, the budget the originator launched with
 ```
+
+Both bytes are fully assigned. `hop_start` matches `hop_limit` at four bits, so a
+packet can be launched with up to fifteen hops of budget.
 
 ### Profiles
 
@@ -534,7 +544,7 @@ Two rules follow, both free on receive:
   `hop_limit` without breaking the tag is left able only to decrease it, which is
   equivalent to dropping the packet and gains nothing.
 - **`hop_start == hop_limit` is not proof of origination.** It is a cheap hint that a
-  packet is an originator retransmission, and forging it costs an attacker three bits
+  packet is an originator retransmission, and forging it costs an attacker four bits
   outside the AAD. A receiver that acts on it - reprocessing a packet it has already
   seen, and rebroadcasting it - must first confirm the path tail is empty. The path is
   one byte per hop and is better evidence than the subtraction.
@@ -680,6 +690,11 @@ Open work, and decisions deliberately not yet made.
   message from a listed key, the way `AdminMessage` already does. Until that lands the
   module stays off by default, because a channel key is shared by everyone on the
   channel and so authorises everyone on it.
+- **`path_len` has no assigned position.** The path tail is one byte per hop written
+  at the frame end, and the payload boundary is `frame_len - path_len`, so a receiver
+  needs the length before it can find either. No profile layout in the table above
+  carries the field. Widening `hop_limit` to four bits also widens the tail's bound
+  from 7 bytes to 15, so whatever carries the length needs four bits too.
 - **Event mode must stop rewriting `hop_start`.** `capEventRelayHops` in
   `NextHopRouter.cpp` clamps `hop_limit` at a relay and reduces `hop_start` by the same
   amount to keep `hops_away` accurate downstream. `hop_start` is in the AAD, so a relay
