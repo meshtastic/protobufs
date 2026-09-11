@@ -419,7 +419,7 @@ covered span is byte-for-byte immutable in flight.
 | `via_mqtt` (`flags`) | a gateway | no, zeroed |
 | `from`, `id`, `to`, `chan`, the ext block | originator | yes |
 | `relay`, `next_hop` | every relay | no |
-| `path_len`, path bytes | every relay | no |
+| path bytes | every relay | no |
 
 ### The two always-present bytes
 
@@ -552,6 +552,34 @@ Two rules follow, both free on receive:
 Profile 0 has no `flags` byte and therefore no `hop_start`, so the first rule cannot be
 evaluated on it. `MINIMAL` carries no hop accounting: `hop_limit` is zero and ignored,
 and a profile 0 frame is never relayed.
+
+### The path tail
+
+The path is one byte per hop taken, appended at the frame end, oldest first. **Its
+length is not carried.** A packet that has taken *h* hops has taken them out of the
+budget the originator set, so the path is exactly `hop_start - hop_limit` bytes and can
+never exceed `hop_start`. The payload boundary is the same subtraction:
+
+```
+   payload_end = frame_len - (hop_start - hop_limit)
+```
+
+`relay` is the last entry of the path, kept at a fixed core offset for nodes that only
+care about the previous hop.
+
+**This makes `hop_limit` tamper-evident without putting it in the AAD.** Changing it
+moves the payload boundary, which moves the ciphertext and tag, which fails
+verification. An attacker who alters it in either direction destroys the frame rather
+than extending its life or faking a hop count - no new capability, since they could
+already corrupt a ciphertext byte, but the budget inflation the rules above guard
+against stops being reachable. The two receive-side rules stay as cheap structural
+checks that fail fast before any crypto runs.
+
+**The invariant a relay must preserve is `path length == hop_start - hop_limit`.**
+Appending a byte and decrementing the budget together preserves it; doing neither also
+preserves it, at the cost of a path that omits that hop. Decrementing without
+appending, or setting `hop_limit` to zero in one step, breaks the frame for every node
+downstream.
 
 ### The extension block
 
@@ -690,11 +718,13 @@ Open work, and decisions deliberately not yet made.
   message from a listed key, the way `AdminMessage` already does. Until that lands the
   module stays off by default, because a channel key is shared by everyone on the
   channel and so authorises everyone on it.
-- **`path_len` has no assigned position.** The path tail is one byte per hop written
-  at the frame end, and the payload boundary is `frame_len - path_len`, so a receiver
-  needs the length before it can find either. No profile layout in the table above
-  carries the field. Widening `hop_limit` to four bits also widens the tail's bound
-  from 7 bytes to 15, so whatever carries the length needs four bits too.
+- **Hop exhaustion has to stop rebroadcasting rather than zero the budget.**
+  `shouldExhaustHops` in the traffic management module sets `hop_limit = 0` in one
+  step while appending a single path byte, which breaks
+  `path length == hop_start - hop_limit` and makes the frame undecodable downstream.
+  Dropping the packet instead achieves the same end - the packet stops here - without a
+  wire inconsistency. The favourite router-to-router path that skips the decrement is
+  fine as it stands, since it appends nothing either.
 - **Event mode must stop rewriting `hop_start`.** `capEventRelayHops` in
   `NextHopRouter.cpp` clamps `hop_limit` at a relay and reduces `hop_start` by the same
   amount to keep `hops_away` accurate downstream. `hop_start` is in the AAD, so a relay
