@@ -390,27 +390,36 @@ same form for latitude and longitude.**
 
 ## 8. The v3 header
 
-The header is three regions, split by who may write to them rather than by what the
-fields mean. A relay rewrites only the mutable tail; everything before it is covered by
-the AEAD's additional authenticated data and cannot be touched in flight.
+The header is split by what the AEAD's additional authenticated data covers.
 
 ```
    +-----+-----+------+------+------+------+-------+   +------------+------+
    |ctrl |flags| from |  id  |  to  | chan |  ext  |   | ciphertext | path |
    |  1  |  1  |  4   |  4   | 0/4  | 0/1  |  1+n  |   |   + tag    | 0..7 |
    +-----+-----+------+------+------+------+-------+   +------------+------+
-   |                                               |   |                   |
-   +------- immutable, covered by the AAD ---------+   +----- mutable -----+
-     |                                       |                        |
-     |                                       |                        +-- append-only,
-     |                                       |                            one byte per hop
-     |                                       +-- length-prefixed HeaderExt,
-     |                                           a real protobuf message
-     +-- version and profile, plus a mutable hop_limit excluded from the AAD
+   |                                               |                |
+   +--------------- covered by the AAD ------------+                +-- appended,
+                                                                        one byte per hop
 ```
 
 Which of `to` and `chan` are present is what the profile selects. `ext` is absent when
-the length byte is zero.
+the length byte is zero, and is a length-prefixed `HeaderExt` when it is not.
+
+**The split is not byte-aligned, and the covered span is not wholly immutable.** `ctrl`
+and `flags` each carry bits a relay rewrites. Those bits are canonicalised to zero
+before the AAD is computed, so the rest of both bytes stays authenticated; the same
+construction IPsec AH uses on the IP header's TTL and ToS. Everything else inside the
+covered span is byte-for-byte immutable in flight.
+
+| field | written by | in the AAD |
+|---|---|---|
+| `ver`, `profile` (`ctrl`) | originator | yes |
+| `hop_limit` (`ctrl`) | every relay | no, zeroed |
+| `hop_start`, `want_ack`, `ext`, `path` (`flags`) | originator | yes |
+| `via_mqtt` (`flags`) | a gateway | no, zeroed |
+| `from`, `id`, `to`, `chan`, the ext block | originator | yes |
+| `relay`, `next_hop` | every relay | no |
+| `path_len`, path bytes | every relay | no |
 
 ### The two always-present bytes
 
@@ -510,6 +519,30 @@ Four sizing rules fix the rest of the layout:
 - **There is no critical extension bit.** A field that tells a relay to drop a packet
   it does not understand contradicts the one property the extension block guarantees.
 
+### Hop accounting
+
+`hop_start` is authenticated and `hop_limit` is not, so **their difference is not
+authenticated.** `hops_away` is a hint. It must never be an authorisation input, and
+anything that decides whether to forward, to trust a neighbour, or to suppress a
+duplicate needs evidence that is not a subtraction between a protected and an
+unprotected field.
+
+Two rules follow, both free on receive:
+
+- **`hop_limit > hop_start` is structurally impossible. Drop the frame.** One
+  comparison, and it removes budget inflation entirely: an attacker who can rewrite
+  `hop_limit` without breaking the tag is left able only to decrease it, which is
+  equivalent to dropping the packet and gains nothing.
+- **`hop_start == hop_limit` is not proof of origination.** It is a cheap hint that a
+  packet is an originator retransmission, and forging it costs an attacker three bits
+  outside the AAD. A receiver that acts on it - reprocessing a packet it has already
+  seen, and rebroadcasting it - must first confirm the path tail is empty. The path is
+  one byte per hop and is better evidence than the subtraction.
+
+Profile 0 has no `flags` byte and therefore no `hop_start`, so the first rule cannot be
+evaluated on it. `MINIMAL` carries no hop accounting: `hop_limit` is zero and ignored,
+and a profile 0 frame is never relayed.
+
 ### The extension block
 
 `ext` is a length byte followed by that many bytes of an encoded `HeaderExt`.
@@ -559,11 +592,11 @@ packet forever. That asymmetry is the argument for the whole design.
 loop over attacker-controlled bytes, and the TLV parse happens only in endpoints after
 AEAD verification.
 
-**AAD** covers `ctrl` and `flags` with the mutable bits zeroed, plus `from`, `id`,
-`to`, `channel` and the whole extension block. Excluded because relays rewrite them:
-`hop_limit`, `via_mqtt`, `next_hop`, `relay`, `path_len`, path bytes. XEdDSA signs the
-same set. `from` and `id` stay in the nonce derivation and must not be narrowed; `to`
-is not, which is what lets the broadcast profiles elide it.
+**XEdDSA signs the same set the AAD covers**, canonicalised the same way, so a HAM
+mode frame and an encrypted one protect identical bytes.
+
+`from` and `id` are in the nonce derivation and must not be narrowed. `to` is not,
+which is what lets the broadcast profiles elide it.
 
 **The invariant that makes it work: never decode and re-encode `HeaderExt` in
 transit.** nanopb drops unknown fields on decode, so a re-encode silently strips
@@ -647,6 +680,14 @@ Open work, and decisions deliberately not yet made.
   message from a listed key, the way `AdminMessage` already does. Until that lands the
   module stays off by default, because a channel key is shared by everyone on the
   channel and so authorises everyone on it.
+- **Event mode must stop rewriting `hop_start`.** `capEventRelayHops` in
+  `NextHopRouter.cpp` clamps `hop_limit` at a relay and reduces `hop_start` by the same
+  amount to keep `hops_away` accurate downstream. `hop_start` is in the AAD, so a relay
+  cannot change it without invalidating the tag. The clamp on `hop_limit` stays; what
+  goes is the compensating edit, which means `hops_away` over-reports past an
+  event-mode relay. That is a display and heuristic inaccuracy in one build flavour,
+  against an authenticated statement of the originator's budget everywhere - which is
+  what makes the `hop_limit > hop_start` check mean anything.
 - **Sixteen channels.** `MAX_NUM_CHANNELS` is not a firmware constant: `mesh-pb-constants.h`
   derives it from `sizeof(ChannelFile.channels) / sizeof(channels[0])`, so the count is set
   by `*ChannelFile.channels max_count` in `deviceonly.options` and by nothing else. It is
