@@ -259,9 +259,16 @@ message SensorReadings {
    * to indicate the field of application. This is important to distinguish between different
    * fields and explicitly express what each quantity refers to.
    *
-   * Where a quantity is measured by several sensors on one node - air temperature
-   * from the BME280, the SCD4X and the PM sensor - use one quantity and distinguish
-   * them by ordinal, optionally naming each in `sensors`.
+   * Where one quantity is measured by several sensors on one node - air temperature
+   * from two BME280s at different points on a mast - use one quantity and separate
+   * them by ordinal, naming each in `sensors` where it matters.
+   *
+   * A reading is a different quantity only when it measures a different thing, not
+   * when a different part produced it. The temperature a CO2 or PM sensor reports for
+   * its own compensation is one of those: it describes the inside of an enclosure
+   * rather than the air, so it is SENSOR_TEMPERATURE_C_CENTI and not an ordinal of
+   * AIR_TEMPERATURE_C_CENTI. Two ordinary sensors disagreeing about the same air are
+   * not.
    */
   enum Quantity {
     /* Not set; never valid in a key */
@@ -318,7 +325,12 @@ message SensorReadings {
     VOLTAGE_MV = 18;
     /* Current, milliamps, negative when discharging. Ordinal selects the channel. */
     CURRENT_MA = 19;
-    /* Voltage, high-resolution microvolts. Ordinal selects the channel. */
+    /*
+     * Voltage, microvolts. For electrochemical sensor outputs, whose signal sits in
+     * the microvolt range. Supply rails and battery voltages use VOLTAGE_MV: a rail
+     * carried here is four bytes absolute and inflates every delta a thousandfold.
+     * Ordinal selects the channel.
+     */
     VOLTAGE_UV = 20;
 
     // --- Distance and mass ---
@@ -366,20 +378,20 @@ message SensorReadings {
     WATER_AMMONIUM_PPM_CENTI = 39;
 
     // --- Air Quality ---
-    /* PM1.0, standard conditions centi-ug/m3 (235 = 2.35 ug/m3)*/
-    PM1_0_STD_UGM3_CENTI = 40;
-    /* PM2.5, standard conditions centi-ug/m3 (235 = 2.35 ug/m3)*/
-    PM2_5_STD_UGM3_CENTI = 41;
-    /* PM4.0, standard conditions centi-ug/m3 (235 = 2.35 ug/m3)*/
-    PM4_0_STD_UGM3_CENTI = 42;
-    /* PM10.0, standard conditions centi-ug/m3 (235 = 2.35 ug/m3)*/
-    PM10_0_STD_UGM3_CENTI = 43;
-    /* PM1.0, ambient conditions centi-ug/m3 (235 = 2.35 ug/m3)*/
-    PM1_0_ENV_UGM3_CENTI = 44;
-    /* PM2.5, ambient conditions centi-ug/m3 (235 = 2.35 ug/m3)*/
-    PM2_5_ENV_UGM3_CENTI = 45;
-    /* PM10.0, ambient conditions centi-ug/m3 (235 = 2.35 ug/m3)*/
-    PM10_0_ENV_UGM3_CENTI = 46;
+    /* PM1.0, standard conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
+    PM1_0_STD_UGM3_DECI = 40;
+    /* PM2.5, standard conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
+    PM2_5_STD_UGM3_DECI = 41;
+    /* PM4.0, standard conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
+    PM4_0_STD_UGM3_DECI = 42;
+    /* PM10.0, standard conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
+    PM10_0_STD_UGM3_DECI = 43;
+    /* PM1.0, ambient conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
+    PM1_0_ENV_UGM3_DECI = 44;
+    /* PM2.5, ambient conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
+    PM2_5_ENV_UGM3_DECI = 45;
+    /* PM10.0, ambient conditions deci-ug/m3 (235 = 23.5 ug/m3)*/
+    PM10_0_ENV_UGM3_DECI = 46;
 
     /* Particles at least 0.3 um (#/0.1l) */
     PARTICLES_0_3UM = 47;
@@ -416,32 +428,27 @@ message SensorReadings {
      */
     PM_STATUS_FLAGS = 61;
 
-    // --- Multi-sensor nodes additional metrics ---
-    /*
-     * Separated out from atmospheric values as these sensors are generally
-     * embedded in a box and not fully representative of temperature or relative humidity.
-     * These values are generally used for correcting readings from the same sensor.
-     */
-    /* Carbon dioxide sensor temperature, centi-degrees Celsius (2350 = 23.50 C) */
-    CO2_TEMPERATURE_C_CENTI = 62;
-    /* Carbon dioxide sensor humidity, centi-percent (6550 = 65.50 %) */
-    CO2_HUMIDITY_PCT_CENTI = 63;
-    /* Formaldehyde sensor temperature, centi-degrees Celsius (2350 = 23.50 C) */
-    HCHO_TEMPERATURE_C_CENTI = 64;
-    /* Formaldehyde sensor humidity, centi-percent (6550 = 65.50 %) */
-    HCHO_HUMIDITY_PCT_CENTI = 65;
-    /* PM sensor temperature, centi-degrees Celsius (2350 = 23.50 C) */
-    PM_TEMPERATURE_C_CENTI = 66;
-    /* PM sensor humidity, centi-percent (6550 = 65.50 %) */
-    PM_HUMIDITY_PCT_CENTI = 67;
+    // --- Compensation channels ---
+    //
+    // A gas or particulate sensor reports its own temperature and humidity so a
+    // reading can be corrected for them. These are NOT ambient conditions: the part
+    // sits in an enclosure and self-heats, so the value runs warm and averaging it
+    // with AIR_TEMPERATURE_C_CENTI corrupts both. They are separate quantities for
+    // that reason and not per sensor family: what makes them distinct is being a
+    // compensation channel, so name the part in `sensors` and use the ordinal to
+    // separate two of the same kind.
+    /* Sensor-internal temperature, centi-degrees Celsius (2350 = 23.50 C) */
+    SENSOR_TEMPERATURE_C_CENTI = 62;
+    /* Sensor-internal humidity, centi-percent (6550 = 65.50 %) */
+    SENSOR_HUMIDITY_PCT_CENTI = 63;
 
     // --- Body ---
     /* Heart rate, beats per minute */
-    HEART_RATE_BPM = 68;
+    BODY_HEART_RATE_BPM = 64;
     /* Blood oxygen saturation, percent */
-    BLOOD_SPO2_PCT = 69;
+    BODY_SPO2_PCT = 65;
     /* Body temperature, centi-degrees Celsius */
-    BODY_TEMPERATURE_C_CENTI = 70;
+    BODY_TEMPERATURE_C_CENTI = 66;
   }
 
   /*

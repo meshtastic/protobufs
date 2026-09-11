@@ -211,12 +211,17 @@ wire regardless of magnitude, which is why temperature, current, SNR and ORP are
 
 **Match the scale to the instrument, not to a round number.** A scale finer than the
 sensor resolves buys no information and multiplies every delta, which costs a byte per
-sample as soon as the delta crosses 63. The four illuminance quantities are `_DECI` for
-this reason: the best ambient light sensors in use resolve about 0.004 lx at maximum
-gain and most resolve 1 lx, while daylight readings run to six figures. Centi-lux would
-have been ten times finer than any of them, paid for on every sample of a column that
-moves. Voltage in millivolts and pressure in pascals go the other way and are right for
-it - those are the hardware quanta.
+sample as soon as the delta crosses 63. The illuminance and particulate quantities are
+`_DECI` for this reason. The best ambient light sensors resolve about 0.004 lx at
+maximum gain and most resolve 1 lx, while daylight readings run to six figures;
+particulate mass is accurate to about 10 ug/m3 or 10% of the reading, so a hundredth is
+orders below the noise. A centi scale on either doubles the cost of a batch and stores
+digits no sensor produces. Voltage in millivolts and pressure in pascals go the other
+way and are right for it - those are the hardware quanta.
+
+Two scales for one measurand is the exception, not a shortcut: `VOLTAGE_MV` and
+`VOLTAGE_UV` coexist because a supply rail and an electrochemical cell's output are
+four orders of magnitude apart, and each quantity says which it is for.
 
 One field is exempt: `Nau7802Config.calibrationFactor` stays a `float`, because a
 load cell calibration factor is a scale rather than a reading, and quantising a scale
