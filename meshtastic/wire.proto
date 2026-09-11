@@ -601,7 +601,14 @@ message StoreForwardPlusPlus {
  */
 message HeaderExt {
   /*
-   * Fragmentation state, packed as msg_id(8) | index(4) | total(4).
+   * Fragmentation state, packed as msg_id(8) | index(3) | total(3).
+   *
+   * index is 0..7 and total holds the fragment count minus one, so a message is at
+   * most eight fragments, about 1.8 kB. Three bits rather than four because the
+   * fourth buys nothing: fourteen bits is a two-byte varint where fifteen is a
+   * three-byte one, and a sixteen-fragment message arrives whole 19% of the time at
+   * 90% per-packet delivery, against 43% for eight. The limit that matters is
+   * delivery probability, and it binds long before the field width does.
    *
    * total travels on every fragment rather than only the last: a receiver that gets
    * fragment 3 first can size its buffer immediately and knows what is missing, which
@@ -610,7 +617,7 @@ message HeaderExt {
    * Reassembly is endpoint-only; relays treat fragments as independent packets and
    * hold no state. Each fragment is an ordinary packet, so want_ack and ReliableRouter
    * already provide per-fragment retransmission - there is no separate ARQ.
-   * msg_id is a per-sender counter and wraps after 16 concurrent fragmented messages.
+   * msg_id is a per-sender counter and wraps after 256 fragmented messages.
    */
   uint32 fragment = 1;
 }

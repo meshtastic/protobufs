@@ -642,10 +642,10 @@ What it costs, including the length byte:
 | ext block content | bytes |
 |---|--:|
 | none | 0 |
-| fragmentation state | 5 |
-| one future `uint16` field | 5 |
+| fragmentation state | 4 |
 | eight future bools as one bitfield | 4 |
-| fragment plus one future field | 9 |
+| one future `uint16` field | 5 |
+| fragment plus one future field | 8 |
 
 A future field a relay carries blind costs **five bytes on the packets that carry it
 and nothing on the rest**. Growing the fixed header by one field instead costs every
@@ -670,13 +670,27 @@ out identical - not with a comment.
 `MeshPacket.header_ext` carries the encoded block through to the phone API and MQTT so
 a packet's extensions survive intact, including fields the local build does not know.
 
-**Fragmentation** is `HeaderExt.fragment`, packed `msg_id(8) | index(4) | total(4)`.
+**Fragmentation** is `HeaderExt.fragment`, packed `msg_id(8) | index(3) | total(3)`.
 Endpoint-only; relays treat fragments as independent packets. `total` travels on every
 fragment so a receiver that gets fragment 3 first can size its buffer. There is no new
-ARQ - each fragment is an ordinary packet, so `want_ack` already covers it. Ship it
-off by default and opt in per portnum: the byte overhead is ~12%, but the delivery
-probability is what kills you (a 7-fragment message is 48% likely to arrive whole at
-90% per-packet delivery).
+ARQ - each fragment is an ordinary packet, so `want_ack` already covers it.
+
+**Eight fragments is the ceiling**, about 1.8 kB, with `total` holding the count minus
+one. The field is three bits per counter and not four because the fourth is not free
+in either direction: fourteen bits is a two-byte varint where fifteen is a three-byte
+one, so the wider counters cost a byte on every fragmented frame, and they buy a range
+no mesh can deliver.
+
+| fragments | bytes | arrives whole at 90% | at 80% |
+|--:|--:|--:|--:|
+| 2 | 466 | 81% | 64% |
+| 4 | 932 | 66% | 41% |
+| 8 | 1,864 | 43% | 17% |
+| 16 | 3,728 | 19% | 3% |
+
+Delivery probability binds long before the field width does, which is also why
+fragmentation ships off by default and opts in per portnum. The byte overhead is ~12%;
+the arrival odds are what kill you.
 
 ---
 
