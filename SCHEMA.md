@@ -508,8 +508,10 @@ profile 3  EXT    length-prefixed core         2 + len bytes
 the whole thing: `relay` is the node this frame was last transmitted by, `next_hop` the
 node it is meant for next.
 
-Three profiles ship. `EXT` is the escape hatch for a core that outgrows a fixed table:
-reserved, not implemented, and its `CORE_LEN` entry maps to a drop until it is.
+Three profiles ship. `EXT` is an outer layer for traffic that none of the other three
+shapes fit: a floodable frame with a bespoke payload and no addressing. Its framing is
+fixed and no message is defined for its block yet, so its `CORE_LEN` entry maps to a
+drop until one is.
 
 **`EXT` uses the extension block's own mechanism as its core.** A length byte, then that
 many bytes of an encoded protobuf message. `ctrl` is present because the profile has to
@@ -523,19 +525,33 @@ So `CORE_LEN` holds a constant for profiles 0 to 2 and a rule for profile 3: the
 That keeps the relay fast path what it was - no loop over attacker-controlled bytes,
 one length and one comparison.
 
-**The block is immutable, so an `EXT` frame is never relayed.** Relaying means writing
-`relay` and appending to the path, and in this profile those live inside a block that
-cannot be re-encoded in flight without dropping the unknown fields it exists to carry.
-`hop_limit` is therefore zero on an `EXT` frame, and a receiver drops one that arrives
-with it set. `EXT` reaches nodes in direct radio range of the sender.
+**`EXT` floods on `hop_limit` alone.** A forwarder decrements it and sends the frame on
+while it is above zero. That is the whole forwarding rule: no `hop_start`, so no hop
+count and no `hops_away`; no `relay`, so no route learning; no `next_hop`, so no
+steering; no path tail. A frame goes out as far as its budget carries it and no node
+learns anything from having carried it.
 
-**Everything except `hop_limit` is signed.** With no `flags` byte and no mutable core
-fields, the AAD over an `EXT` frame is `ctrl` with the hop bits canonicalised to zero,
-the length byte, and the whole block - which is the entire header. It is the only
-profile where that is true.
+**A forwarder therefore touches exactly one field, and it is the one already outside the
+AAD.** Profiles 1 and 2 rewrite `relay` and append to the tail as they go; `EXT` mutates
+only the hop bits in `ctrl`. So the AAD over an `EXT` frame is `ctrl` with those bits
+canonicalised to zero, the length byte and the whole block - the entire header - and it
+survives an arbitrary number of hops byte-for-byte. `EXT` is the only profile where a
+relay can forward a frame without altering a single authenticated byte.
+
+**Duplicate suppression is a hash of the immutable region**, since there is no `from`
+and no `id` to key on and a forwarder must not parse the block to find a substitute.
+Hashing `ctrl` with the hop bits zeroed, the length byte and the block gives a key that
+is stable across hops, needs no knowledge of what the block contains, and costs one pass
+over bytes the forwarder has already bounds-checked. Without it a flood has nothing
+stopping it.
+
+**What it is for** is a payload a specially assigned node acts on, reaching nodes that
+have no route to it and no reason to hold one - discovering which edge nodes gateway
+into another messaging system, for instance. The block is bespoke to that service and
+opaque to every node that forwards it.
 
 Two profile bits rather than three, because four layouts is the useful space: no
-addressing, addressed to everyone, addressed to one, and an escape hatch. A broadcast
+addressing, addressed to everyone, addressed to one, and a floodable outer layer. A broadcast
 variant without `relay` would save a byte and cost a code path and a table entry, and
 `relay` is what `NextHopRouter` learns routes from. The third bit is reserved in
 `ctrl`.
@@ -581,10 +597,11 @@ Two rules follow, both free on receive:
   seen, and rebroadcasting it - must first confirm the path tail is empty. The path is
   one byte per hop and is better evidence than the subtraction.
 
-Neither `MINI` nor `EXT` carries a `flags` byte, so neither has a `hop_start` and the
-first rule cannot be evaluated on them. Both carry `hop_limit` zero, are never relayed,
-and a receiver drops one that arrives with `hop_limit` set - which is the same check the
-first rule performs, reached by a different route.
+Neither `MINI` nor `EXT` carries a `flags` byte, so neither has a `hop_start` and
+neither rule can be evaluated on them. Both flood on `hop_limit` alone, forwarded while
+it is above zero, and both suppress duplicates on a key that needs no addressing fields:
+`MINI` on its nonce, `EXT` on a hash of its immutable region. Neither supports route
+learning, and neither is meant to.
 
 ### The path tail
 
@@ -760,8 +777,9 @@ Open work, and decisions deliberately not yet made.
 
 **Deferred by scope:**
 
-- **Header profile 3.** `EXT`'s framing is fixed in §8 and the message that goes in
-  its block is not defined. Its `CORE_LEN` entry maps to a drop until one exists.
+- **Header profile 3.** `EXT`'s framing and forwarding rule are fixed in §8; the
+  message that goes in its block is not defined, and neither is the hash used for
+  duplicate suppression. Its `CORE_LEN` entry maps to a drop until both exist.
 
 **Stated but not built:**
 
