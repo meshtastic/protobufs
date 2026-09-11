@@ -233,11 +233,10 @@ message HostMetrics {
  * Send as many samples as the payload allows, then start another message.
  *
  * On size: a reading costs one key byte plus one to three value bytes, against a
- * typed field's one to two tag bytes plus the same value. The generic form is
- * therefore slightly larger for a three-reading BME280 broadcast and slightly
- * smaller for anything that used to sit above field 15, which was most of the
- * catalogue. What it actually buys is unbounded quantities, repeated quantities and
- * no schema churn per sensor.
+ * typed field's one to two tag bytes plus the same value. That is slightly larger for
+ * a three-reading BME280 broadcast and slightly smaller once a quantity would need a
+ * two-byte tag, which a catalogue this size reaches quickly. What it buys is unbounded
+ * quantities, repeated quantities and no schema churn per sensor.
  */
 message SensorReadings {
   /*

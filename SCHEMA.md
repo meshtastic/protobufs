@@ -437,12 +437,11 @@ read everything after it.
      +-- 0 = v3
 ```
 
-**One version bit, not two.** A firmware build carries at most two wire formats at
-once, because that is what a gradual migration needs and more than two is not
-maintainable. The bit distinguishes the format being migrated from the one being
-migrated to; once a conversion completes it flips back for the next one. A break that
-cannot be done gradually changes the PHY sync word instead, which is a different
-mechanism at a lower layer.
+**The version field is one bit.** A firmware build carries at most two wire formats at
+once, which is what a gradual migration needs and the most that is maintainable. The
+bit distinguishes the format being migrated from the one being migrated to; a completed
+conversion frees it to flip back for the next. A break that cannot be done gradually
+changes the PHY sync word, which is a different mechanism at a lower layer.
 
 `flags` is present on profiles 1 to 3.
 
@@ -572,8 +571,8 @@ moves the payload boundary, which moves the ciphertext and tag, which fails
 verification. An attacker who alters it in either direction destroys the frame rather
 than extending its life or faking a hop count - no new capability, since they could
 already corrupt a ciphertext byte, but the budget inflation the rules above guard
-against stops being reachable. The two receive-side rules stay as cheap structural
-checks that fail fast before any crypto runs.
+against is not reachable. The two receive-side rules are cheap structural checks that
+fail before any crypto runs.
 
 **The invariant a relay must preserve is `path length == hop_start - hop_limit`.**
 Appending a byte and decrementing the budget together preserves it; doing neither also
@@ -708,7 +707,7 @@ Open work, and decisions deliberately not yet made.
 - **Fragmentation off by default, opt-in per portnum.** §8 states the policy; nothing
   implements the gate.
 
-**Firmware work the schema now assumes:**
+**Firmware work the schema assumes:**
 
 - **`DeviceState` is written on configuration changes only.** Nothing in the message
   changes per packet, so a deep sleep is not a reason to rewrite it. Firmware that
