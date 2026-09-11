@@ -288,12 +288,12 @@ message MeshPacket {
   TransportMechanism transport_mechanism = 18;
 
   /*
-   * The v3 header's extension block, exactly as it appeared on air.
+   * The v3 header's options block, exactly as it appeared on air.
    *
-   * Carried through opaquely so the phone API and MQTT deliver a packet's extensions
-   * intact, including fields this build does not know. Encodes a HeaderExt
+   * Carried through opaquely so the phone API and MQTT deliver a packet's options
+   * intact, including fields this build does not know. Encodes a HeaderOptions
    * (wire.proto). Never re-encode it: decoding and re-encoding drops unknown fields
    * and defeats the point of the block.
    */
-  bytes header_ext = 19;
+  bytes header_options = 19;
 }

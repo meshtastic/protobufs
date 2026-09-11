@@ -77,11 +77,11 @@ The on-air header was 16 fixed bytes, and any new field meant paying for it on e
 packet forever. The 3.0 header is split by **who is allowed to write to it**:
 
 - a small **core** that relays rewrite at fixed offsets - hop limit, next hop, relay
-- an **extension block** that no relay may touch, and therefore cannot strip
+- an **options block** that no relay may touch, and therefore cannot strip
 - an append-only **path** at the frame tail
 
 A relay's entire header parse is a version check, a table lookup and one bounds
-check. It never decodes the extension block; it copies the bytes. That is what makes
+check. It never decodes the options block; it copies the bytes. That is what makes
 an unencrypted, expandable header safe rather than an attack surface: a field a relay
 has never heard of survives the trip intact, and the AEAD tag now covers the whole
 block, so nobody can add or drop one without failing authentication. Today the header

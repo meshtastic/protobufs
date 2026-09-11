@@ -26,7 +26,7 @@ graph TD
     end
 
     subgraph Wire["Wire - over the air"]
-        wire[wire.proto<br/><i>Position, User, Data, Routing,<br/>Waypoint, NeighborInfo, HeaderExt</i>]
+        wire[wire.proto<br/><i>Position, User, Data, Routing,<br/>Waypoint, NeighborInfo, HeaderOptions</i>]
         packet[packet.proto<br/><i>MeshPacket</i>]
         beacon[mesh_beacon.proto]
         admin[admin.proto<br/><i>AdminMessage</i>]
@@ -394,7 +394,7 @@ The header is split by what the AEAD's additional authenticated data covers.
 
 ```
    +-----+-----+------+------+------+------+-------+   +------------+------+
-   |ctrl |flags| from |  id  |  to  | chan |  ext  |   | ciphertext | path |
+   |ctrl |flags| from |  id  |  to  | chan |  opt  |   | ciphertext | path |
    |  1  |  1  |  4   |  4   | 0/4  | 0/1  |  1+n  |   |   + tag    | 0..14|
    +-----+-----+------+------+------+------+-------+   +------------+------+
    |                                               |                |
@@ -402,8 +402,8 @@ The header is split by what the AEAD's additional authenticated data covers.
                                                                         one byte per hop
 ```
 
-Which of `to` and `chan` are present is what the profile selects. `ext` is absent when
-the length byte is zero, and is a length-prefixed `HeaderExt` when it is not.
+Which of `to` and `chan` are present is what the profile selects. `opt` is absent when
+its length byte is zero, and is a length-prefixed `HeaderOptions` when it is not.
 
 **The split is not byte-aligned, and the covered span is not wholly immutable.** `ctrl`
 and `flags` each carry bits a relay rewrites. Those bits are canonicalised to zero
@@ -415,9 +415,9 @@ covered span is byte-for-byte immutable in flight.
 |---|---|---|
 | `ver`, `profile` (`ctrl`) | originator | yes |
 | `hop_limit` (`ctrl`) | every relay | no, zeroed |
-| `hop_start`, `want_ack`, `ext`, `path` (`flags`) | originator | yes |
+| `hop_start`, `want_ack`, `opt`, `path` (`flags`) | originator | yes |
 | `via_mqtt` (`flags`) | a gateway | no, zeroed |
-| `from`, `id`, `to`, `chan`, the ext block | originator | yes |
+| `from`, `id`, `to`, `chan`, the options block | originator | yes |
 | `relay`, `next_hop` | every relay | no |
 | path bytes | every relay | no |
 
@@ -452,11 +452,11 @@ changes the PHY sync word, which is a different mechanism at a lower layer.
 ```
      7   6  5   4      3     2      1     0
    +---------------+ +---+ +----+ +---+ +----+
-   |   hop_start   | |ack| |mqtt| |ext| |path|
+   |   hop_start   | |ack| |mqtt| |opt| |path|
    +---------------+ +---+ +----+ +---+ +----+
            |           |     |      |     |
            |           |     |      |     +-- a path tail follows the ciphertext
-           |           |     |      +-- an ext block is present
+           |           |     |      +-- an options block is present
            |           |     +-- via_mqtt, MUTABLE, gateway-set, not in the AAD
            |           +-- want_ack
            +-- 0..15, the budget the originator launched with
@@ -513,7 +513,7 @@ shapes fit: a floodable frame with a bespoke payload and no addressing. Its fram
 fixed and no message is defined for its block yet, so its `CORE_LEN` entry maps to a
 drop until one is.
 
-**`EXT` uses the extension block's own mechanism as its core.** A length byte, then that
+**`EXT` uses the options block's own mechanism as its core.** A length byte, then that
 many bytes of an encoded protobuf message. `ctrl` is present because the profile has to
 be read from somewhere, so a receiver always has a version, a profile and a length
 before it has anything variable. The message that goes in the block is deliberately not
@@ -575,7 +575,7 @@ Four sizing rules fix the rest of the layout:
 - **`channel` is a full byte** on the broadcast profiles. A six-bit hash frees two bits
   in the core and pays for them with extra decode attempts on every received packet.
 - **There is no critical extension bit.** A field that tells a relay to drop a packet
-  it does not understand contradicts the one property the extension block guarantees.
+  it does not understand contradicts the one property the options block guarantees.
 
 ### Hop accounting
 
@@ -647,19 +647,19 @@ Appending and decrementing together preserves it, and so does doing neither, at 
 cost of a tail that omits that hop. Decrementing without appending, or setting
 `hop_limit` to zero in one step, breaks the frame for every node downstream.
 
-### The extension block
+### The options block
 
-`ext` is a length byte followed by that many bytes of an encoded `HeaderExt`.
+`opt` is a length byte followed by that many bytes of an encoded `HeaderOptions`.
 
 ```
-   ext_len (1) || <ext_len bytes of encoded HeaderExt>
+   opt_len (1) || <opt_len bytes of encoded HeaderOptions>
 ```
 
 It is not a bespoke TLV. It is an ordinary protobuf message in `wire.proto`, encoded
 with the nanopb already in the tree:
 
 ```proto
-message HeaderExt {
+message HeaderOptions {
   /* Fragmentation state, packed as msg_id(8) | index(4) | total(4). */
   uint32 fragment = 1;
 }
@@ -682,7 +682,7 @@ it, because a hop-by-hop field added later will need the space.
 
 What it costs, including the length byte:
 
-| ext block content | bytes |
+| options block content | bytes |
 |---|--:|
 | none | 0 |
 | fragmentation state | 4 |
@@ -704,16 +704,16 @@ mode frame and an encrypted one protect identical bytes.
 `from` and `id` are in the nonce derivation and must not be narrowed. `to` is not,
 which is what lets the broadcast profiles elide it.
 
-**The invariant that makes it work: never decode and re-encode `HeaderExt` in
+**The invariant that makes it work: never decode and re-encode `HeaderOptions` in
 transit.** nanopb drops unknown fields on decode, so a re-encode silently strips
 exactly the forward compatibility the block exists to provide. Enforce it with a test
 that round-trips an unknown high tag through the relay path and asserts the bytes come
 out identical - not with a comment.
 
-`MeshPacket.header_ext` carries the encoded block through to the phone API and MQTT so
-a packet's extensions survive intact, including fields the local build does not know.
+`MeshPacket.header_options` carries the encoded block through to the phone API and MQTT so
+a packet's options survive intact, including fields the local build does not know.
 
-**Fragmentation** is `HeaderExt.fragment`, packed `msg_id(8) | index(3) | total(3)`.
+**Fragmentation** is `HeaderOptions.fragment`, packed `msg_id(8) | index(3) | total(3)`.
 Endpoint-only; relays treat fragments as independent packets. `total` travels on every
 fragment so a receiver that gets fragment 3 first can size its buffer. There is no new
 ARQ - each fragment is an ordinary packet, so `want_ack` already covers it.
@@ -783,7 +783,7 @@ Open work, and decisions deliberately not yet made.
 
 **Stated but not built:**
 
-- **The "never re-encode `HeaderExt` in transit" test.** §8 requires it as a test
+- **The "never re-encode `HeaderOptions` in transit" test.** §8 requires it as a test
   rather than a comment, because nanopb drops unknown fields on decode and a re-encode
   silently strips exactly the forward compatibility the block exists to provide. Round
   trip an unknown high tag through the relay path and assert the bytes are identical.

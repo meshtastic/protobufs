@@ -577,7 +577,7 @@ message StoreForwardPlusPlus {
 }
 
 /*
- * The immutable extension block of the v3 on-air header.
+ * The immutable options block of the v3 on-air header.
  *
  * The header is split by mutability rather than by meaning: a fixed core that relays
  * rewrite at known offsets, this block which no relay may touch, and an append-only
@@ -599,7 +599,7 @@ message StoreForwardPlusPlus {
  * decode, so a re-encode silently strips exactly the forward compatibility this
  * design exists to provide.
  */
-message HeaderExt {
+message HeaderOptions {
   /*
    * Fragmentation state, packed as msg_id(8) | index(3) | total(3).
    *
