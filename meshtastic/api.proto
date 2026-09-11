@@ -34,8 +34,8 @@ message NodeInfo {
   User user = 2;
 
   /*
-   * This position data. Note: before 1.2.14 we would also store the last time we've heard from this node in position.time, that is no longer true.
-   * Position.time now indicates the last time we received a POSITION from that node.
+   * This node's last known position. Position.time is when that position was
+   * received, not when the node was last heard from - see last_heard for that.
    */
   Position position = 3;
 

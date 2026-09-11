@@ -1,9 +1,7 @@
 # Meshtastic 3.0 Protobufs - Developer Reference
 
-Conventions and encodings for anyone implementing against this schema. It is the
-accepted 3.0 schema rather than a proposal, so the rules below are what a client has
-to follow, not options under discussion. For why the rework happened, see
-[OVERVIEW.md](OVERVIEW.md).
+Conventions and encodings for anyone implementing against this schema. For why the
+rework happened, see [OVERVIEW.md](OVERVIEW.md).
 
 Everything here is a hard break from 2.x. Field numbers, message shapes and encodings
 all changed; nothing decodes across the boundary, and nothing is expected to.
@@ -120,11 +118,10 @@ on the air and a full-precision `sfixed32` on the client link.
 `Position` with every field populated, computed from the stored compact values rather
 than relayed verbatim.
 
-This is not duplication left over from 2.x. The two sides optimise for opposite things:
-airtime and flash wear on one, and a decoder that a phone or a web app can read without
-knowing the encoding rules on the other. Collapsing each pair to one type would make one
-of those worse, so both stay. The same holds for the node database, which is stored in
-its compact form and served in a form a client can parse directly.
+The two sides optimise for opposite things: airtime and flash wear on one, a decoder a
+phone or a web app can read without knowing the encoding rules on the other. One type
+cannot do both, which is why each pair exists. The node database follows the same rule,
+stored in its compact form and served in one a client can parse directly.
 
 ### What to compile
 
@@ -315,14 +312,13 @@ tag and a length byte on every element, plus a tag on each field inside it. Two 
 It wins whenever the element count exceeds the field count, which is the usual shape for
 a list of measurements or edges.
 
-| message | before | after |
-|---|---|---|
-| `NeighborInfo.neighbor_ids` / `.neighbor_snr` | `repeated Neighbor` | 32% smaller at 4 edges, 40% at 10, 44% at 20 |
-| `DrawnShape.vertex_lat_deltas` / `.vertex_lon_deltas` | `repeated CotGeoPoint` | ~58 B on a 32-vertex telestration |
+| columns | saving against one submessage per element |
+|---|---|
+| `NeighborInfo.neighbor_ids` / `.neighbor_snr` | 32% at 4 edges, 40% at 10, 44% at 20 |
+| `DrawnShape.vertex_lat_deltas` / `.vertex_lon_deltas` | ~58 B on a 32-vertex telestration |
 
-Flattening `NeighborInfo` also removed two fields the submessage carried and the
-comments said were never transmitted - when the message *is* the columns, a local-only
-value has nowhere to hide.
+Columns also constrain what a message can carry: a value that is local to one node has
+nowhere to sit in a pair of parallel arrays, so it stays in that node's own table.
 
 **`fixed32` for node numbers.** Since 2.8 a NodeNum is a CRC over the node's public
 key, so it is uniformly distributed over 32 bits: 15 in 16 land above 2²⁸ and cost the
@@ -340,13 +336,11 @@ the whole thing, so a varint is one byte where `fixed32` would be four.
 nanopb only honours that for a bounded field. Without `max_count` in the `.options` it
 emits a callback instead, and a callback writes a tag per element - exactly the
 per-element framing the columns exist to remove, silently, with the `.proto` still
-saying `repeated sint32`. `DrawnShape`'s vertex columns were in this state: the options
-comment described a 32-entry pool that had never been declared. Bounding them also makes
-the message measurable - nanopb now emits `meshtastic_DrawnShape_size` at 490 where it
-previously reported "depends on runtime parameters", and the 256 B pool costs no RAM
-because `Route` is the larger arm of the same `oneof`. Every `repeated` scalar in the
-tree now carries a bound except `resend_chunks.chunks`, which is unbounded by nature and
-client-facing.
+saying `repeated sint32`. A bound also makes the message measurable: nanopb emits
+`meshtastic_DrawnShape_size` at 490, which it cannot compute for a callback field. The
+32-vertex pool costs no RAM, because `Route` is the larger arm of the same `oneof`.
+Every `repeated` scalar in the tree carries a bound except `resend_chunks.chunks`, which
+is unbounded by nature and client-facing.
 
 ---
 
@@ -504,16 +498,17 @@ inherently broadcast, and a DM is exclusively PKI - signed but unencrypted in HA
 encrypted otherwise. That is what buys back the byte `ctrl` costs and lands profile 3
 at exactly today's 16.
 
-**Four choices the design left open are settled.** The profile 0 nonce is **four
-bytes**: it collides at around 2^16 packets on a private net, which is above what a
-profile-0 deployment sends and below the point where the byte is worth spending. The
-mutable path records **one-byte NodeNum suffixes**, matching what `relay_node` already
-carries, rather than full NodeNums at four bytes each. `channel` stays a **full byte**
-on the broadcast profiles - a six-bit hash would free two bits in the core and buy them
-with extra decode attempts on every received packet. And there is **no critical
-extension bit**: a field that can tell a relay to drop a packet it does not understand
-contradicts the one property the extension block exists to guarantee, so its absence is
-now a decision rather than an omission.
+Four sizing rules fix the rest of the layout:
+
+- **The profile 0 nonce is four bytes.** It collides at around 2^16 packets on a
+  private net, above what a profile-0 deployment sends and below the point where a
+  fifth byte is worth spending.
+- **The mutable path records one-byte NodeNum suffixes**, matching `relay_node`, not
+  full NodeNums at four bytes each.
+- **`channel` is a full byte** on the broadcast profiles. A six-bit hash frees two bits
+  in the core and pays for them with extra decode attempts on every received packet.
+- **There is no critical extension bit.** A field that tells a relay to drop a packet
+  it does not understand contradicts the one property the extension block guarantees.
 
 ### The extension block
 
@@ -619,8 +614,8 @@ Open work, and decisions deliberately not yet made.
 
 **Deferred, needs data:**
 
-- **Tag ordering in the large messages.** Which fields deserve tags 1-15 was decided
-  on judgement rather than on measured traffic. It costs most in `AdminMessage`, where
+- **Tag ordering in the large messages.** The assignment of tags 1-15 rests on
+  judgement rather than on measured traffic. It costs most in `AdminMessage`, where
   the whole config write path - `set_owner`, `set_channel`, `set_config`,
   `set_module_config`, `begin_edit_settings`, `commit_edit_settings` - sits above 15
   and pays a two-byte key, while the read path sits below it. `Position` and
@@ -644,10 +639,9 @@ Open work, and decisions deliberately not yet made.
 
 **Firmware work the schema now assumes:**
 
-- **`DeviceState` is written on configuration changes only.** The receive queue, the
-  last text message and the last waypoint are gone from it, so nothing in the message
-  changes per packet and a deep sleep no longer has a reason to rewrite it. Firmware
-  that still saves it on every sleep keeps the wear without the cause.
+- **`DeviceState` is written on configuration changes only.** Nothing in the message
+  changes per packet, so a deep sleep is not a reason to rewrite it. Firmware that
+  saves it on every sleep pays the flash wear for nothing.
 - **`RemoteHardware` authorisation.** `RemoteHardwareConfig.authorized_key` exists;
   the module must reject a `HardwareMessage` that did not arrive as a PKI direct
   message from a listed key, the way `AdminMessage` already does. Until that lands the
@@ -674,6 +668,6 @@ Open work, and decisions deliberately not yet made.
 
 **Documentation:**
 
-- **`ChannelSettings` still under-documents itself.** It no longer needs to explain
-  primary versus secondary, but it does not say how admin messages are secured, and
-  its `id` comment still refers to a "Well Known Channels" table that does not exist.
+- **`ChannelSettings` under-documents itself.** It does not say how admin messages are
+  secured, and its `id` comment refers to a "Well Known Channels" table that does not
+  exist.

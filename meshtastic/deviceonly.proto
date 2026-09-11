@@ -145,10 +145,9 @@ message NodeInfoLite {
 message DeviceState {
   // Everything here changes only when someone reconfigures the node, so the
   // file is written on a configuration change rather than on every deep sleep.
-  // 2.x also kept the receive queue and the last received text message and
-  // waypoint in this blob, which is what made a deep sleep rewrite all of it
-  // and wore the flash. The queue was never implemented and the screen keeps
-  // its own message store, so all three are gone rather than split out.
+  // Nothing that changes per packet belongs in it: packets the phone has yet to
+  // read, and the messages and waypoints the screen shows, are held by the
+  // modules that own them.
 
   /*
    * Read only settings/info about this node

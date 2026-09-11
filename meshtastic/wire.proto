@@ -917,17 +917,15 @@ message NeighborInfo {
    * (neighbor_ids[N], neighbor_snr[N]), and the two columns MUST stay the same
    * length.
    *
-   * Replaces the former `repeated Neighbor neighbors = 4`, one length-delimited
-   * submessage per edge. A submessage spent a tag and a length byte on every
-   * neighbour plus a tag on each of its two fields; the columns pay the field
-   * framing once and then nothing per edge, which is around a third of the
-   * message at ten neighbours and roughly doubles how many edges fit in a
-   * 233-byte payload.
+   * Columns rather than one submessage per edge: a submessage costs a tag and a
+   * length byte per neighbour plus a tag on each field inside it, where the
+   * columns pay the field framing once and nothing per edge. That is around a
+   * third of the message at ten neighbours, and roughly twice as many edges in
+   * a 233-byte payload.
    *
-   * The old submessage also carried `last_rx_time` and the neighbour's own
-   * broadcast interval, both documented as local-only and never transmitted.
-   * They are not columns here: a node's view of when it last heard a neighbour
-   * belongs to that node's own table, not to a message about the edge.
+   * A node's view of when it last heard a neighbour, and that neighbour's own
+   * broadcast interval, belong to that node's table rather than to a message
+   * about the edge, so neither is a column here.
    */
   repeated fixed32 neighbor_ids = 4;
 

@@ -110,14 +110,13 @@ message Channel {
    *
    * Index 0 is the primary channel: its name feeds the frequency slot hash, so
    * it is the one that decides where the radio listens. Every other index is a
-   * key for decrypting traffic on that same frequency. 3.0 drops the PRIMARY /
-   * SECONDARY role enum that used to say this, because position already did.
+   * key for decrypting traffic on that same frequency. Position carries this
+   * distinction, so no role field states it.
    */
   uint32 index = 1;
 
   /*
-   * The settings for this channel. Absent means the channel is disabled, which
-   * is what the DISABLED role used to mean.
+   * The settings for this channel. Absent means the channel is disabled.
    */
   ChannelSettings settings = 2;
 }
