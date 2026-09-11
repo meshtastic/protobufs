@@ -76,4 +76,3 @@
 
 # ext_len is a single byte in the on-air header, so the encoded block cannot exceed
 # 255; keeping it one byte keeps the relay bounds check a single comparison.
-*HeaderExt.source_route max_size:7

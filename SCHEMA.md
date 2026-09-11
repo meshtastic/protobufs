@@ -619,9 +619,6 @@ with the nanopb already in the tree:
 message HeaderExt {
   /* Fragmentation state, packed as msg_id(8) | index(4) | total(4). */
   uint32 fragment = 1;
-
-  /* An explicit path supplied by the endpoint, one NodeNum suffix per hop. */
-  bytes source_route = 2;
 }
 ```
 
@@ -629,6 +626,10 @@ Being real protobuf is the whole point. Unknown fields skip by protobuf's own ru
 so a relay carrying a field its build has never heard of needs no new code. Third-party
 MQTT consumers decode it with generated code in every language. Field numbering and
 deprecation work as they do everywhere else.
+
+The block carries no route. A prescriptive path and the descriptive one in the tail
+are the same list in the same encoding, and the tail already records what a route was,
+which is what a reply needs in order to steer itself.
 
 **Tags 1 to 15 are the hop-by-hop budget.** They cost a one-byte key and are the only
 ones a relay may ever read; an unknown one is forwarded verbatim and never acted on.
@@ -643,7 +644,7 @@ What it costs, including the length byte:
 | fragmentation state | 5 |
 | one future `uint16` field | 5 |
 | eight future bools as one bitfield | 4 |
-| fragment plus a 4-hop source route | 11 |
+| fragment plus one future field | 9 |
 
 A future field a relay carries blind costs **five bytes on the packets that carry it
 and nothing on the rest**. Growing the fixed header by one field instead costs every

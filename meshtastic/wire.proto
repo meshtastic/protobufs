@@ -613,12 +613,6 @@ message HeaderExt {
    * msg_id is a per-sender counter and wraps after 16 concurrent fragmented messages.
    */
   uint32 fragment = 1;
-
-  /*
-   * An explicit path supplied by the endpoint, one NodeNum suffix per hop.
-   * Distinct from the mutable path recorded at the frame tail, which relays append to.
-   */
-  bytes source_route = 2;
 }
 
 /*
