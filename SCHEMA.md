@@ -634,7 +634,8 @@ which is what a reply needs in order to steer itself.
 **Tags 1 to 15 are the hop-by-hop budget.** They cost a one-byte key and are the only
 ones a relay may ever read; an unknown one is forwarded verbatim and never acted on.
 Tags 16 and above cost two bytes and are end-to-end, so a relay has no business looking
-at them at all. Both current fields sit in the cheap range.
+at them at all. `fragment` sits in the cheap range even though a relay never reads
+it, because a hop-by-hop field added later will need the space.
 
 What it costs, including the length byte:
 
