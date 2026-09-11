@@ -427,12 +427,13 @@ covered span is byte-for-byte immutable in flight.
 read everything after it.
 
 ```
-     7     6   5  4   3      2   1  0
-   +---+ +---------------+ +-----------+
-   |ver| |   hop_limit   | |  profile  |
-   +---+ +---------------+ +-----------+
-     |           |               |
-     |           |               +-- selects the core layout, 8 values
+     7     6   5  4   3     2     1  0
+   +---+ +---------------+ +---+ +-------+
+   |ver| |   hop_limit   | |rsv| |profile|
+   +---+ +---------------+ +---+ +-------+
+     |           |           |       |
+     |           |           |       +-- selects the core layout, 4 values
+     |           |           +-- reserved, must be 0
      |           +-- 0..15, MUTABLE, canonicalised to zero in the AAD
      +-- 0 = v3
 ```
@@ -463,49 +464,56 @@ packet can be launched with up to fifteen hops of budget.
 
 ### Profiles
 
-`CORE_LEN` must be a complete 8-entry table with reserved profiles mapping to a drop -
-the profile field is attacker-controlled, so a partial `switch` with a fallthrough is a
-vulnerability.
+`CORE_LEN` is a complete 4-entry table. The profile field is attacker-controlled, so a
+partial `switch` with a fallthrough is a vulnerability.
 
 | # | profile | fields | bytes |
 |--:|---|---|--:|
-| 0 | `MINIMAL` | `ctrl nonce4` | 5 |
-| 1 | `BCAST` **(tbd)** | `ctrl flags from4 id4 chan` | 11 |
-| 2 | `BCAST_R` | `ctrl flags from4 id4 chan relay` | 12 |
-| 3 | `UNICAST` | `ctrl flags from4 id4 to4 relay next_hop` | 16 |
-| 4-6 | reserved **(tbd)** | | |
-| 7 | `EXT_CORE` **(tbd)** | TLV core, endpoints only | |
+| 0 | `MINI` | `ctrl nonce4` | 5 |
+| 1 | `BCAST` | `ctrl flags from4 id4 chan relay` | 12 |
+| 2 | `UCAST` | `ctrl flags from4 id4 to4 relay next_hop` | 16 |
+| 3 | `EXT` **(tbd)** | TLV core, endpoints only | |
 | | today's fixed `PacketHeader` | | 16 |
 
 ```
-profile 0  MINIMAL   no addressing at all        5 bytes
+profile 0  MINI   no addressing                 5 bytes
      0     1     2     3     4
   +-----+-----------------------+
   | ctrl|       nonce (4)       |
   +-----+-----------------------+
 
-profile 1  BCAST     broadcast, never relayed   11 bytes
-     0     1     2     3     4     5     6     7     8     9     10
-  +-----+-----+-----------------------+-----------------------+-----+
-  | ctrl|flags|        from (4)       |         id (4)        | chan|
-  +-----+-----+-----------------------+-----------------------+-----+
-
-profile 2  BCAST_R   broadcast, relayed         12 bytes
+profile 1  BCAST  addressed to everyone        12 bytes
      0     1     2     3     4     5     6     7     8     9     10    11
   +-----+-----+-----------------------+-----------------------+-----+-----+
   | ctrl|flags|        from (4)       |         id (4)        | chan|relay|
   +-----+-----+-----------------------+-----------------------+-----+-----+
 
-profile 3  UNICAST   addressed, PKI only        16 bytes
+profile 2  UCAST  addressed to one, PKI only   16 bytes
      0     1     2     3     4     5     6     7     8     9     10    11    12    13    14    15
   +-----+-----+-----------------------+-----------------------+-----------------------+-----+-----+
   | ctrl|flags|        from (4)       |         id (4)        |         to (4)        |relay| nhop|
   +-----+-----+-----------------------+-----------------------+-----------------------+-----+-----+
+
+profile 3  EXT    TLV core, endpoints only     reserved
 ```
 
-`nhop` is `next_hop`, and both it and `relay` carry the last byte of a NodeNum rather
-than the whole thing. Profiles 4 to 6 have no layout because they are unallocated, and
-7 has none because its core is a TLV read only by endpoints.
+`nhop` is `next_hop`. Both it and `relay` carry the last byte of a NodeNum rather than
+the whole thing: `relay` is the node this frame was last transmitted by, `next_hop` the
+node it is meant for next.
+
+Three profiles ship. `EXT` is the escape hatch for a core that outgrows a fixed table,
+reserved and not implemented, and its `CORE_LEN` entry maps to a drop.
+
+**A relay drops `EXT` by construction**, not only while it is unimplemented: its core is
+a TLV, so a relay cannot length it without parsing attacker-controlled bytes, which is
+the one thing the fast path may not do. `EXT` frames reach only nodes in direct radio
+range of the sender.
+
+Two profile bits rather than three, because four layouts is the useful space: no
+addressing, addressed to everyone, addressed to one, and an escape hatch. A broadcast
+variant without `relay` would save a byte and cost a code path and a table entry, and
+`relay` is what `NextHopRouter` learns routes from. The third bit is reserved in
+`ctrl`.
 
 **The expandable header is smaller than the fixed one on the dominant traffic class.**
 A broadcast `to` is four bytes of `0xFFFFFFFF` today, and the broadcast profiles encode
@@ -513,14 +521,14 @@ it in zero bits, so expandability pays for itself before a single extension is a
 
 **Unicast carries no channel hash.** A PSK is a channel key, so PSK traffic is
 inherently broadcast, and a DM is exclusively PKI - signed but unencrypted in HAM mode,
-encrypted otherwise. That is what buys back the byte `ctrl` costs and lands profile 3
+encrypted otherwise. That is what buys back the byte `ctrl` costs and lands `UCAST`
 at exactly today's 16.
 
 Four sizing rules fix the rest of the layout:
 
-- **The profile 0 nonce is four bytes.** It collides at around 2^16 packets on a
-  private net, above what a profile-0 deployment sends and below the point where a
-  fifth byte is worth spending.
+- **The `MINI` nonce is four bytes.** It collides at around 2^16 packets on a
+  private net, above what a `MINI` deployment sends and below the point where a fifth
+  byte is worth spending.
 - **The mutable path records one-byte NodeNum suffixes**, matching `relay_node`, not
   full NodeNums at four bytes each.
 - **`channel` is a full byte** on the broadcast profiles. A six-bit hash frees two bits
@@ -549,30 +557,35 @@ Two rules follow, both free on receive:
   one byte per hop and is better evidence than the subtraction.
 
 Profile 0 has no `flags` byte and therefore no `hop_start`, so the first rule cannot be
-evaluated on it. `MINIMAL` carries no hop accounting: `hop_limit` is zero and ignored,
+evaluated on it. `MINI` carries no hop accounting: `hop_limit` is zero and ignored,
 and a profile 0 frame is never relayed.
 
 ### The path tail
 
-The path is one byte per hop taken, appended at the frame end, oldest first. **Its
-length is not carried.** A packet that has taken *h* hops has taken them out of the
-budget the originator set, so the path is exactly `hop_start - hop_limit` bytes and can
-never exceed `hop_start`. The payload boundary is the same subtraction:
+The path is one byte per hop taken, appended at the frame end, oldest first. It is
+optional: `flags.path` says whether a frame carries one.
+
+**Its length is not carried.** A hop costs one byte of budget and writes one byte of
+path, so a frame that has one is exactly `hop_start - hop_limit` bytes of it, never
+more than `hop_start`. The payload boundary follows from the same subtraction:
 
 ```
-   payload_end = frame_len - (hop_start - hop_limit)
+   path present:   payload_end = frame_len - (hop_start - hop_limit)
+   path absent:    payload_end = frame_len
 ```
 
-`relay` is the last entry of the path, kept at a fixed core offset for nodes that only
-care about the previous hop.
+On a frame that carries a path, the last byte is the previous hop, which is what `relay`
+in the core says; `relay` is kept at a fixed core offset so a node that wants only the
+previous hop can read it without consulting the tail, and so the value survives on
+frames with no path at all.
 
-**This makes `hop_limit` tamper-evident without putting it in the AAD.** Changing it
-moves the payload boundary, which moves the ciphertext and tag, which fails
-verification. An attacker who alters it in either direction destroys the frame rather
-than extending its life or faking a hop count - no new capability, since they could
-already corrupt a ciphertext byte, but the budget inflation the rules above guard
-against is not reachable. The two receive-side rules are cheap structural checks that
-fail before any crypto runs.
+**On a frame that carries a path, `hop_limit` is tamper-evident without being in the
+AAD.** Altering it moves the payload boundary, which moves the ciphertext and tag, which
+fails verification, in either direction. That is no new capability for an attacker, who
+could always corrupt a ciphertext byte, but it does put budget inflation out of reach.
+**It does not hold when `flags.path` is clear**, where nothing ties `hop_limit` to the
+frame geometry and the two receive-side rules above are the only check. They are cheap
+and structural, and they run before any crypto.
 
 **The invariant a relay must preserve is `path length == hop_start - hop_limit`.**
 Appending a byte and decrementing the budget together preserves it; doing neither also
@@ -694,9 +707,8 @@ Open work, and decisions deliberately not yet made.
 
 **Deferred by scope:**
 
-- **Header profiles 1 and 7.** `BCAST` and `EXT_CORE` are defined in §8 and not
-  implemented in the first release, along with the reserved 4 to 6. Their `CORE_LEN`
-  entries must map to a drop meanwhile.
+- **Header profile 3.** `EXT` is defined in §8 and not implemented. Its `CORE_LEN`
+  entry maps to a drop meanwhile, and at relays permanently.
 
 **Stated but not built:**
 
