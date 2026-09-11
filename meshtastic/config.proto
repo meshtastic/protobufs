@@ -1256,6 +1256,11 @@ message Config {
      * Don't use radiolib to initialize the radio, instead listen for a serialHal connection
      */
     bool serial_hal_only = 107;
+
+    /*
+     * The length of the preamble in symbols
+     */
+    uint32 preamble_length = 108;
   }
 
   message BluetoothConfig {
