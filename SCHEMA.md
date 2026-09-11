@@ -261,7 +261,7 @@ column*. A constant column is one entry and no deltas. Column-major because
 consecutive numbers are then one sensor moving over time, and a sensor moves slowly.
 
 ```
-keys        = [TEMPERATURE_C_CENTI, PRESSURE_PA]
+keys        = [AIR_TEMPERATURE_C_CENTI, AIR_PRESSURE_PA]
 temperature = 1582, 1548, 1514     ->  1582, -34, -34
 pressure    = 98801, 98814, 98857  ->  98801, 13, 43
 values      = [1582, -34, -34, 98801, 13, 43]
