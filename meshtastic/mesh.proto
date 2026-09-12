@@ -969,6 +969,11 @@ enum HardwareModel {
   T_CONNECT_PRO = 147;
 
   /*
+   * A phone or desktop app acting as a mesh node of its own, via meshtastic-node-kmp
+   */
+  NODE_KMP = 148;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
