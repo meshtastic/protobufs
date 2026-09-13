@@ -18,8 +18,12 @@ cd "$repo_root"
 swift_pkg="tools/protoc-gen-fieldmeta-swift"
 swift_bin="$repo_root/$swift_pkg/.build/release/protoc-gen-fieldmeta-swift"
 
+# Package-local SwiftPM cache: the shared ~/Library/Caches/org.swift.swiftpm on
+# GitHub's macos-26 runners can be in a state where the swift-protobuf fetch fails
+# ("cannot change to .../repositories/swift-protobuf-*"). Lives under .build so
+# it persists between local runs and is discarded with it.
 echo "==> Building protoc-gen-fieldmeta-swift (release)"
-swift build -c release --package-path "$swift_pkg"
+swift build -c release --package-path "$swift_pkg" --cache-path "$repo_root/$swift_pkg/.build/spm-cache"
 
 workdir=$(mktemp -d)
 trap 'rm -rf "$workdir"' EXIT
@@ -51,6 +55,6 @@ echo "==> Diffing"
 if diff -u "$workdir/go/FieldMetadataRegistry.swift" "$workdir/swift/FieldMetadataRegistry.swift"; then
   echo "✅ Go and Swift generators are byte-identical"
 else
-  echo "❌ Generators diverged — update whichever plugin changed so their output matches." >&2
+  echo "❌ Generators diverged - update whichever plugin changed so their output matches." >&2
   exit 1
 fi
