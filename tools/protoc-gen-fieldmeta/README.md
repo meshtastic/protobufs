@@ -132,9 +132,14 @@ go -C protobufs/tools/protoc-gen-fieldmeta build -o "$PWD/protoc-gen-fieldmeta" 
 protoc --proto_path=./protobufs \
   --plugin=protoc-gen-fieldmeta="$PWD/protoc-gen-fieldmeta" \
   --swift_opt=Visibility=Public --swift_out=./MeshtasticProtobufs/Sources \
-  --fieldmeta_out=target=swift:./MeshtasticProtobufs/Sources \
+  --fieldmeta_out=target=swift:./Meshtastic/Model \
   ./protobufs/meshtastic/*.proto
 ```
+
+The registry goes to the **app target**, not into `MeshtasticProtobufs` beside
+the `.pb.swift` files. The `swift` target emits string attributes as
+`String(localized:)` so they reach the app's string catalog, and extraction only
+happens in a target that has one; a SwiftPM package does not.
 
 ### Python
 

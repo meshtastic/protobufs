@@ -198,3 +198,63 @@ func TestEmitMultipleMessageTypes(t *testing.T) {
 	_, swift := emitSwift(schema, entries)
 	mustContain(t, "swift-multi", swift, "extension A {", "extension B {")
 }
+
+// TestSwiftArgsFollowSchemaOrder pins the ordering the Swift target needs. Its
+// FieldMetadata properties are emitted in schema order, and Swift's memberwise
+// initializer demands arguments in property-declaration order - so a field
+// carrying several attributes will not compile if the literal uses the
+// name-sorted order the other targets use. entry.Fields arrives name-sorted
+// (readMetadata sorts it), and here that is deliberately the reverse of the
+// schema, so a regression cannot pass by coincidence.
+func TestSwiftArgsFollowSchemaOrder(t *testing.T) {
+	schema := []schemaField{
+		{Name: "zzz_first", Kind: protoreflect.BoolKind},
+		{Name: "aaa_second", Kind: protoreflect.BoolKind},
+	}
+	entries := []entry{{
+		MessageType: "meshtastic.M", TypePath: []string{"M"}, FieldName: "f", Tag: 1,
+		Fields: []metaField{
+			{Name: "aaa_second", Value: true},
+			{Name: "zzz_first", Value: false},
+		},
+	}}
+	_, out := emitSwift(schema, entries)
+	mustContain(t, "swift-order", out, "FieldMetadata(zzzFirst: false, aaaSecond: true)")
+}
+
+// TestSwiftLocalizesStringAttributes pins that string attributes - user-facing
+// display text per field_metadata.proto - are emitted so Xcode's string-catalog
+// extractor can see them, keyed by full proto field name rather than by the
+// English (labels repeat across the schema). Other targets keep plain literals.
+func TestSwiftLocalizesStringAttributes(t *testing.T) {
+	schema := []schemaField{
+		{Name: "label", Kind: protoreflect.StringKind},
+		{Name: "min_value", Kind: protoreflect.DoubleKind},
+	}
+	entries := []entry{{
+		MessageType: "meshtastic.Config.LoRaConfig", TypePath: []string{"Config", "LoRaConfig"},
+		FieldName: "hop_limit", Tag: 8,
+		Fields: []metaField{
+			{Name: "label", Value: "Hop Limit"},
+			{Name: "min_value", Value: 0.0},
+		},
+	}}
+
+	_, swift := emitSwift(schema, entries)
+	mustContain(t, "swift-localized", swift,
+		`String(localized: "meshtastic.Config.LoRaConfig.hop_limit.label", `+
+			`defaultValue: "Hop Limit", `+
+			`comment: "label of meshtastic.Config.LoRaConfig.hop_limit")`,
+		// numbers are untouched
+		"minValue: 0.0",
+	)
+
+	// Localization is Swift-only; the other targets still emit a plain literal.
+	for name, emit := range map[string]emitter{"c": emitC, "python": emitPython, "typescript": emitTypeScript, "rust": emitRust} {
+		_, out := emit(schema, entries)
+		if strings.Contains(out, "String(localized:") {
+			t.Errorf("%s: localization must not leak into non-Swift targets:\n%s", name, out)
+		}
+		mustContain(t, name, out, `"Hop Limit"`)
+	}
+}

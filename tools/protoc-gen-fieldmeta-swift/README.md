@@ -21,10 +21,34 @@ Swift consumer doesn't need Go on contributor machines or CI.
   `field.options` - no descriptor byte-parsing.
 - The emitted `FieldMetadata` struct's shape is schema-driven, and the
   scalar-only constraint is enforced with the same hard error as the Go plugin.
-  One deliberate difference: value emission uses an explicit per-attribute
-  switch that **fails loudly** on an unhandled attribute (a one-line `case` to
-  extend) rather than fully dynamic rendering - metadata is never silently
-  dropped.
+  Values are read generically by traversing the decoded option with a
+  `SwiftProtobuf.Visitor` - the counterpart of the Go plugin's protoreflect
+  `Range` - so adding a scalar attribute needs no change to this plugin's code.
+  It does need the bundled `field_metadata.pb.swift` regenerated (below): that
+  binding is how the option decodes as a typed value, and an attribute it
+  predates would arrive in `unknownFields`. Generation stops with a pointed
+  error in that case rather than dropping the attribute silently.
+- Attribute arguments are emitted in **schema declaration order**, not the
+  name-sorted order the other targets use. Swift's memberwise initializer
+  requires arguments in property-declaration order, and the struct's properties
+  come from the same schema, so a field carrying more than one attribute would
+  not compile otherwise.
+- **String attributes are emitted for localization.** Per
+  `meshtastic/field_metadata.proto`, string attributes are user-facing display
+  text, so they render as
+  `String(localized: <key>, defaultValue: <English>, comment: ...)` rather than
+  as bare literals. Xcode's string-catalog extractor picks those up out of the
+  generated file when it is compiled in a target with
+  `SWIFT_EMIT_LOC_STRINGS = YES`, so the English in the schema becomes the
+  source string and translations live in the consuming app's catalog - not in
+  the wire schema. The key is the field's full proto name plus the attribute
+  (`meshtastic.Config.LoRaConfig.hop_limit.label`), not the English text,
+  because labels repeat across the schema and a shared key would force one
+  translation on all of them.
+
+  This places a requirement on the consumer: emit the registry into a target
+  that has a string catalog. A SwiftPM package has neither the catalog nor the
+  build setting, so a registry generated into one is never extracted.
 - The `deprecated` attribute is mirrored from each field's **standard**
   `[deprecated = true]` option (read off `field.options.deprecated`), not from
   the custom annotation - so fields already marked deprecated surface as
@@ -43,9 +67,17 @@ In `Meshtastic-Apple`'s `scripts/gen_protos.sh`, alongside the existing
 swift build -c release --package-path protobufs/tools/protoc-gen-fieldmeta-swift
 protoc --proto_path=./protobufs \
   --plugin=protoc-gen-fieldmetaswift=protobufs/tools/protoc-gen-fieldmeta-swift/.build/release/protoc-gen-fieldmeta-swift \
-  --fieldmetaswift_out=./MeshtasticProtobufs/Sources/meshtastic \
+  --fieldmetaswift_out=./Meshtastic/Model \
   ./protobufs/meshtastic/*.proto
 ```
+
+Note the output directory is in the **app target**, not in the
+`MeshtasticProtobufs` package alongside the `.pb.swift` files. String attributes
+are emitted as `String(localized:)` and are only extracted into
+`Localizable.xcstrings` if the file is compiled in a target that has the catalog
+and `SWIFT_EMIT_LOC_STRINGS = YES`; a SwiftPM package has neither. The plugin
+emits a bare filename with no package-path prefix, so point `--fieldmetaswift_out`
+at the directory the file should land in.
 
 Consumed as:
 

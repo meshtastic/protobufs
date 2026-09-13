@@ -15,7 +15,7 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
@@ -26,14 +26,28 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 /// Carried in a single FieldOptions extension (`field_metadata` below), so adding
 /// an attribute is a SCHEMA-ONLY change: add a new field to this message (use the
 /// next field number) and every generated registry - KMP/Wire, C, Python,
-/// TypeScript, Rust, Swift - picks it up automatically. No code generator or
-/// build change is needed, and no additional FieldOptions extension number is
-/// consumed.
+/// TypeScript, Rust, Swift - picks it up automatically. No generator code change
+/// is needed, and no additional FieldOptions extension number is consumed.
+///
+/// The one build step an attribute addition does cost is regenerating
+/// protoc-gen-fieldmeta-swift's own binding for this file
+/// (tools/protoc-gen-fieldmeta-swift/README.md documents the one-liner). That
+/// plugin decodes the option through a generated Swift type rather than through
+/// dynamic reflection as the Go plugin does, so a stale binding cannot see the
+/// new attribute. It fails loudly rather than dropping it silently.
 ///
 /// Constraint: attributes must be SCALAR (bool / int / float / string). A
 /// message, enum, bytes, repeated, or map attribute is rejected at generation
 /// time (the generators would otherwise emit meaningless, non-deterministic
-/// values). See tools/protoc-gen-fieldmeta.
+/// values). A list is therefore a single delimited string - see `keywords`.
+/// See tools/protoc-gen-fieldmeta.
+///
+/// STRING attributes are treated as user-facing display text and are emitted for
+/// localization where the target supports it - the Swift target emits
+/// String(localized:defaultValue:comment:) keyed by the field's full name, so the
+/// English here is the SOURCE string and translations live in the consuming app's
+/// catalog. Do not put machine-readable values (regexes, identifiers, format
+/// codes) in a string attribute; they would be handed to translators.
 ///
 /// To tag a field, set the option on it, e.g.
 ///   uint32 rx_gpio = 8 [(meshtastic.field_metadata) = { diy_only: true }];
@@ -46,7 +60,7 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 ///
 /// Downstream apps use this to drive UI decisions (e.g. hiding DIY-only settings
 /// on pre-assembled boards) directly from the protobuf schema.
-public struct FieldMetadata: Sendable {
+public nonisolated struct FieldMetadata: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -125,6 +139,48 @@ public struct FieldMetadata: Sendable {
   /// Clears the value of `deprecated`. Subsequent reads from it will return its default value.
   public mutating func clearDeprecated() {self._deprecated = nil}
 
+  ///
+  /// Short human-facing name for the field, as a UI would label the control that
+  /// edits it (e.g. "Hop Limit"). Source string for localization; see the note on
+  /// string attributes above.
+  public var label: String {
+    get {_label ?? String()}
+    set {_label = newValue}
+  }
+  /// Returns true if `label` has been explicitly set.
+  public var hasLabel: Bool {self._label != nil}
+  /// Clears the value of `label`. Subsequent reads from it will return its default value.
+  public mutating func clearLabel() {self._label = nil}
+
+  ///
+  /// One-sentence plain-language explanation of what the field does, suitable for
+  /// showing under the control (e.g. "How many times a message may be repeated
+  /// before it stops being forwarded."). Source string for localization.
+  public var description_p: String {
+    get {_description_p ?? String()}
+    set {_description_p = newValue}
+  }
+  /// Returns true if `description_p` has been explicitly set.
+  public var hasDescription_p: Bool {self._description_p != nil}
+  /// Clears the value of `description_p`. Subsequent reads from it will return its default value.
+  public mutating func clearDescription_p() {self._description_p = nil}
+
+  ///
+  /// Additional terms a user might search for to find this field, beyond its
+  /// label - abbreviations, older names, and related concepts (e.g. for
+  /// `hop_limit`: "hops|ttl|range"). Attributes must be scalar, so this is a
+  /// single string; entries are separated by "|" and surrounding whitespace is
+  /// ignored. "|" is used rather than "," because a keyword may itself contain a
+  /// comma. Source string for localization.
+  public var keywords: String {
+    get {_keywords ?? String()}
+    set {_keywords = newValue}
+  }
+  /// Returns true if `keywords` has been explicitly set.
+  public var hasKeywords: Bool {self._keywords != nil}
+  /// Clears the value of `keywords`. Subsequent reads from it will return its default value.
+  public mutating func clearKeywords() {self._keywords = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -135,6 +191,9 @@ public struct FieldMetadata: Sendable {
   fileprivate var _maxValue: Double? = nil
   fileprivate var _unit: String? = nil
   fileprivate var _deprecated: Bool? = nil
+  fileprivate var _label: String? = nil
+  fileprivate var _description_p: String? = nil
+  fileprivate var _keywords: String? = nil
 }
 
 // MARK: - Extension support defined in field_metadata.proto.
@@ -146,7 +205,7 @@ public struct FieldMetadata: Sendable {
 // declaration. To avoid naming collisions, the names are prefixed with the name of
 // the scope where the extend directive occurs.
 
-extension SwiftProtobuf.Google_Protobuf_FieldOptions {
+nonisolated extension SwiftProtobuf.Google_Protobuf_FieldOptions {
 
   ///
   /// Attach FieldMetadata to a field, e.g.
@@ -176,7 +235,7 @@ extension SwiftProtobuf.Google_Protobuf_FieldOptions {
 /// this .proto file. It can be used any place an `SwiftProtobuf.ExtensionMap` is needed
 /// in parsing, or it can be combined with other `SwiftProtobuf.SimpleExtensionMap`s to create
 /// a larger `SwiftProtobuf.SimpleExtensionMap`.
-public let FieldMetadata_Extensions: SwiftProtobuf.SimpleExtensionMap = [
+public nonisolated let FieldMetadata_Extensions: SwiftProtobuf.SimpleExtensionMap = [
   Extensions_field_metadata
 ]
 
@@ -189,18 +248,18 @@ public let FieldMetadata_Extensions: SwiftProtobuf.SimpleExtensionMap = [
 ///   uint32 rx_gpio = 8 [(meshtastic.field_metadata) = { diy_only: true }];
 ///
 /// Private-use extension number range is 50000-99999.
-public let Extensions_field_metadata = SwiftProtobuf.MessageExtension<SwiftProtobuf.OptionalMessageExtensionField<FieldMetadata>, SwiftProtobuf.Google_Protobuf_FieldOptions>(
+public nonisolated let Extensions_field_metadata = SwiftProtobuf.MessageExtension<SwiftProtobuf.OptionalMessageExtensionField<FieldMetadata>, SwiftProtobuf.Google_Protobuf_FieldOptions>(
   _protobuf_fieldNumber: 51001,
   fieldName: "meshtastic.field_metadata"
 )
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-fileprivate let _protobuf_package = "meshtastic"
+fileprivate nonisolated let _protobuf_package = "meshtastic"
 
-extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FieldMetadata"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}diy_only\0\u{3}admin_only\0\u{3}min_value\0\u{3}max_value\0\u{1}unit\0\u{1}deprecated\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}diy_only\0\u{3}admin_only\0\u{3}min_value\0\u{3}max_value\0\u{1}unit\0\u{1}deprecated\0\u{1}label\0\u{1}description\0\u{1}keywords\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -214,6 +273,9 @@ extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
       case 4: try { try decoder.decodeSingularDoubleField(value: &self._maxValue) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self._unit) }()
       case 6: try { try decoder.decodeSingularBoolField(value: &self._deprecated) }()
+      case 7: try { try decoder.decodeSingularStringField(value: &self._label) }()
+      case 8: try { try decoder.decodeSingularStringField(value: &self._description_p) }()
+      case 9: try { try decoder.decodeSingularStringField(value: &self._keywords) }()
       default: break
       }
     }
@@ -242,6 +304,15 @@ extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
     try { if let v = self._deprecated {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 6)
     } }()
+    try { if let v = self._label {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 7)
+    } }()
+    try { if let v = self._description_p {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 8)
+    } }()
+    try { if let v = self._keywords {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 9)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -252,6 +323,9 @@ extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementa
     if lhs._maxValue != rhs._maxValue {return false}
     if lhs._unit != rhs._unit {return false}
     if lhs._deprecated != rhs._deprecated {return false}
+    if lhs._label != rhs._label {return false}
+    if lhs._description_p != rhs._description_p {return false}
+    if lhs._keywords != rhs._keywords {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

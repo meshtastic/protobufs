@@ -16,14 +16,28 @@ option swift_prefix = "";
  * Carried in a single FieldOptions extension (`field_metadata` below), so adding
  * an attribute is a SCHEMA-ONLY change: add a new field to this message (use the
  * next field number) and every generated registry - KMP/Wire, C, Python,
- * TypeScript, Rust, Swift - picks it up automatically. No code generator or
- * build change is needed, and no additional FieldOptions extension number is
- * consumed.
+ * TypeScript, Rust, Swift - picks it up automatically. No generator code change
+ * is needed, and no additional FieldOptions extension number is consumed.
+ *
+ * The one build step an attribute addition does cost is regenerating
+ * protoc-gen-fieldmeta-swift's own binding for this file
+ * (tools/protoc-gen-fieldmeta-swift/README.md documents the one-liner). That
+ * plugin decodes the option through a generated Swift type rather than through
+ * dynamic reflection as the Go plugin does, so a stale binding cannot see the
+ * new attribute. It fails loudly rather than dropping it silently.
  *
  * Constraint: attributes must be SCALAR (bool / int / float / string). A
  * message, enum, bytes, repeated, or map attribute is rejected at generation
  * time (the generators would otherwise emit meaningless, non-deterministic
- * values). See tools/protoc-gen-fieldmeta.
+ * values). A list is therefore a single delimited string - see `keywords`.
+ * See tools/protoc-gen-fieldmeta.
+ *
+ * STRING attributes are treated as user-facing display text and are emitted for
+ * localization where the target supports it - the Swift target emits
+ * String(localized:defaultValue:comment:) keyed by the field's full name, so the
+ * English here is the SOURCE string and translations live in the consuming app's
+ * catalog. Do not put machine-readable values (regexes, identifiers, format
+ * codes) in a string attribute; they would be handed to translators.
  *
  * To tag a field, set the option on it, e.g.
  *   uint32 rx_gpio = 8 [(meshtastic.field_metadata) = { diy_only: true }];
@@ -75,6 +89,30 @@ message FieldMetadata {
    * here.
    */
   optional bool deprecated = 6;
+
+  /*
+   * Short human-facing name for the field, as a UI would label the control that
+   * edits it (e.g. "Hop Limit"). Source string for localization; see the note on
+   * string attributes above.
+   */
+  optional string label = 7;
+
+  /*
+   * One-sentence plain-language explanation of what the field does, suitable for
+   * showing under the control (e.g. "How many times a message may be repeated
+   * before it stops being forwarded."). Source string for localization.
+   */
+  optional string description = 8;
+
+  /*
+   * Additional terms a user might search for to find this field, beyond its
+   * label - abbreviations, older names, and related concepts (e.g. for
+   * `hop_limit`: "hops|ttl|range"). Attributes must be scalar, so this is a
+   * single string; entries are separated by "|" and surrounding whitespace is
+   * ignored. "|" is used rather than "," because a keyword may itself contain a
+   * comma. Source string for localization.
+   */
+  optional string keywords = 9;
 }
 
 extend google.protobuf.FieldOptions {

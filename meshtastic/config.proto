@@ -1178,7 +1178,13 @@ message Config {
      * Default of 3
      * Attempting to set a value > 7 results in the default
      */
-    uint32 hop_limit = 8;
+    uint32 hop_limit = 8 [(meshtastic.field_metadata) = {
+      label: "Hop Limit"
+      description: "How many times a message may be repeated before it stops being forwarded."
+      keywords: "hops|ttl|range|rebroadcast"
+      min_value: 0
+      max_value: 7
+    }];
 
     /*
      * Disable TX from the LoRa radio. Useful for hot-swapping antennas and other tests.

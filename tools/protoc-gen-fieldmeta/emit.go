@@ -501,7 +501,7 @@ func emitSwift(schema []schemaField, entries []entry) (string, string) {
 	for _, typePath := range keys {
 		fmt.Fprintf(&b, "extension %s {\n", typePath)
 		for _, e := range groups[typePath] {
-			fmt.Fprintf(&b, "    public static var %s: FieldMetadata { %s }\n", snakeToCamel(e.FieldName), swiftLiteral(e))
+			fmt.Fprintf(&b, "    public static var %s: FieldMetadata { %s }\n", snakeToCamel(e.FieldName), swiftLiteral(schema, e))
 		}
 		b.WriteString("}\n\n")
 	}
@@ -511,7 +511,7 @@ func emitSwift(schema []schemaField, entries []entry) (string, string) {
 	b.WriteString("    // Keyed by \"\\(messageType)#\\(tag)\".\n")
 	b.WriteString("    static let registry: [String: FieldMetadata] = [\n")
 	for _, e := range entries {
-		fmt.Fprintf(&b, "        %s: %s,\n", quoteString(fmt.Sprintf("%s#%d", e.MessageType, e.Tag)), swiftLiteral(e))
+		fmt.Fprintf(&b, "        %s: %s,\n", quoteString(fmt.Sprintf("%s#%d", e.MessageType, e.Tag)), swiftLiteral(schema, e))
 	}
 	b.WriteString("    ]\n\n")
 	b.WriteString("    /// Metadata for the field with `tag` on `messageType`, or nil.\n")
@@ -522,12 +522,47 @@ func emitSwift(schema []schemaField, entries []entry) (string, string) {
 	return "FieldMetadataRegistry.swift", b.String()
 }
 
-func swiftLiteral(e entry) string {
+// swiftLiteral renders FieldMetadata(...) with the attributes in SCHEMA
+// declaration order, not the name-sorted order the other targets use. Swift's
+// memberwise initializer requires arguments in property-declaration order, and
+// the struct's properties are emitted from the schema - so a field carrying more
+// than one attribute fails to compile if these disagree.
+func swiftLiteral(schema []schemaField, e entry) string {
 	parts := make([]string, 0, len(e.Fields))
-	for _, f := range e.Fields {
-		parts = append(parts, fmt.Sprintf("%s: %s", snakeToCamel(f.Name), decimalFloatValue(f.Value)))
+	for _, sf := range schema {
+		f, ok := e.fieldValue(sf.Name)
+		if !ok {
+			continue
+		}
+		parts = append(parts, fmt.Sprintf("%s: %s", snakeToCamel(f.Name), swiftValue(e, f)))
 	}
 	return "FieldMetadata(" + strings.Join(parts, ", ") + ")"
+}
+
+// swiftValue renders one attribute value. Non-string attributes render as plain
+// literals; STRING attributes are user-facing display text (see
+// meshtastic/field_metadata.proto) and are emitted as
+// String(localized:defaultValue:comment:) so Xcode's string-catalog extractor
+// picks them up out of the generated file. The English in the schema is then the
+// source string and translations live in the consuming app's catalog, not in the
+// wire schema.
+//
+// The catalog key is the field's full proto name plus the attribute, not the
+// English text: labels repeat across the schema ("Enabled" many times over) and
+// a shared key would force one translation on all of them, which languages that
+// inflect cannot do.
+func swiftValue(e entry, f metaField) string {
+	s, isString := f.Value.(string)
+	if !isString {
+		return decimalFloatValue(f.Value)
+	}
+	full := e.MessageType + "." + e.FieldName
+	return fmt.Sprintf(
+		"String(localized: %s, defaultValue: %s, comment: %s)",
+		quoteString(full+"."+f.Name),
+		quoteString(s),
+		quoteString(f.Name+" of "+full),
+	)
 }
 
 func swiftType(k protoreflect.Kind) string {

@@ -118,7 +118,7 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         for typePath in grouped.keys.sorted() {
             out += "extension \(typePath) {\n"
             for e in grouped[typePath]!.sorted(by: { $0.protoFieldName < $1.protoFieldName }) {
-                out += "    public static var \(e.swiftFieldName): FieldMetadata { \(literal(for: e, shape: metadataDescriptor)) }\n"
+                out += "    public static var \(e.swiftFieldName): FieldMetadata { \(try literal(for: e, shape: metadataDescriptor)) }\n"
             }
             out += "}\n\n"
         }
@@ -132,7 +132,7 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
             a.protoTypeName != b.protoTypeName ? a.protoTypeName < b.protoTypeName : a.tag < b.tag
         }
         for e in sortedEntries {
-            out += "        \"\(e.protoTypeName)#\(e.tag)\": \(literal(for: e, shape: metadataDescriptor)),\n"
+            out += "        \"\(e.protoTypeName)#\(e.tag)\": \(try literal(for: e, shape: metadataDescriptor)),\n"
         }
         out += "    ]\n\n"
         out += "    /// Metadata for the field with `tag` on `messageType`, or nil.\n"
@@ -146,42 +146,97 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
 
     /// FieldMetadata(...) literal with only the explicitly-set attributes.
     ///
-    /// Args are sorted by proto (snake_case) field name, matching the Go
-    /// plugin's ordering so the two stay byte-identical even when a field
-    /// carries more than one attribute. `deprecated` is sourced from the entry's
-    /// mirrored standard option, not from the custom-annotation `metadata`.
-    private func literal(for entry: Entry, shape: Descriptor) -> String {
-        let metadata = entry.metadata
+    /// Values are read generically by traversing the decoded option, so a new scalar
+    /// attribute needs no change here - the Swift counterpart of the Go plugin's
+    /// protoreflect `Range`. Args come out in schema declaration order, matching the Go
+    /// plugin's Swift target, so the two stay byte-identical even when a field carries
+    /// more than one attribute. `deprecated` is sourced from the entry's mirrored
+    /// standard option, not from the custom-annotation `metadata`.
+    private func literal(for entry: Entry, shape: Descriptor) throws -> String {
+        var collector = AttributeCollector()
+        try entry.metadata.traverse(visitor: &collector)
+
+        // An attribute this plugin's bundled field_metadata.pb.swift predates decodes
+        // into unknownFields instead of a property, so it would vanish from the output.
+        // Fail loudly rather than dropping metadata silently; the fix is to regenerate
+        // the binding (see README, "Regenerating the bundled field_metadata.pb.swift").
+        if !entry.metadata.unknownFields.data.isEmpty {
+            throw GenError.message(
+                "\(entry.protoTypeName).\(entry.protoFieldName) sets a field_metadata attribute this plugin's bundled field_metadata.pb.swift does not know; regenerate it (see tools/protoc-gen-fieldmeta-swift/README.md)"
+            )
+        }
+
         var args: [(name: String, rendered: String)] = []
         for f in shape.fields {
             let label = NamingUtils.toLowerCamelCase(f.name)
-            switch f.name {
-            case "diy_only":   if metadata.hasDiyOnly { args.append((f.name, "\(label): \(metadata.diyOnly)")) }
-            case "admin_only": if metadata.hasAdminOnly { args.append((f.name, "\(label): \(metadata.adminOnly)")) }
-            case "min_value":  if metadata.hasMinValue { args.append((f.name, "\(label): \(metadata.minValue)")) }
-            case "max_value":  if metadata.hasMaxValue { args.append((f.name, "\(label): \(metadata.maxValue)")) }
-            case "unit":       if metadata.hasUnit { args.append((f.name, "\(label): \(swiftStringLiteral(metadata.unit))")) }
-            case "deprecated": if entry.deprecated { args.append((f.name, "\(label): true")) }
-            default:
-                // A new schema attribute reached emission without plugin support - fail loudly
-                // rather than silently dropping metadata (parity with the Go plugin's guard).
-                fatalError("FieldMetadata attribute '\(f.name)' is not handled by protoc-gen-fieldmeta-swift; add a case")
+            // `deprecated` is generator-managed: mirrored from the field's standard
+            // option rather than read from the annotation, matching the Go plugin's
+            // upsertBool. Every other attribute is read generically below.
+            if f.name == "deprecated" {
+                if entry.deprecated { args.append((f.name, "\(label): true")) }
+                continue
             }
+            guard let value = collector.values[Int(f.number)] else { continue }
+            args.append((f.name, "\(label): \(render(value, attribute: f.name, of: entry))"))
         }
-        let rendered = args.sorted { $0.name < $1.name }.map(\.rendered)
-        return "FieldMetadata(\(rendered.joined(separator: ", ")))"
+        // Schema declaration order, which `shape.fields` already gives us - NOT sorted
+        // by name as the other targets do. Swift's memberwise initializer requires
+        // arguments in property-declaration order, and the properties above are emitted
+        // from the same schema, so a field carrying more than one attribute would not
+        // compile if these disagreed.
+        return "FieldMetadata(\(args.map(\.rendered).joined(separator: ", ")))"
     }
 
+    /// Renders one attribute value. Non-string attributes become plain literals;
+    /// STRING attributes are user-facing display text (see field_metadata.proto) and
+    /// become `String(localized:defaultValue:comment:)`, so Xcode's string-catalog
+    /// extractor picks them up out of the generated file. The English in the schema is
+    /// then the source string and translations live in the consuming app's catalog
+    /// rather than in the wire schema.
+    ///
+    /// The catalog key is the field's full proto name plus the attribute, not the
+    /// English: labels repeat across the schema ("Enabled" many times over), and a
+    /// shared key would force one translation on all of them, which languages that
+    /// inflect cannot do.
+    private func render(_ value: AttributeCollector.Value, attribute: String, of entry: Entry) -> String {
+        switch value {
+        case .bool(let b): return "\(b)"
+        case .double(let d): return decimalFloat(d)
+        case .int(let i): return "\(i)"
+        case .uint(let u): return "\(Int64(bitPattern: u))"
+        case .string(let s):
+            let full = "\(entry.protoTypeName).\(entry.protoFieldName)"
+            return "String(localized: \(swiftStringLiteral("\(full).\(attribute)"))"
+                + ", defaultValue: \(swiftStringLiteral(s))"
+                + ", comment: \(swiftStringLiteral("\(attribute) of \(full)")))"
+        }
+    }
+
+    /// Shortest decimal form that round-trips, never in exponent notation, with a
+    /// trailing `.0` on integral values so the literal types as `Double`. Mirrors the
+    /// Go plugin's `decimalFloat`, which is `strconv.FormatFloat(f, 'f', -1, 64)`.
+    private func decimalFloat(_ d: Double) -> String {
+        for precision in 0...17 {
+            let s = String(format: "%.\(precision)f", d)
+            if Double(s) == d {
+                return s.contains(".") ? s : s + ".0"
+            }
+        }
+        let s = String(format: "%.17f", d)
+        return s.contains(".") ? s : s + ".0"
+    }
+
+    /// Swift type for a FieldMetadata attribute. Integer kinds all widen to `Int64` and
+    /// float to `Double`, matching the Go plugin's `swiftType` - the two must agree or
+    /// the emitted struct definitions diverge. Returns nil for non-scalars, which drives
+    /// the scalar-only guard.
     private func swiftScalarType(for type: Google_Protobuf_FieldDescriptorProto.TypeEnum) -> String? {
         switch type {
         case .bool: return "Bool"
-        case .double: return "Double"
-        case .float: return "Float"
+        case .double, .float: return "Double"
         case .string: return "String"
-        case .int32, .sint32, .sfixed32: return "Int32"
-        case .uint32, .fixed32: return "UInt32"
-        case .int64, .sint64, .sfixed64: return "Int64"
-        case .uint64, .fixed64: return "UInt64"
+        case .int32, .sint32, .sfixed32, .int64, .sint64, .sfixed64: return "Int64"
+        case .uint32, .fixed32, .uint64, .fixed64: return "Int64"
         default: return nil
         }
     }
@@ -193,10 +248,83 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
             case "\"": escaped += "\\\""
             case "\\": escaped += "\\\\"
             case "\n": escaped += "\\n"
+            case "\t": escaped += "\\t"
             default: escaped.unicodeScalars.append(c)
             }
         }
         return "\"\(escaped)\""
+    }
+
+    /// Collects the attributes a FieldMetadata value actually sets, keyed by field
+    /// number. This is the Swift counterpart of the Go plugin's protoreflect `Range`:
+    /// `traverse` visits only fields that are present, so a new scalar attribute is
+    /// picked up with no change here.
+    ///
+    /// Only the widest case of each family is implemented. `Visitor`'s forwarding
+    /// defaults widen 32-bit and sint/fixed/sfixed variants into these, which is also
+    /// what the Go plugin's `goValue` does, so the two agree on rendering.
+    struct AttributeCollector: SwiftProtobuf.Visitor {
+        enum Value {
+            case bool(Bool)
+            case double(Double)
+            case int(Int64)
+            case uint(UInt64)
+            case string(String)
+        }
+
+        var values: [Int: Value] = [:]
+
+        mutating func visitSingularBoolField(value: Bool, fieldNumber: Int) throws {
+            values[fieldNumber] = .bool(value)
+        }
+        mutating func visitSingularDoubleField(value: Double, fieldNumber: Int) throws {
+            values[fieldNumber] = .double(value)
+        }
+        mutating func visitSingularInt64Field(value: Int64, fieldNumber: Int) throws {
+            values[fieldNumber] = .int(value)
+        }
+        mutating func visitSingularUInt64Field(value: UInt64, fieldNumber: Int) throws {
+            values[fieldNumber] = .uint(value)
+        }
+        mutating func visitSingularStringField(value: String, fieldNumber: Int) throws {
+            values[fieldNumber] = .string(value)
+        }
+        // The scalar-only guard rejects non-scalar attributes before any value is read,
+        // so the rest of the protocol is unreachable. Throwing keeps it that way: if the
+        // guard is ever loosened, generation stops instead of emitting a literal with a
+        // silently missing attribute.
+        mutating func visitUnknown(bytes: Data) throws {}
+
+        mutating func visitSingularBytesField(value: Data, fieldNumber: Int) throws {
+            throw GenError.message("field_metadata attribute \(fieldNumber) is bytes; attributes must be scalar")
+        }
+        mutating func visitSingularEnumField<E: Enum>(value: E, fieldNumber: Int) throws {
+            throw GenError.message("field_metadata attribute \(fieldNumber) is an enum; attributes must be scalar")
+        }
+        mutating func visitSingularMessageField<M: Message>(value: M, fieldNumber: Int) throws {
+            throw GenError.message("field_metadata attribute \(fieldNumber) is a message; attributes must be scalar")
+        }
+        mutating func visitMapField<KeyType, ValueType: MapValueType>(
+            fieldType: _ProtobufMap<KeyType, ValueType>.Type,
+            value: _ProtobufMap<KeyType, ValueType>.BaseType,
+            fieldNumber: Int
+        ) throws {
+            throw GenError.message("field_metadata attribute \(fieldNumber) is a map; attributes must be scalar")
+        }
+        mutating func visitMapField<KeyType, ValueType>(
+            fieldType: _ProtobufEnumMap<KeyType, ValueType>.Type,
+            value: _ProtobufEnumMap<KeyType, ValueType>.BaseType,
+            fieldNumber: Int
+        ) throws where ValueType.RawValue == Int {
+            throw GenError.message("field_metadata attribute \(fieldNumber) is a map; attributes must be scalar")
+        }
+        mutating func visitMapField<KeyType, ValueType>(
+            fieldType: _ProtobufMessageMap<KeyType, ValueType>.Type,
+            value: _ProtobufMessageMap<KeyType, ValueType>.BaseType,
+            fieldNumber: Int
+        ) throws {
+            throw GenError.message("field_metadata attribute \(fieldNumber) is a map; attributes must be scalar")
+        }
     }
 
     enum GenError: Error, CustomStringConvertible {
