@@ -2,13 +2,13 @@
 //  protoc-gen-fieldmeta-swift
 //
 //  A pure-Swift protoc plugin that emits FieldMetadataRegistry.swift for
-//  (meshtastic.field_metadata) options — the Swift-native sibling of the Go
+//  (meshtastic.field_metadata) options - the Swift-native sibling of the Go
 //  protoc-gen-fieldmeta in ../protoc-gen-fieldmeta, for consumers whose
 //  toolchain is already swift-protobuf based (e.g. Meshtastic-Apple).
 //  Output is byte-identical to the Go plugin's swift target.
 //
-//  Built on SwiftProtobufPluginLibrary — the same library protoc-gen-swift itself
-//  uses — so Swift type paths (`Config.PositionConfig`) and property names
+//  Built on SwiftProtobufPluginLibrary - the same library protoc-gen-swift itself
+//  uses - so Swift type paths (`Config.PositionConfig`) and property names
 //  (`rxGpio`) match the real generated code BY CONSTRUCTION (same NamingUtils),
 //  rather than by reimplementing snake_case→camelCase and hoping it agrees.
 //
@@ -58,7 +58,7 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
             }
         }
         guard let metadataDescriptor else {
-            throw GenError.message("meshtastic.FieldMetadata not found among the input protos — include meshtastic/field_metadata.proto")
+            throw GenError.message("meshtastic.FieldMetadata not found among the input protos - include meshtastic/field_metadata.proto")
         }
         // Scalar-only guard, mirroring the Go plugin's hard error.
         for f in metadataDescriptor.fields {
@@ -163,7 +163,7 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
             case "unit":       if metadata.hasUnit { args.append((f.name, "\(label): \(swiftStringLiteral(metadata.unit))")) }
             case "deprecated": if entry.deprecated { args.append((f.name, "\(label): true")) }
             default:
-                // A new schema attribute reached emission without plugin support — fail loudly
+                // A new schema attribute reached emission without plugin support - fail loudly
                 // rather than silently dropping metadata (parity with the Go plugin's guard).
                 fatalError("FieldMetadata attribute '\(f.name)' is not handled by protoc-gen-fieldmeta-swift; add a case")
             }

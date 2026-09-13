@@ -48,7 +48,7 @@ func compileRequest(t *testing.T, sources map[string]string, target string, path
 		walk(f)
 	}
 	// Re-encode each descriptor through the STANDARD descriptor types so the
-	// custom field_metadata option lands in unknown fields — exactly how
+	// custom field_metadata option lands in unknown fields - exactly how
 	// buf/protoc hand options to a plugin. (protocompile would otherwise leave
 	// it pre-resolved, masking the re-decode readMetadata must perform.)
 	for i, p := range protos {
@@ -133,8 +133,8 @@ message Outer {
 
 // TestGenerateMirrorsDeprecated verifies that a field's standard
 // `[deprecated = true]` option is mirrored into the registry as a
-// `deprecated` attribute — with no (meshtastic.field_metadata) annotation
-// required — and coexists with custom attributes on the same field.
+// `deprecated` attribute - with no (meshtastic.field_metadata) annotation
+// required - and coexists with custom attributes on the same field.
 func TestGenerateMirrorsDeprecated(t *testing.T) {
 	sources := map[string]string{
 		"meshtastic/field_metadata.proto": fieldMetadataProtoSrc,
@@ -195,7 +195,7 @@ func generateTo(t *testing.T, sources map[string]string, target string) string {
 }
 
 // TestGenerateNoExtensionEmitsNothing verifies that a module which does not
-// define the field_metadata extension yields no output (rather than an error) —
+// define the field_metadata extension yields no output (rather than an error) -
 // this keeps the plugin safe when buf splits, e.g., nanopb.proto into its own
 // module.
 func TestGenerateNoExtensionEmitsNothing(t *testing.T) {
@@ -232,7 +232,7 @@ func TestGenerateRejectsBadTarget(t *testing.T) {
 
 // TestGenerateRejectsHandSetDeprecated verifies that setting the
 // generator-managed `deprecated` attribute by hand inside the custom annotation
-// is a hard error — regardless of its value or of the standard option — instead
+// is a hard error - regardless of its value or of the standard option - instead
 // of silently producing output the other generators would disagree with.
 func TestGenerateRejectsHandSetDeprecated(t *testing.T) {
 	for name, fieldDef := range map[string]string{

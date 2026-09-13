@@ -4,8 +4,8 @@
 //
 // It is the cross-language companion to the Kotlin/Wire SchemaHandler used by
 // the KMP package: both turn the same proto option into a static table keyed by
-// fully-qualified message name and field tag, so every consumer — including
-// runtimes that strip options at runtime (nanopb/C, prost/Rust, Wire) — can
+// fully-qualified message name and field tag, so every consumer - including
+// runtimes that strip options at runtime (nanopb/C, prost/Rust, Wire) - can
 // query field metadata with no descriptor reflection and no runtime cost.
 //
 // The plugin reads the option DYNAMICALLY via protoreflect, so it needs no
@@ -130,7 +130,7 @@ func generate(req *pluginpb.CodeGeneratorRequest) (*pluginpb.CodeGeneratorRespon
 	if extType == nil {
 		// This module doesn't define the field_metadata extension (e.g. buf
 		// generates the option-free nanopb.proto as its own module), so there is
-		// nothing to emit. Returning no files — rather than erroring — keeps the
+		// nothing to emit. Returning no files - rather than erroring - keeps the
 		// plugin safe to run across a whole workspace.
 		return &pluginpb.CodeGeneratorResponse{
 			SupportedFeatures: proto.Uint64(uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)),
@@ -253,7 +253,7 @@ func collectMessages(msgs protoreflect.MessageDescriptors, extType protoreflect.
 			mf := readMetadata(f, extType, resolver)
 			// `deprecated` is generator-managed: it mirrors the field's standard
 			// option, and a hand-set value in the annotation is rejected rather
-			// than merged — the generators would otherwise disagree about it (the
+			// than merged - the generators would otherwise disagree about it (the
 			// Swift plugin reads only the standard option), and the schema would
 			// carry two sources of truth for the same fact.
 			for _, a := range mf {
@@ -288,7 +288,7 @@ func collectMessages(msgs protoreflect.MessageDescriptors, extType protoreflect.
 // field, or nil if the field carries no such option.
 //
 // buf/protoc hand the plugin FieldOptions with our custom extension left as an
-// UNKNOWN field — the standard descriptor types parsed from the request don't
+// UNKNOWN field - the standard descriptor types parsed from the request don't
 // know it, so protodesc.NewFiles cannot resolve it. We therefore re-decode the
 // options with a resolver that knows the extension before reading it. (The
 // resolver is built once and passed in.)
@@ -323,7 +323,7 @@ func readMetadata(f protoreflect.FieldDescriptor, extType protoreflect.Extension
 
 // fieldIsDeprecated reports whether the field carries the standard
 // `[deprecated = true]` option. This is a well-known FieldOptions field (not our
-// custom extension), so it reads straight off the descriptor's options — no
+// custom extension), so it reads straight off the descriptor's options - no
 // re-decode needed.
 func fieldIsDeprecated(f protoreflect.FieldDescriptor) bool {
 	if o, ok := f.Options().(*descriptorpb.FieldOptions); ok && o != nil {

@@ -25,8 +25,8 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 ///
 /// Carried in a single FieldOptions extension (`field_metadata` below), so adding
 /// an attribute is a SCHEMA-ONLY change: add a new field to this message (use the
-/// next field number) and every generated registry — KMP/Wire, C, Python,
-/// TypeScript, Rust, Swift — picks it up automatically. No code generator or
+/// next field number) and every generated registry - KMP/Wire, C, Python,
+/// TypeScript, Rust, Swift - picks it up automatically. No code generator or
 /// build change is needed, and no additional FieldOptions extension number is
 /// consumed.
 ///
@@ -110,7 +110,7 @@ public struct FieldMetadata: Sendable {
 
   ///
   /// Field is deprecated. MIRRORS the field's standard `[deprecated = true]`
-  /// option — the generators populate this automatically from that option so
+  /// option - the generators populate this automatically from that option so
   /// every consumer can read it at runtime (protobuf runtimes strip options, so
   /// the standard `deprecated` bit is otherwise invisible to apps). Setting it
   /// by hand in a (meshtastic.field_metadata) annotation is a generation-time

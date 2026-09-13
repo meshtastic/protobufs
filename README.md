@@ -20,7 +20,7 @@ The [Protobuf](https://developers.google.com/protocol-buffers) message definitio
 ## Field metadata
 
 Fields can carry app/UI-relevant metadata (e.g. `diy_only`) via the `(meshtastic.field_metadata)`
-option — see [`meshtastic/field_metadata.proto`](meshtastic/field_metadata.proto). It is exposed to
+option - see [`meshtastic/field_metadata.proto`](meshtastic/field_metadata.proto). It is exposed to
 consumers as reflection-free generated accessors: the KMP package generates them with a Wire
 `SchemaHandler` ([`packages/kmp`](packages/kmp/README.md)), and other languages via the
 [`tools/protoc-gen-fieldmeta`](tools/protoc-gen-fieldmeta/README.md) plugin (which has integration

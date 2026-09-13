@@ -22,11 +22,11 @@ uint32 rx_gpio = 8 [(meshtastic.field_metadata) = { diy_only: true }];
 ```
 
 At build time a custom Wire `SchemaHandler` (in `buildSrc`) generates a reflection-free
-`FieldMetadataRegistry` into the published artifact — plain Kotlin, queryable on **every** target
+`FieldMetadataRegistry` into the published artifact - plain Kotlin, queryable on **every** target
 (JVM, Android, JS, Wasm, Native) with no reflection and no runtime cost.
 
 Prefer the **typed accessors**, generated as extension properties on each message's companion
-object — they hang directly off the real message type, so they're autocomplete-friendly with no
+object - they hang directly off the real message type, so they're autocomplete-friendly with no
 magic strings or field tags (the IDE auto-imports the extension on use):
 
 ```kotlin
@@ -39,8 +39,8 @@ if (!Config.PositionConfig.rx_gpio.diy_only || deviceIsDiy) {
 ```
 
 Each typed accessor is a per-field extension on the message companion, so it carries its own
-import (the IDE auto-imports on use). To **enumerate** what's annotated on a message — e.g. a
-settings screen iterating a message's fields — use the dynamic lookups keyed by proto message
+import (the IDE auto-imports on use). To **enumerate** what's annotated on a message - e.g. a
+settings screen iterating a message's fields - use the dynamic lookups keyed by proto message
 name: `forType` returns every annotated field (keyed by tag) and `get` looks up one field:
 
 ```kotlin
@@ -52,7 +52,7 @@ val isDiyOnly = FieldMetadataRegistry.get("meshtastic.Config.PositionConfig", ta
 ```
 
 Adding a new **scalar** attribute to the `FieldMetadata` message (e.g. `admin_only`, `unit`) is a
-schema-only change — the generator serializes whatever sub-fields are set, so no build code needs
+schema-only change - the generator serializes whatever sub-fields are set, so no build code needs
 to change.
 
 ## Versioning

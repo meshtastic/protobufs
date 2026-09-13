@@ -11,11 +11,11 @@ Google uses for [`google.api.field_behavior`](https://google.aip.dev/203). Custo
 options can be read two ways: runtime descriptor reflection, or code generation.
 
 Reflection (the [protovalidate](https://protovalidate.com/) model) only works on
-runtimes that keep descriptors/options at runtime — Go, Python, C#, Java,
+runtimes that keep descriptors/options at runtime - Go, Python, C#, Java,
 protobuf-es. It is **structurally impossible** on the runtimes Meshtastic cares
 about most: nanopb (firmware) and Wire (KMP) strip options for size, and prost
 (Rust) discards them. So the only mechanism that works for *every* consumer is
-build-time code generation — which is also what Google's own SDK generators do
+build-time code generation - which is also what Google's own SDK generators do
 with `field_behavior`.
 
 This plugin is the cross-language half of that. The KMP package generates the
@@ -26,9 +26,9 @@ host); see [`packages/kmp/buildSrc`](../../packages/kmp/buildSrc).
 
 Each target emits two layers, no reflection and no runtime cost:
 
-1. **Typed accessors** for a known field — the everyday, autocomplete-friendly
+1. **Typed accessors** for a known field - the everyday, autocomplete-friendly
    API (no magic strings or field tags).
-2. A **dynamic lookup** keyed by fully-qualified message name + field tag — an
+2. A **dynamic lookup** keyed by fully-qualified message name + field tag - an
    escape hatch for generic field walking.
 
 | Target (`opt: target=`) | File | Accessor (primary) | Mechanism | Dynamic lookup |
@@ -37,7 +37,7 @@ Each target emits two layers, no reflection and no runtime cost:
 | `rust` | `field_metadata_registry.rs` | `config::position_config::RX_GPIO` | standalone namespaced module | `get(type, tag)` |
 | `typescript` | `meshtastic/field_metadata_registry.ts` | `Config.PositionConfig.rxGpio` | standalone namespace object | `get(type, tag)` |
 | `python` | `meshtastic/field_metadata_registry.py` | `Config.PositionConfig.rx_gpio` | standalone nested classes | `get(type, tag)` |
-| `c` (nanopb / firmware) | `meshtastic/field_metadata_registry.h` | — (no namespacing) | — | `meshtastic_field_metadata_get(type, tag)` |
+| `c` (nanopb / firmware) | `meshtastic/field_metadata_registry.h` | - (no namespacing) | - | `meshtastic_field_metadata_get(type, tag)` |
 
 Where the language supports extending the generated message type, the accessor
 hangs directly off it: **Swift** uses an `extension` (which also avoids
@@ -56,7 +56,7 @@ repo; the standalone module is used until then.
 > swift-protobuf prefixes generated type names with the package name
 > (`Meshtastic_Config`), so this plugin's extensions would reference types that
 > don't exist. The pure-Swift sibling plugin derives names from swift-protobuf's
-> own namer and is immune — the divergence is caught by the parity check in CI
+> own namer and is immune - the divergence is caught by the parity check in CI
 > (`.github/workflows/field-metadata.yml`).
 
 The plugin reads the option **dynamically** (no generated Go bindings) and is
@@ -74,13 +74,13 @@ If a module doesn't define the extension (e.g. buf generates the option-free
 
 `FieldMetadata` has one attribute the schema author never sets by hand:
 `deprecated`. The plugin populates it from the field's **standard**
-`[deprecated = true]` option — the deprecation info that protobuf runtimes strip
+`[deprecated = true]` option - the deprecation info that protobuf runtimes strip
 and apps therefore can't read at runtime. So any field already marked
 `[deprecated = true]` shows up in the registry (`deprecated: true`) with no
 `(meshtastic.field_metadata)` annotation, and a field carrying both a custom
 attribute and `[deprecated = true]` gets both. Setting `deprecated` by hand
 inside the annotation is a **hard error at generation time** (in all three
-generators) — it would create a second source of truth for the same fact. This
+generators) - it would create a second source of truth for the same fact. This
 is the one attribute that costs a generator change (the sibling Kotlin/Wire and
 pure-Swift generators mirror it identically); every other attribute remains a
 schema-only addition.
@@ -94,10 +94,10 @@ go -C tools/protoc-gen-fieldmeta test ./...
 
 ## Integration
 
-### TypeScript (this repo) — already wired
+### TypeScript (this repo) - already wired
 
 [`buf.gen.yaml`](../../buf.gen.yaml) invokes the plugin via `go run` (so CI needs
-Go on `PATH` — GitHub-hosted runners include it; the publish workflow pins it via
+Go on `PATH` - GitHub-hosted runners include it; the publish workflow pins it via
 `actions/setup-go`). The generated `field_metadata_registry.ts` is flattened into
 `packages/ts/lib/` by the publish workflow and re-exported from
 [`packages/ts/mod.ts`](../../packages/ts/mod.ts) under the `FieldMeta` namespace,
@@ -149,8 +149,8 @@ In `meshtastic/python`'s `bin/regen-protobufs.sh`, alongside `--python_out`:
 ## Extension number / global registry
 
 `field_metadata.proto` uses extension number **51001**, which is in the
-[50000–99999 range protobuf reserves for in-house use](https://protobuf.dev/programming-guides/proto2/#customoptions)
-— valid as-is. Because this schema is public, we may optionally reserve a number
+[50000-99999 range protobuf reserves for in-house use](https://protobuf.dev/programming-guides/proto2/#customoptions),
+valid as-is. Because this schema is public, we may optionally reserve a number
 in the [global extension registry](https://github.com/protocolbuffers/protobuf/blob/main/docs/options.md)
 to rule out collisions for third parties who import our options. Draft entry
 (pick the next free number when submitting the upstream PR):

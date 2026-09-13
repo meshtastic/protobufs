@@ -1,7 +1,7 @@
 # protoc-gen-fieldmeta-swift
 
 A pure-Swift `protoc` plugin that generates `FieldMetadataRegistry.swift` from
-`(meshtastic.field_metadata)` options — the Swift-native sibling of the Go
+`(meshtastic.field_metadata)` options - the Swift-native sibling of the Go
 [`protoc-gen-fieldmeta`](../protoc-gen-fieldmeta) one directory over, for
 consumers whose codegen toolchain is already swift-protobuf based
 (e.g. Meshtastic-Apple). Its output is **byte-identical** to the Go plugin's
@@ -10,7 +10,7 @@ Swift consumer doesn't need Go on contributor machines or CI.
 
 ## Why a separate Swift implementation
 
-- Built on `SwiftProtobufPluginLibrary` — the same library `protoc-gen-swift`
+- Built on `SwiftProtobufPluginLibrary` - the same library `protoc-gen-swift`
   itself uses. Emitted type paths (`Config.PositionConfig`) and property names
   (`rxGpio`) come from swift-protobuf's own `SwiftProtobufNamer`/`NamingUtils`,
   so they match the consumer's real generated code **by construction** (fields
@@ -18,16 +18,16 @@ Swift consumer doesn't need Go on contributor machines or CI.
   snake_case→camelCase rules can drift).
 - The `(meshtastic.field_metadata)` option is registered through the library's
   `customOptionExtensions` hook and arrives as a typed value on
-  `field.options` — no descriptor byte-parsing.
+  `field.options` - no descriptor byte-parsing.
 - The emitted `FieldMetadata` struct's shape is schema-driven, and the
   scalar-only constraint is enforced with the same hard error as the Go plugin.
   One deliberate difference: value emission uses an explicit per-attribute
   switch that **fails loudly** on an unhandled attribute (a one-line `case` to
-  extend) rather than fully dynamic rendering — metadata is never silently
+  extend) rather than fully dynamic rendering - metadata is never silently
   dropped.
 - The `deprecated` attribute is mirrored from each field's **standard**
   `[deprecated = true]` option (read off `field.options.deprecated`), not from
-  the custom annotation — so fields already marked deprecated surface as
+  the custom annotation - so fields already marked deprecated surface as
   `FieldMetadata(deprecated: true)` and apps can read deprecation at runtime.
   Hand-setting `deprecated` inside the annotation is a hard error, same as the
   Go plugin. Entry/attribute ordering matches the Go plugin (entries by proto
@@ -76,7 +76,7 @@ protoc --proto_path=. \
   tools/protoc-gen-fieldmeta-swift/scripts/verify-parity.sh
   ```
 
-  It builds this plugin, runs both generators over the schema, and diffs — so
+  It builds this plugin, runs both generators over the schema, and diffs - so
   the "interchangeable" claim can't silently rot. Run it after touching either
   generator.
 - Output diffed byte-for-byte identical to `protoc-gen-fieldmeta`'s

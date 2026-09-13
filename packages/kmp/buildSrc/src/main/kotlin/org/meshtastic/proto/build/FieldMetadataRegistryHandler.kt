@@ -18,10 +18,10 @@ import okio.Path
  *
  * The registry exposes two layers:
  *  - **Typed accessors** generated as extension properties on each message's companion object,
- *    e.g. `Config.PositionConfig.rx_gpio` — the everyday, autocomplete-friendly API that hangs
+ *    e.g. `Config.PositionConfig.rx_gpio` - the everyday, autocomplete-friendly API that hangs
  *    directly off the real generated message type (no magic strings, no parallel namespace). The
  *    accessor name matches Wire's snake_case field name.
- *  - **`FieldMetadataRegistry.get(messageType, tag)`** — a dynamic escape hatch for generic
+ *  - **`FieldMetadataRegistry.get(messageType, tag)`** - a dynamic escape hatch for generic
  *    field walking.
  *
  * The handler is GENERIC over the contents of the `FieldMetadata` message: it reads whatever
@@ -29,7 +29,7 @@ import okio.Path
  * constructor call. Adding a new scalar attribute to `field_metadata.proto` requires NO change here.
  *
  * Output is `org/meshtastic/proto/FieldMetadataRegistry.kt`, written into the custom target's `out`
- * directory, which the KMP build wires into `commonMain` — so it is queryable on every KMP target
+ * directory, which the KMP build wires into `commonMain` - so it is queryable on every KMP target
  * (JVM, Android, JS, Wasm, Native) with no reflection and no runtime cost.
  */
 class FieldMetadataRegistryHandler : SchemaHandler() {

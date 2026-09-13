@@ -3,7 +3,7 @@ name: field-metadata
 # Guards the field-metadata generators (see tools/protoc-gen-fieldmeta and
 # tools/protoc-gen-fieldmeta-swift). The Go plugin's tests aren't otherwise run
 # in CI, and the Go/Swift "byte-identical" promise was previously hand-checked
-# only — this workflow enforces both.
+# only - this workflow enforces both.
 on:
   pull_request:
     paths:
