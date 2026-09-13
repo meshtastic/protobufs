@@ -215,7 +215,7 @@ message StoreAndForward {
      */
     bytes text = 5;
   }
-  
+
   /*
    * Contains the original ID of the contained message.
    */
