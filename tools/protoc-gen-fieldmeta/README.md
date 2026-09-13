@@ -70,6 +70,26 @@ generation time** rather than producing meaningless, non-deterministic output.
 If a module doesn't define the extension (e.g. buf generates the option-free
 `nanopb.proto` as its own module), the plugin emits nothing rather than failing.
 
+### Enum values
+
+`(meshtastic.enum_value_metadata)` attaches the same `FieldMetadata` to an enum
+value, and those entries share the registry and key format with fields - keyed
+`"<enum full name>#<value number>"`. A message and an enum cannot share a
+fully-qualified name, so the two kinds cannot collide.
+
+This is what gives a picker's options their display text, instead of every client
+hand-maintaining its own copy of "Long Range - Fast" and "United States". It also
+lets a bitfield field name the toggles that make it up: `position_flags` is a
+single `uint32`, but its flags are values of `PositionFlags`, so the labels live
+on the values rather than on the field.
+
+`deprecated` is mirrored from an enum value's standard `[deprecated = true]`
+option exactly as it is for fields, so values already marked deprecated surface
+with no annotation at all.
+
+The extension is optional - a schema defining only `field_metadata` still
+generates.
+
 ### The `deprecated` attribute (mirrored, not annotated)
 
 `FieldMetadata` has one attribute the schema author never sets by hand:

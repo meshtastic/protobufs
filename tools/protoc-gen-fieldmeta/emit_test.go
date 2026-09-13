@@ -199,6 +199,52 @@ func TestEmitMultipleMessageTypes(t *testing.T) {
 	mustContain(t, "swift-multi", swift, "extension A {", "extension B {")
 }
 
+// TestEnumValueEntries covers enum-value metadata: a picker's options and a
+// bitfield's flags are enum values, and they share the registry and key format
+// with fields. Swift is the interesting target, because an enum value cannot get
+// a static accessor - the enum case of that name is already a static member - so
+// it gets one instance property per enum type, resolved by rawValue.
+func TestEnumValueEntries(t *testing.T) {
+	schema := []schemaField{{Name: "label", Kind: protoreflect.StringKind}}
+	entries := []entry{
+		{
+			Kind: kindField, MessageType: "meshtastic.Config.LoRaConfig",
+			TypePath: []string{"Config", "LoRaConfig"}, FieldName: "modem_preset", Tag: 2,
+			Fields: []metaField{{Name: "label", Value: "Preset"}},
+		},
+		{
+			Kind: kindEnumValue, MessageType: "meshtastic.Config.LoRaConfig.ModemPreset",
+			TypePath: []string{"Config", "LoRaConfig", "ModemPreset"}, FieldName: "LONG_FAST", Tag: 0,
+			Fields: []metaField{{Name: "label", Value: "Long Range - Fast"}},
+		},
+	}
+	_, out := emitSwift(schema, entries)
+
+	mustContain(t, "swift-enum", out,
+		// one instance property for the enum type, keyed on rawValue
+		"extension Config.LoRaConfig.ModemPreset {",
+		`public var metadata: FieldMetadata? { FieldMetadataRegistry.get("meshtastic.Config.LoRaConfig.ModemPreset", tag: rawValue) }`,
+		// the value itself is a normal registry row, localized like any string
+		`"meshtastic.Config.LoRaConfig.ModemPreset#0": FieldMetadata(label: String(localized: `+
+			`"meshtastic.Config.LoRaConfig.ModemPreset.LONG_FAST.label", `+
+			`defaultValue: "Long Range - Fast", `+
+			`comment: "label of meshtastic.Config.LoRaConfig.ModemPreset.LONG_FAST")`,
+		// fields keep their static accessors
+		"public static var modemPreset: FieldMetadata {",
+	)
+
+	// A static named for the value would collide with the enum case of that name.
+	if strings.Contains(out, "public static var longFast") {
+		t.Errorf("swift: enum values must not get static accessors (collides with the case):\n%s", out)
+	}
+
+	// Every other target still renders both kinds without erroring.
+	for name, emit := range map[string]emitter{"c": emitC, "python": emitPython, "typescript": emitTypeScript, "rust": emitRust} {
+		_, o := emit(schema, entries)
+		mustContain(t, name, o, "meshtastic.Config.LoRaConfig.ModemPreset")
+	}
+}
+
 // TestSwiftArgsFollowSchemaOrder pins the ordering the Swift target needs. Its
 // FieldMetadata properties are emitted in schema order, and Swift's memberwise
 // initializer demands arguments in property-declaration order - so a field

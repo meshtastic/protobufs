@@ -72,6 +72,17 @@ func pascalToSnake(s string) string {
 	return b.String()
 }
 
+// filterKind returns the entries of one kind, preserving order.
+func filterKind(entries []entry, kind entryKind) []entry {
+	out := make([]entry, 0, len(entries))
+	for _, e := range entries {
+		if e.Kind == kind {
+			out = append(out, e)
+		}
+	}
+	return out
+}
+
 // fieldValue returns the metaField set for name on this entry, if present.
 func (e entry) fieldValue(name string) (metaField, bool) {
 	for _, f := range e.Fields {
@@ -494,15 +505,31 @@ func emitSwift(schema []schemaField, entries []entry) (string, string) {
 	}
 	b.WriteString("}\n\n")
 
-	// Typed accessors as extensions on the real swift-protobuf message types, e.g.
-	// `Config.PositionConfig.rxGpio`. Extensions can't add stored properties, so these are
-	// computed (returning an immutable struct is cheap).
-	groups, keys := groupByTypePath(entries)
-	for _, typePath := range keys {
+	// Typed accessors as extensions on the real swift-protobuf types.
+	//
+	// Messages get one static per field, e.g. `Config.PositionConfig.rxGpio`.
+	// Extensions can't add stored properties, so these are computed (returning an
+	// immutable struct is cheap).
+	//
+	// Enums get a single INSTANCE property instead, looked up by rawValue. Two
+	// reasons: a static named after the value would collide with the enum case of
+	// the same name (cases are already static members), and keying on rawValue
+	// avoids reimplementing swift-protobuf's enum-case naming here, where it could
+	// drift from the real generated code.
+	fieldGroups, fieldKeys := groupByTypePath(filterKind(entries, kindField))
+	for _, typePath := range fieldKeys {
 		fmt.Fprintf(&b, "extension %s {\n", typePath)
-		for _, e := range groups[typePath] {
+		for _, e := range fieldGroups[typePath] {
 			fmt.Fprintf(&b, "    public static var %s: FieldMetadata { %s }\n", snakeToCamel(e.FieldName), swiftLiteral(schema, e))
 		}
+		b.WriteString("}\n\n")
+	}
+	enumGroups, enumKeys := groupByTypePath(filterKind(entries, kindEnumValue))
+	for _, typePath := range enumKeys {
+		fmt.Fprintf(&b, "extension %s {\n", typePath)
+		b.WriteString("    /// Metadata for this value, or nil if it carries none.\n")
+		fmt.Fprintf(&b, "    public var metadata: FieldMetadata? { FieldMetadataRegistry.get(%s, tag: rawValue) }\n",
+			quoteString(enumGroups[typePath][0].MessageType))
 		b.WriteString("}\n\n")
 	}
 

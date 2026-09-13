@@ -24,16 +24,23 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         [.proto3Optional]
     }
 
-    // Registering the extension here is what makes `field.options.fieldMetadata`
-    // decode as a typed value instead of landing in unknownFields.
-    var customOptionExtensions: [any AnyMessageExtension] { [Extensions_field_metadata] }
+    // Registering the extensions here is what makes `field.options.fieldMetadata`
+    // and `value.options.enumValueMetadata` decode as typed values instead of
+    // landing in unknownFields.
+    var customOptionExtensions: [any AnyMessageExtension] {
+        [Extensions_field_metadata, Extensions_enum_value_metadata]
+    }
 
     var version: String? { "1.0.0 (swift)" }
 
+    /// One annotated field or enum value. For an enum value, `protoTypeName` is the
+    /// enum's full name, `protoFieldName` is the value's name and `tag` is its number -
+    /// the shapes are identical, so one registry and one key format serve both.
     struct Entry {
+        let isEnumValue: Bool
         let swiftTypePath: String     // e.g. Config.PositionConfig
         let protoTypeName: String     // e.g. meshtastic.Config.PositionConfig
-        let swiftFieldName: String    // e.g. rxGpio
+        let swiftFieldName: String    // e.g. rxGpio (unused for enum values)
         let protoFieldName: String    // e.g. rx_gpio (ordering key, matches the Go plugin)
         let tag: Int32
         let metadata: FieldMetadata
@@ -70,10 +77,39 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         var entries: [Entry] = []
         for file in files {
             let namer = SwiftProtobufNamer()
+
+            // A picker's options and a bitfield's flags are enum values, so enums are
+            // walked alongside messages.
+            func collectEnums(_ enums: [EnumDescriptor]) throws {
+                for enumDescriptor in enums {
+                    for value in enumDescriptor.values
+                    where value.options.hasEnumValueMetadata || value.options.deprecated {
+                        if value.options.enumValueMetadata.hasDeprecated {
+                            throw GenError.message(
+                                "\(enumDescriptor.fullName).\(value.name): the \"deprecated\" attribute is generator-managed and cannot be set in (meshtastic.enum_value_metadata); mark the value `[deprecated = true]` instead and it is mirrored automatically"
+                            )
+                        }
+                        entries.append(Entry(
+                            isEnumValue: true,
+                            swiftTypePath: namer.fullName(enum: enumDescriptor),
+                            protoTypeName: enumDescriptor.fullName,
+                            swiftFieldName: "",
+                            protoFieldName: value.name,
+                            tag: value.number,
+                            metadata: value.options.enumValueMetadata,
+                            deprecated: value.options.deprecated
+                        ))
+                    }
+                }
+            }
+
+            try collectEnums(file.enums)
+
             var stack = file.messages
             while !stack.isEmpty {
                 let message = stack.removeFirst()
                 stack.append(contentsOf: message.messages)
+                try collectEnums(message.enums)
                 // A field earns an entry if it carries the custom annotation OR
                 // the standard `deprecated` option (which we mirror below).
                 for field in message.fields where field.options.hasFieldMetadata || field.options.deprecated {
@@ -86,6 +122,7 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
                         )
                     }
                     entries.append(Entry(
+                        isEnumValue: false,
                         swiftTypePath: namer.fullName(message: message),
                         protoTypeName: message.fullName,
                         swiftFieldName: namer.messagePropertyNames(field: field, prefixed: "", includeHasAndClear: false).name,
@@ -112,7 +149,7 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         // by proto type path sorted alphabetically, fields within a group sorted
         // by proto field name.
         var grouped: [String: [Entry]] = [:]
-        for e in entries {
+        for e in entries where !e.isEnumValue {
             grouped[e.swiftTypePath, default: []].append(e)
         }
         for typePath in grouped.keys.sorted() {
@@ -120,6 +157,22 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
             for e in grouped[typePath]!.sorted(by: { $0.protoFieldName < $1.protoFieldName }) {
                 out += "    public static var \(e.swiftFieldName): FieldMetadata { \(try literal(for: e, shape: metadataDescriptor)) }\n"
             }
+            out += "}\n\n"
+        }
+
+        // Enums get a single INSTANCE property, looked up by rawValue, rather than one
+        // static per value. A static named after the value would collide with the enum
+        // case of the same name - cases are already static members - and keying on
+        // rawValue avoids reimplementing swift-protobuf's enum-case naming, which is
+        // exactly where an independent implementation would drift.
+        var enumGrouped: [String: String] = [:]
+        for e in entries where e.isEnumValue {
+            enumGrouped[e.swiftTypePath] = e.protoTypeName
+        }
+        for typePath in enumGrouped.keys.sorted() {
+            out += "extension \(typePath) {\n"
+            out += "    /// Metadata for this value, or nil if it carries none.\n"
+            out += "    public var metadata: FieldMetadata? { FieldMetadataRegistry.get(\(swiftStringLiteral(enumGrouped[typePath]!)), tag: rawValue) }\n"
             out += "}\n\n"
         }
 

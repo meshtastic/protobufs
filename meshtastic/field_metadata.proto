@@ -11,7 +11,7 @@ option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
 /*
- * Structured, app/UI-relevant metadata describing a protobuf field.
+ * Structured, app/UI-relevant metadata describing a protobuf field or enum value.
  *
  * Carried in a single FieldOptions extension (`field_metadata` below), so adding
  * an attribute is a SCHEMA-ONLY change: add a new field to this message (use the
@@ -123,4 +123,25 @@ extend google.protobuf.FieldOptions {
    * Private-use extension number range is 50000-99999.
    */
   optional FieldMetadata field_metadata = 51001;
+}
+
+extend google.protobuf.EnumValueOptions {
+  /*
+   * Attach the same metadata to an ENUM VALUE, e.g.
+   *   LONG_FAST = 0 [(meshtastic.enum_value_metadata) = { label: "Long Range - Fast" }];
+   *
+   * A picker's options are enum values, so this is what gives them display text:
+   * without it every client hand-maintains its own copy of "Long Range - Fast",
+   * "United States" and the rest, and they drift. Bitfield flags are enum values
+   * too, which is how a single uint32 field like PositionConfig.position_flags
+   * can name the individual toggles that make it up.
+   *
+   * Reuses the FieldMetadata message so there is one shape, one registry and one
+   * localization path for both. Attributes that only make sense for a numeric
+   * field (min_value, max_value, unit) are simply left unset.
+   *
+   * Extension numbers are scoped per extendee, so sharing 51001 with the
+   * FieldOptions extension above is deliberate and not a conflict.
+   */
+  optional FieldMetadata enum_value_metadata = 51001;
 }

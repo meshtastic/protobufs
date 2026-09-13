@@ -28,6 +28,24 @@ Swift consumer doesn't need Go on contributor machines or CI.
   binding is how the option decodes as a typed value, and an attribute it
   predates would arrive in `unknownFields`. Generation stops with a pointed
   error in that case rather than dropping the attribute silently.
+- **Enum values are annotated too**, via the `(meshtastic.enum_value_metadata)`
+  extension, and share the registry and key format with fields. This is what
+  gives a picker's options their display text, and what lets a bitfield field
+  like `PositionConfig.position_flags` name the individual toggles that make it
+  up - both are enum values.
+
+  Swift emits **one instance property per enum type**, not one static per value:
+
+  ```swift
+  extension Config.LoRaConfig.ModemPreset {
+      public var metadata: FieldMetadata? { FieldMetadataRegistry.get("meshtastic.Config.LoRaConfig.ModemPreset", tag: rawValue) }
+  }
+  ```
+
+  A static named after the value would collide with the enum case of that name,
+  since cases are already static members. Resolving by `rawValue` also avoids
+  reimplementing swift-protobuf's enum-case naming, which is exactly where an
+  independent implementation would drift.
 - Attribute arguments are emitted in **schema declaration order**, not the
   name-sorted order the other targets use. Swift's memberwise initializer
   requires arguments in property-declaration order, and the struct's properties

@@ -40,6 +40,10 @@ import (
 // carries field metadata. Defined in meshtastic/field_metadata.proto.
 const fieldMetadataExtension protoreflect.FullName = "meshtastic.field_metadata"
 
+// enumValueMetadataExtension is the same metadata attached to an enum value. Kept
+// optional: a schema may define field_metadata without it.
+const enumValueMetadataExtension protoreflect.FullName = "meshtastic.enum_value_metadata"
+
 // deprecatedAttr is the FieldMetadata attribute mirrored from a field's standard
 // (google.protobuf.FieldOptions) `deprecated` bit. It is generator-managed: we
 // set it from that standard option rather than from the custom annotation, so
@@ -62,14 +66,25 @@ type metaField struct {
 	Value any // bool | float64 | int64 | string
 }
 
-// entry is one annotated proto field and its metadata.
+// entry is one annotated field or enum value. For an enum value the three
+// "message"/"field" names below carry the enum's equivalents: MessageType is the
+// enum's full name, FieldName is the value's name, and Tag is its number. The
+// shapes are identical, so one registry and one key format serve both.
 type entry struct {
+	Kind        entryKind
 	MessageType string   // fully-qualified, e.g. "meshtastic.Config.PositionConfig"
-	TypePath    []string // package-relative message path, e.g. ["Config", "PositionConfig"]
-	FieldName   string   // proto field name, e.g. "rx_gpio"
-	Tag         int32
+	TypePath    []string // package-relative path, e.g. ["Config", "PositionConfig"]
+	FieldName   string   // proto field or enum value name, e.g. "rx_gpio"
+	Tag         int32    // field number, or enum value number
 	Fields      []metaField
 }
+
+type entryKind int
+
+const (
+	kindField entryKind = iota
+	kindEnumValue
+)
 
 // emitter renders the collected schema + entries into one generated file.
 type emitter func(schema []schemaField, entries []entry) (filename, content string)
@@ -137,11 +152,18 @@ func generate(req *pluginpb.CodeGeneratorRequest) (*pluginpb.CodeGeneratorRespon
 		}, nil
 	}
 
-	// Resolver that knows our extension, used to re-decode each field's options
+	// Resolver that knows our extensions, used to re-decode each field's options
 	// (built once; see readMetadata for why the round-trip is required).
 	resolver := new(protoregistry.Types)
 	if err := resolver.RegisterExtension(extType); err != nil {
 		return nil, fmt.Errorf("registering %s extension: %w", fieldMetadataExtension, err)
+	}
+	// Optional: a schema carrying only field_metadata still generates.
+	enumExtType := findExtension(files, enumValueMetadataExtension)
+	if enumExtType != nil {
+		if err := resolver.RegisterExtension(enumExtType); err != nil {
+			return nil, fmt.Errorf("registering %s extension: %w", enumValueMetadataExtension, err)
+		}
 	}
 
 	// Only scan the files this invocation was asked to generate for, so we skip
@@ -157,7 +179,10 @@ func generate(req *pluginpb.CodeGeneratorRequest) (*pluginpb.CodeGeneratorRespon
 		if len(toGen) > 0 && !toGen[fd.Path()] {
 			return true
 		}
-		if collectErr = collectMessages(fd.Messages(), extType, resolver, &entries); collectErr != nil {
+		if collectErr = collectMessages(fd.Messages(), extType, enumExtType, resolver, &entries); collectErr != nil {
+			return false
+		}
+		if collectErr = collectEnums(fd.Enums(), enumExtType, resolver, &entries); collectErr != nil {
 			return false
 		}
 		return true
@@ -241,7 +266,7 @@ func isScalarKind(k protoreflect.Kind) bool {
 	return isIntKind(k)
 }
 
-func collectMessages(msgs protoreflect.MessageDescriptors, extType protoreflect.ExtensionType, resolver *protoregistry.Types, out *[]entry) error {
+func collectMessages(msgs protoreflect.MessageDescriptors, extType, enumExtType protoreflect.ExtensionType, resolver *protoregistry.Types, out *[]entry) error {
 	for i := 0; i < msgs.Len(); i++ {
 		md := msgs.Get(i)
 		// Package-relative path, e.g. meshtastic.Config.PositionConfig -> [Config, PositionConfig].
@@ -270,6 +295,7 @@ func collectMessages(msgs protoreflect.MessageDescriptors, extType protoreflect.
 				continue
 			}
 			*out = append(*out, entry{
+				Kind:        kindField,
 				MessageType: string(md.FullName()),
 				TypePath:    typePath,
 				FieldName:   string(f.Name()),
@@ -277,7 +303,10 @@ func collectMessages(msgs protoreflect.MessageDescriptors, extType protoreflect.
 				Fields:      mf,
 			})
 		}
-		if err := collectMessages(md.Messages(), extType, resolver, out); err != nil { // nested message types
+		if err := collectEnums(md.Enums(), enumExtType, resolver, out); err != nil { // nested enums
+			return err
+		}
+		if err := collectMessages(md.Messages(), extType, enumExtType, resolver, out); err != nil { // nested message types
 			return err
 		}
 	}
@@ -305,8 +334,31 @@ func readMetadata(f protoreflect.FieldDescriptor, extType protoreflect.Extension
 	if err := (proto.UnmarshalOptions{Resolver: resolver}).Unmarshal(raw, reopts); err != nil {
 		return nil
 	}
+	return decodeMetadata(reopts.ProtoReflect(), extType)
+}
 
-	m := reopts.ProtoReflect()
+// readEnumValueMetadata is readMetadata for an enum value. Same re-decode dance,
+// against EnumValueOptions and the enum_value_metadata extension.
+func readEnumValueMetadata(v protoreflect.EnumValueDescriptor, extType protoreflect.ExtensionType, resolver *protoregistry.Types) []metaField {
+	opts := v.Options()
+	if opts == nil {
+		return nil
+	}
+	raw, err := proto.Marshal(opts)
+	if err != nil {
+		return nil
+	}
+	reopts := &descriptorpb.EnumValueOptions{}
+	if err := (proto.UnmarshalOptions{Resolver: resolver}).Unmarshal(raw, reopts); err != nil {
+		return nil
+	}
+	return decodeMetadata(reopts.ProtoReflect(), extType)
+}
+
+// decodeMetadata pulls the attributes out of an options message that has already
+// been re-decoded with a resolver that knows the extension, sorted by attribute
+// name so every target renders them deterministically.
+func decodeMetadata(m protoreflect.Message, extType protoreflect.ExtensionType) []metaField {
 	xtd := extType.TypeDescriptor()
 	if !m.Has(xtd) {
 		return nil
@@ -319,6 +371,55 @@ func readMetadata(f protoreflect.FieldDescriptor, extType protoreflect.Extension
 	})
 	sort.Slice(fields, func(i, j int) bool { return fields[i].Name < fields[j].Name })
 	return fields
+}
+
+// collectEnums is collectMessages for enum values: a picker's options and a
+// bitfield's flags are enum values, so this is what lets them carry display text.
+func collectEnums(enums protoreflect.EnumDescriptors, extType protoreflect.ExtensionType, resolver *protoregistry.Types, out *[]entry) error {
+	if extType == nil {
+		return nil
+	}
+	for i := 0; i < enums.Len(); i++ {
+		ed := enums.Get(i)
+		rel := strings.TrimPrefix(string(ed.FullName()), string(ed.ParentFile().Package())+".")
+		typePath := strings.Split(rel, ".")
+		values := ed.Values()
+		for j := 0; j < values.Len(); j++ {
+			ev := values.Get(j)
+			mf := readEnumValueMetadata(ev, extType, resolver)
+			for _, a := range mf {
+				if a.Name == deprecatedAttr {
+					return fmt.Errorf(
+						"%s: the %q attribute is generator-managed and cannot be set in (meshtastic.enum_value_metadata); mark the value `[deprecated = true]` instead and it is mirrored automatically",
+						ev.FullName(), deprecatedAttr)
+				}
+			}
+			if enumValueIsDeprecated(ev) {
+				mf = upsertBool(mf, deprecatedAttr, true)
+			}
+			if len(mf) == 0 {
+				continue
+			}
+			*out = append(*out, entry{
+				Kind:        kindEnumValue,
+				MessageType: string(ed.FullName()),
+				TypePath:    typePath,
+				FieldName:   string(ev.Name()),
+				Tag:         int32(ev.Number()),
+				Fields:      mf,
+			})
+		}
+	}
+	return nil
+}
+
+// enumValueIsDeprecated reports whether the value carries the standard
+// `[deprecated = true]` option, mirrored the same way fieldIsDeprecated is.
+func enumValueIsDeprecated(v protoreflect.EnumValueDescriptor) bool {
+	if o, ok := v.Options().(*descriptorpb.EnumValueOptions); ok && o != nil {
+		return o.GetDeprecated()
+	}
+	return false
 }
 
 // fieldIsDeprecated reports whether the field carries the standard

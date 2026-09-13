@@ -21,7 +21,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
 }
 
 ///
-/// Structured, app/UI-relevant metadata describing a protobuf field.
+/// Structured, app/UI-relevant metadata describing a protobuf field or enum value.
 ///
 /// Carried in a single FieldOptions extension (`field_metadata` below), so adding
 /// an attribute is a SCHEMA-ONLY change: add a new field to this message (use the
@@ -205,6 +205,40 @@ public nonisolated struct FieldMetadata: Sendable {
 // declaration. To avoid naming collisions, the names are prefixed with the name of
 // the scope where the extend directive occurs.
 
+nonisolated extension SwiftProtobuf.Google_Protobuf_EnumValueOptions {
+
+  ///
+  /// Attach the same metadata to an ENUM VALUE, e.g.
+  ///   LONG_FAST = 0 [(meshtastic.enum_value_metadata) = { label: "Long Range - Fast" }];
+  ///
+  /// A picker's options are enum values, so this is what gives them display text:
+  /// without it every client hand-maintains its own copy of "Long Range - Fast",
+  /// "United States" and the rest, and they drift. Bitfield flags are enum values
+  /// too, which is how a single uint32 field like PositionConfig.position_flags
+  /// can name the individual toggles that make it up.
+  ///
+  /// Reuses the FieldMetadata message so there is one shape, one registry and one
+  /// localization path for both. Attributes that only make sense for a numeric
+  /// field (min_value, max_value, unit) are simply left unset.
+  ///
+  /// Extension numbers are scoped per extendee, so sharing 51001 with the
+  /// FieldOptions extension above is deliberate and not a conflict.
+  public var enumValueMetadata: FieldMetadata {
+    get {return getExtensionValue(ext: Extensions_enum_value_metadata) ?? FieldMetadata()}
+    set {setExtensionValue(ext: Extensions_enum_value_metadata, value: newValue)}
+  }
+  /// Returns true if extension `Extensions_enum_value_metadata`
+  /// has been explicitly set.
+  public var hasEnumValueMetadata: Bool {
+    return hasExtensionValue(ext: Extensions_enum_value_metadata)
+  }
+  /// Clears the value of extension `Extensions_enum_value_metadata`.
+  /// Subsequent reads from it will return its default value.
+  public mutating func clearEnumValueMetadata() {
+    clearExtensionValue(ext: Extensions_enum_value_metadata)
+  }
+}
+
 nonisolated extension SwiftProtobuf.Google_Protobuf_FieldOptions {
 
   ///
@@ -236,7 +270,8 @@ nonisolated extension SwiftProtobuf.Google_Protobuf_FieldOptions {
 /// in parsing, or it can be combined with other `SwiftProtobuf.SimpleExtensionMap`s to create
 /// a larger `SwiftProtobuf.SimpleExtensionMap`.
 public nonisolated let FieldMetadata_Extensions: SwiftProtobuf.SimpleExtensionMap = [
-  Extensions_field_metadata
+  Extensions_field_metadata,
+  Extensions_enum_value_metadata
 ]
 
 // Extension Objects - The only reason these might be needed is when manually
@@ -251,6 +286,27 @@ public nonisolated let FieldMetadata_Extensions: SwiftProtobuf.SimpleExtensionMa
 public nonisolated let Extensions_field_metadata = SwiftProtobuf.MessageExtension<SwiftProtobuf.OptionalMessageExtensionField<FieldMetadata>, SwiftProtobuf.Google_Protobuf_FieldOptions>(
   _protobuf_fieldNumber: 51001,
   fieldName: "meshtastic.field_metadata"
+)
+
+///
+/// Attach the same metadata to an ENUM VALUE, e.g.
+///   LONG_FAST = 0 [(meshtastic.enum_value_metadata) = { label: "Long Range - Fast" }];
+///
+/// A picker's options are enum values, so this is what gives them display text:
+/// without it every client hand-maintains its own copy of "Long Range - Fast",
+/// "United States" and the rest, and they drift. Bitfield flags are enum values
+/// too, which is how a single uint32 field like PositionConfig.position_flags
+/// can name the individual toggles that make it up.
+///
+/// Reuses the FieldMetadata message so there is one shape, one registry and one
+/// localization path for both. Attributes that only make sense for a numeric
+/// field (min_value, max_value, unit) are simply left unset.
+///
+/// Extension numbers are scoped per extendee, so sharing 51001 with the
+/// FieldOptions extension above is deliberate and not a conflict.
+public nonisolated let Extensions_enum_value_metadata = SwiftProtobuf.MessageExtension<SwiftProtobuf.OptionalMessageExtensionField<FieldMetadata>, SwiftProtobuf.Google_Protobuf_EnumValueOptions>(
+  _protobuf_fieldNumber: 51001,
+  fieldName: "meshtastic.enum_value_metadata"
 )
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.

@@ -286,7 +286,10 @@ message Config {
       /*
        * Include an altitude value (if available)
        */
-      ALTITUDE = 0x0001;
+      ALTITUDE = 0x0001 [(meshtastic.enum_value_metadata) = {
+        label: "Altitude"
+        description: "Include an altitude value in position reports, when one is available."
+      }];
 
       /*
        * Altitude value is MSL
@@ -1001,7 +1004,10 @@ message Config {
       /*
        * Long Range - Fast
        */
-      LONG_FAST = 0;
+      LONG_FAST = 0 [(meshtastic.enum_value_metadata) = {
+        label: "Long Range - Fast"
+        keywords: "longfast|default"
+      }];
 
       /*
        * Long Range - Slow
