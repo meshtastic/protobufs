@@ -199,6 +199,36 @@ func TestEmitMultipleMessageTypes(t *testing.T) {
 	mustContain(t, "swift-multi", swift, "extension A {", "extension B {")
 }
 
+// TestSwiftCamelCase pins agreement with swift-protobuf's
+// NamingUtils.toLowerCamelCase. The Swift target must name properties exactly as
+// protoc-gen-swift does, and a naive snake_case -> camelCase silently disagrees
+// wherever a digit meets a letter. Expected values below are copied from real
+// generated .pb.swift output, not from this implementation.
+func TestSwiftCamelCase(t *testing.T) {
+	cases := map[string]string{
+		// the three that actually differ in the Meshtastic schema
+		"use_12h_clock":          "use12HClock",
+		"sx126x_rx_boosted_gain": "sx126XRxBoostedGain",
+		"use_i2s_as_buzzer":      "useI2SAsBuzzer",
+		// ordinary names, where naive camelCasing happens to agree
+		"hop_limit":         "hopLimit",
+		"config_ok_to_mqtt": "configOkToMqtt",
+		"region":            "region",
+		// digit runs and abbreviations
+		"ipv4_config": "ipv4Config",
+		"device_id":   "deviceID",
+	}
+	for in, want := range cases {
+		if got := swiftCamelCase(in); got != want {
+			t.Errorf("swiftCamelCase(%q) = %q, want %q", in, got, want)
+		}
+	}
+	// TypeScript keeps the naive rule; the two must not be conflated.
+	if snakeToCamel("use_12h_clock") == swiftCamelCase("use_12h_clock") {
+		t.Error("snakeToCamel and swiftCamelCase should differ on use_12h_clock")
+	}
+}
+
 // TestEnumValueEntries covers enum-value metadata: a picker's options and a
 // bitfield's flags are enum values, and they share the registry and key format
 // with fields. Swift is the interesting target, because an enum value cannot get

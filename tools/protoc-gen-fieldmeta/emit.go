@@ -55,6 +55,103 @@ func snakeToCamel(s string) string {
 	return strings.Join(parts, "")
 }
 
+// swiftCamelCase mirrors swift-protobuf's NamingUtils.toLowerCamelCase, which is
+// how protoc-gen-swift names the properties this target has to agree with.
+//
+// A naive snake_case -> camelCase is NOT the same function. swift-protobuf splits
+// on changes of character class, so a digit run starts a new segment and the letter
+// after it is capitalised: use_12h_clock becomes use12HClock, not use12hClock, and
+// sx126x_rx_boosted_gain becomes sx126XRxBoostedGain. The pure-Swift sibling plugin
+// gets this right for free by calling swift-protobuf; this is the port that keeps
+// the two byte-identical.
+func swiftCamelCase(s string) string {
+	const (
+		clsNone = iota
+		clsDigit
+		clsLower
+		clsUpper
+		clsUnderscore
+		clsOther
+	)
+	classOf := func(r rune) int {
+		switch {
+		case r >= '0' && r <= '9':
+			return clsDigit
+		case r >= 'a' && r <= 'z':
+			return clsLower
+		case r >= 'A' && r <= 'Z':
+			return clsUpper
+		case r == '_':
+			return clsUnderscore
+		default:
+			return clsOther
+		}
+	}
+	// Kept identical to swift-protobuf's set.
+	abbreviations := map[string]bool{"url": true, "http": true, "https": true, "id": true}
+
+	var result, current strings.Builder
+	last := clsNone
+
+	addCurrent := func() {
+		if current.Len() == 0 {
+			return
+		}
+		seg := current.String()
+		current.Reset()
+		switch {
+		case result.Len() == 0:
+			// First segment stays lowercase (lowerCamelCase).
+		case abbreviations[seg]:
+			seg = strings.ToUpper(seg)
+		default:
+			seg = strings.ToUpper(seg[:1]) + seg[1:]
+		}
+		result.WriteString(seg)
+	}
+
+	for _, r := range s {
+		switch c := classOf(r); c {
+		case clsDigit:
+			if last != clsDigit {
+				addCurrent()
+			}
+			if result.Len() == 0 {
+				result.WriteString("_") // cannot start an identifier with a digit
+			}
+			current.WriteRune(r)
+			last = c
+		case clsUpper:
+			if last != clsUpper {
+				addCurrent()
+			}
+			current.WriteRune(r - 'A' + 'a')
+			last = c
+		case clsLower:
+			if last != clsLower && last != clsUpper {
+				addCurrent()
+			}
+			current.WriteRune(r)
+			last = c
+		case clsUnderscore:
+			addCurrent()
+			if last == clsUnderscore {
+				result.WriteString("_") // repeated underscores carry over
+			}
+			last = c
+		default:
+			addCurrent()
+			current.WriteRune(r)
+			last = c
+		}
+	}
+	addCurrent()
+	if last == clsUnderscore {
+		result.WriteString("_")
+	}
+	return result.String()
+}
+
 // pascalToSnake lowercases a proto message name for use as a Rust module name
 // ("PositionConfig" -> "position_config").
 func pascalToSnake(s string) string {
@@ -501,7 +598,7 @@ func emitSwift(schema []schemaField, entries []entry) (string, string) {
 	fmt.Fprintf(&b, "// %s\n\n", doNotEdit)
 	b.WriteString("public struct FieldMetadata {\n")
 	for _, sf := range schema {
-		fmt.Fprintf(&b, "    public var %s: %s? = nil\n", snakeToCamel(sf.Name), swiftType(sf.Kind))
+		fmt.Fprintf(&b, "    public var %s: %s? = nil\n", swiftCamelCase(sf.Name), swiftType(sf.Kind))
 	}
 	b.WriteString("}\n\n")
 
@@ -520,7 +617,7 @@ func emitSwift(schema []schemaField, entries []entry) (string, string) {
 	for _, typePath := range fieldKeys {
 		fmt.Fprintf(&b, "extension %s {\n", typePath)
 		for _, e := range fieldGroups[typePath] {
-			fmt.Fprintf(&b, "    public static var %s: FieldMetadata { %s }\n", snakeToCamel(e.FieldName), swiftLiteral(schema, e))
+			fmt.Fprintf(&b, "    public static var %s: FieldMetadata { %s }\n", swiftCamelCase(e.FieldName), swiftLiteral(schema, e))
 		}
 		b.WriteString("}\n\n")
 	}
@@ -561,7 +658,7 @@ func swiftLiteral(schema []schemaField, e entry) string {
 		if !ok {
 			continue
 		}
-		parts = append(parts, fmt.Sprintf("%s: %s", snakeToCamel(f.Name), swiftValue(e, f)))
+		parts = append(parts, fmt.Sprintf("%s: %s", swiftCamelCase(f.Name), swiftValue(e, f)))
 	}
 	return "FieldMetadata(" + strings.Join(parts, ", ") + ")"
 }
