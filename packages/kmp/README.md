@@ -51,6 +51,35 @@ for ((tag, meta) in FieldMetadataRegistry.forType("meshtastic.Config.PositionCon
 val isDiyOnly = FieldMetadataRegistry.get("meshtastic.Config.PositionConfig", tag = 8)?.diy_only == true
 ```
 
+### Enum values
+
+Enum values carry the same `FieldMetadata` shape through the
+`(meshtastic.enum_value_metadata)` option, so a picker gets its labels from the schema instead of
+a hand-maintained `when`:
+
+```protobuf
+CLIENT = 0 [(meshtastic.enum_value_metadata) = { label: "Client" }];
+```
+
+```kotlin
+import org.meshtastic.proto.metadata
+
+// typed: an extension on the enum TYPE, so it reads off a value you already hold
+val label = role.metadata?.label
+
+// dynamic: enum values share the registry and the key format with fields
+FieldMetadataRegistry.forEnum("meshtastic.Config.DeviceConfig.Role")   // number -> FieldMetadata
+FieldMetadataRegistry.forEnumValue("meshtastic.Config.DeviceConfig.Role", number = 2)
+```
+
+`metadata` is a top-level extension in `org.meshtastic.proto`, so it needs that import outside the
+package (the IDE auto-imports on use), the same as the per-field accessors above.
+
+`forEnum` and `forEnumValue` are aliases for `forType` and `get` - one registry serves both kinds,
+matching `protoc-gen-fieldmeta`. The typed accessor cannot hang off the enum companion: an
+extension named after a value is shadowed by the enum entry itself, since Kotlin resolves members
+before extensions, so it would compile and never be reachable.
+
 Adding a new **scalar** attribute to the `FieldMetadata` message (e.g. `admin_only`, `unit`) is a
 schema-only change - the generator serializes whatever sub-fields are set, so no build code needs
 to change.
