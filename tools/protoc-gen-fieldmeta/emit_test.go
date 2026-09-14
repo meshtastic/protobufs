@@ -334,3 +334,58 @@ func TestSwiftLocalizesStringAttributes(t *testing.T) {
 		mustContain(t, name, out, `"Hop Limit"`)
 	}
 }
+
+// TestDuplicateLabelsWithinATypeAreRejected pins the guard that catches a wrong
+// annotation rather than a malformed one. A label lifted from the wrong control is
+// present and syntactically valid, so nothing else notices - but two fields of one
+// message sharing a display name are indistinguishable to a user, and that label
+// becomes the source string every client translates.
+func TestDuplicateLabelsWithinATypeAreRejected(t *testing.T) {
+	dup := []entry{
+		{Kind: kindField, MessageType: "meshtastic.M", FieldName: "a", Tag: 1,
+			Fields: []metaField{{Name: "label", Value: "Enabled"}}},
+		{Kind: kindField, MessageType: "meshtastic.M", FieldName: "b", Tag: 2,
+			Fields: []metaField{{Name: "label", Value: "Enabled"}}},
+	}
+	err := checkDuplicateLabels(dup)
+	if err == nil {
+		t.Fatal("expected duplicate labels on one message to be rejected")
+	}
+	for _, want := range []string{"meshtastic.M", "a", "b", "Enabled"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("error should name %q, got: %v", want, err)
+		}
+	}
+
+	// The same label on DIFFERENT types is fine: the screen around it disambiguates.
+	spread := []entry{
+		{Kind: kindField, MessageType: "meshtastic.M", FieldName: "a", Tag: 1,
+			Fields: []metaField{{Name: "label", Value: "Enabled"}}},
+		{Kind: kindField, MessageType: "meshtastic.N", FieldName: "a", Tag: 1,
+			Fields: []metaField{{Name: "label", Value: "Enabled"}}},
+	}
+	if err := checkDuplicateLabels(spread); err != nil {
+		t.Errorf("same label on different types must be allowed, got: %v", err)
+	}
+
+	// Enum values are checked the same way - they share the entry shape.
+	enumDup := []entry{
+		{Kind: kindEnumValue, MessageType: "meshtastic.M.E", FieldName: "X", Tag: 0,
+			Fields: []metaField{{Name: "label", Value: "Off"}}},
+		{Kind: kindEnumValue, MessageType: "meshtastic.M.E", FieldName: "Y", Tag: 1,
+			Fields: []metaField{{Name: "label", Value: "Off"}}},
+	}
+	if err := checkDuplicateLabels(enumDup); err == nil {
+		t.Error("expected duplicate labels on one enum to be rejected")
+	}
+
+	// Entries with no label at all must not collide with each other.
+	if err := checkDuplicateLabels([]entry{
+		{Kind: kindField, MessageType: "meshtastic.M", FieldName: "a", Tag: 1,
+			Fields: []metaField{{Name: "diy_only", Value: true}}},
+		{Kind: kindField, MessageType: "meshtastic.M", FieldName: "b", Tag: 2,
+			Fields: []metaField{{Name: "diy_only", Value: true}}},
+	}); err != nil {
+		t.Errorf("unlabelled entries must not collide, got: %v", err)
+	}
+}

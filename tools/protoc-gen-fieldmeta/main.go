@@ -198,6 +198,10 @@ func generate(req *pluginpb.CodeGeneratorRequest) (*pluginpb.CodeGeneratorRespon
 		return entries[i].Tag < entries[j].Tag
 	})
 
+	if err := checkDuplicateLabels(entries); err != nil {
+		return nil, err
+	}
+
 	schema, err := fieldMetadataSchema(extType)
 	if err != nil {
 		return nil, err
@@ -411,6 +415,50 @@ func collectEnums(enums protoreflect.EnumDescriptors, extType protoreflect.Exten
 		}
 	}
 	return nil
+}
+
+// checkDuplicateLabels rejects two fields of the same message, or two values of the
+// same enum, carrying the same label.
+//
+// A label is the display name every client shows and translates from, so within one
+// type it has to identify which setting is which. Duplicates are indistinguishable to
+// a user and are nearly always a seeding mistake rather than intent: five
+// TrafficManagementConfig fields once came out labelled "Enabled" because the tool
+// lifting them from a client matched the wrong control. That failure is invisible
+// otherwise - the annotation is present and syntactically valid, just wrong, and it
+// ships as the source string everyone translates.
+//
+// Scoped per type, not globally: "Enabled" appearing once each on MQTTConfig and
+// SerialConfig is fine, since the screen around it says which is which.
+func checkDuplicateLabels(entries []entry) error {
+	seen := map[string]map[string]string{} // type -> label -> the field that claimed it
+	var problems []string
+	for _, e := range entries {
+		f, ok := e.fieldValue("label")
+		if !ok {
+			continue
+		}
+		label, _ := f.Value.(string)
+		if label == "" {
+			continue
+		}
+		byLabel := seen[e.MessageType]
+		if byLabel == nil {
+			byLabel = map[string]string{}
+			seen[e.MessageType] = byLabel
+		}
+		if first, dup := byLabel[label]; dup {
+			problems = append(problems, fmt.Sprintf(
+				"%s: %s and %s both use label %q", e.MessageType, first, e.FieldName, label))
+			continue
+		}
+		byLabel[label] = e.FieldName
+	}
+	if len(problems) == 0 {
+		return nil
+	}
+	sort.Strings(problems)
+	return fmt.Errorf("duplicate labels within a type:\n  %s", strings.Join(problems, "\n  "))
 }
 
 // enumValueIsDeprecated reports whether the value carries the standard
