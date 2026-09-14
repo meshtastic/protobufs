@@ -194,9 +194,11 @@ func (e entry) fieldValue(name string) (metaField, bool) {
 
 // ---- accessor tree --------------------------------------------------------
 
-// metaTree mirrors the proto message nesting so each target can emit
-// namespaced, name-based accessors (Config.PositionConfig.rxGpio) instead of
-// requiring callers to know magic message-name strings and field tags.
+// metaTree mirrors the proto message nesting so the standalone-namespace targets
+// (TS, Python, Rust) can emit name-based accessors (Config.PositionConfig.rxGpio)
+// instead of requiring callers to know magic message-name strings and field tags.
+// Swift and C do not use it: C has no namespacing, and Swift has no typed field
+// accessor to namespace (see emitSwift).
 type metaTree struct {
 	children map[string]*metaTree
 	fields   []entry
@@ -604,25 +606,24 @@ func emitSwift(schema []schemaField, entries []entry) (string, string) {
 	}
 	b.WriteString("}\n\n")
 
-	// Typed accessors as extensions on the real swift-protobuf types.
+	// Message fields get NO typed accessor in Swift - look them up by tag.
 	//
-	// Messages get one static per field, e.g. `Config.PositionConfig.rxGpio`.
-	// Extensions can't add stored properties, so these are computed (returning an
-	// immutable struct is cheap).
+	// An accessor keyed on the field's name is only stable where the generated
+	// name IS the proto name. Wire keeps snake_case, so the Kotlin handler can
+	// hang `Config.PositionConfig.rx_gpio` off the companion and have it mean
+	// what the schema says. swift-protobuf renames - `sx126x_rx_boosted_gain`
+	// becomes `sx126XRxBoostedGain` - so the Swift accessor was keyed on a name
+	// swift-protobuf chooses, not one this schema controls. The tag is the only
+	// key stable by contract, which makes the dynamic lookup the real API here.
 	//
-	// Enums get a single INSTANCE property instead, looked up by rawValue. Two
-	// reasons: a static named after the value would collide with the enum case of
-	// the same name (cases are already static members), and keying on rawValue
-	// avoids reimplementing swift-protobuf's enum-case naming here, where it could
-	// drift from the real generated code.
-	fieldGroups, fieldKeys := groupByTypePath(filterKind(entries, kindField))
-	for _, typePath := range fieldKeys {
-		fmt.Fprintf(&b, "extension %s {\n", typePath)
-		for _, e := range fieldGroups[typePath] {
-			fmt.Fprintf(&b, "    public static var %s: FieldMetadata { %s }\n", swiftCamelCase(e.FieldName), swiftLiteral(schema, e))
-		}
-		b.WriteString("}\n\n")
-	}
+	// It also collided. A static named after the field competes with the message's
+	// own instance property of that name once the generated types are in a
+	// different module from the consumer, which breaks writes at the call site.
+	//
+	// Enums are unaffected and keep a single INSTANCE property, looked up by
+	// rawValue. An instance property shadows nothing, and keying on rawValue
+	// avoids reimplementing swift-protobuf's enum-case naming here, where it
+	// could drift from the real generated code.
 	enumGroups, enumKeys := groupByTypePath(filterKind(entries, kindEnumValue))
 	for _, typePath := range enumKeys {
 		fmt.Fprintf(&b, "extension %s {\n", typePath)

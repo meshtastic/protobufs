@@ -105,17 +105,21 @@ func TestEmitSwift(t *testing.T) {
 	_, out := emitSwift(testSchema, testEntries)
 	mustContain(t, "swift", out,
 		"public var minValue: Double? = nil",
-		// dynamic registry
-		`FieldMetadata(diyOnly: true)`,
+		// the registry row IS the API for a message field
+		`"meshtastic.Config.PositionConfig#8": FieldMetadata(diyOnly: true)`,
 		"minValue: 1.5",
-		// typed accessors as an extension on the real message type
-		"extension Config.PositionConfig {",
-		"public static var rxGpio: FieldMetadata { FieldMetadata(diyOnly: true) }",
 	)
+	// Message fields get no typed accessor: the swift-protobuf property name is
+	// not the proto name, so there is no key for one that this schema controls,
+	// and a static named for the field collides with the message's own instance
+	// property across a module boundary.
+	if strings.Contains(out, "public static var rxGpio") {
+		t.Errorf("swift: message fields must not get static accessors:\n%s", out)
+	}
 	// must NOT declare a parallel `Config` enum (that would collide with the
 	// swift-protobuf-generated Config message in the same module).
 	if strings.Contains(out, "public enum Config ") || strings.Contains(out, "public enum Config{") {
-		t.Errorf("swift: must extend the real Config type, not declare a parallel enum:\n%s", out)
+		t.Errorf("swift: must not declare a parallel Config enum:\n%s", out)
 	}
 }
 
@@ -200,8 +204,10 @@ func TestEmitMultipleMessageTypes(t *testing.T) {
 	mustContain(t, "ts-multi", ts, "export const A = {", "export const B = {")
 	_, py := emitPython(schema, entries)
 	mustContain(t, "py-multi", py, "class A:", "class B:")
+	// Swift has no per-message extension for fields; the registry keys carry the
+	// namespacing instead.
 	_, swift := emitSwift(schema, entries)
-	mustContain(t, "swift-multi", swift, "extension A {", "extension B {")
+	mustContain(t, "swift-multi", swift, `"meshtastic.A#1"`, `"meshtastic.B#1"`)
 }
 
 // TestSwiftCamelCase pins agreement with swift-protobuf's
@@ -236,9 +242,10 @@ func TestSwiftCamelCase(t *testing.T) {
 
 // TestEnumValueEntries covers enum-value metadata: a picker's options and a
 // bitfield's flags are enum values, and they share the registry and key format
-// with fields. Swift is the interesting target, because an enum value cannot get
-// a static accessor - the enum case of that name is already a static member - so
-// it gets one instance property per enum type, resolved by rawValue.
+// with fields. Swift is the interesting target, because it is the only one with
+// a typed accessor for enum values and none for message fields - an instance
+// property on the enum shadows nothing, where a static named for either a case
+// or a field competes with a member that already exists.
 func TestEnumValueEntries(t *testing.T) {
 	schema := []schemaField{{Name: "label", Kind: protoreflect.StringKind}}
 	entries := []entry{
@@ -264,13 +271,12 @@ func TestEnumValueEntries(t *testing.T) {
 			`"meshtastic.Config.LoRaConfig.ModemPreset.LONG_FAST.label", `+
 			`defaultValue: "Long Range - Fast", `+
 			`comment: "label of meshtastic.Config.LoRaConfig.ModemPreset.LONG_FAST")`,
-		// fields keep their static accessors
-		"public static var modemPreset: FieldMetadata {",
 	)
 
-	// A static named for the value would collide with the enum case of that name.
-	if strings.Contains(out, "public static var longFast") {
-		t.Errorf("swift: enum values must not get static accessors (collides with the case):\n%s", out)
+	// Neither kind gets a static: for an enum value it would collide with the case
+	// of that name, for a field with the message's own instance property.
+	if strings.Contains(out, "public static var ") {
+		t.Errorf("swift: nothing should get a static accessor:\n%s", out)
 	}
 
 	// Every other target still renders both kinds without erroring.

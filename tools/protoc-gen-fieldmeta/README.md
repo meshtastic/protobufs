@@ -27,31 +27,58 @@ host); see [`packages/kmp/buildSrc`](../../packages/kmp/buildSrc).
 Each target emits two layers, no reflection and no runtime cost:
 
 1. **Typed accessors** for a known field - the everyday, autocomplete-friendly
-   API (no magic strings or field tags).
+   API (no magic strings or field tags). Swift is the exception: it has them for
+   enum values only, and message fields go through the lookup. See
+   [Why Swift has no typed field accessor](#why-swift-has-no-typed-field-accessor).
 2. A **dynamic lookup** keyed by fully-qualified message name + field tag - an
-   escape hatch for generic field walking.
+   escape hatch for generic field walking, and the only key that is stable by
+   contract.
 
 | Target (`opt: target=`) | File | Accessor (primary) | Mechanism | Dynamic lookup |
 | --- | --- | --- | --- | --- |
-| `swift` | `FieldMetadataRegistry.swift` | `Config.PositionConfig.rxGpio` | `extension` on the real message type | `FieldMetadataRegistry.get(type, tag)` |
+| `swift` | `FieldMetadataRegistry.swift` | enum values only - `preset.metadata` | instance property on an `extension` of the real enum | `FieldMetadataRegistry.get(type, tag)` |
 | `rust` | `field_metadata_registry.rs` | `config::position_config::RX_GPIO` | standalone namespaced module | `get(type, tag)` |
 | `typescript` | `meshtastic/field_metadata_registry.ts` | `Config.PositionConfig.rxGpio` | standalone namespace object | `get(type, tag)` |
 | `python` | `meshtastic/field_metadata_registry.py` | `Config.PositionConfig.rx_gpio` | standalone nested classes | `get(type, tag)` |
 | `c` (nanopb / firmware) | `meshtastic/field_metadata_registry.h` | - (no namespacing) | - | `meshtastic_field_metadata_get(type, tag)` |
 
 Where the language supports extending the generated message type, the accessor
-hangs directly off it: **Swift** uses an `extension` (which also avoids
-colliding with the swift-protobuf `Config` type in the same module), and the
-sibling **Kotlin/Wire** handler ([`packages/kmp/buildSrc`](../../packages/kmp/buildSrc))
-generates companion extension properties named to match Wire's snake_case fields
+hangs directly off it: the sibling **Kotlin/Wire** handler
+([`packages/kmp/buildSrc`](../../packages/kmp/buildSrc)) generates companion
+extension properties named to match Wire's snake_case fields
 (`Config.PositionConfig.rx_gpio`).
 **Rust/TS/Python** use a self-contained namespace (their messages live in a
 separate module, so there's no collision). Rust could instead use an inherent
 `impl` on the prost types once the Rust generation pipeline is wired into this
 repo; the standalone module is used until then.
 
+### Why Swift has no typed field accessor
+
+The shapes are deliberately not the same in every language, and assuming parity
+and finding out at the call site is the failure worth avoiding:
+
+- **enum values**: typed accessor everywhere - an instance property on the enum
+  shadows nothing in either language.
+- **message fields**: typed accessor in **Kotlin only**.
+- **the dynamic lookup**: everywhere, and the only key stable by contract.
+
+An accessor named after a field is only stable where the generated name *is* the
+proto name. Wire keeps snake_case, so `Config.PositionConfig.rx_gpio` in Kotlin
+means what the schema says. swift-protobuf renames -
+`sx126x_rx_boosted_gain` becomes `sx126XRxBoostedGain`, `use_12h_clock` becomes
+`use12HClock` - so a Swift accessor would be keyed on a name swift-protobuf
+chooses rather than one this schema controls. The field tag is the only form that
+is stable by contract, which is what the lookup takes.
+
+It also collided outright. A `static var rxGpio` on `extension Config.PositionConfig`
+competes with the message's own instance property of that name once the generated
+types are in a different module from the consumer, which breaks writes
+(`Config.PositionConfig(rxGpio: 3)`) at the call site. Kotlin has no equivalent
+problem: the accessor is an extension on the companion, an instance receiver never
+resolves to a companion member, and an extension never shadows a member.
+
 > **`target=swift` assumes `option swift_prefix = "";`** (which every
-> `meshtastic/*.proto` sets). The emitted `extension Config.PositionConfig`
+> `meshtastic/*.proto` sets). The emitted `extension Config.LoRaConfig.ModemPreset`
 > blocks use raw proto type paths; for a file *without* that option,
 > swift-protobuf prefixes generated type names with the package name
 > (`Meshtastic_Config`), so this plugin's extensions would reference types that

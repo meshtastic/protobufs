@@ -100,9 +100,20 @@ at the directory the file should land in.
 Consumed as:
 
 ```swift
-let hideOnRetail = Config.PositionConfig.rxGpio.diyOnly ?? false      // typed accessor
-FieldMetadataRegistry.get("meshtastic.Config.PositionConfig", tag: 8) // dynamic lookup
+let label = preset.metadata?.label                                    // enum value, typed
+FieldMetadataRegistry.get("meshtastic.Config.PositionConfig", tag: 8) // message field, by tag
 ```
+
+**Message fields have no typed accessor in Swift** - look them up by tag. The
+field's Swift name is chosen by swift-protobuf, not by this schema
+(`sx126x_rx_boosted_gain` becomes `sx126XRxBoostedGain`), so it is not a key
+anything can rely on; and a static named after the field competed with the
+message's own instance property of that name across a module boundary. Enum
+values keep a typed accessor because an instance property on the enum shadows
+nothing. The reasoning in full is in the
+[Go plugin's README](../protoc-gen-fieldmeta/README.md#why-swift-has-no-typed-field-accessor);
+the Kotlin/Wire handler does have field accessors, because Wire keeps the proto's
+snake_case name.
 
 ## Regenerating the bundled `field_metadata.pb.swift`
 
@@ -132,6 +143,11 @@ protoc --proto_path=. \
 - Output diffed byte-for-byte identical to `protoc-gen-fieldmeta`'s
   `target=swift` over this repo's schema, on swift-protobuf 1.36.1 and 1.38.1.
 - The generated registry compiles inside Meshtastic-Apple's real
-  `MeshtasticProtobufs` package, and an external consumer typechecks the typed
-  accessor, the dynamic lookup, and static/instance member coexistence
-  (`config.rxGpio` field value vs `Config.PositionConfig.rxGpio` metadata).
+  `MeshtasticProtobufs` package, and a consumer in a *separate* module typechecks
+  the enum accessor and the dynamic lookup, including writes to the message
+  fields themselves (`Config.PositionConfig(rxGpio: 3)`).
+
+  Test from a second module, not from inside the package. The per-field static
+  accessors this plugin used to emit typechecked fine in the same module and
+  failed only across a module boundary, which is how they shipped in the first
+  place; they were removed rather than renamed.

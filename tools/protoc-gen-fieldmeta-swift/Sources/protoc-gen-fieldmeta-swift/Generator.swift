@@ -40,7 +40,6 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         let isEnumValue: Bool
         let swiftTypePath: String     // e.g. Config.PositionConfig
         let protoTypeName: String     // e.g. meshtastic.Config.PositionConfig
-        let swiftFieldName: String    // e.g. rxGpio (unused for enum values)
         let protoFieldName: String    // e.g. rx_gpio (ordering key, matches the Go plugin)
         let tag: Int32
         let metadata: FieldMetadata
@@ -108,7 +107,6 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
                             isEnumValue: true,
                             swiftTypePath: namer.fullName(enum: enumDescriptor),
                             protoTypeName: enumDescriptor.fullName,
-                            swiftFieldName: "",
                             protoFieldName: value.name,
                             tag: value.number,
                             metadata: value.options.enumValueMetadata,
@@ -140,7 +138,6 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
                         isEnumValue: false,
                         swiftTypePath: namer.fullName(message: message),
                         protoTypeName: message.fullName,
-                        swiftFieldName: namer.messagePropertyNames(field: field, prefixed: "", includeHasAndClear: false).name,
                         protoFieldName: field.name,
                         tag: field.number,
                         metadata: field.options.fieldMetadata,
@@ -161,27 +158,25 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         }
         out += "}\n\n"
 
-        // Typed accessors as extensions on the real swift-protobuf message types.
-        // Ordering mirrors the Go plugin (so the two stay byte-identical): groups
-        // by proto type path sorted alphabetically, fields within a group sorted
-        // by proto field name.
-        var grouped: [String: [Entry]] = [:]
-        for e in entries where !e.isEnumValue {
-            grouped[e.swiftTypePath, default: []].append(e)
-        }
-        for typePath in grouped.keys.sorted() {
-            out += "extension \(typePath) {\n"
-            for e in grouped[typePath]!.sorted(by: { $0.protoFieldName < $1.protoFieldName }) {
-                out += "    public static var \(e.swiftFieldName): FieldMetadata { \(try literal(for: e, shape: metadataDescriptor)) }\n"
-            }
-            out += "}\n\n"
-        }
-
-        // Enums get a single INSTANCE property, looked up by rawValue, rather than one
-        // static per value. A static named after the value would collide with the enum
-        // case of the same name - cases are already static members - and keying on
-        // rawValue avoids reimplementing swift-protobuf's enum-case naming, which is
-        // exactly where an independent implementation would drift.
+        // Message fields get NO typed accessor - look them up by tag.
+        //
+        // An accessor keyed on the field's name is only stable where the generated
+        // name IS the proto name. Wire keeps snake_case, so the Kotlin handler can
+        // hang `Config.PositionConfig.rx_gpio` off the companion and have it mean what
+        // the schema says. swift-protobuf renames - `sx126x_rx_boosted_gain` becomes
+        // `sx126XRxBoostedGain` - so the Swift accessor was keyed on a name
+        // swift-protobuf chooses, not one this schema controls. The tag is the only key
+        // stable by contract, which makes the dynamic lookup the real API here.
+        //
+        // It also collided. A static named after the field competes with the message's
+        // own instance property of that name once the generated types are in a
+        // different module from the consumer, which breaks writes at the call site.
+        //
+        // Enums are unaffected and keep a single INSTANCE property, looked up by
+        // rawValue, rather than one static per value. An instance property shadows
+        // nothing, and keying on rawValue avoids reimplementing swift-protobuf's
+        // enum-case naming, which is exactly where an independent implementation
+        // would drift.
         var enumGrouped: [String: String] = [:]
         for e in entries where e.isEnumValue {
             enumGrouped[e.swiftTypePath] = e.protoTypeName
