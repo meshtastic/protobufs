@@ -286,7 +286,10 @@ message Config {
      * Send our nodeinfo this often
      * Defaults to 900 Seconds (15 minutes)
      */
-    uint32 node_info_broadcast_secs = 7 [(meshtastic.field_metadata) = {label: "Node Info Broadcast Interval"}];
+    uint32 node_info_broadcast_secs = 7 [(meshtastic.field_metadata) = {
+      label: "Node Info Broadcast Interval"
+      unit: "s"
+    }];
 
     /*
      * Treat double tap interrupt on supported accelerometers as a button press if set to true
@@ -428,7 +431,10 @@ message Config {
      * We should send our position this often (but only if it has changed significantly)
      * Defaults to 15 minutes
      */
-    uint32 position_broadcast_secs = 1 [(meshtastic.field_metadata) = {label: "Broadcast Interval"}];
+    uint32 position_broadcast_secs = 1 [(meshtastic.field_metadata) = {
+      label: "Broadcast Interval"
+      unit: "s"
+    }];
 
     /*
      * Adaptive position braoadcast, which is now the default.
@@ -486,7 +492,10 @@ message Config {
     /*
      * The minimum number of seconds (since the last send) before we can send a position to the mesh if position_broadcast_smart_enabled
      */
-    uint32 broadcast_smart_minimum_interval_secs = 11 [(meshtastic.field_metadata) = {label: "Minimum Interval"}];
+    uint32 broadcast_smart_minimum_interval_secs = 11 [(meshtastic.field_metadata) = {
+      label: "Minimum Interval"
+      unit: "s"
+    }];
 
     /*
      * (Re)define PIN_GPS_EN for your board.
@@ -517,7 +526,10 @@ message Config {
     /*
      *  Description: If non-zero, the device will fully power off this many seconds after external power is removed.
      */
-    uint32 on_battery_shutdown_after_secs = 2 [(meshtastic.field_metadata) = {label: "Shutdown on Power Loss"}];
+    uint32 on_battery_shutdown_after_secs = 2 [(meshtastic.field_metadata) = {
+      label: "Shutdown on Power Loss"
+      unit: "s"
+    }];
 
     /*
      * Ratio of voltage divider for battery pin eg. 3.20 (R1=100k, R2=220k)
@@ -744,7 +756,10 @@ message Config {
      * Number of seconds the screen stays on after pressing the user button or receiving a message
      * 0 for default of one minute MAXUINT for always on
      */
-    uint32 screen_on_secs = 1 [(meshtastic.field_metadata) = {label: "Screen on for"}];
+    uint32 screen_on_secs = 1 [(meshtastic.field_metadata) = {
+      label: "Screen on for"
+      unit: "s"
+    }];
 
     /*
      * Deprecated in 2.7.4: Unused
@@ -756,7 +771,10 @@ message Config {
      * Automatically toggles to the next page on the screen like a carousel, based the specified interval in seconds.
      * Potentially useful for devices without user buttons.
      */
-    uint32 auto_screen_carousel_secs = 3 [(meshtastic.field_metadata) = {label: "Carousel Interval"}];
+    uint32 auto_screen_carousel_secs = 3 [(meshtastic.field_metadata) = {
+      label: "Carousel Interval"
+      unit: "s"
+    }];
 
     /*
      * If this is set, the displayed compass will always point north. if unset, the old behaviour

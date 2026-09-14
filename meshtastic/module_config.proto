@@ -103,7 +103,10 @@ message ModuleConfig {
     /*
      * How often we should report our info to the map (in seconds)
      */
-    uint32 publish_interval_secs = 1 [(meshtastic.field_metadata) = {label: "Map Publish Interval"}];
+    uint32 publish_interval_secs = 1 [(meshtastic.field_metadata) = {
+      label: "Map Publish Interval"
+      unit: "s"
+    }];
 
     /*
      * Bits of precision for the location sent (default of 32 is full precision).
@@ -199,7 +202,10 @@ message ModuleConfig {
      * Interval in seconds of how often we can send a message to the mesh when a
      * trigger event is detected
      */
-    uint32 minimum_broadcast_secs = 2 [(meshtastic.field_metadata) = {label: "Minimum time between detection broadcasts"}];
+    uint32 minimum_broadcast_secs = 2 [(meshtastic.field_metadata) = {
+      label: "Minimum time between detection broadcasts"
+      unit: "s"
+    }];
 
     /*
      * Interval in seconds of how often we should send a message to the mesh
@@ -207,7 +213,10 @@ message ModuleConfig {
      * trigger events will be broadcasted Works as a sort of status heartbeat
      * for peace of mind
      */
-    uint32 state_broadcast_secs = 3 [(meshtastic.field_metadata) = {label: "State Broadcast Interval"}];
+    uint32 state_broadcast_secs = 3 [(meshtastic.field_metadata) = {
+      label: "State Broadcast Interval"
+      unit: "s"
+    }];
 
     /*
      * Send ASCII bell with alert message
@@ -381,27 +390,33 @@ message ModuleConfig {
      * A non-zero value implicitly enables the suppression window; 0 disables it.
      * Firmware default: 21600 (6 hours), installed when this config is first created.
      */
-    uint32 position_min_interval_secs = 4 [(meshtastic.field_metadata) = {label: "Minimum Interval"}];
+    uint32 position_min_interval_secs = 4 [(meshtastic.field_metadata) = {
+      label: "Minimum Position Interval"
+      unit: "s"
+    }];
 
     /*
      * Maximum hop distance from the requestor at which direct NodeInfo responses
      * are served from the local cache. A non-zero value implicitly enables direct
      * response; 0 disables it.
      */
-    uint32 nodeinfo_direct_response_max_hops = 6 [(meshtastic.field_metadata) = {label: "Max Hops"}];
+    uint32 nodeinfo_direct_response_max_hops = 6 [(meshtastic.field_metadata) = {label: "Direct NodeInfo Max Hops"}];
 
     /*
      * Time window in seconds for per-node rate limiting.
      * A non-zero value implicitly enables rate limiting; 0 disables it.
      */
-    uint32 rate_limit_window_secs = 8 [(meshtastic.field_metadata) = {label: "Window"}];
+    uint32 rate_limit_window_secs = 8 [(meshtastic.field_metadata) = {
+      label: "Rate Limit Window"
+      unit: "s"
+    }];
 
     /*
      * Maximum packets allowed per node within the rate limit window.
      * A non-zero value implicitly enables rate limiting; 0 disables it.
      */
     uint32 rate_limit_max_packets = 9 [(meshtastic.field_metadata) = {
-      label: "Max Packets"
+      label: "Rate Limit Max Packets"
       description: "The most packets one node may send per window."
     }];
 
@@ -411,7 +426,7 @@ message ModuleConfig {
      * 0 disables it.
      */
     uint32 unknown_packet_threshold = 11 [(meshtastic.field_metadata) = {
-      label: "Threshold"
+      label: "Unknown Packet Threshold"
       description: "How many per window before the sender is dropped."
     }];
   }
@@ -1035,7 +1050,10 @@ message ModuleConfig {
     /*
      * How often to broadcast, in seconds. Min 3600 (1 h), default 3600.
      */
-    uint32 broadcast_interval_secs = 11 [(meshtastic.field_metadata) = {label: "Interval"}];
+    uint32 broadcast_interval_secs = 11 [(meshtastic.field_metadata) = {
+      label: "Interval"
+      unit: "s"
+    }];
 
     /*
      * One entry in the broadcast destination list.
