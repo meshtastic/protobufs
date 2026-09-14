@@ -34,6 +34,24 @@ option swift_prefix = "";
  * not set to inf. A list is therefore a single delimited string - see
  * `keywords`. See tools/protoc-gen-fieldmeta.
  *
+ * BOUNDS (`min_value`, `max_value`) are PRESENTATION metadata, deliberately, and
+ * they overlap an existing standard. protovalidate - `(buf.validate.field)`,
+ * buf's successor to protoc-gen-validate - is the industry-standard way to
+ * express a numeric constraint in a schema, and where a constraint must be
+ * ENFORCED that is the thing to reach for, not these two attributes.
+ *
+ * They exist here anyway because protovalidate evaluates CEL against a
+ * descriptor at runtime, and the consumers that most need a bound cannot do
+ * that: nanopb on the firmware has no descriptors and no CEL, and neither do
+ * the generated Wire, prost or swift-protobuf types the clients use. A build-
+ * time attribute is the only form that reaches every target.
+ *
+ * The cost is that a bound stated here and a bound enforced elsewhere can
+ * drift, and nothing detects it. So: state a bound here only when the firmware
+ * genuinely enforces it, treat the firmware as the source of truth, and if
+ * `(buf.validate.field)` is ever adopted for a field, make these mirror it
+ * rather than compete with it.
+ *
  * STRING attributes are treated as user-facing display text and are emitted for
  * localization where the target supports it - the Swift target emits
  * String(localized:defaultValue:comment:) keyed by the field's full name, so the
@@ -67,12 +85,15 @@ message FieldMetadata {
   optional bool admin_only = 2;
 
   /*
-   * Inclusive lower bound for the field value, for UI validation/clamping.
+   * Inclusive lower bound, for PRESENTATION: slider and stepper range, and the
+   * client-side check that stops a user entering a value the firmware would
+   * reject anyway. It is NOT the wire contract and nothing enforces it on
+   * receipt - see the note on bounds below.
    */
   optional double min_value = 3;
 
   /*
-   * Inclusive upper bound for the field value, for UI validation/clamping.
+   * Inclusive upper bound, for PRESENTATION. Same status as `min_value`.
    */
   optional double max_value = 4;
 
