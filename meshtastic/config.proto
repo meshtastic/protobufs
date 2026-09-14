@@ -477,12 +477,18 @@ message Config {
     /*
      * (Re)define GPS_RX_PIN for your board.
      */
-    uint32 rx_gpio = 8 [(meshtastic.field_metadata) = {diy_only: true}];
+    uint32 rx_gpio = 8 [(meshtastic.field_metadata) = {
+      label: "GPS Receive GPIO"
+      diy_only: true
+    }];
 
     /*
      * (Re)define GPS_TX_PIN for your board.
      */
-    uint32 tx_gpio = 9 [(meshtastic.field_metadata) = {diy_only: true}];
+    uint32 tx_gpio = 9 [(meshtastic.field_metadata) = {
+      label: "GPS Transmit GPIO"
+      diy_only: true
+    }];
 
     /*
      * The minimum distance in meters traveled (since the last send) before we can send a position to the mesh if position_broadcast_smart_enabled
