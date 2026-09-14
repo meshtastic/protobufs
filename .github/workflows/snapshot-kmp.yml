@@ -37,6 +37,11 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v4
+        with:
+          # Drop the action's default `tools` package. SDK Tools is obsolete and is no
+          # longer served reliably, so sdkmanager intermittently fails the job with
+          # "Failed to find package 'tools'" before Gradle ever runs.
+          packages: platform-tools
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
