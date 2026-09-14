@@ -216,4 +216,12 @@ message StoreAndForward {
      */
     bytes text = 5;
   }
+
+  /*
+   * Contains the original ID of the contained message.
+   *
+   * fixed32, as MeshPacket.id is: a packet ID is spread across all 32 bits, so a
+   * varint costs five bytes for most of them where fixed32 always costs four.
+   */
+  fixed32 original_id = 6;
 }
