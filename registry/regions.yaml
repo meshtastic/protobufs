@@ -1,0 +1,419 @@
+# Regulatory regions, the profiles they share and the preset lists those permit.
+# Region and preset names are RegionCode and ModemPreset values without their
+# REGION_ / MODEM_ prefix. Fractional values are rounded down to the field unit,
+# and firmware keeps the exact value. Any change to this file raises revision;
+# tools/gen_registry.py --check enforces it.
+revision: 1
+
+preset_lists:
+  - name: "STD"
+    presets: [LONG_FAST, MEDIUM_SLOW, MEDIUM_FAST, SHORT_SLOW, SHORT_FAST, LONG_MODERATE, SHORT_TURBO, LONG_TURBO, MEDIUM_TURBO]
+  - name: "EU_868"
+    presets: [LONG_FAST, MEDIUM_SLOW, MEDIUM_FAST, SHORT_SLOW, SHORT_FAST, LONG_MODERATE]
+  - name: "LITE"
+    presets: [LITE_FAST, LITE_SLOW]
+  - name: "NARROW"
+    presets: [NARROW_FAST, NARROW_SLOW]
+  - name: "TINY"
+    presets: [TINY_FAST, TINY_SLOW]
+
+profiles:
+  - name: "STD"
+    preset_list: "STD"
+    default_preset: LONG_FAST
+    spacing_khz: 0
+    padding_khz: 0
+    audio_permitted: true
+    licensed_only: false
+    position_throttle: 1
+    telemetry_throttle: 1
+  - name: "EU868"
+    preset_list: "EU_868"
+    default_preset: LONG_FAST
+    spacing_khz: 0
+    padding_khz: 0
+    audio_permitted: false
+    licensed_only: false
+    position_throttle: 1
+    telemetry_throttle: 1
+  - name: "LITE"
+    preset_list: "LITE"
+    default_preset: LITE_FAST
+    spacing_khz: 400
+    padding_khz: 37
+    audio_permitted: false
+    licensed_only: false
+    position_throttle: 10
+    telemetry_throttle: 10
+  - name: "NARROW"
+    preset_list: "NARROW"
+    default_preset: NARROW_SLOW
+    spacing_khz: 0
+    padding_khz: 10
+    audio_permitted: true
+    licensed_only: false
+    position_throttle: 1
+    telemetry_throttle: 1
+  - name: "HAM_20KHZ"
+    preset_list: "TINY"
+    default_preset: TINY_FAST
+    spacing_khz: 0
+    padding_khz: 2
+    audio_permitted: false
+    licensed_only: true
+    position_throttle: 2
+    telemetry_throttle: 2
+  - name: "HAM_100KHZ"
+    preset_list: "NARROW"
+    default_preset: NARROW_SLOW
+    spacing_khz: 0
+    padding_khz: 18
+    audio_permitted: false
+    licensed_only: true
+    position_throttle: 1
+    telemetry_throttle: 1
+
+swap_groups:
+  - regions: [EU_868, EU_866, EU_N_868]
+
+regions:
+  - region: "US"
+    profile: "STD"
+    freq_start_mhz_x100: 90200
+    freq_end_mhz_x100: 92800
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 30
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "EU_433"
+    profile: "STD"
+    freq_start_mhz_x100: 43300
+    freq_end_mhz_x100: 43400
+    duty_cycle: 10
+    router_duty_cycle: 0
+    power_limit_dbm: 10
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "EU_868"
+    profile: "EU868"
+    freq_start_mhz_x100: 86940
+    freq_end_mhz_x100: 86965
+    duty_cycle: 10
+    router_duty_cycle: 0
+    power_limit_dbm: 27
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "CN"
+    profile: "STD"
+    freq_start_mhz_x100: 47000
+    freq_end_mhz_x100: 51000
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 19
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "JP"
+    profile: "STD"
+    freq_start_mhz_x100: 92050
+    freq_end_mhz_x100: 92350
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 13
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "ANZ"
+    profile: "STD"
+    freq_start_mhz_x100: 91500
+    freq_end_mhz_x100: 92800
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 30
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "KR"
+    profile: "STD"
+    freq_start_mhz_x100: 92000
+    freq_end_mhz_x100: 92300
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 23
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "TW"
+    profile: "STD"
+    freq_start_mhz_x100: 92000
+    freq_end_mhz_x100: 92500
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 27
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "RU"
+    profile: "STD"
+    freq_start_mhz_x100: 86870
+    freq_end_mhz_x100: 86920
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 20
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "IN"
+    profile: "STD"
+    freq_start_mhz_x100: 86500
+    freq_end_mhz_x100: 86700
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 30
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "NZ_865"
+    profile: "STD"
+    freq_start_mhz_x100: 86400
+    freq_end_mhz_x100: 86800
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 36
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "TH"
+    profile: "STD"
+    freq_start_mhz_x100: 92000
+    freq_end_mhz_x100: 92500
+    duty_cycle: 10
+    router_duty_cycle: 0
+    power_limit_dbm: 27
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "LORA_24"
+    profile: "STD"
+    freq_start_mhz_x100: 240000
+    freq_end_mhz_x100: 248350
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 10
+    frequency_switching: false
+    wide_lora: true
+    override_slot: 0
+  - region: "UA_433"
+    profile: "STD"
+    freq_start_mhz_x100: 43300
+    freq_end_mhz_x100: 43470
+    duty_cycle: 10
+    router_duty_cycle: 0
+    power_limit_dbm: 10
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "MY_433"
+    profile: "STD"
+    freq_start_mhz_x100: 43300
+    freq_end_mhz_x100: 43500
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 20
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "MY_919"
+    profile: "STD"
+    freq_start_mhz_x100: 91900
+    freq_end_mhz_x100: 92400
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 27
+    frequency_switching: true
+    wide_lora: false
+    override_slot: 0
+  - region: "SG_923"
+    profile: "STD"
+    freq_start_mhz_x100: 91700
+    freq_end_mhz_x100: 92500
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 20
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "PH_433"
+    profile: "STD"
+    freq_start_mhz_x100: 43300
+    freq_end_mhz_x100: 43470
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 10
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "PH_868"
+    profile: "STD"
+    freq_start_mhz_x100: 86800
+    freq_end_mhz_x100: 86940
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 14
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "PH_915"
+    profile: "STD"
+    freq_start_mhz_x100: 91500
+    freq_end_mhz_x100: 91800
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 24
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "ANZ_433"
+    profile: "STD"
+    freq_start_mhz_x100: 43305
+    freq_end_mhz_x100: 43479
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 14
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "KZ_433"
+    profile: "STD"
+    freq_start_mhz_x100: 43307
+    freq_end_mhz_x100: 43477
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 10
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "KZ_863"
+    profile: "STD"
+    freq_start_mhz_x100: 86300
+    freq_end_mhz_x100: 86800
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 30
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "NP_865"
+    profile: "STD"
+    freq_start_mhz_x100: 86500
+    freq_end_mhz_x100: 86800
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 30
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "BR_902"
+    profile: "STD"
+    freq_start_mhz_x100: 90200
+    freq_end_mhz_x100: 90750
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 30
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "ITU1_2M"
+    profile: "HAM_20KHZ"
+    freq_start_mhz_x100: 14400
+    freq_end_mhz_x100: 14600
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 30
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 26
+  - region: "ITU2_2M"
+    profile: "HAM_20KHZ"
+    freq_start_mhz_x100: 14400
+    freq_end_mhz_x100: 14800
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 30
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 51
+  - region: "EU_866"
+    profile: "LITE"
+    freq_start_mhz_x100: 86560
+    freq_end_mhz_x100: 86760
+    duty_cycle: 2
+    router_duty_cycle: 10
+    power_limit_dbm: 27
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+  - region: "EU_N_868"
+    profile: "NARROW"
+    freq_start_mhz_x100: 86940
+    freq_end_mhz_x100: 86965
+    duty_cycle: 10
+    router_duty_cycle: 0
+    power_limit_dbm: 27
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 1
+  - region: "ITU3_2M"
+    profile: "HAM_20KHZ"
+    freq_start_mhz_x100: 14400
+    freq_end_mhz_x100: 14800
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 30
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 33
+  - region: "ITU1_70CM"
+    profile: "HAM_100KHZ"
+    freq_start_mhz_x100: 43000
+    freq_end_mhz_x100: 44000
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 30
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 37
+  - region: "ITU2_70CM"
+    profile: "HAM_100KHZ"
+    freq_start_mhz_x100: 42000
+    freq_end_mhz_x100: 45000
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 30
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 137
+  - region: "ITU3_70CM"
+    profile: "HAM_100KHZ"
+    freq_start_mhz_x100: 43000
+    freq_end_mhz_x100: 45000
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 30
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 37
+  - region: "ITU2_125CM"
+    profile: "HAM_100KHZ"
+    freq_start_mhz_x100: 22000
+    freq_end_mhz_x100: 22500
+    duty_cycle: 100
+    router_duty_cycle: 0
+    power_limit_dbm: 30
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 37

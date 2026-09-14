@@ -120,6 +120,76 @@ firmware is.
 
 ---
 
+## Registry data
+
+Hardware vendors and devices, regulatory regions and modem presets are data, not
+schema. Their source is YAML under `registry/`. `gen_registry.py` validates it and
+writes the protobuf JSON mapping of the registry messages to `registry/generated/`,
+which is committed, so firmware build scripts and clients read it without running
+anything.
+
+```sh
+python tools/gen_registry.py                                 # regenerate registry/generated/
+python tools/gen_registry.py --check                         # rules hold, generated files current
+python tools/gen_registry.py --check --base origin/trident   # also: allocations kept, revisions raised
+python tools/gen_registry.py --selftest                      # the rules reject what they should
+buf convert . --type meshtastic.RegionRegistry --from registry/generated/regions.json#format=json --to regions.binpb
+```
+
+It needs PyYAML.
+
+| source | message | generated |
+|---|---|---|
+| `registry/hardware/*.yaml` | `HwVendorRegistry`, `HwDeviceRegistry` | `hw_vendors.json`, `hw_devices.json` |
+| `registry/regions.yaml` | `RegionRegistry` | `regions.json` |
+| `registry/modem_presets.yaml` | `ModemPresetRegistry` | `modem_presets.json` |
+
+**Hardware** is one file per vendor, named after the vendor slug. `00-legacy.yaml` is
+vendor `0x00`: the `HardwareModel` enum at its old numbers, named from the firmware
+variants' `custom_meshtastic_display_name`. A vendor file:
+
+```yaml
+vendor:
+  id: 0x01
+  slug: "acme"
+  name: "Acme"
+devices:
+  - id: 0x01
+    slug: "ACME_TRACKER"
+    name: "Tracker"
+    display: "Acme Tracker"   # optional
+```
+
+Vendor ids are `0x00`-`0x3F` and device ids `0x01`-`0xFE`; `0x00` and `0xFF` are
+reserved under every vendor (SCHEMA.md §6). Ids and slugs are unique across all files,
+and vendor `0x00` appears only in `00-legacy.yaml`. An allocation is permanent: against
+`--base`, an id may not disappear or change its slug, while its name and display may.
+Each hardware registry's `revision` is its entry count.
+
+**Regions and presets** name their `RegionCode` or `ModemPreset` without the prefix.
+The generator reads both enums from `common.proto`, so a name the schema lacks is
+rejected.
+
+`regions.yaml` holds four tables, as firmware does: a region refers to a profile, a
+profile to a preset list, and a swap group lists regions that share a band. A fact is
+stated once, and the generator rejects anything that would state one twice: two
+identical preset lists or profiles, a list or profile nothing refers to, a router duty
+cycle equal to the ordinary one. It checks the tables against each other as well: a
+default preset belongs to its profile's list, every listed preset has an entry in
+`modem_presets.yaml`, a 2.4 GHz region permits only presets with a wide bandwidth, and
+the members of a swap group permit disjoint presets.
+
+Fields keep integer units (MHz x100, percent, kHz): a value firmware holds as a
+fraction is entered rounded down, so EU_866's 2.5% duty cycle is `2` and an 812.5 kHz
+bandwidth is `812`, and firmware keeps the exact value. Both files are edited in place,
+so each carries its own `revision`, and any change to the data must raise it.
+
+CI runs all of it as the `Registry data` job in `.github/workflows/pull_request.yml`:
+the self-test, `--check --base` against the pull request's target branch, and a
+`buf convert` of each generated file to prove it decodes against the schema.
+
+---
+
 ## Wire size
 
 `wire_size.py` computes what the 3.0 encoding costs against the 2.x shape it replaced,

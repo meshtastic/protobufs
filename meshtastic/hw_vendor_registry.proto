@@ -12,28 +12,47 @@ option swift_prefix = "";
  * Hardware Vendor Registry
  *
  * NOT used on-wire; consumed by clients/apps for display purposes only.
- * Maps vendor IDs (7-bit, 0x00-0x7F) to human-readable vendor names.
+ * Maps vendor IDs (6-bit, 0x00-0x3F) to human-readable vendor names.
+ * Data lives in registry/hardware/, one file per vendor; tools/gen_registry.py
+ * validates it and generates registry/generated/hw_vendors.json.
  *
- * The on-wire hw_model field is a packed uint32: (vendor_id << 8) | device_id
- * Vendor ID 0x00 = Legacy/Meshtastic community (device IDs map 1:1 to old HardwareModel values)
- * Vendor IDs 0x01-0x6F = Registered third-party vendors (111 slots)
- * Vendor IDs 0x70-0x7F = Private/development (unrestricted, never registered)
+ * The on-wire hw_model field is a packed uint32: (vendor_id << 8) | device_id.
+ * Vendor IDs are six bits and device IDs a full byte, so every packed value is at
+ * most 0x3FFF and fits a two-byte varint. A seventh vendor bit would put vendors
+ * 0x40 and up at three bytes on every User broadcast.
+ *
+ * Vendor ID 0x00       = Legacy/Meshtastic community. Old HardwareModel values keep
+ *                        their device IDs; free slots are allocated to new devices.
+ * Vendor IDs 0x01-0x3F = Registered vendors.
+ *
+ * Two device IDs are reserved under every vendor, leaving 254 to assign:
+ *   0x00 = the vendor as a whole, not a particular device
+ *   0xFF = any other device from that vendor, one without its own ID
+ * Under vendor 0 they are 0x0000 UNSET and 0x00FF PRIVATE_HW. There is no private
+ * vendor range.
  *
  * Helper macros for firmware:
- *   #define HW_VENDOR(hw_model)  ((uint8_t)(((hw_model) >> 8) & 0x7F))
+ *   #define HW_VENDOR(hw_model)  ((uint8_t)(((hw_model) >> 8) & 0x3F))
  *   #define HW_DEVICE(hw_model)  ((uint8_t)((hw_model) & 0xFF))
- *   #define HW_MODEL(vid, did)   (((uint16_t)((vid) & 0x7F) << 8) | (uint8_t)(did))
+ *   #define HW_MODEL(vid, did)   (((uint16_t)((vid) & 0x3F) << 8) | (uint8_t)(did))
  */
 
 /*
  * A single vendor entry in the registry
  */
 message HwVendor {
-  /* Vendor ID (0x00-0x7F) */
+  /* Vendor ID (0x00-0x3F) */
   uint32 vendor_id = 1;
 
   /* Human-readable vendor name, e.g. "Heltec", "LILYGO", "RAKwireless" */
   string name = 2;
+
+  /*
+   * Stable identifier, lower-case words joined by '-', e.g. "heltec". Names the
+   * vendor's data file, registry/hardware/<slug>.yaml, and never changes once
+   * allocated.
+   */
+  string slug = 3;
 }
 
 /*
@@ -41,4 +60,11 @@ message HwVendor {
  */
 message HwVendorRegistry {
   repeated HwVendor vendors = 1;
+
+  /*
+   * Number of vendors in the registry. An allocation is permanent, so this only
+   * grows, and a client holding revision N can resolve every vendor allocated up to
+   * that point.
+   */
+  uint32 revision = 2;
 }

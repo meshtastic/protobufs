@@ -351,16 +351,30 @@ is unbounded by nature and client-facing.
 
 ## 6. Hardware identifiers
 
-`hw_model` is a packed `uint32`: `(vendor_id << 8) | device_id`. Vendor 0 is the
-Meshtastic community, `0x01`-`0x6F` are registered vendors with 256 device ids each,
-and `0x70`-`0x7F` are private and never registered.
+`hw_model` is a packed `uint32`: `(vendor_id << 8) | device_id`. Vendor ids are six
+bits, `0x00`-`0x3F`; device ids are a full byte. Vendor 0 holds the legacy
+`HardwareModel` values at their old numbers, and its free slots are allocated to new
+devices. `0x01`-`0x3F` are registered vendors. There is no private vendor range.
 
-Names live in `hw_vendor_registry.proto` and `hw_device_registry.proto`, shipped as
-data files. Firmware stores and sends only the number; clients bundle the registry and
-look names up locally. **Adding a board does not touch the schema.**
+Two device ids are reserved under every vendor, leaving 254 to assign:
 
-Vendor ids stay within 7 bits so the packed value never exceeds `0x7FFF` and always
-encodes as two varint bytes.
+| device id | means |
+|---|---|
+| `0x00` | the vendor as a whole, not a particular device |
+| `0xFF` | any other device from that vendor, one without its own id |
+
+Under vendor 0 they are `0x0000` `UNSET` and `0x00FF` `PRIVATE_HW`.
+
+Names live in the `HwVendorRegistry` and `HwDeviceRegistry` data: one YAML file per
+vendor under `registry/hardware/`, generated into `registry/generated/` (see
+`tools/README.md`). Firmware stores and sends only the number; clients bundle the
+registry and look names up locally. **Adding a board does not touch the schema.** An
+allocated id is permanent: CI rejects a change that removes one or changes its slug.
+
+**Every packed value fits two varint bytes.** A varint spends bit 7 of every byte on
+its continuation flag, so two bytes carry 14 value bits and top out at `0x3FFF`. Six
+vendor bits and eight device bits are exactly those 14. A seventh vendor bit would put
+every vendor from `0x40` up at three bytes on every `User` broadcast.
 
 ---
 
@@ -761,6 +775,13 @@ messages whose encoding changed. It is a documentation generator, not a test: th
 numbers in it are written down rather than read from the schema, so it cannot notice a
 regression. `schema_lint.py` is the one that can.
 
+`tools/gen_registry.py` validates the registry data under `registry/` - hardware ids,
+regions, modem presets - and generates the committed JSON from it. CI checks the
+hardware id rules and the references between the region tables, that the JSON matches
+its YAML, that no allocated hardware id is removed or renamed, that an edit to regions
+or presets raises their revision, and that each generated file decodes against its
+registry message.
+
 `buf breaking` will fail against the registry baseline. That is the intended 3.0
 break, not a regression.
 
@@ -838,6 +859,21 @@ Open work, and decisions deliberately not yet made.
 - **The channel role enum is gone.** Index 0 is the primary channel and an absent
   `settings` disables one, so firmware and clients that switched on `Channel.role`
   need to read position and presence instead.
+
+**Registry data:**
+
+- **Firmware states two region facts outside its tables.** `getEffectiveDutyCycle`
+  returns EU_866's router duty cycle from code, and every `RDEF` row repeats the
+  default preset its profile already determines. The registry holds both once, as
+  `RegionInfo.router_duty_cycle` and `RegionProfile.default_preset`; firmware that
+  generates its table from the registry loses the copies. `RegionProfile.textThrottle`
+  is not carried: firmware sets it to 0 everywhere and reads it nowhere.
+- **`LONG_SLOW` is not a `ModemPreset`**, while firmware permits it in 25 regions. The
+  registry lists only presets the schema has.
+- **`EU_874` and `EU_917` have no data.** Both are `RegionCode` values with no firmware
+  definition, so `regions.yaml` has no entry for them.
+- **51 of the 147 legacy devices are named by slug.** No firmware variant gives them a
+  display name.
 
 **Documentation:**
 

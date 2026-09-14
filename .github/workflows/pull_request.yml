@@ -59,3 +59,41 @@ jobs:
 
       - name: Check schema rules
         run: python tools/schema_lint.py descriptor.binpb
+
+  registry:
+    name: Registry data
+    runs-on: ubuntu-latest
+
+    # The registries are data under registry/, checked by rules no schema tool can
+    # see: id ranges and uniqueness, allocations that never change, revisions that
+    # rise with every edit. The generated JSON must match its YAML and decode
+    # against the registry messages.
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Install buf
+        uses: bufbuild/buf-setup-action@v1.50.0
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+
+      - name: Check registry rules and generated files
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          pip install --quiet pyyaml
+          python tools/gen_registry.py --selftest
+          python tools/gen_registry.py --check --base "origin/$BASE_REF"
+
+      - name: Decode generated JSON against the schema
+        run: |
+          for pair in HwVendorRegistry:hw_vendors HwDeviceRegistry:hw_devices RegionRegistry:regions ModemPresetRegistry:modem_presets; do
+            buf convert . --type "meshtastic.${pair%%:*}" --from "registry/generated/${pair#*:}.json#format=json" --to "-#format=binpb" > /dev/null
+          done

@@ -14,10 +14,16 @@ option swift_prefix = "";
  * NOT used on-wire; consumed by clients/apps for display purposes only.
  * Maps (vendor_id, device_id) pairs to human-readable device names.
  *
- * Vendor 0x00 preserves existing numeric values from the legacy HardwareModel enum.
- * e.g. TBEAM = 4 becomes vendor=0, device=4, packed value = 0x0004 = 4 (identical to today).
+ * Vendor 0x00 holds the HardwareModel enum values as device IDs, so a packed value
+ * equals the enum value: TBEAM = 4 is vendor 0, device 4, packed 0x0004.
+ * Its unused device IDs are allocated to new devices.
  *
- * Adding a new board = updating this registry data file. No proto schema change needed.
+ * Device IDs 0x00 and 0xFF are reserved under every vendor: 0x00 names the vendor as a
+ * whole and 0xFF any other device from that vendor. Under vendor 0 they are UNSET and
+ * PRIVATE_HW.
+ *
+ * Adding a board is a change to registry/hardware/<vendor>.yaml, not to this schema;
+ * tools/gen_registry.py validates it and generates registry/generated/hw_devices.json.
  */
 
 /*
@@ -27,7 +33,7 @@ message HwDevice {
   /* Parent vendor ID */
   uint32 vendor_id = 1;
 
-  /* Device ID within the vendor (0x00-0xFE) */
+  /* Device ID within the vendor (0x01-0xFE; 0x00 and 0xFF are reserved) */
   uint32 device_id = 2;
 
   /* Device name, e.g. "Lora V4", "T-Beam Supreme" */
@@ -35,6 +41,13 @@ message HwDevice {
 
   /* Optional pre-formatted display string, e.g. "Heltec Lora V4" */
   string display = 4;
+
+  /*
+   * Stable identifier, upper-case words joined by '_', e.g. "HELTEC_V3". Firmware
+   * build metadata refers to a board by slug rather than by number, and a slug never
+   * changes once allocated.
+   */
+  string slug = 5;
 }
 
 /*
@@ -42,4 +55,11 @@ message HwDevice {
  */
 message HwDeviceRegistry {
   repeated HwDevice devices = 1;
+
+  /*
+   * Number of devices in the registry. An allocation is permanent, so this only
+   * grows, and a client holding revision N can resolve every device allocated up to
+   * that point.
+   */
+  uint32 revision = 2;
 }

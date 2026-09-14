@@ -1,0 +1,10 @@
+{
+  "revision": 1,
+  "vendors": [
+    {
+      "vendor_id": 0,
+      "slug": "legacy",
+      "name": "Legacy"
+    }
+  ]
+}

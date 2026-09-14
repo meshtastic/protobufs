@@ -14,72 +14,162 @@ option swift_prefix = "";
  * Region Registry
  *
  * NOT used on-wire; consumed by clients/apps and optionally embedded in firmware.
- * Centralizes the regulatory region definitions with their parameters and
- * legal modem preset mappings.
+ * Centralizes the regulatory regions, the profiles they share and the modem presets
+ * each profile permits.
  *
- * Shipped as a serialized .pb data file alongside the proto schema.
- * Firmware can generate its RDEF table from this data or embed it directly.
+ * Each fact is stated in exactly one table, and tables refer to each other by name:
+ *
+ *   RegionInfo       band, duty cycle, power limit, slot      -> one RegionProfile
+ *   RegionProfile    slot layout, audio, licensing,
+ *                    throttles, default preset                -> one ModemPresetList
+ *   ModemPresetList  the presets a profile permits            -> ModemPreset values
+ *   RegionSwapGroup  regions sharing one band                 -> RegionCode values
+ *
+ * Many regions share one profile, and profiles can share one preset list: NARROW
+ * and HAM_100KHZ permit the same presets and differ in licensing. Whatever follows
+ * from the tables is not stored, such as a preset being reachable only by licensed
+ * operators, or the presets a swap group offers.
+ *
+ * The radio parameters of each preset are in modem_preset_registry.proto.
+ *
+ * Data lives in registry/regions.yaml. tools/gen_registry.py validates it and
+ * generates registry/generated/regions.json, which `buf convert` serializes.
+ * Firmware can generate its region table from this data or embed it directly.
  */
 
 /*
- * Regulatory region definition with radio parameters
+ * Regulatory region definition
  */
 message RegionInfo {
   /* Which region this defines */
   RegionCode region_code = 1;
 
-  /* Frequency range start in MHz x100 (e.g. 90200 = 902.00 MHz) */
-  uint32 freq_start_mhz_x100 = 2;
+  /* Name of the RegionProfile this region uses */
+  string profile = 2;
 
-  /* Frequency range end in MHz x100 (e.g. 92800 = 928.00 MHz) */
-  uint32 freq_end_mhz_x100 = 3;
+  /*
+   * Frequency range start in MHz x100 (e.g. 90200 = 902.00 MHz). A finer band edge
+   * is rounded down, 433.075 MHz to 43307; firmware holds the exact value.
+   */
+  uint32 freq_start_mhz_x100 = 3;
 
-  /* Duty cycle percentage (0-100, where 100 = no duty cycle restriction) */
-  uint32 duty_cycle = 4;
+  /* Frequency range end in MHz x100 (e.g. 92800 = 928.00 MHz), rounded down */
+  uint32 freq_end_mhz_x100 = 4;
 
-  /* Channel spacing in kHz (0 = automatic calculation) */
-  uint32 spacing_khz = 5;
+  /*
+   * Duty cycle percentage (1-100, where 100 = no duty cycle restriction). A
+   * fractional limit is rounded down, 2.5% to 2; firmware holds the exact value.
+   */
+  uint32 duty_cycle = 5;
 
-  /* Maximum TX power in dBm */
-  uint32 power_limit_dbm = 6;
+  /*
+   * Duty cycle percentage for a node in the ROUTER role, where regulation grants it
+   * more airtime than other nodes. 0 = duty_cycle applies to every role.
+   */
+  uint32 router_duty_cycle = 6;
 
-  /* Whether audio mode is permitted by regulation */
-  bool audio_permitted = 7;
+  /* Maximum TX power in dBm. A licensed operator (User.is_licensed) may exceed it. */
+  uint32 power_limit_dbm = 7;
 
   /* Whether frequency hopping/switching is allowed */
   bool frequency_switching = 8;
 
-  /* Whether 2.4 GHz wide LoRa bandwidth modes are supported */
+  /*
+   * Whether this is a 2.4 GHz region. It needs a wide-capable radio, and its presets
+   * use their wide_bandwidth_khz.
+   */
   bool wide_lora = 9;
 
-  /* Human-readable region name, e.g. "US", "EU_868" */
-  string name = 10;
+  /*
+   * Frequency slot used while the user has not chosen one:
+   *   0      the hash of the primary channel name picks the slot
+   *   -1     the hash of the preset name picks the slot
+   *   N > 0  slot N, counted from 1
+   */
+  sint32 override_slot = 10;
+}
 
-  /* Which modem presets are legal in this region (many-to-one: each region permits a subset) */
-  repeated ModemPreset allowed_presets = 11;
+/*
+ * Parameters shared by every region that uses the profile
+ */
+message RegionProfile {
+  /* Name regions refer to this profile by, e.g. "STD", "HAM_20KHZ" */
+  string name = 1;
 
-  /* If true, this region may only be used by licensed HAM radio operators */
-  bool ham_only = 12;
+  /* Name of the ModemPresetList this profile permits */
+  string preset_list = 2;
 
   /*
-   * Maximum allowed occupied bandwidth in kHz for this region (inclusive).
-   * Presets with bandwidth_khz > max_bandwidth_khz are illegal.
-   * 0 = no bandwidth constraint (unrestricted).
+   * Preset a region selects when none is set or the current one is not permitted.
+   * One of the presets in preset_list.
    */
-  uint32 max_bandwidth_khz = 13;
+  ModemPreset default_preset = 3;
+
+  /* Gap between adjacent frequency slots in kHz, rounded down */
+  uint32 spacing_khz = 4;
 
   /*
-   * Maximum allowed on-air packet duration in milliseconds for this region (inclusive).
-   * Presets producing packets with duration > max_packet_duration_ms are illegal.
-   * 0 = no packet duration constraint (unrestricted).
-   * Firmware/clients compute packet duration from the preset's LoRa parameters and payload size.
+   * Guard band on each side of a frequency slot in kHz, rounded down. It widens the
+   * slot beyond the preset bandwidth, placing 62.5 kHz presets on a 100 kHz raster.
    */
-  uint32 max_packet_duration_ms = 14;
+  uint32 padding_khz = 5;
+
+  /* Whether audio mode is permitted */
+  bool audio_permitted = 6;
+
+  /*
+   * Only a licensed operator (User.is_licensed) may select a region using this
+   * profile; firmware rejects the region otherwise.
+   */
+  bool licensed_only = 7;
+
+  /* Multiplier on the position broadcast interval; 0 and 1 leave it unchanged */
+  uint32 position_throttle = 8;
+
+  /* Multiplier on the telemetry broadcast interval; 0 and 1 leave it unchanged */
+  uint32 telemetry_throttle = 9;
+}
+
+/*
+ * A set of modem presets, shared by every profile that permits exactly this set
+ */
+message ModemPresetList {
+  /* Name profiles refer to this list by, e.g. "STD", "NARROW" */
+  string name = 1;
+
+  /* The presets, in ModemPreset order */
+  repeated ModemPreset presets = 2;
+}
+
+/*
+ * Regions that share one band and permit mutually exclusive preset lists. Selecting a
+ * preset that only a sibling permits switches the node to that sibling region, so a
+ * client offers the union of the members' presets in each of them.
+ */
+message RegionSwapGroup {
+  /* The member regions */
+  repeated RegionCode regions = 1;
 }
 
 /*
  * The complete region registry
  */
 message RegionRegistry {
+  /* Every region with a definition */
   repeated RegionInfo regions = 1;
+
+  /* Every profile a region uses */
+  repeated RegionProfile profiles = 2;
+
+  /* Every preset list a profile uses */
+  repeated ModemPresetList preset_lists = 3;
+
+  /* Every group of regions that swap into each other */
+  repeated RegionSwapGroup swap_groups = 4;
+
+  /*
+   * Raised by every change to the data. CI rejects a change that leaves it where it
+   * was, so a client can tell whether its bundled copy is current.
+   */
+  uint32 revision = 5;
 }

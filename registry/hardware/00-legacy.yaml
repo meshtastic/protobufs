@@ -1,0 +1,545 @@
+# Vendor 0x00: the device ids of the HardwareModel enum, at their old numbers.
+# Free slots are allocated to new devices. Device ids 0x00 and 0xFF are reserved
+# under every vendor, here as UNSET and PRIVATE_HW, and are not listed.
+vendor:
+  id: 0x00
+  slug: "legacy"
+  name: "Legacy"
+devices:
+  - id: 0x01
+    slug: "TLORA_V2"
+    name: "T-LoRa V2"
+    display: "LILYGO T-LoRa V2"
+  - id: 0x02
+    slug: "TLORA_V1"
+    name: "T-LoRa V1"
+    display: "LILYGO T-LoRa V1"
+  - id: 0x03
+    slug: "TLORA_V2_1_1P6"
+    name: "T-LoRa V2.1-1.6"
+    display: "LILYGO T-LoRa V2.1-1.6"
+  - id: 0x04
+    slug: "TBEAM"
+    name: "T-Beam"
+    display: "LILYGO T-Beam"
+  - id: 0x05
+    slug: "HELTEC_V2_0"
+    name: "V2.0"
+    display: "Heltec V2.0"
+  - id: 0x06
+    slug: "TBEAM_V0P7"
+    name: "T-Beam V0.7"
+    display: "LILYGO T-Beam V0.7"
+  - id: 0x07
+    slug: "T_ECHO"
+    name: "T-Echo"
+    display: "LILYGO T-Echo"
+  - id: 0x08
+    slug: "TLORA_V1_1P3"
+    name: "TLORA_V1_1P3"
+  - id: 0x09
+    slug: "RAK4631"
+    name: "WisBlock 4631"
+    display: "RAK WisBlock 4631"
+  - id: 0x0A
+    slug: "HELTEC_V2_1"
+    name: "V2.1"
+    display: "Heltec V2.1"
+  - id: 0x0B
+    slug: "HELTEC_V1"
+    name: "V1"
+    display: "Heltec V1"
+  - id: 0x0C
+    slug: "LILYGO_TBEAM_S3_CORE"
+    name: "T-Beam Supreme"
+    display: "LILYGO T-Beam Supreme"
+  - id: 0x0D
+    slug: "RAK11200"
+    name: "WisBlock 11200"
+    display: "RAK WisBlock 11200"
+  - id: 0x0E
+    slug: "NANO_G1"
+    name: "Nano G1"
+    display: "Nano G1"
+  - id: 0x0F
+    slug: "TLORA_V2_1_1P8"
+    name: "T-LoRa V2.1-1.8"
+    display: "LILYGO T-LoRa V2.1-1.8"
+  - id: 0x10
+    slug: "TLORA_T3_S3"
+    name: "T-LoRa T3-S3"
+    display: "LILYGO T-LoRa T3-S3"
+  - id: 0x11
+    slug: "NANO_G1_EXPLORER"
+    name: "Nano G1 Explorer"
+    display: "Nano G1 Explorer"
+  - id: 0x12
+    slug: "NANO_G2_ULTRA"
+    name: "Nano G2 Ultra"
+    display: "Nano G2 Ultra"
+  - id: 0x13
+    slug: "LORA_TYPE"
+    name: "LORA_TYPE"
+  - id: 0x14
+    slug: "WIPHONE"
+    name: "WIPHONE"
+  - id: 0x15
+    slug: "WIO_WM1110"
+    name: "Wio WM1110 Tracker"
+    display: "Seeed Wio WM1110 Tracker"
+  - id: 0x16
+    slug: "RAK2560"
+    name: "WisMesh Repeater"
+    display: "RAK WisMesh Repeater"
+  - id: 0x17
+    slug: "HELTEC_HRU_3601"
+    name: "HELTEC_HRU_3601"
+  - id: 0x18
+    slug: "HELTEC_WIRELESS_BRIDGE"
+    name: "HELTEC_WIRELESS_BRIDGE"
+  - id: 0x19
+    slug: "STATION_G1"
+    name: "Station G1"
+    display: "Station G1"
+  - id: 0x1A
+    slug: "RAK11310"
+    name: "WisBlock 11310"
+    display: "RAK WisBlock 11310"
+  - id: 0x1B
+    slug: "MAKERFABS_TRACKER"
+    name: "MAKERFABS_TRACKER"
+  - id: 0x1C
+    slug: "MAKERFABS_RESERVED"
+    name: "MAKERFABS_RESERVED"
+  - id: 0x1D
+    slug: "CANARYONE"
+    name: "One"
+    display: "Canary One"
+  - id: 0x1E
+    slug: "RP2040_LORA"
+    name: "RP2040 LoRa"
+    display: "RP2040 LoRa"
+  - id: 0x1F
+    slug: "STATION_G2"
+    name: "Station G2"
+    display: "Station G2"
+  - id: 0x20
+    slug: "LORA_RELAY_V1"
+    name: "LORA_RELAY_V1"
+  - id: 0x21
+    slug: "T_ECHO_PLUS"
+    name: "T-Echo Plus"
+    display: "LILYGO T-Echo Plus"
+  - id: 0x22
+    slug: "PPR"
+    name: "PPR"
+  - id: 0x23
+    slug: "GENIEBLOCKS"
+    name: "GENIEBLOCKS"
+  - id: 0x24
+    slug: "NRF52_UNKNOWN"
+    name: "NRF52_UNKNOWN"
+  - id: 0x25
+    slug: "PORTDUINO"
+    name: "PORTDUINO"
+  - id: 0x26
+    slug: "ANDROID_SIM"
+    name: "ANDROID_SIM"
+  - id: 0x27
+    slug: "DIY_V1"
+    name: "V1"
+    display: "DIY V1"
+  - id: 0x28
+    slug: "NRF52840_PCA10059"
+    name: "NRF52840_PCA10059"
+  - id: 0x29
+    slug: "DR_DEV"
+    name: "DR-DEV"
+    display: "DR-DEV"
+  - id: 0x2A
+    slug: "M5STACK"
+    name: "M5 Stack"
+    display: "M5 Stack"
+  - id: 0x2B
+    slug: "HELTEC_V3"
+    name: "V3"
+    display: "Heltec V3"
+  - id: 0x2C
+    slug: "HELTEC_WSL_V3"
+    name: "Wireless Stick Lite V3"
+    display: "Heltec Wireless Stick Lite V3"
+  - id: 0x2D
+    slug: "BETAFPV_2400_TX"
+    name: "BETAFPV_2400_TX"
+  - id: 0x2E
+    slug: "BETAFPV_900_NANO_TX"
+    name: "BETAFPV_900_NANO_TX"
+  - id: 0x2F
+    slug: "RPI_PICO"
+    name: "Raspberry Pi Pico"
+    display: "Raspberry Pi Pico"
+  - id: 0x30
+    slug: "HELTEC_WIRELESS_TRACKER"
+    name: "Wireless Tracker V1.1"
+    display: "Heltec Wireless Tracker V1.1"
+  - id: 0x31
+    slug: "HELTEC_WIRELESS_PAPER"
+    name: "Wireless Paper"
+    display: "Heltec Wireless Paper"
+  - id: 0x32
+    slug: "T_DECK"
+    name: "T-Deck"
+    display: "LILYGO T-Deck"
+  - id: 0x33
+    slug: "T_WATCH_S3"
+    name: "T-Watch S3"
+    display: "LILYGO T-Watch S3"
+  - id: 0x34
+    slug: "PICOMPUTER_S3"
+    name: "Pi Computer S3"
+    display: "Pi Computer S3"
+  - id: 0x35
+    slug: "HELTEC_HT62"
+    name: "HT62"
+    display: "Heltec HT62"
+  - id: 0x36
+    slug: "EBYTE_ESP32_S3"
+    name: "EBYTE_ESP32_S3"
+  - id: 0x37
+    slug: "ESP32_S3_PICO"
+    name: "ESP32_S3_PICO"
+  - id: 0x38
+    slug: "CHATTER_2"
+    name: "CHATTER_2"
+  - id: 0x39
+    slug: "HELTEC_WIRELESS_PAPER_V1_0"
+    name: "Wireless Paper V1.0"
+    display: "Heltec Wireless Paper V1.0"
+  - id: 0x3A
+    slug: "HELTEC_WIRELESS_TRACKER_V1_0"
+    name: "Heltec Wireless Tracker V1.0"
+    display: "Heltec Wireless Tracker V1.0"
+  - id: 0x3B
+    slug: "UNPHONE"
+    name: "unPhone"
+    display: "unPhone"
+  - id: 0x3C
+    slug: "TD_LORAC"
+    name: "TD_LORAC"
+  - id: 0x3D
+    slug: "CDEBYTE_EORA_S3"
+    name: "EoRa-S3"
+    display: "EBYTE EoRa-S3"
+  - id: 0x3E
+    slug: "TWC_MESH_V4"
+    name: "TWC_MESH_V4"
+  - id: 0x3F
+    slug: "NRF52_PROMICRO_DIY"
+    name: "NRF52 Pro-micro DIY"
+    display: "NRF52 Pro-micro DIY"
+  - id: 0x40
+    slug: "RADIOMASTER_900_BANDIT_NANO"
+    name: "900 Bandit Nano"
+    display: "RadioMaster 900 Bandit Nano"
+  - id: 0x41
+    slug: "HELTEC_CAPSULE_SENSOR_V3"
+    name: "HELTEC_CAPSULE_SENSOR_V3"
+  - id: 0x42
+    slug: "HELTEC_VISION_MASTER_T190"
+    name: "Vision Master T190"
+    display: "Heltec Vision Master T190"
+  - id: 0x43
+    slug: "HELTEC_VISION_MASTER_E213"
+    name: "Vision Master E213"
+    display: "Heltec Vision Master E213"
+  - id: 0x44
+    slug: "HELTEC_VISION_MASTER_E290"
+    name: "Vision Master E290"
+    display: "Heltec Vision Master E290"
+  - id: 0x45
+    slug: "HELTEC_MESH_NODE_T114"
+    name: "Mesh Node T114"
+    display: "Heltec Mesh Node T114"
+  - id: 0x46
+    slug: "SENSECAP_INDICATOR"
+    name: "SenseCAP Indicator"
+    display: "Seeed SenseCAP Indicator"
+  - id: 0x47
+    slug: "TRACKER_T1000_E"
+    name: "SenseCAP T1000-E"
+    display: "Seeed SenseCAP T1000-E"
+  - id: 0x48
+    slug: "RAK3172"
+    name: "RAK3172"
+  - id: 0x49
+    slug: "WIO_E5"
+    name: "WIO_E5"
+  - id: 0x4A
+    slug: "RADIOMASTER_900_BANDIT"
+    name: "RADIOMASTER_900_BANDIT"
+  - id: 0x4B
+    slug: "ME25LS01_4Y10TD"
+    name: "ME25LS01_4Y10TD"
+  - id: 0x4C
+    slug: "RP2040_FEATHER_RFM95"
+    name: "RP2040_FEATHER_RFM95"
+  - id: 0x4D
+    slug: "M5STACK_COREBASIC"
+    name: "M5STACK_COREBASIC"
+  - id: 0x4E
+    slug: "M5STACK_CORE2"
+    name: "M5STACK_CORE2"
+  - id: 0x4F
+    slug: "RPI_PICO2"
+    name: "RPI_PICO2"
+  - id: 0x50
+    slug: "M5STACK_CORES3"
+    name: "M5STACK_CORES3"
+  - id: 0x51
+    slug: "SEEED_XIAO_S3"
+    name: "Xiao ESP32-S3"
+    display: "Seeed Xiao ESP32-S3"
+  - id: 0x52
+    slug: "MS24SF1"
+    name: "MS24SF1"
+  - id: 0x53
+    slug: "TLORA_C6"
+    name: "T3-C6"
+    display: "LilyGo T3-C6"
+  - id: 0x54
+    slug: "WISMESH_TAP"
+    name: "WisMesh Tap"
+    display: "RAK WisMesh Tap"
+  - id: 0x55
+    slug: "ROUTASTIC"
+    name: "ROUTASTIC"
+  - id: 0x56
+    slug: "MESH_TAB"
+    name: "MESH_TAB"
+  - id: 0x57
+    slug: "MESHLINK"
+    name: "MESHLINK"
+  - id: 0x58
+    slug: "XIAO_NRF52_KIT"
+    name: "Xiao NRF52840 Kit"
+    display: "Seeed Xiao NRF52840 Kit"
+  - id: 0x59
+    slug: "THINKNODE_M1"
+    name: "ThinkNode M1"
+    display: "ThinkNode M1"
+  - id: 0x5A
+    slug: "THINKNODE_M2"
+    name: "ThinkNode M2"
+    display: "ThinkNode M2"
+  - id: 0x5B
+    slug: "T_ETH_ELITE"
+    name: "T_ETH_ELITE"
+  - id: 0x5C
+    slug: "HELTEC_SENSOR_HUB"
+    name: "HELTEC_SENSOR_HUB"
+  - id: 0x5D
+    slug: "MUZI_BASE"
+    name: "BASE"
+    display: "muzi BASE"
+  - id: 0x5E
+    slug: "HELTEC_MESH_POCKET"
+    name: "Mesh Pocket"
+    display: "Heltec Mesh Pocket"
+  - id: 0x5F
+    slug: "SEEED_SOLAR_NODE"
+    name: "SenseCAP Solar Node"
+    display: "Seeed SenseCAP Solar Node"
+  - id: 0x60
+    slug: "NOMADSTAR_METEOR_PRO"
+    name: "Meteor Pro"
+    display: "NomadStar Meteor Pro"
+  - id: 0x61
+    slug: "CROWPANEL"
+    name: "Crowpanel Adv 3.5 TFT"
+    display: "Crowpanel Adv 3.5 TFT"
+  - id: 0x62
+    slug: "LINK_32"
+    name: "LINK_32"
+  - id: 0x63
+    slug: "SEEED_WIO_TRACKER_L1"
+    name: "Wio Tracker L1"
+    display: "Seeed Wio Tracker L1"
+  - id: 0x64
+    slug: "SEEED_WIO_TRACKER_L1_EINK"
+    name: "Wio Tracker L1 E-Ink"
+    display: "Seeed Wio Tracker L1 E-Ink"
+  - id: 0x65
+    slug: "MUZI_R1_NEO"
+    name: "R1 Neo"
+    display: "muzi R1 Neo"
+  - id: 0x66
+    slug: "T_DECK_PRO"
+    name: "T-Deck Pro"
+    display: "LILYGO T-Deck Pro"
+  - id: 0x67
+    slug: "T_LORA_PAGER"
+    name: "T-LoRa Pager"
+    display: "LILYGO T-LoRa Pager"
+  - id: 0x68
+    slug: "M5STACK_RESERVED"
+    name: "M5STACK_RESERVED"
+  - id: 0x69
+    slug: "WISMESH_TAG"
+    name: "WisMesh Tag"
+    display: "RAK WisMesh Tag"
+  - id: 0x6A
+    slug: "RAK3312"
+    name: "3312"
+    display: "RAK3312"
+  - id: 0x6B
+    slug: "THINKNODE_M5"
+    name: "ThinkNode M5"
+    display: "ThinkNode M5"
+  - id: 0x6C
+    slug: "HELTEC_MESH_SOLAR"
+    name: "MeshSolar"
+    display: "Heltec MeshSolar"
+  - id: 0x6D
+    slug: "T_ECHO_LITE"
+    name: "T-Echo Lite"
+    display: "LILYGO T-Echo Lite"
+  - id: 0x6E
+    slug: "HELTEC_V4"
+    name: "V4"
+    display: "Heltec V4"
+  - id: 0x6F
+    slug: "M5STACK_C6L"
+    name: "Unit C6L"
+    display: "M5Stack Unit C6L"
+  - id: 0x70
+    slug: "M5STACK_CARDPUTER_ADV"
+    name: "M5STACK_CARDPUTER_ADV"
+  - id: 0x71
+    slug: "HELTEC_WIRELESS_TRACKER_V2"
+    name: "Wireless Tracker V2"
+    display: "Heltec Wireless Tracker V2"
+  - id: 0x72
+    slug: "T_WATCH_ULTRA"
+    name: "T-Watch Ultra"
+    display: "T-Watch Ultra"
+  - id: 0x73
+    slug: "THINKNODE_M3"
+    name: "ThinkNode M3"
+    display: "Elecrow ThinkNode M3"
+  - id: 0x74
+    slug: "WISMESH_TAP_V2"
+    name: "WisMesh Tap V2"
+    display: "RAK WisMesh Tap V2"
+  - id: 0x75
+    slug: "RAK3401"
+    name: "3401 1W"
+    display: "RAK3401 1W"
+  - id: 0x76
+    slug: "RAK6421"
+    name: "RAK6421"
+  - id: 0x77
+    slug: "THINKNODE_M4"
+    name: "THINKNODE_M4"
+  - id: 0x78
+    slug: "THINKNODE_M6"
+    name: "ThinkNode M6"
+    display: "ThinkNode M6"
+  - id: 0x79
+    slug: "MESHSTICK_1262"
+    name: "MESHSTICK_1262"
+  - id: 0x7A
+    slug: "TBEAM_1_WATT"
+    name: "T-Beam 1W"
+    display: "LILYGO T-Beam 1W"
+  - id: 0x7B
+    slug: "T5_S3_EPAPER_PRO"
+    name: "T5_S3_EPAPER_PRO"
+  - id: 0x7C
+    slug: "TBEAM_BPF"
+    name: "T-Beam BPF"
+    display: "LILYGO T-Beam BPF"
+  - id: 0x7D
+    slug: "MINI_EPAPER_S3"
+    name: "Mini ePaper S3 E-Ink"
+    display: "LILYGO Mini ePaper S3 E-Ink"
+  - id: 0x7E
+    slug: "TDISPLAY_S3_PRO"
+    name: "TDISPLAY_S3_PRO"
+  - id: 0x7F
+    slug: "HELTEC_MESH_NODE_T096"
+    name: "Mesh Node 096"
+    display: "Heltec Mesh Node 096"
+  - id: 0x80
+    slug: "MESH_TRACKER_X1"
+    name: "SenseCAP Mesh-Tracker-X1"
+    display: "Seeed SenseCAP Mesh-Tracker-X1"
+  - id: 0x81
+    slug: "THINKNODE_M7"
+    name: "THINKNODE_M7"
+  - id: 0x82
+    slug: "THINKNODE_M8"
+    name: "ThinkNode M8"
+    display: "Elecrow ThinkNode M8"
+  - id: 0x83
+    slug: "THINKNODE_M9"
+    name: "ThinkNode M9"
+    display: "ThinkNode M9"
+  - id: 0x84
+    slug: "HELTEC_V4_R8"
+    name: "V4 R8"
+    display: "Heltec V4 R8"
+  - id: 0x85
+    slug: "HELTEC_MESH_NODE_T1"
+    name: "Mesh Node T1"
+    display: "Heltec Mesh Node T1"
+  - id: 0x86
+    slug: "STATION_G3"
+    name: "Station G3"
+    display: "Station G3"
+  - id: 0x87
+    slug: "T_IMPULSE_PLUS"
+    name: "T-Impulse Plus"
+    display: "LILYGO T-Impulse Plus"
+  - id: 0x88
+    slug: "T_ECHO_CARD"
+    name: "T_ECHO_CARD"
+  - id: 0x89
+    slug: "SEEED_WIO_TRACKER_L2"
+    name: "Wio Tracker L2"
+    display: "Seeed Wio Tracker L2"
+  - id: 0x8A
+    slug: "CROWPANEL_P4"
+    name: "CROWPANEL_P4"
+  - id: 0x8B
+    slug: "HELTEC_MESH_TOWER_V2"
+    name: "MeshTower V2"
+    display: "Heltec MeshTower V2"
+  - id: 0x8C
+    slug: "MESHNOLOGY_W10"
+    name: "W10"
+    display: "Meshnology W10"
+  - id: 0x8D
+    slug: "HELTEC_RC32"
+    name: "RC32"
+    display: "Heltec RC32"
+  - id: 0x8E
+    slug: "HELTEC_RC52"
+    name: "RC52"
+    display: "Heltec RC52"
+  - id: 0x8F
+    slug: "HELTEC_RCC6"
+    name: "RCC6"
+    display: "Heltec RCC6"
+  - id: 0x90
+    slug: "SEEED_WIO_TRACKER_L1_PRO_1W"
+    name: "Wio Tracker L1 Pro 1W"
+    display: "Seeed Wio Tracker L1 Pro 1W"
+  - id: 0x91
+    slug: "MESHNOLOGY_W12"
+    name: "MESHNOLOGY_W12"
+  - id: 0x92
+    slug: "MESHPAGER_X2"
+    name: "MESHPAGER_X2"
+  - id: 0x93
+    slug: "T_CONNECT_PRO"
+    name: "T_CONNECT_PRO"
