@@ -63,9 +63,10 @@ The plugin reads the option **dynamically** (no generated Go bindings) and is
 generic over the contents of the `FieldMetadata` message: adding a scalar
 attribute to `field_metadata.proto` requires no change here. The `FieldMetadata`
 shape (struct/interface) is read from the schema so it stays in sync
-automatically. Attributes must be scalar (bool/int/float/string); a non-scalar
-attribute (message/enum/bytes, or a repeated/map field) is a **hard error at
-generation time** rather than producing meaningless, non-deterministic output.
+automatically. Attributes must be scalar (bool / 32-bit int / float / string); a
+non-scalar attribute (message/enum/bytes, or a repeated/map field), a 64-bit
+integer kind, or a non-finite float value is a **hard error at generation time**
+rather than producing meaningless, non-deterministic, or uncompilable output.
 
 If a module doesn't define the extension (e.g. buf generates the option-free
 `nanopb.proto` as its own module), the plugin emits nothing rather than failing.

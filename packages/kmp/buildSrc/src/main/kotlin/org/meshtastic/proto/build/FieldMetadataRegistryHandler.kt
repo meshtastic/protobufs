@@ -121,7 +121,7 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
         (raw as? Map<*, *>)?.forEach { (key, value) ->
             if (value == null) return@forEach
             val name = (key as? ProtoMember)?.simpleName ?: key.toString()
-            args[name] = "$name = ${renderLiteral(value, metaFieldTypes[name])}"
+            args[name] = "$name = ${renderLiteral(name, value, metaFieldTypes[name])}"
         }
         if (isDeprecated) {
             args[DEPRECATED_ATTR] = "$DEPRECATED_ATTR = true"
@@ -129,17 +129,61 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
         return if (args.isEmpty()) null else "FieldMetadata(${args.values.joinToString(", ")})"
     }
 
-    private fun renderLiteral(value: Any, protoType: ProtoType?): String = when (protoType) {
-        ProtoType.BOOL -> value.toString().toBoolean().toString()
-        // Constructor params are Double?, so emit a decimal literal even for integral values.
-        ProtoType.DOUBLE, ProtoType.FLOAT -> value.toString().toDouble().toString()
-        ProtoType.STRING -> value.toString().quote()
-        // Fallback for any scalar kind not anticipated here (rendered as a String literal).
-        else -> value.toString().quote()
+    /**
+     * Renders one attribute value as a Kotlin literal of the type Wire generates for the
+     * attribute's proto kind, so the `FieldMetadata(...)` call compiles whatever scalar
+     * attributes the schema declares. The kinds the other generators reject (64-bit
+     * integers, non-finite floats, non-scalars) are rejected here with the same rule.
+     */
+    private fun renderLiteral(name: String, value: Any, protoType: ProtoType?): String {
+        val text = value.toString()
+        return when (protoType) {
+            ProtoType.BOOL -> text.toBoolean().toString()
+            // Wire maps double to Double and float to Float; Kotlin needs the `f` suffix on
+            // the latter and never coerces an integer literal, so render each as its own type.
+            ProtoType.DOUBLE -> text.toDouble().also { requireFinite(name, it) }.toString()
+            ProtoType.FLOAT -> text.toFloat().also { requireFinite(name, it.toDouble()) }.toString() + "f"
+            // Wire maps every 32-bit integer kind, signed or unsigned, to Int; a uint32 above
+            // Int.MAX_VALUE is carried as its two's-complement Int, which toLong().toInt() gives.
+            ProtoType.INT32, ProtoType.SINT32, ProtoType.SFIXED32,
+            ProtoType.UINT32, ProtoType.FIXED32,
+            -> text.toLong().toInt().toString()
+            ProtoType.STRING -> text.quote()
+            ProtoType.INT64, ProtoType.SINT64, ProtoType.SFIXED64,
+            ProtoType.UINT64, ProtoType.FIXED64,
+            -> error(
+                "FieldMetadata.$name: 64-bit integer attributes are not supported (not every target can " +
+                    "hold them exactly); use a 32-bit kind"
+            )
+            null -> error("FieldMetadata has no attribute named \"$name\"")
+            else -> error("FieldMetadata.$name: attributes must be scalar (bool / 32-bit int / float / string); got $protoType")
+        }
     }
 
-    private fun String.quote(): String =
-        "\"" + replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+    private fun requireFinite(name: String, d: Double) = require(d.isFinite()) {
+        "FieldMetadata.$name: float attributes must be finite (leave a bound unset instead); got $d"
+    }
+
+    /**
+     * Kotlin string literal for [this]. Escapes everything Kotlin gives meaning to inside
+     * `"..."`: backslash, quote, `$` (template start), and the control characters a
+     * single-line literal cannot contain.
+     */
+    private fun String.quote(): String = buildString {
+        append('"')
+        for (c in this@quote) {
+            when (c) {
+                '\\' -> append("\\\\")
+                '"' -> append("\\\"")
+                '$' -> append("\\\$")
+                '\n' -> append("\\n")
+                '\r' -> append("\\r")
+                '\t' -> append("\\t")
+                else -> if (c < ' ') append("\\u%04x".format(c.code)) else append(c)
+            }
+        }
+        append('"')
+    }
 
     private fun render(entries: List<Entry>): String = buildString {
         appendLine("// GENERATED CODE -- DO NOT EDIT.")

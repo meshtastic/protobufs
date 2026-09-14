@@ -169,17 +169,22 @@ func TestEmitScalarValueRendering(t *testing.T) {
 	mustContain(t, "swift", swift, "public var weight: Int64? = nil", "minValue: 2.0", "weight: 7")
 }
 
-// TestEmitStringEscaping exercises backslash, newline and tab (not just the
-// embedded quote covered elsewhere) across every target.
+// TestEmitStringEscaping exercises backslash, newline, carriage return and tab
+// (not just the embedded quote covered elsewhere) across every target. A raw CR
+// inside a single-line literal is a syntax error in Swift, so it must be escaped
+// like the newline is.
 func TestEmitStringEscaping(t *testing.T) {
 	schema := []schemaField{{Name: "unit", Kind: protoreflect.StringKind}}
 	entries := []entry{{
 		MessageType: "meshtastic.M", TypePath: []string{"M"}, FieldName: "f", Tag: 1,
-		Fields: []metaField{{Name: "unit", Value: "a\\b\nc\td"}},
+		Fields: []metaField{{Name: "unit", Value: "a\\b\nc\rd\te"}},
 	}}
 	for _, emit := range []emitter{emitC, emitPython, emitTypeScript, emitRust, emitSwift} {
 		_, out := emit(schema, entries)
-		mustContain(t, "escape", out, `a\\b\nc\td`)
+		mustContain(t, "escape", out, `a\\b\nc\rd\te`)
+		if strings.ContainsAny(out, "\r") {
+			t.Errorf("escape: raw carriage return leaked into output:\n%s", out)
+		}
 	}
 }
 

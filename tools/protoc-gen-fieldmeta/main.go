@@ -23,6 +23,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"sort"
 	"strings"
@@ -201,6 +202,9 @@ func generate(req *pluginpb.CodeGeneratorRequest) (*pluginpb.CodeGeneratorRespon
 	if err := checkDuplicateLabels(entries); err != nil {
 		return nil, err
 	}
+	if err := checkFiniteFloats(entries); err != nil {
+		return nil, err
+	}
 
 	schema, err := fieldMetadataSchema(extType)
 	if err != nil {
@@ -243,6 +247,11 @@ func findExtension(files *protoregistry.Files, name protoreflect.FullName) proto
 // contract: a non-scalar attribute (message/enum/bytes/group, or a repeated/map
 // field) is a hard error, since the emitters would otherwise render meaningless
 // and non-deterministic values (e.g. pointer addresses) into checked-in output.
+//
+// 64-bit integer kinds are rejected too. The typed targets declare int64 and
+// TypeScript's number holds 53 bits, so a uint64 above 2^63 would wrap and a
+// value above 2^53 would lose precision on the way through; a 32-bit kind is
+// rendered exactly by every target, and nothing a UI hint carries needs more.
 func fieldMetadataSchema(extType protoreflect.ExtensionType) ([]schemaField, error) {
 	md := extType.TypeDescriptor().Message()
 	if md == nil {
@@ -254,8 +263,13 @@ func fieldMetadataSchema(extType protoreflect.ExtensionType) ([]schemaField, err
 		f := fields.Get(i)
 		if f.IsList() || f.IsMap() || !isScalarKind(f.Kind()) {
 			return nil, fmt.Errorf(
-				"%s.%s: field_metadata attributes must be scalar (bool/int/float/string); got %v (repeated=%t, map=%t)",
+				"%s.%s: field_metadata attributes must be scalar (bool / 32-bit int / float / string); got %v (repeated=%t, map=%t)",
 				md.FullName(), f.Name(), f.Kind(), f.IsList(), f.IsMap())
+		}
+		if is64BitIntKind(f.Kind()) {
+			return nil, fmt.Errorf(
+				"%s.%s: 64-bit integer attributes are not supported (TypeScript's number cannot hold a %v exactly); use a 32-bit kind",
+				md.FullName(), f.Name(), f.Kind())
 		}
 		out = append(out, schemaField{Name: string(f.Name()), Kind: f.Kind()})
 	}
@@ -268,6 +282,35 @@ func isScalarKind(k protoreflect.Kind) bool {
 		return true
 	}
 	return isIntKind(k)
+}
+
+func is64BitIntKind(k protoreflect.Kind) bool {
+	switch k {
+	case protoreflect.Int64Kind, protoreflect.Uint64Kind, protoreflect.Sint64Kind,
+		protoreflect.Fixed64Kind, protoreflect.Sfixed64Kind:
+		return true
+	}
+	return false
+}
+
+// checkFiniteFloats rejects NaN and infinite float attributes. min_value and
+// max_value are UI bounds, and an open side is expressed by leaving the attribute
+// unset; no target spells a non-finite literal the way strconv renders one
+// ("NaN", "+Inf"), so the output would not compile.
+func checkFiniteFloats(entries []entry) error {
+	var problems []string
+	for _, e := range entries {
+		for _, f := range e.Fields {
+			if v, ok := f.Value.(float64); ok && (math.IsNaN(v) || math.IsInf(v, 0)) {
+				problems = append(problems, fmt.Sprintf("%s.%s: %s is %v", e.MessageType, e.FieldName, f.Name, v))
+			}
+		}
+	}
+	if len(problems) == 0 {
+		return nil
+	}
+	sort.Strings(problems)
+	return fmt.Errorf("float attributes must be finite (leave a bound unset instead):\n  %s", strings.Join(problems, "\n  "))
 }
 
 func collectMessages(msgs protoreflect.MessageDescriptors, extType, enumExtType protoreflect.ExtensionType, resolver *protoregistry.Types, out *[]entry) error {
@@ -388,6 +431,10 @@ func collectEnums(enums protoreflect.EnumDescriptors, extType protoreflect.Exten
 		rel := strings.TrimPrefix(string(ed.FullName()), string(ed.ParentFile().Package())+".")
 		typePath := strings.Split(rel, ".")
 		values := ed.Values()
+		// allow_alias lets two values share a number, and the registry is keyed by
+		// number: a second metadata-bearing alias would be a duplicate row (and a
+		// duplicate key in the Swift dictionary literal), so it is rejected.
+		claimed := map[protoreflect.EnumNumber]string{}
 		for j := 0; j < values.Len(); j++ {
 			ev := values.Get(j)
 			mf := readEnumValueMetadata(ev, extType, resolver)
@@ -404,6 +451,12 @@ func collectEnums(enums protoreflect.EnumDescriptors, extType protoreflect.Exten
 			if len(mf) == 0 {
 				continue
 			}
+			if first, dup := claimed[ev.Number()]; dup {
+				return fmt.Errorf(
+					"%s: values %s and %s share number %d; metadata (or [deprecated = true]) can be attached to only one alias of a number",
+					ed.FullName(), first, ev.Name(), ev.Number())
+			}
+			claimed[ev.Number()] = string(ev.Name())
 			*out = append(*out, entry{
 				Kind:        kindEnumValue,
 				MessageType: string(ed.FullName()),
@@ -507,6 +560,7 @@ func goValue(fd protoreflect.FieldDescriptor, v protoreflect.Value) any {
 		return v.Int()
 	case protoreflect.Uint32Kind, protoreflect.Uint64Kind, protoreflect.Fixed32Kind,
 		protoreflect.Fixed64Kind:
+		// Exact: fieldMetadataSchema rejects the 64-bit kinds, so this is at most 2^32-1.
 		return int64(v.Uint())
 	default:
 		return v.String()

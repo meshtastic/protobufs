@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"sort"
 	"strings"
 	"testing"
@@ -286,5 +287,152 @@ message M { uint32 p = 1 [(meshtastic.field_metadata) = { tags: "a" }]; }
 
 	if _, err := generate(req); err == nil {
 		t.Fatal("expected error for non-scalar (repeated) FieldMetadata attribute, got nil")
+	}
+}
+
+// TestGenerateRejects64BitAttribute pins the width limit on integer attributes.
+// TypeScript's number holds 53 bits and the typed targets declare int64, so a
+// 64-bit attribute could not be rendered exactly everywhere; rejecting it at the
+// schema is the honest alternative to a registry that silently disagrees with the
+// schema on large values.
+func TestGenerateRejects64BitAttribute(t *testing.T) {
+	for _, kind := range []string{"uint64", "int64", "fixed64", "sfixed64", "sint64"} {
+		t.Run(kind, func(t *testing.T) {
+			req := compileRequest(t, map[string]string{
+				"meshtastic/field_metadata.proto": `
+syntax = "proto2";
+package meshtastic;
+import "google/protobuf/descriptor.proto";
+message FieldMetadata { optional ` + kind + ` big = 1; }
+extend google.protobuf.FieldOptions {
+  optional FieldMetadata field_metadata = 51001;
+}
+`,
+				"meshtastic/test.proto": `
+syntax = "proto3";
+package meshtastic;
+import "meshtastic/field_metadata.proto";
+message M { uint32 p = 1 [(meshtastic.field_metadata) = { big: 1 }]; }
+`,
+			}, "typescript", "meshtastic/test.proto", "meshtastic/field_metadata.proto")
+
+			_, err := generate(req)
+			if err == nil {
+				t.Fatal("expected error for a 64-bit integer attribute, got nil")
+			}
+			if !strings.Contains(err.Error(), "64-bit") || !strings.Contains(err.Error(), "FieldMetadata.big") {
+				t.Errorf("error should name the attribute and the rule, got: %v", err)
+			}
+		})
+	}
+}
+
+// TestGenerateRendersUnsigned32Exactly verifies that a uint32 attribute above
+// Int32.max keeps its value through the int64 conversion in goValue, so the
+// 32-bit kinds that remain allowed are exact on every target.
+func TestGenerateRendersUnsigned32Exactly(t *testing.T) {
+	out := generateTo(t, map[string]string{
+		"meshtastic/field_metadata.proto": `
+syntax = "proto2";
+package meshtastic;
+import "google/protobuf/descriptor.proto";
+message FieldMetadata { optional uint32 weight = 1; }
+extend google.protobuf.FieldOptions {
+  optional FieldMetadata field_metadata = 51001;
+}
+`,
+		"meshtastic/test.proto": `
+syntax = "proto3";
+package meshtastic;
+import "meshtastic/field_metadata.proto";
+message M { uint32 p = 1 [(meshtastic.field_metadata) = { weight: 4000000000 }]; }
+`,
+	}, "python")
+	mustContain(t, "uint32", out, `("meshtastic.M", 1): {"weight": 4000000000}`)
+}
+
+// TestGenerateRejectsNonFiniteFloat pins that inf/nan bounds are a hard error.
+// An open bound is expressed by leaving min_value/max_value unset; no target's
+// float literal syntax accepts what strconv renders for these ("+Inf", "NaN").
+func TestGenerateRejectsNonFiniteFloat(t *testing.T) {
+	for name, fieldDef := range map[string]string{
+		"inf":  `uint32 p = 1 [(meshtastic.field_metadata) = { max_value: inf }];`,
+		"-inf": `uint32 p = 1 [(meshtastic.field_metadata) = { min_value: -inf }];`,
+		"nan":  `uint32 p = 1 [(meshtastic.field_metadata) = { min_value: nan }];`,
+	} {
+		t.Run(name, func(t *testing.T) {
+			req := compileRequest(t, map[string]string{
+				"meshtastic/field_metadata.proto": fieldMetadataProtoSrc,
+				"meshtastic/test.proto": `
+syntax = "proto3";
+package meshtastic;
+import "meshtastic/field_metadata.proto";
+message M { ` + fieldDef + ` }
+`,
+			}, "swift", "meshtastic/test.proto", "meshtastic/field_metadata.proto")
+
+			_, err := generate(req)
+			if err == nil {
+				t.Fatal("expected error for a non-finite float attribute, got nil")
+			}
+			if !strings.Contains(err.Error(), "finite") || !strings.Contains(err.Error(), "meshtastic.M.p") {
+				t.Errorf("error should name the field and the rule, got: %v", err)
+			}
+		})
+	}
+}
+
+const fieldMetadataWithEnumProtoSrc = fieldMetadataProtoSrc + `
+extend google.protobuf.EnumValueOptions {
+  optional FieldMetadata enum_value_metadata = 51001;
+}
+`
+
+// TestGenerateRejectsMetadataOnTwoAliases covers allow_alias enums. The registry
+// is keyed by value number, so metadata may be attached to only one alias of a
+// number; a second one would be a duplicate row and, in Swift, a duplicate
+// dictionary key that does not compile. One annotated alias is fine.
+func TestGenerateRejectsMetadataOnTwoAliases(t *testing.T) {
+	const enumWith = `
+syntax = "proto3";
+package meshtastic;
+import "meshtastic/field_metadata.proto";
+enum Mode {
+  option allow_alias = true;
+  MODE_A = 0 [(meshtastic.enum_value_metadata) = { unit: "a" }];
+  MODE_A_ALIAS = 0 %s;
+}
+`
+	dup := compileRequest(t, map[string]string{
+		"meshtastic/field_metadata.proto": fieldMetadataWithEnumProtoSrc,
+		"meshtastic/test.proto":           fmt.Sprintf(enumWith, `[(meshtastic.enum_value_metadata) = { unit: "b" }]`),
+	}, "python", "meshtastic/test.proto", "meshtastic/field_metadata.proto")
+	_, err := generate(dup)
+	if err == nil {
+		t.Fatal("expected error for metadata on two aliases of one number, got nil")
+	}
+	for _, want := range []string{"meshtastic.Mode", "MODE_A", "MODE_A_ALIAS", "share number 0"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("error should contain %q, got: %v", want, err)
+		}
+	}
+
+	// A deprecated alias earns a mirrored entry, so it collides the same way.
+	deprecatedAlias := compileRequest(t, map[string]string{
+		"meshtastic/field_metadata.proto": fieldMetadataWithEnumProtoSrc,
+		"meshtastic/test.proto":           fmt.Sprintf(enumWith, `[deprecated = true]`),
+	}, "python", "meshtastic/test.proto", "meshtastic/field_metadata.proto")
+	if _, err := generate(deprecatedAlias); err == nil {
+		t.Error("expected error when a deprecated alias shares a number with an annotated value, got nil")
+	}
+
+	// Only one alias carrying metadata is allowed and yields a single row.
+	out := generateTo(t, map[string]string{
+		"meshtastic/field_metadata.proto": fieldMetadataWithEnumProtoSrc,
+		"meshtastic/test.proto":           fmt.Sprintf(enumWith, ""),
+	}, "python")
+	mustContain(t, "alias-ok", out, `("meshtastic.Mode", 0): {"unit": "a"}`)
+	if strings.Count(out, `("meshtastic.Mode", 0)`) != 1 {
+		t.Errorf("alias-ok: expected exactly one registry row for the number:\n%s", out)
 	}
 }

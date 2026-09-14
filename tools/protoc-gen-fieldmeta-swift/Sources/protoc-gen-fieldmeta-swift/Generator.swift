@@ -67,10 +67,15 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         guard let metadataDescriptor else {
             throw GenError.message("meshtastic.FieldMetadata not found among the input protos - include meshtastic/field_metadata.proto")
         }
-        // Scalar-only guard, mirroring the Go plugin's hard error.
+        // Scalar-only guard, mirroring the Go plugin's hard errors. 64-bit integer
+        // kinds are rejected as well: TypeScript's number holds 53 bits and the typed
+        // targets declare Int64, so only a 32-bit kind is exact on every target.
         for f in metadataDescriptor.fields {
             guard swiftScalarType(for: f.type) != nil, !f.isRepeated else {
-                throw GenError.message("FieldMetadata.\(f.name): attributes must be scalar (bool/int/float/string), not repeated/message/enum/bytes")
+                throw GenError.message("FieldMetadata.\(f.name): attributes must be scalar (bool / 32-bit int / float / string), not repeated/message/enum/bytes")
+            }
+            if is64BitInt(f.type) {
+                throw GenError.message("FieldMetadata.\(f.name): 64-bit integer attributes are not supported (TypeScript's number cannot hold a \(f.type) exactly); use a 32-bit kind")
             }
         }
 
@@ -82,6 +87,10 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
             // walked alongside messages.
             func collectEnums(_ enums: [EnumDescriptor]) throws {
                 for enumDescriptor in enums {
+                    // allow_alias lets two values share a number, and the registry is keyed
+                    // by number: a second metadata-bearing alias would be a duplicate row and
+                    // a duplicate dictionary key below, so it is rejected (as in the Go plugin).
+                    var claimed: [Int32: String] = [:]
                     for value in enumDescriptor.values
                     where value.options.hasEnumValueMetadata || value.options.deprecated {
                         if value.options.enumValueMetadata.hasDeprecated {
@@ -89,6 +98,12 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
                                 "\(enumDescriptor.fullName).\(value.name): the \"deprecated\" attribute is generator-managed and cannot be set in (meshtastic.enum_value_metadata); mark the value `[deprecated = true]` instead and it is mirrored automatically"
                             )
                         }
+                        if let first = claimed[value.number] {
+                            throw GenError.message(
+                                "\(enumDescriptor.fullName): values \(first) and \(value.name) share number \(value.number); metadata (or [deprecated = true]) can be attached to only one alias of a number"
+                            )
+                        }
+                        claimed[value.number] = value.name
                         entries.append(Entry(
                             isEnumValue: true,
                             swiftTypePath: namer.fullName(enum: enumDescriptor),
@@ -232,7 +247,7 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
                 continue
             }
             guard let value = collector.values[Int(f.number)] else { continue }
-            args.append((f.name, "\(label): \(render(value, attribute: f.name, of: entry))"))
+            args.append((f.name, "\(label): \(try render(value, attribute: f.name, of: entry))"))
         }
         // Schema declaration order, which `shape.fields` already gives us - NOT sorted
         // by name as the other targets do. Swift's memberwise initializer requires
@@ -281,12 +296,19 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
     /// English: labels repeat across the schema ("Enabled" many times over), and a
     /// shared key would force one translation on all of them, which languages that
     /// inflect cannot do.
-    private func render(_ value: AttributeCollector.Value, attribute: String, of entry: Entry) -> String {
+    private func render(_ value: AttributeCollector.Value, attribute: String, of entry: Entry) throws -> String {
         switch value {
         case .bool(let b): return "\(b)"
-        case .double(let d): return decimalFloat(d)
+        case .double(let d):
+            // An open bound is left unset: there is no portable literal for inf/nan,
+            // and the Go plugin rejects them the same way.
+            guard d.isFinite else {
+                throw GenError.message("float attributes must be finite (leave a bound unset instead): \(entry.protoTypeName).\(entry.protoFieldName): \(attribute) is \(d)")
+            }
+            return decimalFloat(d)
         case .int(let i): return "\(i)"
-        case .uint(let u): return "\(Int64(bitPattern: u))"
+        // Exact: the schema guard rejects 64-bit kinds, so this is at most UInt32.max.
+        case .uint(let u): return "\(u)"
         case .string(let s):
             let full = "\(entry.protoTypeName).\(entry.protoFieldName)"
             return "String(localized: \(swiftStringLiteral("\(full).\(attribute)"))"
@@ -299,20 +321,22 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
     /// trailing `.0` on integral values so the literal types as `Double`. Mirrors the
     /// Go plugin's `decimalFloat`, which is `strconv.FormatFloat(f, 'f', -1, 64)`.
     private func decimalFloat(_ d: Double) -> String {
+        // Fixed locale: the decimal separator must be "." whatever the host is set to.
+        let posix = Locale(identifier: "en_US_POSIX")
         for precision in 0...17 {
-            let s = String(format: "%.\(precision)f", d)
+            let s = String(format: "%.\(precision)f", locale: posix, d)
             if Double(s) == d {
                 return s.contains(".") ? s : s + ".0"
             }
         }
-        let s = String(format: "%.17f", d)
+        let s = String(format: "%.17f", locale: posix, d)
         return s.contains(".") ? s : s + ".0"
     }
 
     /// Swift type for a FieldMetadata attribute. Integer kinds all widen to `Int64` and
     /// float to `Double`, matching the Go plugin's `swiftType` - the two must agree or
     /// the emitted struct definitions diverge. Returns nil for non-scalars, which drives
-    /// the scalar-only guard.
+    /// the scalar-only guard; 64-bit kinds pass here and are rejected by `is64BitInt`.
     private func swiftScalarType(for type: Google_Protobuf_FieldDescriptorProto.TypeEnum) -> String? {
         switch type {
         case .bool: return "Bool"
@@ -324,6 +348,13 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         }
     }
 
+    private func is64BitInt(_ type: Google_Protobuf_FieldDescriptorProto.TypeEnum) -> Bool {
+        switch type {
+        case .int64, .sint64, .sfixed64, .uint64, .fixed64: return true
+        default: return false
+        }
+    }
+
     private func swiftStringLiteral(_ s: String) -> String {
         var escaped = ""
         for c in s.unicodeScalars {
@@ -331,6 +362,7 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
             case "\"": escaped += "\\\""
             case "\\": escaped += "\\\\"
             case "\n": escaped += "\\n"
+            case "\r": escaped += "\\r"
             case "\t": escaped += "\\t"
             default: escaped.unicodeScalars.append(c)
             }

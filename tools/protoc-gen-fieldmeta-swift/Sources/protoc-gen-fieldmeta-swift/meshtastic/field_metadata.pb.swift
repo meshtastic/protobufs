@@ -36,11 +36,13 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
 /// dynamic reflection as the Go plugin does, so a stale binding cannot see the
 /// new attribute. It fails loudly rather than dropping it silently.
 ///
-/// Constraint: attributes must be SCALAR (bool / int / float / string). A
-/// message, enum, bytes, repeated, or map attribute is rejected at generation
+/// Constraint: attributes must be SCALAR (bool / 32-bit int / float / string).
+/// A message, enum, bytes, repeated, or map attribute is rejected at generation
 /// time (the generators would otherwise emit meaningless, non-deterministic
-/// values). A list is therefore a single delimited string - see `keywords`.
-/// See tools/protoc-gen-fieldmeta.
+/// values), and so is a 64-bit integer kind, which TypeScript's number cannot
+/// hold exactly. Float attributes must be finite: an open bound is left unset,
+/// not set to inf. A list is therefore a single delimited string - see
+/// `keywords`. See tools/protoc-gen-fieldmeta.
 ///
 /// STRING attributes are treated as user-facing display text and are emitted for
 /// localization where the target supports it - the Swift target emits
