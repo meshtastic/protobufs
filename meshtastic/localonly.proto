@@ -88,8 +88,9 @@ message LocalModuleConfig {
 
   /*
    * The part of the config that is specific to the RangeTest module
+   * Deprecated in 2.8: the Range Test module is compiled out of every firmware target.
    */
-  ModuleConfig.RangeTestConfig range_test = 5;
+  ModuleConfig.RangeTestConfig range_test = 5 [deprecated = true];
 
   /*
    * The part of the config that is specific to the Telemetry module
