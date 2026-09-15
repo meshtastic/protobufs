@@ -6,6 +6,9 @@ on:
       - "meshtastic/**/*.proto"
       - "nanopb.proto"
       - "packages/kmp/**"
+      # Watch this file too, so a change to the build itself is exercised by it.
+      # Without this a workflow edit merges having run none of its own jobs.
+      - ".github/workflows/kmp-pull-request.yml"
 
 permissions:
   contents: read
