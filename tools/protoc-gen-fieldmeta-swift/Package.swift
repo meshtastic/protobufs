@@ -8,7 +8,7 @@ let package = Package(
         // 1.36.1 is the verified floor (the plugin uses SwiftProtobufPluginLibrary's
         // customOptionExtensions hook). Consumers should let this resolve to the same
         // swift-protobuf version their own codegen uses so the naming engine matches.
-        .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.36.1")
+        .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.38.1")
     ],
     targets: [
         .executableTarget(
