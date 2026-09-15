@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") version "2.4.10"
+    kotlin("multiplatform") version "2.4.20"
     id("com.android.kotlin.multiplatform.library") version "9.3.2"
     id("com.squareup.wire") version "6.4.7"
     id("com.vanniktech.maven.publish") version "0.37.0"
