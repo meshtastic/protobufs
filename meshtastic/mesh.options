@@ -116,6 +116,8 @@
 *ChunkedPayload.chunk_count int_size:16
 *ChunkedPayload.chunk_index int_size:16
 *ChunkedPayload.payload_chunk max_size:228
+*ClientApiChunkedPayload.payload_size int_size:16
+*ClientApiChunkedPayload.payload_chunk max_size:228
 
 # Longest documented value is "token_wrong_size" (16 chars); 32 leaves room
 # for future short reasons without forcing nanopb to use callbacks.
