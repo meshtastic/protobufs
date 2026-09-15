@@ -83,8 +83,9 @@ message NodeInfo {
  */
 message MyNodeInfo {
   /*
-   * Tells the phone what our node number is, default starting value is
-   * lowbyte of macaddr, but it will be fixed if that is already in use
+   * Tells the phone what our node number is: a CRC over the node's public key.
+   * DeviceState.my_node holds the authoritative copy, computed once when the key is
+   * set and read from there rather than recomputed.
    */
   uint32 my_node_num = 1;
 

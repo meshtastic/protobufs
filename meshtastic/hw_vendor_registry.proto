@@ -49,8 +49,8 @@ message HwVendor {
 
   /*
    * Stable identifier, lower-case words joined by '-', e.g. "heltec". Names the
-   * vendor's data file, registry/hardware/<slug>.yaml, and never changes once
-   * allocated.
+   * vendor's data file, registry/hardware/<slug>.yaml, except vendor 0x00, whose
+   * file is 00-legacy.yaml. It never changes once allocated.
    */
   string slug = 3;
 }

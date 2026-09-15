@@ -62,7 +62,8 @@ message PositionLite {
 
 message NodeInfoLite {
   /*
-   * The node number.
+   * The node number, and the authoritative copy of it: stored once, not recomputed
+   * from public_key when it is needed.
    *
    * fixed32 rather than a varint: a NodeNum is uniformly distributed over 32
    * bits, so 15 in 16 of them cost the full five varint bytes where fixed32
@@ -71,13 +72,15 @@ message NodeInfoLite {
   fixed32 num = 1;
 
   /*
-   * Hardware model the user's device is running.
+   * Hardware model the user's device is running, and the one stored copy of it, for
+   * this node as for any other.
    * Packed vendor/device id: (vendor_id << 8) | device_id. See hw_vendor_registry.proto.
    */
   uint32 hw_model = 2;
 
   /*
-   * The user's role in the mesh.
+   * The user's role in the mesh. The node's own entry leaves it unset:
+   * DeviceConfig.role is the one stored copy of this node's role.
    */
   Role role = 3;
 
@@ -102,7 +105,8 @@ message NodeInfoLite {
   uint32 channel = 6;
 
   /*
-   * The public key of the user's device, for PKI-based encrypted DMs.
+   * The public key of the user's device, for PKI-based encrypted DMs. Empty in the
+   * node's own entry: SecurityConfig.public_key is the one stored copy of its key.
    */
   bytes public_key = 7;
 
@@ -155,7 +159,9 @@ message DeviceState {
   MyNodeInfo my_node = 1;
 
   /*
-   * My owner info
+   * My owner info. public_key, role and hw_model are left unset: their stored copies
+   * are SecurityConfig.public_key, DeviceConfig.role and the node's own
+   * NodeInfoLite.hw_model, and firmware fills them in when it sends the User.
    */
   User owner = 2;
 
@@ -263,7 +269,9 @@ message BackupPreferences {
   ChannelFile channels = 5;
 
   /*
-   * The node's user (owner) information
+   * The node's user (owner) information, without public_key, role and hw_model: the
+   * backed-up config holds the key and the role, and the hardware model is the
+   * build's.
    */
   User owner = 6;
 }

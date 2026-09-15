@@ -11,9 +11,30 @@ option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
 /*
- * A packet envelope sent/received over the mesh
- * only payload_variant is sent in the payload portion of the LORA packet.
- * The other fields are either not sent at all, or sent in the special 16 byte LORA header.
+ * A packet as a node holds it: the decoded form of a v3 BCAST or UCAST frame
+ * (SCHEMA.md §8), and what the phone API and MQTT exchange.
+ *
+ * MeshPacket is never encoded onto the radio link. Its header fields unroll the v3
+ * header, `encrypted` is the frame's ciphertext and `decoded` its plaintext, and the
+ * remaining fields are local to the node holding the packet.
+ *
+ *   v3 header         MeshPacket
+ *   ctrl.hop_limit    hop_limit
+ *   flags.hop_start   hop_start
+ *   flags.ack         flags PACKET_WANT_ACK
+ *   flags.mqtt        flags PACKET_VIA_MQTT
+ *   flags.opt         header_options is non-empty
+ *   flags.path        flags PACKET_RECORD_PATH
+ *   from, id          from, id
+ *   to                to, all ones on BCAST, which carries no `to`
+ *   chan              channel_hash, BCAST only
+ *   relay             relay_node
+ *   next_hop          next_hop, UCAST only
+ *   options block     header_options
+ *   path tail         path
+ *
+ * The header's version bit and profile follow from the frame being v3 and from `to`.
+ * MINI and EXT frames have no MeshPacket form.
  */
 message MeshPacket {
   /*
@@ -35,6 +56,14 @@ message MeshPacket {
    * So I bit the bullet and implemented a new (internal - not sent over the air)
    * field in MeshPacket called 'priority'.
    * And the transmission queue in the router object is now a priority queue.
+   *
+   * Priority that follows from the packet is the node's to derive, not a client's to
+   * restate. Whatever priority a packet arrives with, the node sets ACK for a routing
+   * packet, ALERT for an ALERT_APP packet, RESPONSE for a packet with request_id, and
+   * RELIABLE for want_ack or want_response. For a packet that arrives UNSET and matches
+   * none of those it sets HIGH for text and admin, and DEFAULT otherwise. A client sets
+   * priority only to place a packet its contents do not describe: MIN, BACKGROUND,
+   * DEFAULT, HIGH or MAX.
    */
   enum Priority {
     /*
@@ -143,32 +172,27 @@ message MeshPacket {
   }
 
   /*
-   * The sending node number.
-   * Note: Our crypto implementation uses this field as well.
-   * See [crypto](/docs/overview/encryption) for details.
+   * The originating node: header `from`, covered by the AAD and part of the nonce.
    */
   fixed32 from = 1;
 
   /*
-   * The (immediate) destination for this packet.
-   * If the value is 4,294,967,295 (maximum value of an unsigned 32bit integer), this indicates that the packet was
-   * not destined for a specific node, but for a channel as indicated by the value of `channel` below.
-   * If the value is another, this indicates that the packet was destined for a specific
-   * node (i.e. a kind of "Direct Message" to this node) and not broadcast on a channel.
+   * The destination node: header `to` on a UCAST frame. All ones (4,294,967,295) on a
+   * BCAST frame, whose header carries no `to`; such a packet is addressed to a channel.
    */
   fixed32 to = 2;
 
   /*
-   * A unique ID for this packet.
-   * Useful for flooding algorithms, and for matching a response to its request.
+   * A unique ID for this packet: header `id`, covered by the AAD and part of the nonce.
+   * Useful for duplicate suppression, and for matching a response to its request.
    */
   fixed32 id = 3;
 
   /*
-   * (Usually) If set, this indicates the index in the secondary_channels table that this packet was sent/received on.
-   * If unset, packet was on the primary channel.
-   * A particular node might know only a subset of channels in use on the mesh.
-   * Therefore channel_index is inherently a local concept.
+   * Index of the channel this packet was sent or received on, 0 being the primary.
+   * Local: a node holds only the channels it knows, so the index means nothing to
+   * another node. Set when the packet is decoded or originated locally; the header
+   * carries channel_hash instead.
    */
   uint32 channel = 4;
 
@@ -178,30 +202,36 @@ message MeshPacket {
    */
   oneof payload_variant {
     /*
-     * TODO: REPLACE
+     * The plaintext payload, once decrypted or when originated locally
      */
     Data decoded = 5;
 
     /*
-     * TODO: REPLACE
+     * The frame's ciphertext and authentication tag, as received
      */
     bytes encrypted = 6;
   }
 
   /*
    * Packet-level boolean flags: a bitwise OR of Flags values.
+   *
+   * The low nibble matches the v3 header's flags byte bit for bit, so firmware copies
+   * it without remapping. 0x02 is that byte's opt bit, which a MeshPacket expresses
+   * as a non-empty header_options instead.
    */
   enum Flags {
     /* Nothing set */
     PACKET_NONE = 0x00;
-    /* The sender wants this packet acknowledged */
-    PACKET_WANT_ACK = 0x01;
-    /* This packet passed via MQTT somewhere along the path it took */
-    PACKET_VIA_MQTT = 0x02;
-    /* The packet was en/decrypted using PKI */
-    PACKET_PKI_ENCRYPTED = 0x04;
-    /* The packet carries a valid XEdDSA signature */
-    PACKET_XEDDSA_SIGNED = 0x08;
+    /* Relays record the path this packet takes (header flags.path) */
+    PACKET_RECORD_PATH = 0x01;
+    /* This packet passed via MQTT somewhere along its path (header flags.mqtt) */
+    PACKET_VIA_MQTT = 0x04;
+    /* The sender wants this packet acknowledged (header flags.ack) */
+    PACKET_WANT_ACK = 0x08;
+    /* The packet was en/decrypted using PKI; local, not in the header */
+    PACKET_PKI_ENCRYPTED = 0x10;
+    /* The packet carries a valid XEdDSA signature; local, not in the header */
+    PACKET_XEDDSA_SIGNED = 0x20;
   }
 
   /*
@@ -210,35 +240,34 @@ message MeshPacket {
   uint32 flags = 7;
 
   /*
-   * If unset treated as zero (no forwarding, send to direct neighbor nodes only)
-   * if 1, allow hopping through one node, etc...
+   * Remaining hop budget: header ctrl.hop_limit, 0-15 in four bits. A relay forwards
+   * while it is above zero and decrements it. It is outside the AAD, so a receiver
+   * drops a frame whose hop_limit exceeds hop_start.
    */
   uint32 hop_limit = 8;
 
   /*
-   * Hop limit with which the original packet started. Sent via LoRa using three bits in the unencrypted header.
-   * When receiving a packet, the difference between hop_start and hop_limit gives how many hops it traveled.
-   * hop_start == 0 does not necessarily mean a direct (0-hop) neighbor: firmware prior to 2.3.0
-   * never populated this field, so a receiver can only trust hop_start == 0 as genuine once it has
-   * decoded the packet and confirmed the sender's bitfield is present (added in 2.5.0). Until then,
-   * or for a sender that never sets that bitfield, treat hop_start == 0 as unknown, not direct.
+   * The hop budget the originator launched with: header flags.hop_start, 0-15 in
+   * four bits, covered by the AAD. hop_start - hop_limit is the number of hops taken,
+   * and because only one of the two is authenticated it is a hint, never an
+   * authorisation input (SCHEMA.md §8, Hop accounting).
    */
   uint32 hop_start = 9;
 
   /*
-   * Last byte of the node number of the node that should be used as the next hop in routing.
-   * Set by the firmware internally, clients are not supposed to set this.
+   * Last byte of the NodeNum this packet is meant for next: header next_hop, UCAST
+   * only. Set by the firmware; clients do not set it.
    */
   uint32 next_hop = 10;
 
   /*
-   * Last byte of the node number of the node that will relay/relayed this packet.
-   * Set by the firmware internally, clients are not supposed to set this.
+   * Last byte of the NodeNum that last transmitted this packet: header relay.
+   * Set by the firmware; clients do not set it.
    */
   uint32 relay_node = 11;
 
   /*
-   * The time this message was received by the esp32 (secs since 1970).
+   * The time this message was received by this node (secs since 1970).
    * Note: this field is _never_ sent on the radio link itself (to save space).
    * Explicit presence: firmware cannot always attach a trustworthy wall-clock timestamp at the
    * moment of reception - a node with no GPS and no phone connected yet has no time source at
@@ -288,7 +317,8 @@ message MeshPacket {
   TransportMechanism transport_mechanism = 18;
 
   /*
-   * The v3 header's options block, exactly as it appeared on air.
+   * The v3 header's options block, exactly as it appeared on air. Non-empty exactly
+   * when the header's flags.opt is set.
    *
    * Carried through opaquely so the phone API and MQTT deliver a packet's options
    * intact, including fields this build does not know. Encodes a HeaderOptions
@@ -296,4 +326,19 @@ message MeshPacket {
    * and defeats the point of the block.
    */
   bytes header_options = 19;
+
+  /*
+   * Header chan: the one-byte hash of the channel name and key, as carried on a BCAST
+   * frame. It picks the key a receiver tries, and it is all a receiver that cannot
+   * decode the packet, such as an MQTT consumer without the key, has to go on. Not
+   * meaningful on UCAST, which carries no channel.
+   */
+  uint32 channel_hash = 20;
+
+  /*
+   * The v3 header's path tail: one-byte NodeNum suffixes of the hops between `from`
+   * and relay_node, oldest first. Its length is max(0, hop_start - hop_limit - 1)
+   * when PACKET_RECORD_PATH is set, and it is empty when that flag is clear.
+   */
+  bytes path = 21;
 }

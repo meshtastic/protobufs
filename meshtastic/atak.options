@@ -1,26 +1,20 @@
-*Contact.callsign max_size:120
-*Contact.device_callsign max_size:120
-*Status.battery int_size:8
-*PLI.course int_size:16
 *GeoChat.message max_size:200
 *GeoChat.to max_size:120
 *GeoChat.to_callsign max_size:120
-*TAKPacket.detail max_size:220
-*TAKPacket.payload_variant anonymous_oneof:true
-*TAKPacketV2.cot_type_str max_size:32
-*TAKPacketV2.callsign max_size:120
-*TAKPacketV2.uid max_size:48
-*TAKPacketV2.device_callsign max_size:120
-*TAKPacketV2.tak_version max_size:64
-*TAKPacketV2.tak_device max_size:32
-*TAKPacketV2.tak_platform max_size:32
-*TAKPacketV2.tak_os max_size:16
-*TAKPacketV2.endpoint max_size:32
-*TAKPacketV2.phone max_size:20
-*TAKPacketV2.raw_detail max_size:220
-*TAKPacketV2.stale_seconds int_size:16
-*TAKPacketV2.battery int_size:8
-*TAKPacketV2.course int_size:16
+*TAKPacket.cot_type_str max_size:32
+*TAKPacket.callsign max_size:120
+*TAKPacket.uid max_size:48
+*TAKPacket.device_callsign max_size:120
+*TAKPacket.tak_version max_size:64
+*TAKPacket.tak_device max_size:32
+*TAKPacket.tak_platform max_size:32
+*TAKPacket.tak_os max_size:16
+*TAKPacket.endpoint max_size:32
+*TAKPacket.phone max_size:20
+*TAKPacket.raw_detail max_size:220
+*TAKPacket.stale_seconds int_size:16
+*TAKPacket.battery int_size:8
+*TAKPacket.course int_size:16
 *AircraftTrack.icao max_size:8
 *AircraftTrack.registration max_size:16
 *AircraftTrack.flight max_size:16
@@ -29,7 +23,7 @@
 *AircraftTrack.category max_size:4
 *AircraftTrack.cot_host_id max_size:64
 
-# --- Typed geometry payloads (v2 protocol extension) ---
+# --- Typed geometry payloads ---
 #
 # CotGeoPoint: sint32 deltas from the enclosing event's latitude_i/longitude_i.
 # For nearby vertices (telestrations, small rectangles) the varint+zigzag
@@ -63,7 +57,7 @@
 *DrawnShape.bullseye_uid_ref max_size:48
 
 # Marker pool sizing. Strings bounded tight to keep fixed pool small on
-# ESP32 nanopb. parent_uid matches existing TAKPacketV2.uid cap (48).
+# ESP32 nanopb. parent_uid matches existing TAKPacket.uid cap (48).
 # iconset fits "f7f71666-8b28-4b57-9fbb-e38e61d33b79/Google/hiker.png"
 # (~52 chars) with slack.
 *Marker.parent_uid max_size:48
@@ -86,7 +80,7 @@
 *Route.Link.callsign max_size:16
 *Route.Link.link_type int_size:8
 
-# GeoChat receipt extension. receipt_for_uid matches TAKPacketV2.uid caps.
+# GeoChat receipt extension. receipt_for_uid matches TAKPacket.uid caps.
 *GeoChat.receipt_for_uid max_size:48
 
 # CasevacReport pool sizing. All numeric fields are small (0..255 for
@@ -104,15 +98,15 @@
 *CasevacReport.zone_marker max_size:16
 *CasevacReport.frequency max_size:16
 
-# EmergencyAlert pool sizing. UIDs match TAKPacketV2.uid caps (48).
+# EmergencyAlert pool sizing. UIDs match TAKPacket.uid caps (48).
 *EmergencyAlert.authoring_uid max_size:48
 *EmergencyAlert.cancel_reference_uid max_size:48
 
 # TaskRequest pool sizing. All four strings are capped tight so the
 # worst-case wire size stays under the LoRa MTU with headroom. task_type
-# is a short category tag; target_uid/assignee_uid match TAKPacketV2.uid
-# conventions; note is the one user-entered field.
+# is a short category tag; target_uid/assignee_uid take the TAKPacket.uid
+# cap; note is the one user-entered field.
 *TaskRequest.task_type max_size:12
-*TaskRequest.target_uid max_size:32
-*TaskRequest.assignee_uid max_size:32
+*TaskRequest.target_uid max_size:48
+*TaskRequest.assignee_uid max_size:48
 *TaskRequest.note max_size:48

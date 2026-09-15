@@ -75,7 +75,12 @@ message Position {
   fixed32 time = 6;
 
   /*
-   * In meters above MSL (but see issue #359)
+   * Altitude above mean sea level, in meters.
+   *
+   * altitude, altitude_hae and altitude_geoidal_separation are three values of which
+   * any two give the third: HAE = MSL + separation. A position carries at most two of
+   * them, as the GPS reports them, and which ones are present tells the receiver what
+   * it has.
    */
   optional sint32 altitude = 7;
 
@@ -105,18 +110,22 @@ message Position {
 
   /*
    * Position Dilution of Precision, in 1/100 units.
-   * Sufficient for most cases; for higher precision scenarios send HDOP and VDOP
-   * instead, which makes this redundant (PDOP = sqrt(HDOP^2 + VDOP^2)).
+   *
+   * A position carries dilution of precision in one of two forms, or not at all, and
+   * which one depends on what the GPS chip reports: PDOP alone, or HDOP and VDOP. It
+   * is never both, since PDOP = sqrt(HDOP^2 + VDOP^2). A real DOP is at least 1.00, so
+   * 0 in any of the three means it was not sent.
    */
   uint32 PDOP = 12;
 
   /*
-   * HAE altitude in meters - can be used instead of MSL altitude
+   * Altitude above the WGS84 ellipsoid (HAE), in meters. See altitude for which of the
+   * three altitude values travel together.
    */
   optional sint32 altitude_hae = 13;
 
   /*
-   * Geoidal separation in meters
+   * Geoidal separation in meters, HAE minus MSL. See altitude.
    */
   optional sint32 altitude_geoidal_separation = 14;
 
@@ -139,12 +148,12 @@ message Position {
   uint32 fix_type = 17;
 
   /*
-   * Horizontal Dilution of Precision, in 1/100 units
+   * Horizontal Dilution of Precision, in 1/100 units. Sent with VDOP, never with PDOP.
    */
   uint32 HDOP = 18;
 
   /*
-   * Vertical Dilution of Precision, in 1/100 units
+   * Vertical Dilution of Precision, in 1/100 units. Sent with HDOP, never with PDOP.
    */
   uint32 VDOP = 19;
 
@@ -176,19 +185,13 @@ message Position {
 }
 
 /*
- * Broadcast when a newly powered mesh node wants to find a node num it can use.
- * Sent from the phone over bluetooth to set the user id for the owner of this node.
+ * A node's user details: names, hardware, role and key.
+ * Sent from the phone over bluetooth to set the owner of this node.
  * Also sent from nodes to each other when a new node signs on (so all clients can have this info).
+ * Carries no node identifier: the NodeNum of the node it describes is the packet's
+ * `from`, or the num of the record that holds it.
  */
 message User {
-  /*
-   * A globally unique ID string for this user.
-   * In the case of Signal that would mean +16504442323, for the default macaddr derived id it would be !<8 hexidecimal bytes>.
-   * Note: app developers are encouraged to also use the following standard
-   * node IDs "^all" (for broadcast), "^local" (for the locally connected node)
-   */
-  string id = 1;
-
   /*
    * A full name for this user, i.e. "Kevin Hester"
    * Limited to 24 bytes of UTF-8. Clients should enforce that in their UI; a
@@ -786,12 +789,12 @@ message Waypoint {
   uint32 locked_to = 5;
 
   /*
-   * Name of the waypoint - max 30 chars
+   * Name of the waypoint, limited to 29 bytes
    */
   string name = 6;
 
   /*
-   * Description of the waypoint - max 100 chars
+   * Description of the waypoint, limited to 99 bytes
    */
   string description = 7;
 
@@ -922,7 +925,7 @@ message NeighborInfo {
    * length byte per neighbour plus a tag on each field inside it, where the
    * columns pay the field framing once and nothing per edge. That is around a
    * third of the message at ten neighbours, and roughly twice as many edges in
-   * a 233-byte payload.
+   * one frame.
    *
    * A node's view of when it last heard a neighbour, and that neighbour's own
    * broadcast interval, belong to that node's table rather than to a message

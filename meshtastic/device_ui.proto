@@ -9,7 +9,10 @@ option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
 /*
- * Protobuf structures for device-ui persistency
+ * Protobuf structures for device-ui persistency: a storage container for the MUI, a
+ * separate client on the device API. The node persists it and hands it back through
+ * get_ui_config and store_ui_config, but only the MUI reads it, so a setting here is
+ * the MUI's own and not a duplicate of the node's config.
  */
 
 message DeviceUIConfig {

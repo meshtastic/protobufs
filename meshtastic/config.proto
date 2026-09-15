@@ -174,24 +174,14 @@ message PositionConfig {
     ALTITUDE = 0x0001;
 
     /*
-     * Altitude value is MSL
-     */
-    ALTITUDE_MSL = 0x0002;
-
-    /*
      * Include geoidal separation
      */
     GEOIDAL_SEPARATION = 0x0004;
 
     /*
-     * Include the DOP value ; PDOP used by default, see below
+     * Include dilution of precision as the GPS chip reports it: PDOP, or HDOP and VDOP
      */
     DOP = 0x0008;
-
-    /*
-     * If POS_DOP set, send separate HDOP / VDOP values instead of PDOP
-     */
-    HVDOP = 0x0010;
 
     /*
      * Include number of "satellites in view"
@@ -761,9 +751,9 @@ message LoRaConfig {
   RegionCode region = 7;
 
   /*
-   * Maximum number of hops. This can't be greater than 7.
-   * Default of 3
-   * Attempting to set a value > 7 results in the default
+   * Hop budget for packets this node originates: 0-15, the four bits of the v3
+   * header's hop_limit. Default of 3.
+   * Attempting to set a value above 15 results in the default.
    */
   uint32 hop_limit = 8;
 
@@ -795,13 +785,6 @@ message LoRaConfig {
    * Units are in Hz.
    */
   uint32 override_frequency = 11;
-
-  /*
-   * For testing it is useful sometimes to force a node to never listen to
-   * particular other nodes (simulating radio out of range). All nodenums listed
-   * in ignore_incoming will have packets they send dropped on receive (by router.cpp)
-   */
-  repeated fixed32 ignore_incoming = 12;
 
   /*
    * Set where LORA FEM is enabled, disabled, or not present
@@ -868,8 +851,9 @@ message SecurityConfig {
   }
 
   /*
-   * The public key of the user's device.
-   * Sent out to other nodes on the mesh to allow them to compute a shared secret key.
+   * The public key of this device, and the one stored copy of it: the owner and the
+   * node's own NodeDB entry do not store it. Sent to other nodes as User.public_key
+   * so they can compute a shared secret key.
    */
   bytes public_key = 1;
 

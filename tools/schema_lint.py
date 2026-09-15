@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the schema against the four rules SCHEMA.md states as invariants.
+"""Check the schema against six rules SCHEMA.md states as invariants.
 
 Each of these is a rule the documentation already claims, that protoc and buf
 lint cannot see, and that has been broken at least once without anyone noticing:
@@ -22,15 +22,23 @@ lint cannot see, and that has been broken at least once without anyone noticing:
   layering    nothing in the air layer imports the client layer, so a consumer
               that only decodes mesh traffic can compile the air layer alone.
 
+  indexed     a field indexed by an enum's values keeps up with the enum: an
+              array holds the highest value plus one, and a bitmask has a bit
+              for the highest value.
+
+  sections    the config section lists agree: enum value N, oneof tag N + 1
+              and stored field N + 1 name the same section, and a stored file's
+              other fields sit above every section tag.
+
 Usage:
     buf build -o descriptor.binpb
     python tools/schema_lint.py descriptor.binpb          # all rules
     python tools/schema_lint.py descriptor.binpb --rule signed
     python tools/schema_lint.py --list-allowed            # exemptions and why
 
-Exits non-zero on any violation. The signed and float rules need the
-descriptor; packed and layering read the .proto and .options files directly,
-since nanopb options are not in the descriptor buf emits.
+Exits non-zero on any violation. The signed, float, indexed and sections rules
+need the descriptor; packed, layering and indexed read the .proto and .options
+files directly, since nanopb options are not in the descriptor buf emits.
 """
 from __future__ import annotations
 
@@ -79,6 +87,24 @@ ALLOWED = {
         'lost - so a callback is the right field type. Client-facing, over the '
         'phone link, where the framing is not paid on air.',
 }
+
+# Fields indexed by an enum's values. An array holds one element per value, so its
+# max_count is the highest value plus one; a bitmask gives each value a bit, so the
+# highest value has to fit the field.
+INDEXED = (
+    ('api', 'LoRaRegionPresetMap.region_groups', 'meshtastic.RegionCode', 'array'),
+    ('api', 'LoRaPresetGroup.legal_presets', 'meshtastic.ModemPreset', 'bits'),
+    ('common', 'DeviceMetadata.excluded_modules', 'meshtastic.AdminMessage.ModuleConfigType', 'bits'),
+)
+
+# The config sections are listed three times: the enum that names a section in an
+# admin request, the oneof that carries one section, and the stored file that holds
+# them all. Enum value N, oneof tag N + 1 and stored field N + 1 are the same section.
+SECTIONS = (
+    ('meshtastic.AdminMessage.ConfigType', 'meshtastic.ConfigPayload', 'meshtastic.LocalConfig'),
+    ('meshtastic.AdminMessage.ModuleConfigType', 'meshtastic.ModuleConfigPayload',
+     'meshtastic.LocalModuleConfig'),
+)
 
 IMPORT = re.compile(r'^import "meshtastic/([a-z_0-9]+)\.proto";', re.M)
 REPEATED_FIELD = re.compile(r'^\s*repeated\s+(\w+)\s+(\w+)\s*=', re.M)
@@ -177,7 +203,87 @@ def check_layering(root):
     return out
 
 
-RULES = ('signed', 'float', 'packed', 'layering')
+def types_by_name(fds):
+    """Every message and enum in the set, keyed by full name."""
+    messages, enums = {}, {}
+
+    def visit(prefix, msgs, ens):
+        for e in ens:
+            enums[prefix + e.name] = e
+        for m in msgs:
+            messages[prefix + m.name] = m
+            visit(prefix + m.name + '.', m.nested_type, m.enum_type)
+
+    for file_pb in fds.file:
+        visit(file_pb.package + '.', file_pb.message_type, file_pb.enum_type)
+    return messages, enums
+
+
+def option_value(root, stem, key, name):
+    """The integer value of one nanopb option, or None when it is not set."""
+    path = os.path.join(root, 'meshtastic', stem + '.options')
+    if not os.path.exists(path):
+        return None
+    with open(path, encoding='utf-8') as fh:
+        m = re.search(r'^\*?%s\s.*?\b%s:(\d+)' % (re.escape(key), name), fh.read(), re.M)
+    return int(m.group(1)) if m else None
+
+
+def check_indexed(fds, root):
+    """A cap or bitmask indexed by an enum must cover the enum's highest value."""
+    _, enums = types_by_name(fds)
+    out = []
+    for stem, key, enum_name, kind in INDEXED:
+        where = stem + '.options'
+        if enum_name not in enums:
+            out.append(('indexed', where, key, '%s no longer exists.' % enum_name))
+            continue
+        top = max(v.number for v in enums[enum_name].value)
+        if kind == 'array':
+            count = option_value(root, stem, key, 'max_count')
+            if count != top + 1:
+                out.append(('indexed', where, key,
+                            'max_count is %s, but %s runs to %d, so it must be %d.'
+                            % (count, enum_name, top, top + 1)))
+        else:
+            width = option_value(root, stem, key, 'int_size') or 32
+            if top >= width:
+                out.append(('indexed', where, key,
+                            '%s runs to %d, past the %d bits of the field.'
+                            % (enum_name, top, width)))
+    return out
+
+
+def check_sections(fds):
+    """Enum value N, oneof tag N + 1 and stored field N + 1 name one section."""
+    messages, enums = types_by_name(fds)
+    out = []
+    for enum_name, payload_name, stored_name in SECTIONS:
+        values = {v.number for v in enums[enum_name].value}
+        top_tag = max(values) + 1
+        arms = {f.number: f for f in messages[payload_name].field}
+        for f in messages[stored_name].field:
+            where = '%s.%s' % (stored_name, f.name)
+            arm = arms.get(f.number)
+            if f.type == F.TYPE_MESSAGE:
+                if arm is None or arm.type_name != f.type_name:
+                    out.append(('sections', stored_name, where,
+                                'field %d is %s, but %s tag %d is %s.'
+                                % (f.number, f.type_name.lstrip('.'), payload_name, f.number,
+                                   arm.type_name.lstrip('.') if arm else 'unused')))
+            elif f.number <= top_tag:
+                out.append(('sections', stored_name, where,
+                            'field %d is not a section but sits within the section tags 1-%d.'
+                            % (f.number, top_tag)))
+        for arm in arms.values():
+            if arm.number - 1 not in values:
+                out.append(('sections', payload_name, '%s.%s' % (payload_name, arm.name),
+                            'tag %d has no %s value %d.' % (arm.number, enum_name, arm.number - 1)))
+    return out
+
+
+RULES = ('signed', 'float', 'packed', 'layering', 'indexed', 'sections')
+DESCRIPTOR_RULES = {'signed', 'float', 'indexed', 'sections'}
 
 
 def main() -> int:
@@ -199,15 +305,19 @@ def main() -> int:
     wanted = set(args.rule or RULES)
     findings = []
 
-    if wanted & {'signed', 'float'}:
+    if wanted & DESCRIPTOR_RULES:
         if not args.descriptor:
-            print('error: the signed and float rules need a descriptor set',
-                  file=sys.stderr)
+            print('error: the %s rules need a descriptor set'
+                  % ', '.join(sorted(wanted & DESCRIPTOR_RULES)), file=sys.stderr)
             return 2
         fds = descriptor_pb2.FileDescriptorSet()
         with open(args.descriptor, 'rb') as fh:
             fds.ParseFromString(fh.read())
         findings += [f for f in check_types(fds) if f[0] in wanted]
+        if 'indexed' in wanted:
+            findings += check_indexed(fds, args.root)
+        if 'sections' in wanted:
+            findings += check_sections(fds)
 
     if 'packed' in wanted:
         findings += check_packed(args.root)

@@ -215,7 +215,7 @@ message DetectionSensorConfig {
   /*
    * Friendly name used to format message sent to mesh
    * Example: A name "Motion" would result in a message "Motion detected"
-   * Maximum length of 20 characters
+   * Limited to 19 bytes
    */
   string name = 4;
 
@@ -572,7 +572,7 @@ message StoreForwardConfig {
   uint32 history_return_max = 3;
 
   /*
-   * Time window in seconds; only messages within this window will be returned in history requests
+   * Time window in minutes; only messages within this window will be returned in history requests
    */
   uint32 history_return_window = 4;
 }

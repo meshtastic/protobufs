@@ -56,19 +56,10 @@ message LoRaWANBridge {
     uint32 fsk_bitrate = 6;
 
     /*
-     * PHY payload, or its first part when chunk_count is 2.
+     * PHY payload. A packet too large for the room one frame leaves is fragmented by
+     * the v3 header (HeaderOptions.fragment), not by this message.
      */
     bytes payload = 7;
-
-    /*
-     * Groups this head with its continuation. 1 to 255, or 0 when not chunked.
-     */
-    uint32 payload_id = 8;
-
-    /*
-     * 0 when the frame fits one packet, otherwise 2.
-     */
-    uint32 chunk_count = 9;
   }
 
   /*
@@ -123,40 +114,10 @@ message LoRaWANBridge {
     uint32 request_id = 6;
 
     /*
-     * PHY payload, or its first part when chunk_count is 2.
+     * PHY payload. A packet too large for the room one frame leaves is fragmented by
+     * the v3 header (HeaderOptions.fragment), not by this message.
      */
     bytes payload = 7;
-
-    /*
-     * Groups this head with its continuation. 1 to 255, or 0 when not chunked.
-     */
-    uint32 payload_id = 8;
-
-    /*
-     * 0 when the frame fits one packet, otherwise 2.
-     */
-    uint32 chunk_count = 9;
-  }
-
-  /*
-   * The remainder of a chunked Uplink or Downlink. Carries no RF metadata.
-   */
-  message PayloadChunk {
-    /*
-     * Matches payload_id in the head message. Reassembly keys on the sending
-     * node and this value.
-     */
-    uint32 payload_id = 1;
-
-    /*
-     * Position of this chunk. Always 1.
-     */
-    uint32 chunk_index = 2;
-
-    /*
-     * This part of the PHY payload.
-     */
-    bytes payload_chunk = 3;
   }
 
   /*
@@ -209,6 +170,5 @@ message LoRaWANBridge {
     Uplink uplink = 1;
     Downlink downlink = 2;
     TxResult tx_result = 3;
-    PayloadChunk chunk = 4;
   }
 }

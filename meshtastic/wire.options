@@ -11,16 +11,19 @@
 *User.long_name max_size:25
 *User.short_name max_size:5
 
-*RouteDiscovery.route max_count:8
-*RouteDiscovery.snr_towards max_count:8
+# One route entry per relay, at most the 15 hops a four-bit hop_start allows. Each SNR
+# list holds one more, for the final hop into the destination.
+*RouteDiscovery.route max_count:15
+*RouteDiscovery.snr_towards max_count:16
 *RouteDiscovery.snr_towards int_size:8
-*RouteDiscovery.route_back max_count:8
-*RouteDiscovery.snr_back max_count:8
+*RouteDiscovery.route_back max_count:15
+*RouteDiscovery.snr_back max_count:16
 *RouteDiscovery.snr_back int_size:8
 
-# note: this payload length is ONLY the bytes that are sent inside of the Data protobuf (excluding protobuf overhead). The 16 byte header is
-# outside of this envelope
-*Data.payload max_size:233
+# One frame's worth: no LoRa frame is longer than 256 bytes. The room a frame
+# actually leaves for Data depends on the header, the tag and the path, and firmware
+# enforces it per packet (SCHEMA.md §8, Payload room).
+*Data.payload max_size:256
 *Data.bitfield int_size:8
 *Data.xeddsa_signature max_size:64
 
@@ -41,7 +44,7 @@
 *StoreForwardPlusPlus.message_hash max_size:32
 *StoreForwardPlusPlus.commit_hash max_size:32
 *StoreForwardPlusPlus.root_hash max_size:32
-*StoreForwardPlusPlus.message max_size:240
+*StoreForwardPlusPlus.message max_size:256
 
 *RemoteShell.payload max_size:200
 *RemoteShell.op int_size:8
@@ -55,8 +58,8 @@
 
 *StatusMessage.status max_size:80
 
-#This value may want to be a few bytes smaller to compensate for the parent fields.
-*Compressed.data max_size:233
+# One frame's worth, as Data.payload.
+*Compressed.data max_size:256
 
 *Waypoint.name         max_size:30
 *Waypoint.description  max_size:100
@@ -74,5 +77,3 @@
 *MqttClientProxyMessage.text max_size:435
 *MqttClientProxyMessage.payload_variant anonymous_oneof:true
 
-# ext_len is a single byte in the on-air header, so the encoded block cannot exceed
-# 255; keeping it one byte keeps the relay bounds check a single comparison.

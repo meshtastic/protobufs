@@ -46,7 +46,8 @@ import time as _time
 HERE = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_PROTO = os.path.join(HERE, '..', 'meshtastic', 'telemetry.proto')
 
-# Data.payload is capped at this many bytes in both the 2.x and 3.0 schemas.
+# A sizing yardstick for the report, not a limit: the room a v3 frame leaves for
+# Data is computed per packet (SCHEMA.md §8, Payload room).
 DATA_PAYLOAD_LEN = 233
 
 # The port the test traffic travels on. Unassigned in both schemas; not for use

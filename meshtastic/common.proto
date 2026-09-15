@@ -231,7 +231,7 @@ enum ModemPreset {
    */
   MODEM_NARROW_SLOW = 13;
   /*
-   * Preset optimized for compliance with Amateur Radio restrictions with 20 kHz bandwidth.
+   * Preset optimized for compliance with Amateur Radio restrictions: a 15.6 kHz LoRa slot within a 20 kHz raster.
    * Many regions limit data transmission bandwidth in lower amateur bands (2 Meter).
    * Note: TCXO with tight tolerances (+/-5 ppm or better) is *absolutely required* at these narrow bandwidths.
    * Only compatible with SX127x and SX126x chipsets.
@@ -239,7 +239,7 @@ enum ModemPreset {
    */
   MODEM_TINY_FAST = 14;
   /*
-   * Preset optimized for compliance with Amateur Radio restrictions with 20 kHz bandwidth.
+   * Preset optimized for compliance with Amateur Radio restrictions: a 15.6 kHz LoRa slot within a 20 kHz raster.
    * Many regions limit data transmission bandwidth in lower amateur bands (2 Meter).
    * Note: TCXO with tight tolerances (+/-5 ppm or better) is *absolutely required* at these narrow bandwidths.
    * Only compatible with SX127x and SX126x chipsets.
@@ -395,23 +395,6 @@ enum FirmwareEdition {
 }
 
 /*
- * Shared constants between device and phone
- */
-enum Constants {
-  /*
-   * First enum must be zero, and we are just using this enum to
-   * pass int constants between two very different environments
-   */
-  ZERO = 0;
-
-  /*
-   * Maximum payload length for Data protobuf (excluding protobuf overhead).
-   * The 16 byte header is outside of this envelope.
-   */
-  DATA_PAYLOAD_LEN = 233;
-}
-
-/*
  * Device metadata response
  */
 message DeviceMetadata {
@@ -436,7 +419,7 @@ message DeviceMetadata {
     CAPABILITY_CAN_SHUTDOWN = 0x0001;
     /* Has native wifi */
     CAPABILITY_HAS_WIFI = 0x0002;
-    /* Has native bluetooth */
+    /* Has a working Bluetooth stack in this build */
     CAPABILITY_HAS_BLUETOOTH = 0x0004;
     /* Has an ethernet peripheral */
     CAPABILITY_HAS_ETHERNET = 0x0008;
@@ -470,95 +453,11 @@ message DeviceMetadata {
   uint32 hw_model = 6;
 
   /*
-   * Modules excluded from this device's configuration:
-   * a bitwise OR of ExcludedModules values.
+   * Modules compiled out of this build. Bit N is set when the module whose
+   * AdminMessage.ModuleConfigType value is N is excluded, so a module's mask is
+   * 1 << ModuleConfigType. The Bluetooth and network config sections are not modules
+   * and have no bit: a client hides them when CAPABILITY_HAS_BLUETOOTH is clear, or
+   * when CAPABILITY_HAS_WIFI and CAPABILITY_HAS_ETHERNET are both clear.
    */
   uint32 excluded_modules = 7;
-}
-
-/*
- * Enum for modules excluded from a device's configuration.
- * Each value represents a ModuleConfigType that can be toggled as excluded
- * by setting its corresponding bit in the `excluded_modules` bitmask field.
- */
-enum ExcludedModules {
-  /*
-   * Default value of 0 indicates no modules are excluded.
-   */
-  EXCLUDED_NONE = 0x0000;
-
-  /*
-   * MQTT module
-   */
-  MQTT_CONFIG = 0x0001;
-
-  /*
-   * Serial module
-   */
-  SERIAL_CONFIG = 0x0002;
-
-  /*
-   * External Notification module
-   */
-  EXTNOTIF_CONFIG = 0x0004;
-
-  /*
-   * Store and Forward module
-   */
-  STOREFORWARD_CONFIG = 0x0008;
-
-  /*
-   * Range Test module
-   */
-  RANGETEST_CONFIG = 0x0010;
-
-  /*
-   * Telemetry module
-   */
-  TELEMETRY_CONFIG = 0x0020;
-
-  /*
-   * Canned Message module
-   */
-  CANNEDMSG_CONFIG = 0x0040;
-
-  /*
-   * Audio module
-   */
-  AUDIO_CONFIG = 0x0080;
-
-  /*
-   * Remote Hardware module
-   */
-  REMOTEHARDWARE_CONFIG = 0x0100;
-
-  /*
-   * Neighbor Info module
-   */
-  NEIGHBORINFO_CONFIG = 0x0200;
-
-  /*
-   * Ambient Lighting module
-   */
-  AMBIENTLIGHTING_CONFIG = 0x0400;
-
-  /*
-   * Detection Sensor module
-   */
-  DETECTIONSENSOR_CONFIG = 0x0800;
-
-  /*
-   * Paxcounter module
-   */
-  PAXCOUNTER_CONFIG = 0x1000;
-
-  /*
-   * Bluetooth config (not technically a module, but used to indicate bluetooth capabilities)
-   */
-  BLUETOOTH_CONFIG = 0x2000;
-
-  /*
-   * Network config (not technically a module, but used to indicate network capabilities)
-   */
-  NETWORK_CONFIG = 0x4000;
 }

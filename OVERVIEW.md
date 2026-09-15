@@ -199,7 +199,7 @@ map and array framing costs about a byte per message against a well-tuned protob
 it is not a density win, and no CBOR toolchain generates typed C structs the way nanopb
 does. **FlatBuffers and Cap'n Proto** are larger on the wire, not smaller - they
 serialise defaults for zero-copy access, which is the right trade at high bandwidth and
-the wrong one inside a 233-byte payload. **A bespoke bit-packed format** reaches maximum
+the wrong one inside a single LoRa frame. **A bespoke bit-packed format** reaches maximum
 density and gives up schema evolution entirely, and every client - firmware, the Go
 services, the Python CLI, iOS, Android, the web - reimplements the bit-fiddling and
 keeps it in step by hand.
@@ -211,8 +211,8 @@ both already travel that way. A message whose schema is stable and whose every b
 matters can take a dedicated inner encoding inside `Data.payload` without touching the
 frame or breaking a single client.
 
-For flash storage the question barely arises. Flash is megabytes against a 233-byte air
-budget, schema evolution is what makes a firmware update survive a config change, and
+For flash storage the question barely arises. Flash is megabytes against a 256-byte
+LoRa frame, schema evolution is what makes a firmware update survive a config change, and
 nanopb decodes straight into typed C structs. The wins there were structural, and they
 are §1.
 

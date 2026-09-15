@@ -31,14 +31,14 @@ f.set_is_muted();
 A field is a bitfield when its own comment says `bitwise OR of <Enum> values`. That
 marker is prose already written for human readers, so nothing extra is maintained,
 and it naturally skips a `uint32` of bits that is *not* a set of named booleans -
-`LoRaPresetGroup.legal_presets` indexes bits by `ModemPreset` ordinal, and
-`HardwareMessage.gpio_mask` by GPIO pin. Neither says the phrase, so neither is
-picked up.
+`LoRaPresetGroup.legal_presets` indexes bits by `ModemPreset` ordinal,
+`DeviceMetadata.excluded_modules` by `ModuleConfigType` ordinal, and
+`HardwareMessage.gpio_mask` by GPIO pin. None says the phrase, so none is picked up.
 
 The enum is resolved the way protoc resolves it: innermost scope outwards. That
-covers the nested case, a file-scope enum like `ExcludedModules`, and a shared one
-like `NodeFlags`, which `NodeInfo.flags` and `NodeInfoLite.bitfield` both point at so
-the stored and client-facing words cannot drift.
+covers the nested case and a file-scope enum like `NodeFlags`, which `NodeInfo.flags`
+and `NodeInfoLite.bitfield` both point at so the stored and client-facing words
+cannot drift.
 
 ### What it checks
 
@@ -86,7 +86,7 @@ read the descriptor - nothing at firmware build time does.
 
 ## Schema rules
 
-`schema_lint.py` checks four rules the schema reference states as invariants and that
+`schema_lint.py` checks six rules the schema reference states as invariants and that
 nothing else enforces. Each has been broken at least once without anyone noticing,
 because a violation of any of them builds and lints clean.
 
@@ -103,9 +103,12 @@ python tools/schema_lint.py --list-allowed                   # exemptions, with 
 | `float` | a `float`/`double`. Four fixed bytes on the wire where a scaled integer is one to three, and software floating point on an MCU without an FPU. |
 | `packed` | a `repeated` scalar with no `max_count` in the matching `.options`. nanopb honours proto3 packing only for a bounded field; without the bound it emits a callback that writes a tag per element while the `.proto` still reads `repeated`. |
 | `layering` | an air-layer file importing the client layer, which is what lets an MQTT bridge or a map backend compile the air layer alone. |
+| `indexed` | a cap or bitmask indexed by an enum that the enum has outgrown. `LoRaRegionPresetMap.region_groups` holds the highest `RegionCode` plus one, and the highest `ModemPreset` and `ModuleConfigType` must fit the bitmasks they index. |
+| `sections` | config section lists that disagree. `AdminMessage.ConfigType` value N, `ConfigPayload` tag N + 1 and `LocalConfig` field N + 1 name one section, likewise for module config, and a stored file's other fields sit above every section tag. |
 
-The first two read the descriptor; the last two read the `.proto` and `.options` files,
-since nanopb options do not reach the descriptor buf emits.
+`signed`, `float` and `sections` read the descriptor; `packed` and `layering` read the
+`.proto` and `.options` files, since nanopb options do not reach the descriptor buf
+emits; `indexed` reads both.
 
 Exemptions live in `ALLOWED` and carry their reason, so an entry is a decision on the
 record rather than a way to quieten the rule. There are two: `Nau7802Config.calibrationFactor`
@@ -157,13 +160,12 @@ devices:
   - id: 0x01
     slug: "ACME_TRACKER"
     name: "Tracker"
-    display: "Acme Tracker"   # optional
 ```
 
 Vendor ids are `0x00`-`0x3F` and device ids `0x01`-`0xFE`; `0x00` and `0xFF` are
 reserved under every vendor (SCHEMA.md §6). Ids and slugs are unique across all files,
 and vendor `0x00` appears only in `00-legacy.yaml`. An allocation is permanent: against
-`--base`, an id may not disappear or change its slug, while its name and display may.
+`--base`, an id may not disappear or change its slug, while its name may. A client displays the vendor name and the device name together; vendor `0x00` is not a brand, so its device names are complete.
 Each hardware registry's `revision` is its entry count.
 
 **Regions and presets** name their `RegionCode` or `ModemPreset` without the prefix.
@@ -171,12 +173,12 @@ The generator reads both enums from `common.proto`, so a name the schema lacks i
 rejected.
 
 `regions.yaml` holds four tables, as firmware does: a region refers to a profile, a
-profile to a preset list, and a swap group lists regions that share a band. A fact is
+profile to a preset list, and a swap group lists regions a node moves between by preset. A fact is
 stated once, and the generator rejects anything that would state one twice: two
 identical preset lists or profiles, a list or profile nothing refers to, a router duty
 cycle equal to the ordinary one. It checks the tables against each other as well: a
 default preset belongs to its profile's list, every listed preset has an entry in
-`modem_presets.yaml`, a 2.4 GHz region permits only presets with a wide bandwidth, and
+`modem_presets.yaml`, a wide LoRa region permits only presets with a wide bandwidth, and
 the members of a swap group permit disjoint presets.
 
 Fields keep integer units (MHz x100, percent, kHz): a value firmware holds as a

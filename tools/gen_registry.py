@@ -183,7 +183,7 @@ def build_hardware(files, errors):
             continue
         for index, device in enumerate(doc['devices']):
             dwhere = '%s devices[%d]' % (where, index)
-            if not exact_keys(errors, dwhere, device, ('id', 'slug', 'name'), ('display',)):
+            if not exact_keys(errors, dwhere, device, ('id', 'slug', 'name')):
                 continue
             did, dslug = device['id'], device['slug']
             if not is_int(did) or not DEVICE_MIN <= did <= DEVICE_MAX:
@@ -202,8 +202,6 @@ def build_hardware(files, errors):
             packed_ids[packed], device_slugs[dslug] = dslug, '0x%04X' % packed
             entry = {'vendor_id': vid, 'device_id': did, 'slug': dslug,
                      'name': text(errors, dwhere, device['name'], 'name')}
-            if 'display' in device:
-                entry['display'] = text(errors, dwhere, device['display'], 'display')
             devices.append(entry)
 
     vendors.sort(key=lambda e: e['vendor_id'])

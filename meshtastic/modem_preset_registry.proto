@@ -42,9 +42,9 @@ message ModemPresetInfo {
   uint32 bandwidth_khz = 3;
 
   /*
-   * Bandwidth in kHz in a 2.4 GHz region (RegionInfo.wide_lora), rounded down:
-   * 812.5 kHz is 812. 0 = the preset has no 2.4 GHz form, and no such region
-   * permits it.
+   * Bandwidth in kHz in a wide LoRa region (RegionInfo.wide_lora, above 1 GHz),
+   * rounded down: 812.5 kHz is 812. 0 = the preset has no wide form, and no wide
+   * region permits it.
    */
   uint32 wide_bandwidth_khz = 4;
 

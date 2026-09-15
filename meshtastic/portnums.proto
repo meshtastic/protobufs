@@ -176,7 +176,7 @@ enum PortNum {
    * Provides a hardware serial interface to send and receive from the Meshtastic network.
    * Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic
    * network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network.
-   * Maximum packet size of 240 bytes.
+   * A packet carries at most the room one frame leaves (SCHEMA.md §8, Payload room).
    * Module is disabled by default can be turned on by setting SERIAL_MODULE_ENABLED = 1 in SerialPlugh.cpp.
    * ENCODING: binary undefined
    */
@@ -234,12 +234,6 @@ enum PortNum {
   NEIGHBORINFO_APP = 71;
 
   /*
-   * ATAK Plugin
-   * Portnum for payloads from the official Meshtastic ATAK plugin
-   */
-  ATAK_PLUGIN = 72;
-
-  /*
    * Provides unencrypted information about a node for consumption by a map via MQTT
    */
   MAP_REPORT_APP = 73;
@@ -269,11 +263,12 @@ enum PortNum {
   CAYENNE_APP = 77;
 
   /*
-   * ATAK Plugin V2
-   * Portnum for payloads from the official Meshtastic ATAK plugin using
-   * TAKPacketV2 with zstd dictionary compression.
+   * ATAK Plugin
+   * Cursor on Target events from the Meshtastic ATAK plugin, the apps and TAK tracker
+   * nodes: a flags byte, then a TAKPacket (atak.proto).
+   * ENCODING: Protobuf, optionally zstd dictionary-compressed
    */
-  ATAK_PLUGIN_V2 = 78;
+  ATAK_PLUGIN = 78;
 
   /* signed firmware updates over lora.
    *

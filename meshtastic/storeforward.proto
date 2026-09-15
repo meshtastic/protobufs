@@ -161,7 +161,7 @@ message StoreAndForward {
     uint32 history_messages = 1;
 
     /*
-     * The window of messages that was used to filter the history client requested
+     * The window, in minutes, that was used to filter the history the client requested
      */
     uint32 window = 2;
 

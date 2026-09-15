@@ -123,6 +123,17 @@ phone or a web app can read without knowing the encoding rules on the other. One
 cannot do both, which is why each pair exists. The node database follows the same rule,
 stored in its compact form and served in one a client can parse directly.
 
+**A fact is stored once and may be sent from anywhere.** Duplication is judged by what
+each copy is used for, not by its type. A message written to flash or kept by a client is
+storage; one that travels over the air, the phone link, MQTT or an admin request is
+processing, and is filled from the stored copy when it is sent. Two stored copies of one
+fact are a duplicate, because they drift and one of them has to lose. Copies in
+processing messages are not. The same type is often both: `User` is stored as
+`DeviceState.owner` and sent in a `NODEINFO_APP` packet, inside `NodeInfo`, in
+`set_owner` and in `SharedContact`, so the question is asked of each use. `DeviceMetadata`
+is never stored by the node, and the node's public key is stored only in `SecurityConfig`
+although `User` sends it.
+
 ### What to compile
 
 | building | files |
@@ -301,8 +312,9 @@ reading the quantities it does understand.
 **A single sample** - the ordinary live broadcast - has one entry per column, no
 deltas, no times, no bitmap. It reads as plain values.
 
-**Sizing.** `keys` caps at 16, `time_deltas` and `present` at 24, `values` at 64. Those
-are independent to nanopb but not to the encoder: `values` is the product, so 16 columns
+**Sizing.** `keys` caps at 16 and `values` at 64, and a batch at 24 samples: `present`
+holds 24 bitmaps and `time_deltas` 23 entries, since the first sample's time is
+`Telemetry.time`. Those are independent to nanopb but not to the encoder: `values` is the product, so 16 columns
 caps the batch at 4 samples and 24 samples caps it at 2 columns. An encoder that fills
 both axes loses readings off the end of `values` without an error. Check the product.
 
@@ -330,8 +342,8 @@ key, so it is uniformly distributed over 32 bits: 15 in 16 land above 2²⁸ and
 full five varint bytes, against a flat four for `fixed32`. There is no low-magnitude
 population to make a varint pay, and never will be. `RouteDiscovery.route` was already
 right; the rest now match - `NeighborInfo.node_id`, `last_sent_by_id` and
-`neighbor_ids`, `SharedContact.node_num`, `NodeRemoteHardwarePin.node_num`,
-`LoRaConfig.ignore_incoming`, and the five `num` fields in the node database. The last of those is per stored node,
+`neighbor_ids`, `SharedContact.node_num`, `NodeRemoteHardwarePin.node_num`, and the
+five `num` fields in the node database. The last of those is per stored node,
 so it is flash rather than airtime.
 
 `next_hop` and `relay_node` stay `uint32`: they carry the last byte of a NodeNum, not
@@ -421,8 +433,9 @@ The header is split by what the AEAD's additional authenticated data covers.
                                                                         one byte per hop
 ```
 
-Which of `to` and `chan` are present is what the profile selects. `opt` is absent when
-its length byte is zero, and is a length-prefixed `HeaderOptions` when it is not.
+Which of `to` and `chan` are present is what the profile selects. `opt` is present when
+`flags.opt` is set: a length byte, then that many bytes of `HeaderOptions`. A set bit
+with a zero length is malformed.
 
 **The split is not byte-aligned, and the covered span is not wholly immutable.** `ctrl`
 and `flags` each carry bits a relay rewrites. Those bits are canonicalised to zero
@@ -679,7 +692,7 @@ with the nanopb already in the tree:
 
 ```proto
 message HeaderOptions {
-  /* Fragmentation state, packed as msg_id(8) | index(4) | total(4). */
+  /* Fragmentation state, packed as msg_id(8) | index(3) | total(3). */
   uint32 fragment = 1;
 }
 ```
@@ -732,6 +745,12 @@ out identical - not with a comment.
 `MeshPacket.header_options` carries the encoded block through to the phone API and MQTT so
 a packet's options survive intact, including fields the local build does not know.
 
+**`MeshPacket` is the decoded form of a `BCAST` or `UCAST` frame** and is never encoded
+onto the radio link; `packet.proto` maps each header field to its counterpart. Its flags
+keep the header's bit positions, the header's `chan` is `channel_hash` rather than the
+local `channel` index, and the tail is `path`. `MINI` and `EXT` frames have no
+`MeshPacket` form.
+
 **Fragmentation** is `HeaderOptions.fragment`, packed `msg_id(8) | index(3) | total(3)`.
 Endpoint-only; relays treat fragments as independent packets. `total` travels on every
 fragment so a receiver that gets fragment 3 first can size its buffer. There is no new
@@ -754,6 +773,19 @@ Delivery probability binds long before the field width does, which is also why
 fragmentation ships off by default and opts in per portnum. The byte overhead is ~12%;
 the arrival odds are what kill you.
 
+### Payload room
+
+A LoRa frame is at most 256 bytes, and the room left for the encoded `Data` comes out
+of that from both ends. The front gives up the core, 5, 12 or 16 bytes by profile, and
+the options block; the back gives up the AEAD tag and the path tail, one byte per hop
+recorded. Inside `Data`, an XEdDSA signature takes its share. The room therefore varies
+with the profile, the options, the hops taken and whether the payload is signed, so
+firmware computes it for each packet: a payload that does not fit is fragmented
+(`HeaderOptions.fragment`) or refused.
+
+**No schema bound states a payload budget.** A buffer that holds one frame's worth of
+payload is capped at the frame, 256 bytes, and the enforcement lives in code.
+
 ---
 
 ## 9. Tooling
@@ -763,9 +795,10 @@ validates every mask and generates header-only C++ accessors. CI runs the valida
 half on every pull request; header emission belongs downstream in firmware, which
 vendors this repo as a submodule. See `tools/README.md`.
 
-`tools/schema_lint.py` checks four of the rules stated above that nothing else can
-see: no plain `int32`/`int64` (§4), no `float`/`double` (§4), a `max_count` on every
-`repeated` scalar (§5), and no air-layer file importing the client layer (§1). A
+`tools/schema_lint.py` checks six rules that buf cannot see: no plain `int32`/`int64`
+(§4), no `float`/`double` (§4), a `max_count` on every `repeated` scalar (§5), no
+air-layer file importing the client layer (§1), no cap or bitmask indexed by an enum
+that the enum has outgrown, and one numbering across the config section lists. A
 violation of any of them builds and lints clean, which is why each has been introduced
 at least once. It runs in the same CI job as the mask validation, and its two
 exemptions carry their reasons in the source.
@@ -803,6 +836,9 @@ Open work, and decisions deliberately not yet made.
 
 **Deferred by scope:**
 
+- **`MINI` frames have no `MeshPacket` form.** A `MINI` frame carries no `from`, `id` or
+  `to`, and nothing in `MeshPacket` holds its nonce, so the phone API and MQTT cannot
+  deliver one. A `MINI` deployment needs a decoded representation of its own.
 - **Header profile 3.** `EXT`'s framing and forwarding rule are fixed in §8; the
   message that goes in its block is not defined, and neither is the hash used for
   duplicate suppression. Its `CORE_LEN` entry maps to a drop until both exist.
@@ -816,7 +852,7 @@ Open work, and decisions deliberately not yet made.
 - **Fragmentation off by default, opt-in per portnum.** §8 states the policy; nothing
   implements the gate.
 
-**Firmware work the schema assumes:**
+**Firmware work the schema assumes**, named against the 2.8 firmware, the reference until a 3.0 port exists:
 
 - **`DeviceState` is written on configuration changes only.** Nothing in the message
   changes per packet, so a deep sleep is not a reason to rewrite it. Firmware that
@@ -829,7 +865,7 @@ Open work, and decisions deliberately not yet made.
 - **Hop exhaustion has to stop rebroadcasting rather than zero the budget.**
   `shouldExhaustHops` in the traffic management module sets `hop_limit = 0` in one
   step while appending a single path byte, which breaks
-  `path length == hop_start - hop_limit` and makes the frame undecodable downstream.
+  `path length == max(0, hops taken - 1)` and makes the frame undecodable downstream.
   Dropping the packet instead achieves the same end - the packet stops here - without a
   wire inconsistency. The favourite router-to-router path that skips the decrement is
   fine as it stands, since it appends nothing either.

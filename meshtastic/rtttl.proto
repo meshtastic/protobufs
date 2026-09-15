@@ -9,7 +9,7 @@ option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
 /*
- * Canned message module configuration.
+ * Ringtone module configuration.
  */
 message RTTTLConfig {
   /*

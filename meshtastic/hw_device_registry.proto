@@ -36,11 +36,12 @@ message HwDevice {
   /* Device ID within the vendor (0x01-0xFE; 0x00 and 0xFF are reserved) */
   uint32 device_id = 2;
 
-  /* Device name, e.g. "Lora V4", "T-Beam Supreme" */
+  /*
+   * Device name as the vendor gives it, e.g. "Lora V4", "T-Beam Supreme". A client
+   * displays it after HwVendor.name; there is no stored display string. Vendor 0x00
+   * is not a brand, so its device names are complete, e.g. "LILYGO T-Beam".
+   */
   string name = 3;
-
-  /* Optional pre-formatted display string, e.g. "Heltec Lora V4" */
-  string display = 4;
 
   /*
    * Stable identifier, upper-case words joined by '_', e.g. "HELTEC_V3". Firmware

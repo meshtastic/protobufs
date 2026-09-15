@@ -9,7 +9,7 @@
 # SCHEMA.md section 10.
 *ChannelFile.channels max_count:16
 
-*DeviceState.node_remote_hardware_pins max_count:12
+*DeviceState.node_remote_hardware_pins max_count:16
 
 *NodeInfoLite.channel int_size:8
 *NodeInfoLite.hops_away int_size:8
@@ -24,8 +24,6 @@
 # it is the packed (vendor_id << 8) | device_id value, so it spans 16 bits.
 *NodeInfoLite.hw_model int_size:16
 *NodeInfoLite.role int_size:8
-# NodeFlags reaches bit 10 (NODE_FLAG_HAS_SNR), so this needs 16 bits. It was
-# pinned to 8 when the field held only two flags; the upstream flattening grew it
-# past a byte.
+# NodeFlags (common.proto) reaches bit 11, NODE_FLAG_HEARD_ON_CURRENT_LORA, so 16 bits.
 *NodeInfoLite.bitfield int_size:16
 *PositionLite.precision_bits int_size:8

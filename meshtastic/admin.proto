@@ -31,7 +31,9 @@ message AdminMessage {
   bytes session_passkey = 1;
 
   /*
-   * Identifies which device configuration block to get or set
+   * Identifies which device configuration block to get or set. Value N is the section
+   * ConfigPayload carries at tag N + 1 and LocalConfig stores at field N + 1;
+   * schema_lint's sections rule checks that the three lists agree.
    */
   enum ConfigType {
     /*
@@ -86,7 +88,9 @@ message AdminMessage {
   }
 
   /*
-   * Identifies which module configuration block to get or set
+   * Identifies which module configuration block to get or set. Value N is the section
+   * ModuleConfigPayload carries at tag N + 1 and LocalModuleConfig stores at field
+   * N + 1; schema_lint's sections rule checks that the three lists agree.
    */
   enum ModuleConfigType {
     /*
@@ -364,7 +368,8 @@ message AdminMessage {
     InputEvent send_input_event = 27;
 
     /*
-     * Set the owner for this node
+     * Set the owner for this node. public_key is ignored: the node's key is set
+     * through SecurityConfig.
      */
     User set_owner = 28;
 

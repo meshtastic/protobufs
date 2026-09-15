@@ -20,7 +20,10 @@ message XModem {
     NUL = 0;
     /* Start of Header (128-byte data block) */
     SOH = 1;
-    /* Start of Text (1024-byte data block) */
+    /*
+     * Start of Text: a 1024-byte block in XMODEM-1K. Handled as SOH, and limited to
+     * the same 128-byte buffer.
+     */
     STX = 2;
     /* End of Transmission */
     EOT = 4;

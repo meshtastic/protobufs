@@ -23,12 +23,12 @@ option swift_prefix = "";
  *   RegionProfile    slot layout, audio, licensing,
  *                    throttles, default preset                -> one ModemPresetList
  *   ModemPresetList  the presets a profile permits            -> ModemPreset values
- *   RegionSwapGroup  regions sharing one band                 -> RegionCode values
+ *   RegionSwapGroup  regions a preset moves a node between    -> RegionCode values
  *
  * Many regions share one profile, and profiles can share one preset list: NARROW
- * and HAM_100KHZ permit the same presets and differ in licensing. Whatever follows
- * from the tables is not stored, such as a preset being reachable only by licensed
- * operators, or the presets a swap group offers.
+ * and HAM_100KHZ permit the same presets and differ in licensing, padding and
+ * audio. Whatever follows from the tables is not stored, such as a preset being
+ * reachable only by licensed operators, or the presets a swap group offers.
  *
  * The radio parameters of each preset are in modem_preset_registry.proto.
  *
@@ -75,8 +75,11 @@ message RegionInfo {
   bool frequency_switching = 8;
 
   /*
-   * Whether this is a 2.4 GHz region. It needs a wide-capable radio, and its presets
-   * use their wide_bandwidth_khz.
+   * Whether this region uses wide LoRa. The boundary is 1 GHz: narrow LoRa is sub-GHz,
+   * wide LoRa above it, and newer chips reach 6 GHz. A wide region needs a
+   * wide-capable radio, and its presets use their wide_bandwidth_khz. Kept as its own
+   * field rather than read from the frequency range, because frequency mixing, or
+   * tuning a wideband transmitter, can open ranges where the band does not decide it.
    */
   bool wide_lora = 9;
 
@@ -142,9 +145,14 @@ message ModemPresetList {
 }
 
 /*
- * Regions that share one band and permit mutually exclusive preset lists. Selecting a
- * preset that only a sibling permits switches the node to that sibling region, so a
- * client offers the union of the members' presets in each of them.
+ * EU short-range device regions a node moves between by preset. Members permit
+ * mutually exclusive preset lists: selecting a preset that only a sibling permits
+ * switches the node to that sibling region, so a client offers the union of the
+ * members' presets in each of them.
+ *
+ * Members need not share a frequency range. EU_868 and EU_N_868 overlap, while
+ * EU_866 is a bespoke RFID band that overlaps neither. EU_874 and EU_917 follow
+ * the same pattern if they are allocated.
  */
 message RegionSwapGroup {
   /* The member regions */
