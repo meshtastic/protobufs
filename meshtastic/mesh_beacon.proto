@@ -19,15 +19,19 @@ option swift_prefix = "";
  */
 message MeshBeacon {
   /*
-   * Human-readable beacon message. Max 100 bytes enforced by firmware on send.
+   * Human-readable beacon message. Max 60 bytes enforced by firmware on send.
    */
   string message = 1;
 
   /*
    * Optional channel (name + PSK) being advertised to listening clients.
    * A client app may offer to switch the user to this channel; firmware never applies it automatically.
+   * ChannelIdentity rather than ChannelSettings: only the name and PSK are needed to join, and the
+   * rest of a ChannelSettings - id, uplink_enabled, downlink_enabled, module_settings - described
+   * the advertising node's own posture and had no business on the air. Wire compatible with the
+   * ChannelSettings this tag carried in v2.8.0, in both directions.
    */
-  ChannelSettings offer_channel = 2;
+  ChannelIdentity offer_channel = 2;
 
   /*
    * Optional region being advertised alongside offer_preset.
@@ -39,4 +43,15 @@ message MeshBeacon {
    * Combined with offer_region, tells a client "there is a mesh on this preset/region".
    */
   optional Config.LoRaConfig.ModemPreset offer_preset = 4;
+
+  /*
+   * Frequency slot this mesh uses, 1-based, matching Config.LoRaConfig.channel_num.
+   * OMITTED when a receiver can derive the slot itself from offer_region, offer_channel's
+   * name and offer_preset - an unset offer_preset means the region's default preset. That
+   * covers both a region with a mandated slot and a mesh on the default name hash.
+   * PRESENT means this mesh deliberately deviates from what derivation would produce; a
+   * client should still validate the result against its own region before offering to join.
+   * Do not send 0 - it is the same as omitting the field.
+   */
+  optional uint32 offer_frequency_slot = 5;
 }
