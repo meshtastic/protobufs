@@ -58,6 +58,7 @@
 *FromRadio.payload_variant anonymous_oneof:true
 
 *Routing.variant anonymous_oneof:true
+*Routing.ack_proof max_size:8
 
 *LogRecord.message max_size:384
 *LogRecord.source max_size:32
