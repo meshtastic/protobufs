@@ -138,6 +138,20 @@ wire {
     }
 }
 
+// Pin the published bytecode level. Every JVM-side Kotlin compilation here otherwise
+// inherits whatever JDK builds it, so the artifact's class file version is an accident of
+// CI: the JDK 25 bump in #1087 shipped class file 69 in 2.8.0.81-g1476d78-SNAPSHOT and every
+// consumer still on JDK 21 - TAKPacket-SDK, meshtastic-sdk - died with
+// UnsupportedClassVersionError at run time, which no dependency resolution can catch.
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        // Bound the JDK API surface too, so compiling on a newer JDK cannot link against
+        // a method that does not exist on 11.
+        freeCompilerArgs.add("-Xjdk-release=11")
+    }
+}
+
 // Ensure protos are synced before Wire generates code
 afterEvaluate {
     tasks.matching { it.name.startsWith("generate") && it.name.endsWith("Protos") }.configureEach {
