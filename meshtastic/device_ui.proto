@@ -239,6 +239,12 @@ message Map {
    * Map scroll follows GPS
    */
   bool follow_gps = 3;
+
+  /*
+   * Fetch missing map tiles over the network, caching them to the tile store.
+   * Off means the map draws only from tiles already stored locally.
+   */
+  bool online_tiles = 4;
 }
 
 enum CompassMode {
