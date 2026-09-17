@@ -297,7 +297,7 @@ message Config {
      */
     uint32 node_info_broadcast_secs = 7 [(meshtastic.field_metadata) = {
       label: "Node Info Broadcast Interval"
-      description: "Interval in seconds for sending node information. Defaults to 900 seconds"
+      description: "How often node information is sent. Defaults to 900 seconds."
       unit: "s"
     }];
 
@@ -446,7 +446,7 @@ message Config {
      */
     uint32 position_broadcast_secs = 1 [(meshtastic.field_metadata) = {
       label: "Broadcast Interval"
-      description: "How often this node broadcasts its position, in seconds."
+      description: "How often this node broadcasts its position."
       unit: "s"
     }];
 
@@ -527,7 +527,7 @@ message Config {
      */
     uint32 broadcast_smart_minimum_interval_secs = 11 [(meshtastic.field_metadata) = {
       label: "Minimum Interval"
-      description: "Minimum time in seconds between position updates"
+      description: "Minimum time between position updates."
       unit: "s"
     }];
 
@@ -566,7 +566,7 @@ message Config {
      */
     uint32 on_battery_shutdown_after_secs = 2 [(meshtastic.field_metadata) = {
       label: "Shutdown on Power Loss"
-      description: "Seconds after external power removed before the device powers off. Zero to disable"
+      description: "How long after external power is removed before the device powers off. Zero to disable."
       unit: "s"
     }];
 
@@ -806,7 +806,7 @@ message Config {
      */
     uint32 screen_on_secs = 1 [(meshtastic.field_metadata) = {
       label: "Screen on for"
-      description: "Seconds the screen stays on after button press or message. Zero for default of one minute"
+      description: "How long the screen stays on after a button press or message. Zero for the default of one minute."
       unit: "s"
     }];
 
@@ -822,7 +822,7 @@ message Config {
      */
     uint32 auto_screen_carousel_secs = 3 [(meshtastic.field_metadata) = {
       label: "Carousel Interval"
-      description: "Interval in seconds for automatically rotating to the next screen page"
+      description: "How often the display rotates to the next screen page."
       unit: "s"
     }];
 

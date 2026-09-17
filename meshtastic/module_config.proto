@@ -123,7 +123,7 @@ message ModuleConfig {
      */
     uint32 publish_interval_secs = 1 [(meshtastic.field_metadata) = {
       label: "Map Publish Interval"
-      description: "Map report interval in seconds"
+      description: "How often a map report is published."
       unit: "s"
     }];
 
@@ -239,7 +239,7 @@ message ModuleConfig {
      */
     uint32 state_broadcast_secs = 3 [(meshtastic.field_metadata) = {
       label: "State Broadcast Interval"
-      description: "How often the current sensor state is broadcast, in seconds. Zero broadcasts only on trigger events."
+      description: "How often the current sensor state is broadcast. Zero broadcasts only on trigger events."
       unit: "s"
     }];
 
@@ -430,7 +430,7 @@ message ModuleConfig {
      */
     uint32 position_min_interval_secs = 4 [(meshtastic.field_metadata) = {
       label: "Minimum Position Interval"
-      description: "Minimum position update interval in seconds"
+      description: "Minimum interval between position updates."
       unit: "s"
     }];
 
@@ -450,7 +450,7 @@ message ModuleConfig {
      */
     uint32 rate_limit_window_secs = 8 [(meshtastic.field_metadata) = {
       label: "Rate Limit Window"
-      description: "Rate limit window in seconds"
+      description: "The window over which the rate limit is applied."
       unit: "s"
     }];
 
@@ -784,7 +784,7 @@ message ModuleConfig {
      */
     uint32 sender = 2 [(meshtastic.field_metadata) = {
       label: "Sender Interval"
-      description: "How often this node sends range test messages, in seconds. Zero disables sending."
+      description: "How often this node sends range test messages. Zero disables sending."
       unit: "s"
     }];
 
@@ -1216,7 +1216,7 @@ message ModuleConfig {
      */
     uint32 broadcast_interval_secs = 11 [(meshtastic.field_metadata) = {
       label: "Interval"
-      description: "Beacon broadcast interval in seconds"
+      description: "How often a beacon is broadcast."
       unit: "s"
     }];
 
