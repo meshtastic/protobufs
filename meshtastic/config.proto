@@ -721,7 +721,7 @@ message Config {
      */
     uint32 enabled_protocols = 10 [(meshtastic.field_metadata) = {
       label: "Enabled Protocols"
-      description: "Enable broadcasting packets via UDP over the local network."
+      description: "Which auxiliary transports this node carries mesh packets over, as a bitfield of ProtocolFlags."
       since_firmware: "2.6.0"
     }];
 
