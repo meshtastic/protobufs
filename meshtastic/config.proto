@@ -310,8 +310,8 @@ message Config {
      * Disables the triple-press of user button to enable or disable GPS
      */
     bool disable_triple_click = 10 [(meshtastic.field_metadata) = {
-      label: "Triple Click Ad Hoc Ping"
-      description: "Send a position on the primary channel when the user button is triple clicked."
+      label: "Disable Triple Click"
+      description: "Disables the user button triple-press shortcut."
     }];
 
     /*
@@ -448,7 +448,7 @@ message Config {
      */
     bool fixed_position = 3 [(meshtastic.field_metadata) = {
       label: "Fixed Position"
-      description: "Your current location will be set as the fixed position and broadcast over the mesh on the position interval."
+      description: "The last known latitude, longitude and altitude are broadcast over the mesh on the position interval, rather than a live GPS fix."
     }];
 
     /*
@@ -461,7 +461,7 @@ message Config {
      * or zero for the default of once every 30 seconds
      * or a very large value (maxint) to update only once at boot.
      */
-    uint32 gps_update_interval = 5 [(meshtastic.field_metadata) = {label: "Update Interval"}];
+    uint32 gps_update_interval = 5 [(meshtastic.field_metadata) = {label: "Update Interval", unit: "s"}];
 
     /*
      * Deprecated in favor of using smart / regular broadcast intervals as implicit attempt time
@@ -493,7 +493,7 @@ message Config {
     /*
      * The minimum distance in meters traveled (since the last send) before we can send a position to the mesh if position_broadcast_smart_enabled
      */
-    uint32 broadcast_smart_minimum_distance = 10 [(meshtastic.field_metadata) = {label: "Minimum Distance"}];
+    uint32 broadcast_smart_minimum_distance = 10 [(meshtastic.field_metadata) = {label: "Minimum Distance", unit: "m"}];
 
     /*
      * The minimum number of seconds (since the last send) before we can send a position to the mesh if position_broadcast_smart_enabled
@@ -1275,11 +1275,11 @@ message Config {
     ModemPreset modem_preset = 2 [(meshtastic.field_metadata) = {label: "Presets"}];
 
     /*
-     * Bandwidth in MHz
+     * Bandwidth in kHz
      * Certain bandwidth numbers are 'special' and will be converted to the
-     * appropriate floating point value: 31 -> 31.25MHz
+     * appropriate floating point value: 31 -> 31.25kHz
      */
-    uint32 bandwidth = 3 [(meshtastic.field_metadata) = {label: "Bandwidth"}];
+    uint32 bandwidth = 3 [(meshtastic.field_metadata) = {label: "Bandwidth", unit: "kHz"}];
 
     /*
      * A number from 7 to 12.
