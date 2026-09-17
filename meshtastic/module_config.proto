@@ -158,7 +158,10 @@ message ModuleConfig {
      * Interval in seconds of how often we should try to send our
      * Neighbor Info (minimum is 14400, i.e., 4 hours)
      */
-    uint32 update_interval = 2 [(meshtastic.field_metadata) = {label: "Update Interval", unit: "s"}];
+    uint32 update_interval = 2 [(meshtastic.field_metadata) = {
+      label: "Update Interval"
+      unit: "s"
+    }];
 
     /*
      * Whether in addition to sending it to MQTT and the PhoneAPI, our NeighborInfo should be transmitted over LoRa.
@@ -350,7 +353,10 @@ message ModuleConfig {
      * metrics to the mesh
      */
 
-    uint32 paxcounter_update_interval = 2 [(meshtastic.field_metadata) = {label: "Update Interval", unit: "s"}];
+    uint32 paxcounter_update_interval = 2 [(meshtastic.field_metadata) = {
+      label: "Update Interval"
+      unit: "s"
+    }];
 
     /*
      * WiFi RSSI threshold. Defaults to -80
@@ -540,7 +546,10 @@ message ModuleConfig {
      * When using in On/Off mode, keep the output on for this many
      * milliseconds. Default 1000ms (1 second).
      */
-    uint32 output_ms = 2 [(meshtastic.field_metadata) = {label: "GPIO Output Duration", unit: "ms"}];
+    uint32 output_ms = 2 [(meshtastic.field_metadata) = {
+      label: "GPIO Output Duration"
+      unit: "ms"
+    }];
 
     /*
      * Define the output pin GPIO setting Defaults to
@@ -618,7 +627,10 @@ message ModuleConfig {
      * Default is 0 which means don't repeat at all. 60 would mean blink
      * and/or beep for 60 seconds
      */
-    uint32 nag_timeout = 14 [(meshtastic.field_metadata) = {label: "Nag Timeout", unit: "s"}];
+    uint32 nag_timeout = 14 [(meshtastic.field_metadata) = {
+      label: "Nag Timeout"
+      unit: "s"
+    }];
 
     /*
      * When true, enables devices with native I2S audio output to use the RTTTL over speaker like a buzzer
@@ -712,14 +724,20 @@ message ModuleConfig {
      * Interval in seconds of how often we should try to send our
      * device metrics to the mesh
      */
-    uint32 device_update_interval = 1 [(meshtastic.field_metadata) = {label: "Device Metrics Interval", unit: "s"}];
+    uint32 device_update_interval = 1 [(meshtastic.field_metadata) = {
+      label: "Device Metrics Interval"
+      unit: "s"
+    }];
 
     /*
      * Interval in seconds of how often we should try to send our
      * environment measurements to the mesh
      */
 
-    uint32 environment_update_interval = 2 [(meshtastic.field_metadata) = {label: "Environment Metrics Interval", unit: "s"}];
+    uint32 environment_update_interval = 2 [(meshtastic.field_metadata) = {
+      label: "Environment Metrics Interval"
+      unit: "s"
+    }];
 
     /*
      * Preferences for the Telemetry Module (Environment)
@@ -747,7 +765,10 @@ message ModuleConfig {
      * Interval in seconds of how often we should try to send our
      * air quality metrics to the mesh
      */
-    uint32 air_quality_interval = 7 [(meshtastic.field_metadata) = {label: "Air Quality Metrics Interval", unit: "s"}];
+    uint32 air_quality_interval = 7 [(meshtastic.field_metadata) = {
+      label: "Air Quality Metrics Interval"
+      unit: "s"
+    }];
 
     /*
      * Enable/disable Power metrics
@@ -758,7 +779,10 @@ message ModuleConfig {
      * Interval in seconds of how often we should try to send our
      * power metrics to the mesh
      */
-    uint32 power_update_interval = 9 [(meshtastic.field_metadata) = {label: "Power Metrics Interval", unit: "s"}];
+    uint32 power_update_interval = 9 [(meshtastic.field_metadata) = {
+      label: "Power Metrics Interval"
+      unit: "s"
+    }];
 
     /*
      * Enable/Disable the power measurement module on-device display
