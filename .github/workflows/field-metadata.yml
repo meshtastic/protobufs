@@ -49,7 +49,7 @@ jobs:
       - name: Setup buf
         uses: bufbuild/buf-setup-action@v1
         with:
-          version: 1.71.0 # renovate: datasource=github-releases depName=bufbuild/buf
+          version: 1.73.0 # renovate: datasource=github-releases depName=bufbuild/buf
           github_token: ${{ github.token }}
 
       - name: Verify Go/Swift generator parity
