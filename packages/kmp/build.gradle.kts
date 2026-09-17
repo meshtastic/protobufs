@@ -1,7 +1,7 @@
 plugins {
     kotlin("multiplatform") version "2.4.10"
     id("com.android.kotlin.multiplatform.library") version "9.3.2"
-    id("com.squareup.wire") version "6.4.7"
+    id("com.squareup.wire") version "7.0.0"
     id("com.vanniktech.maven.publish") version "0.37.0"
 }
 
@@ -64,7 +64,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api("com.squareup.wire:wire-runtime:6.4.7")
+                api("com.squareup.wire:wire-runtime:7.0.0")
             }
         }
     }
@@ -101,13 +101,16 @@ wire {
         includes = listOf("meshtastic.*")
 
         // Flatten oneof fields into nullable properties on the parent message
-        // class instead of generating intermediate sealed classes. All consumers
+        // class instead of intermediate sealed classes. All consumers
         // (Meshtastic-Android, TAKPacket-SDK) are written against this shape -
         // e.g. `packet.decoded`, `packet.chat`, `takPacketV2.shape` are all
-        // nullable top-level properties, not sealed-class arms.
-        boxOneOfsMinSize = 5000
+        // nullable top-level properties, not sealed-class arms. This used to be
+        // spelled `boxOneOfsMinSize = 5000`, a threshold set high enough that
+        // nothing could reach it; Wire 7 has a name for the intent. Generates
+        // byte-identical output to the old spelling.
+        oneofMode = "flat"
 
-        // Required by buildersOnly on Wire 6.4.7: with copies off, a repeated
+        // Required by buildersOnly, still on Wire 7.0.0: with copies off, a repeated
         // field initialises from the bare field name, which resolves to itself
         // once the constructor takes a Builder - 32 uncompilable initialisers.
         // Costs nothing on the hot paths, which have no repeated fields at all:
