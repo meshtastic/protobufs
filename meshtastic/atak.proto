@@ -3,6 +3,8 @@ syntax = "proto3";
 /* trunk-ignore(buf-lint/PACKAGE_DIRECTORY_MATCH) */
 package meshtastic;
 
+import "meshtastic/field_metadata.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "ATAKProtos";
@@ -155,63 +157,63 @@ enum Team {
   /*
    * Unspecifed
    */
-  Unspecifed_Color = 0;
+  Unspecifed_Color = 0 [(meshtastic.enum_value_metadata) = {label: "Default (Cyan)"}];
   /*
    * White
    */
-  White = 1;
+  White = 1 [(meshtastic.enum_value_metadata) = {label: "White"}];
   /*
    * Yellow
    */
-  Yellow = 2;
+  Yellow = 2 [(meshtastic.enum_value_metadata) = {label: "Yellow"}];
   /*
    * Orange
    */
-  Orange = 3;
+  Orange = 3 [(meshtastic.enum_value_metadata) = {label: "Orange"}];
   /*
    * Magenta
    */
-  Magenta = 4;
+  Magenta = 4 [(meshtastic.enum_value_metadata) = {label: "Magenta"}];
   /*
    * Red
    */
-  Red = 5;
+  Red = 5 [(meshtastic.enum_value_metadata) = {label: "Red"}];
   /*
    * Maroon
    */
-  Maroon = 6;
+  Maroon = 6 [(meshtastic.enum_value_metadata) = {label: "Maroon"}];
   /*
    * Purple
    */
-  Purple = 7;
+  Purple = 7 [(meshtastic.enum_value_metadata) = {label: "Purple"}];
   /*
    * Dark Blue
    */
-  Dark_Blue = 8;
+  Dark_Blue = 8 [(meshtastic.enum_value_metadata) = {label: "Dark Blue"}];
   /*
    * Blue
    */
-  Blue = 9;
+  Blue = 9 [(meshtastic.enum_value_metadata) = {label: "Blue"}];
   /*
    * Cyan
    */
-  Cyan = 10;
+  Cyan = 10 [(meshtastic.enum_value_metadata) = {label: "Cyan"}];
   /*
    * Teal
    */
-  Teal = 11;
+  Teal = 11 [(meshtastic.enum_value_metadata) = {label: "Teal"}];
   /*
    * Green
    */
-  Green = 12;
+  Green = 12 [(meshtastic.enum_value_metadata) = {label: "Green"}];
   /*
    * Dark Green
    */
-  Dark_Green = 13;
+  Dark_Green = 13 [(meshtastic.enum_value_metadata) = {label: "Dark Green"}];
   /*
    * Brown
    */
-  Brown = 14;
+  Brown = 14 [(meshtastic.enum_value_metadata) = {label: "Brown"}];
 }
 
 /*
@@ -221,39 +223,39 @@ enum MemberRole {
   /*
    * Unspecifed
    */
-  Unspecifed = 0;
+  Unspecifed = 0 [(meshtastic.enum_value_metadata) = {label: "Default (Team Member)"}];
   /*
    * Team Member
    */
-  TeamMember = 1;
+  TeamMember = 1 [(meshtastic.enum_value_metadata) = {label: "Team Member"}];
   /*
    * Team Lead
    */
-  TeamLead = 2;
+  TeamLead = 2 [(meshtastic.enum_value_metadata) = {label: "Team Lead"}];
   /*
    * Headquarters
    */
-  HQ = 3;
+  HQ = 3 [(meshtastic.enum_value_metadata) = {label: "HQ"}];
   /*
    * Airsoft enthusiast
    */
-  Sniper = 4;
+  Sniper = 4 [(meshtastic.enum_value_metadata) = {label: "Sniper"}];
   /*
    * Medic
    */
-  Medic = 5;
+  Medic = 5 [(meshtastic.enum_value_metadata) = {label: "Medic"}];
   /*
    * ForwardObserver
    */
-  ForwardObserver = 6;
+  ForwardObserver = 6 [(meshtastic.enum_value_metadata) = {label: "Forward Observer"}];
   /*
    * Radio Telephone Operator
    */
-  RTO = 7;
+  RTO = 7 [(meshtastic.enum_value_metadata) = {label: "RTO"}];
   /*
    * Doggo
    */
-  K9 = 8;
+  K9 = 8 [(meshtastic.enum_value_metadata) = {label: "K9"}];
 }
 
 /*
