@@ -4,6 +4,9 @@ modules:
     name: buf.build/meshtastic/protobufs
     excludes:
       - .trunk/
+      - .claude/
+      - .direnv/
+      - packages/
       - meshtastic/device_only/
     lint:
       use:

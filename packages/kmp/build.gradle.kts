@@ -1,8 +1,8 @@
 plugins {
-    kotlin("multiplatform") version "2.3.21"
-    id("com.android.kotlin.multiplatform.library") version "9.2.1"
-    id("com.squareup.wire") version "6.4.0"
-    id("com.vanniktech.maven.publish") version "0.36.0"
+    kotlin("multiplatform") version "2.4.10"
+    id("com.android.kotlin.multiplatform.library") version "9.3.2"
+    id("com.squareup.wire") version "7.0.3"
+    id("com.vanniktech.maven.publish") version "0.37.0"
 }
 
 group = providers.gradleProperty("GROUP").get()
@@ -10,8 +10,8 @@ version = providers.gradleProperty("VERSION_NAME").orElse(
     providers.provider {
         // Fallback for local builds with no -PVERSION_NAME (CI always passes it):
         // derive a snapshot version by patch-bumping the latest git tag. Any
-        // failure — git missing, shallow/tagless clone, or an unexpected tag
-        // format — degrades to 0.0.1-SNAPSHOT instead of breaking configuration.
+        // failure - git missing, shallow/tagless clone, or an unexpected tag
+        // format - degrades to 0.0.1-SNAPSHOT instead of breaking configuration.
         val tag = runCatching {
             val process = ProcessBuilder("git", "describe", "--tags", "--abbrev=0")
                 .directory(rootDir)
@@ -64,7 +64,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api("com.squareup.wire:wire-runtime:6.4.0")
+                api("com.squareup.wire:wire-runtime:7.0.0")
             }
         }
     }
@@ -101,15 +101,54 @@ wire {
         includes = listOf("meshtastic.*")
 
         // Flatten oneof fields into nullable properties on the parent message
-        // class instead of generating intermediate sealed classes. All consumers
-        // (Meshtastic-Android, TAKPacket-SDK) are written against this shape —
+        // class instead of intermediate sealed classes. All consumers
+        // (Meshtastic-Android, TAKPacket-SDK) are written against this shape -
         // e.g. `packet.decoded`, `packet.chat`, `takPacketV2.shape` are all
-        // nullable top-level properties, not sealed-class arms.
-        boxOneOfsMinSize = 5000
+        // nullable top-level properties, not sealed-class arms. This used to be
+        // spelled `boxOneOfsMinSize = 5000`, a threshold set high enough that
+        // nothing could reach it; Wire 7 has a name for the intent. Generates
+        // byte-identical output to the old spelling.
+        oneofMode = "flat"
 
-        // Skip defensive immutable copies of repeated/map fields on decode.
-        // Reduces allocations on high-frequency decode paths (mesh packets).
-        makeImmutableCopies = false
+        // Required by buildersOnly, still on Wire 7.0.0: with copies off, a repeated
+        // field initialises from the bare field name, which resolves to itself
+        // once the constructor takes a Builder - 32 uncompilable initialisers.
+        // Costs nothing on the hot paths, which have no repeated fields at all:
+        // MeshPacket, Data, Position, NodeInfo, Telemetry, FromRadio and ToRadio
+        // are all scalar/message only, so this touches config and bulk types.
+        makeImmutableCopies = true
+
+        // Construct through Builder only, so the generated types stay binary
+        // compatible across an added proto field. The all-args constructor and
+        // `copy()` encode every field in their signature, so a consumer compiled
+        // against a different `protobufs` version fails at runtime with
+        // NoSuchMethodError; a Builder property does not move.
+        buildersOnly = true
+    }
+
+    // Generate a reflection-free `FieldMetadataRegistry` from the
+    // `(meshtastic.field_metadata)` field options. The custom SchemaHandler lives in
+    // `buildSrc`; the Wire plugin auto-registers this output dir into `commonMain` (with the
+    // generate-task dependency), so downstream consumers query field metadata on every KMP
+    // target with no reflection and no runtime cost. A distinct `out` dir avoids clobbering
+    // the `kotlin {}` target's generated sources.
+    custom {
+        schemaHandlerFactoryClass = "org.meshtastic.proto.build.FieldMetadataRegistryHandlerFactory"
+        out = "build/generated/source/wire-field-metadata"
+    }
+}
+
+// Pin the published bytecode level. Every JVM-side Kotlin compilation here otherwise
+// inherits whatever JDK builds it, so the artifact's class file version is an accident of
+// CI: the JDK 25 bump in #1087 shipped class file 69 in 2.8.0.81-g1476d78-SNAPSHOT and every
+// consumer still on JDK 21 - TAKPacket-SDK, meshtastic-sdk - died with
+// UnsupportedClassVersionError at run time, which no dependency resolution can catch.
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        // Bound the JDK API surface too, so compiling on a newer JDK cannot link against
+        // a method that does not exist on 11.
+        freeCompilerArgs.add("-Xjdk-release=11")
     }
 }
 
