@@ -367,7 +367,8 @@ message ModuleConfig {
      */
     int32 wifi_threshold = 3 [(meshtastic.field_metadata) = {
       label: "WiFi Threshold"
-      description: "RSSI threshold for WiFi device counting. Default is −80 dBm."
+      description: "RSSI threshold for counting WiFi devices."
+      unit: "dBm"
     }];
 
     /*
@@ -375,7 +376,8 @@ message ModuleConfig {
      */
     int32 ble_threshold = 4 [(meshtastic.field_metadata) = {
       label: "BLE Threshold"
-      description: "RSSI threshold for BLE device counting. Default is −80 dBm."
+      description: "RSSI threshold for counting BLE devices."
+      unit: "dBm"
     }];
   }
 
