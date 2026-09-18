@@ -180,19 +180,19 @@ message ModuleConfig {
   message DetectionSensorConfig {
     enum TriggerType {
       // Event is triggered if pin is low
-      LOGIC_LOW = 0;
+      LOGIC_LOW = 0 [(meshtastic.enum_value_metadata) = {label: "Low"}];
       // Event is triggered if pin is high
-      LOGIC_HIGH = 1;
+      LOGIC_HIGH = 1 [(meshtastic.enum_value_metadata) = {label: "High"}];
       // Event is triggered when pin goes high to low
-      FALLING_EDGE = 2;
+      FALLING_EDGE = 2 [(meshtastic.enum_value_metadata) = {label: "Falling Edge"}];
       // Event is triggered when pin goes low to high
-      RISING_EDGE = 3;
+      RISING_EDGE = 3 [(meshtastic.enum_value_metadata) = {label: "Rising Edge"}];
       // Event is triggered on every pin state change, low is considered to be
       // "active"
-      EITHER_EDGE_ACTIVE_LOW = 4;
+      EITHER_EDGE_ACTIVE_LOW = 4 [(meshtastic.enum_value_metadata) = {label: "Either Edge Low"}];
       // Event is triggered on every pin state change, high is considered to be
       // "active"
-      EITHER_EDGE_ACTIVE_HIGH = 5;
+      EITHER_EDGE_ACTIVE_HIGH = 5 [(meshtastic.enum_value_metadata) = {label: "Either Edge High"}];
     }
     /*
      * Whether the Module is enabled
@@ -268,13 +268,13 @@ message ModuleConfig {
      * Baudrate for codec2 voice
      */
     enum Audio_Baud {
-      CODEC2_DEFAULT = 0;
-      CODEC2_3200 = 1;
-      CODEC2_2400 = 2;
-      CODEC2_1600 = 3;
-      CODEC2_1400 = 4;
-      CODEC2_1300 = 5;
-      CODEC2_1200 = 6;
+      CODEC2_DEFAULT = 0 [(meshtastic.enum_value_metadata) = {label: "Default"}];
+      CODEC2_3200 = 1 [(meshtastic.enum_value_metadata) = {label: "3200 bps"}];
+      CODEC2_2400 = 2 [(meshtastic.enum_value_metadata) = {label: "2400 bps"}];
+      CODEC2_1600 = 3 [(meshtastic.enum_value_metadata) = {label: "1600 bps"}];
+      CODEC2_1400 = 4 [(meshtastic.enum_value_metadata) = {label: "1400 bps"}];
+      CODEC2_1300 = 5 [(meshtastic.enum_value_metadata) = {label: "1300 bps"}];
+      CODEC2_1200 = 6 [(meshtastic.enum_value_metadata) = {label: "1200 bps"}];
 
       /*
        * Removed from libcodec2 upstream. A device configured to one of these
@@ -286,12 +286,12 @@ message ModuleConfig {
       /*
        * Replaces CODEC2_700. Default for new configurations.
        */
-      CODEC2_700C = 9;
+      CODEC2_700C = 9 [(meshtastic.enum_value_metadata) = {label: "700C bps"}];
 
       /*
        * Lowest rate, and the only one usable on slower modem presets.
        */
-      CODEC2_450 = 10;
+      CODEC2_450 = 10 [(meshtastic.enum_value_metadata) = {label: "450 bps"}];
     }
 
     /*
@@ -478,7 +478,7 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     enum Serial_Mode {
-      DEFAULT = 0;
+      DEFAULT = 0 [(meshtastic.enum_value_metadata) = {label: "Default"}];
       SIMPLE = 1 [(meshtastic.enum_value_metadata) = {label: "Simple"}];
       PROTO = 2 [(meshtastic.enum_value_metadata) = {label: "Protobufs"}];
       TEXTMSG = 3 [(meshtastic.enum_value_metadata) = {label: "Text Message"}];
