@@ -161,6 +161,7 @@ message ModuleConfig {
     uint32 update_interval = 2 [(meshtastic.field_metadata) = {
       label: "Update Interval"
       unit: "s"
+      description: "How often to broadcast neighbor info."
     }];
 
     /*
@@ -208,6 +209,7 @@ message ModuleConfig {
     uint32 minimum_broadcast_secs = 2 [(meshtastic.field_metadata) = {
       label: "Minimum time between detection broadcasts"
       unit: "s"
+      description: "Minimum time between detection broadcasts."
     }];
 
     /*
@@ -219,6 +221,7 @@ message ModuleConfig {
     uint32 state_broadcast_secs = 3 [(meshtastic.field_metadata) = {
       label: "State Broadcast Interval"
       unit: "s"
+      description: "How often to send the detection sensor state to the mesh, whether or not anything was detected."
     }];
 
     /*
@@ -356,6 +359,7 @@ message ModuleConfig {
     uint32 paxcounter_update_interval = 2 [(meshtastic.field_metadata) = {
       label: "Update Interval"
       unit: "s"
+      description: "How often we can send a message to the mesh when people are detected."
     }];
 
     /*
@@ -363,7 +367,8 @@ message ModuleConfig {
      */
     int32 wifi_threshold = 3 [(meshtastic.field_metadata) = {
       label: "WiFi Threshold"
-      description: "RSSI threshold for WiFi device counting. Default is −80 dBm."
+      description: "RSSI threshold for counting WiFi devices."
+      unit: "dBm"
     }];
 
     /*
@@ -371,7 +376,8 @@ message ModuleConfig {
      */
     int32 ble_threshold = 4 [(meshtastic.field_metadata) = {
       label: "BLE Threshold"
-      description: "RSSI threshold for BLE device counting. Default is −80 dBm."
+      description: "RSSI threshold for counting BLE devices."
+      unit: "dBm"
     }];
   }
 
@@ -399,6 +405,7 @@ message ModuleConfig {
     uint32 position_min_interval_secs = 4 [(meshtastic.field_metadata) = {
       label: "Minimum Position Interval"
       unit: "s"
+      description: "Positions from the same node arriving sooner than this are dropped."
     }];
 
     /*
@@ -406,7 +413,10 @@ message ModuleConfig {
      * are served from the local cache. A non-zero value implicitly enables direct
      * response; 0 disables it.
      */
-    uint32 nodeinfo_direct_response_max_hops = 6 [(meshtastic.field_metadata) = {label: "Direct NodeInfo Max Hops"}];
+    uint32 nodeinfo_direct_response_max_hops = 6 [(meshtastic.field_metadata) = {
+      label: "Direct NodeInfo Max Hops"
+      description: "Only answer requestors within this many hops."
+    }];
 
     /*
      * Time window in seconds for per-node rate limiting.
@@ -415,6 +425,7 @@ message ModuleConfig {
     uint32 rate_limit_window_secs = 8 [(meshtastic.field_metadata) = {
       label: "Rate Limit Window"
       unit: "s"
+      description: "The time window packets are counted over."
     }];
 
     /*
@@ -518,7 +529,10 @@ message ModuleConfig {
     /*
      * TODO: REPLACE
      */
-    uint32 timeout = 6 [(meshtastic.field_metadata) = {label: "Timeout"}];
+    uint32 timeout = 6 [(meshtastic.field_metadata) = {
+      label: "Timeout"
+      description: "The amount of time to wait before we consider your packet as done."
+    }];
 
     /*
      * Mode for serial module operation
@@ -549,6 +563,7 @@ message ModuleConfig {
     uint32 output_ms = 2 [(meshtastic.field_metadata) = {
       label: "GPIO Output Duration"
       unit: "ms"
+      description: "In GPIO mode, how long to keep the output on."
     }];
 
     /*
@@ -698,7 +713,11 @@ message ModuleConfig {
     /*
      * Send out range test messages from this node
      */
-    uint32 sender = 2 [(meshtastic.field_metadata) = {label: "Sender Interval"}];
+    uint32 sender = 2 [(meshtastic.field_metadata) = {
+      label: "Sender Interval"
+      description: "This device will send out range test messages on the selected interval."
+      unit: "s"
+    }];
 
     /*
      * Bool value indicating that this node should save a RangeTest.csv file.
@@ -727,6 +746,7 @@ message ModuleConfig {
     uint32 device_update_interval = 1 [(meshtastic.field_metadata) = {
       label: "Device Metrics Interval"
       unit: "s"
+      description: "How often device metrics are sent over the mesh."
     }];
 
     /*
@@ -737,6 +757,7 @@ message ModuleConfig {
     uint32 environment_update_interval = 2 [(meshtastic.field_metadata) = {
       label: "Environment Metrics Interval"
       unit: "s"
+      description: "How often environment metrics are sent over the mesh."
     }];
 
     /*
@@ -768,6 +789,7 @@ message ModuleConfig {
     uint32 air_quality_interval = 7 [(meshtastic.field_metadata) = {
       label: "Air Quality Metrics Interval"
       unit: "s"
+      description: "How often air quality metrics are sent over the mesh."
     }];
 
     /*
@@ -782,6 +804,7 @@ message ModuleConfig {
     uint32 power_update_interval = 9 [(meshtastic.field_metadata) = {
       label: "Power Metrics Interval"
       unit: "s"
+      description: "How often power metrics are sent over the mesh."
     }];
 
     /*
@@ -878,17 +901,26 @@ message ModuleConfig {
     /*
      * GPIO pin for rotary encoder A port.
      */
-    uint32 inputbroker_pin_a = 2 [(meshtastic.field_metadata) = {label: "Pin A"}];
+    uint32 inputbroker_pin_a = 2 [(meshtastic.field_metadata) = {
+      label: "Pin A"
+      description: "GPIO pin for rotary encoder A port."
+    }];
 
     /*
      * GPIO pin for rotary encoder B port.
      */
-    uint32 inputbroker_pin_b = 3 [(meshtastic.field_metadata) = {label: "Pin B"}];
+    uint32 inputbroker_pin_b = 3 [(meshtastic.field_metadata) = {
+      label: "Pin B"
+      description: "GPIO pin for rotary encoder B port."
+    }];
 
     /*
      * GPIO pin for rotary encoder Press port.
      */
-    uint32 inputbroker_pin_press = 4 [(meshtastic.field_metadata) = {label: "Press Pin"}];
+    uint32 inputbroker_pin_press = 4 [(meshtastic.field_metadata) = {
+      label: "Press Pin"
+      description: "GPIO pin for rotary encoder Press port."
+    }];
 
     /*
      * Generate input event on CW of this kind.

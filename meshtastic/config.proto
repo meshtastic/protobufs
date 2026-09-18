@@ -434,6 +434,7 @@ message Config {
     uint32 position_broadcast_secs = 1 [(meshtastic.field_metadata) = {
       label: "Broadcast Interval"
       unit: "s"
+      description: "The longest a node will go without broadcasting a position."
     }];
 
     /*
@@ -464,6 +465,7 @@ message Config {
     uint32 gps_update_interval = 5 [(meshtastic.field_metadata) = {
       label: "Update Interval"
       unit: "s"
+      description: "How often to try to get a GPS position."
     }];
 
     /*
@@ -499,6 +501,7 @@ message Config {
     uint32 broadcast_smart_minimum_distance = 10 [(meshtastic.field_metadata) = {
       label: "Minimum Distance"
       unit: "m"
+      description: "The minimum change in distance before a smart position broadcast is considered."
     }];
 
     /*
@@ -507,6 +510,7 @@ message Config {
     uint32 broadcast_smart_minimum_interval_secs = 11 [(meshtastic.field_metadata) = {
       label: "Minimum Interval"
       unit: "s"
+      description: "The shortest interval between position updates once the minimum distance has been met."
     }];
 
     /*
@@ -771,6 +775,7 @@ message Config {
     uint32 screen_on_secs = 1 [(meshtastic.field_metadata) = {
       label: "Screen on for"
       unit: "s"
+      description: "How long the screen remains on after the user button is pressed or messages are received."
     }];
 
     /*
@@ -786,6 +791,7 @@ message Config {
     uint32 auto_screen_carousel_secs = 3 [(meshtastic.field_metadata) = {
       label: "Carousel Interval"
       unit: "s"
+      description: "Automatically moves to the next screen page, like a carousel, on this interval."
     }];
 
     /*
@@ -811,12 +817,18 @@ message Config {
     /*
      * Perferred display units
      */
-    DisplayUnits units = 6 [(meshtastic.field_metadata) = {label: "Display Units"}];
+    DisplayUnits units = 6 [(meshtastic.field_metadata) = {
+      label: "Display Units"
+      description: "Units shown on the device screen."
+    }];
 
     /*
      * Override auto-detect in screen
      */
-    OledType oled = 7 [(meshtastic.field_metadata) = {label: "OLED Type"}];
+    OledType oled = 7 [(meshtastic.field_metadata) = {
+      label: "OLED Type"
+      description: "Override automatic OLED screen detection."
+    }];
 
     enum DisplayMode {
       /*
@@ -842,7 +854,10 @@ message Config {
     /*
      * Display Mode
      */
-    DisplayMode displaymode = 8 [(meshtastic.field_metadata) = {label: "Display Mode"}];
+    DisplayMode displaymode = 8 [(meshtastic.field_metadata) = {
+      label: "Display Mode"
+      description: "Override default screen layout."
+    }];
 
     /*
      * Print first line in pseudo-bold? FALSE is original style, TRUE is bold
@@ -905,7 +920,10 @@ message Config {
     /*
      * Indicates how to rotate or invert the compass output to accurate display on the display.
      */
-    CompassOrientation compass_orientation = 11 [(meshtastic.field_metadata) = {label: "Compass Orientation"}];
+    CompassOrientation compass_orientation = 11 [(meshtastic.field_metadata) = {
+      label: "Compass Orientation"
+      description: "Indicates how to rotate or invert the compass output for accurate display."
+    }];
 
     /*
      * If false (default), the device will display the time in 24-hour format on screen.
@@ -1312,7 +1330,10 @@ message Config {
     /*
      * The region code for the radio (US, CN, EU433, etc...)
      */
-    RegionCode region = 7 [(meshtastic.field_metadata) = {label: "Region"}];
+    RegionCode region = 7 [(meshtastic.field_metadata) = {
+      label: "Region"
+      description: "The region where you will be using your radios."
+    }];
 
     /*
      * Maximum number of hops. This can't be greater than 7.
