@@ -839,6 +839,22 @@ message Config {
     ];
 
     /*
+     * If true, the bearings and distance screen is replaced by the radar minimap.
+     */
+    bool bearings_view_radar = 15 [(meshtastic.field_metadata) = {
+      label: "Radar View"
+      description: "Show nearby nodes on a radar minimap instead of the bearings and distance list."
+    }];
+
+    /*
+     * If true, the radar minimap only plots favorite nodes.
+     */
+    bool radar_favorites_only = 16 [(meshtastic.field_metadata) = {
+      label: "Radar Favorites Only"
+      description: "Limit the radar minimap to favorite nodes."
+    }];
+
+    /*
      * Flip screen vertically, for cases that mount the screen upside down
      */
     bool flip_screen = 5 [(meshtastic.field_metadata) = {
