@@ -25,8 +25,9 @@ import okio.Path
  *    field walking.
  *
  * The handler is GENERIC over the contents of the `FieldMetadata` message: it reads whatever
- * scalar sub-fields are set on each annotated field and re-emits them as a `FieldMetadata(...)`
- * constructor call. Adding a new scalar attribute to `field_metadata.proto` requires NO change here.
+ * scalar sub-fields are set on each annotated field and re-emits them as a
+ * `FieldMetadata.Builder()` call. Adding a new scalar attribute to `field_metadata.proto` requires
+ * NO change here.
  *
  * Output is `org/meshtastic/proto/FieldMetadataRegistry.kt`, written into the custom target's `out`
  * directory, which the KMP build wires into `commonMain` - so it is queryable on every KMP target
@@ -39,7 +40,7 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
         val typePath: List<String>, // package-relative, e.g. ["Config", "PositionConfig"]
         val fieldName: String, // proto field name, e.g. "rx_gpio"
         val tag: Int,
-        val ctor: String, // rendered "FieldMetadata(...)" call
+        val ctor: String, // rendered "FieldMetadata.Builder()...build()" call
     )
 
     override fun handle(schema: Schema, context: Context) {
@@ -105,8 +106,11 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
     }
 
     /**
-     * Renders the `FieldMetadata(...)` constructor call for one field, or null if the field has no
-     * metadata at all. [raw] is the decoded `(meshtastic.field_metadata)` option (may be null);
+     * Renders the `FieldMetadata.Builder()` call for one field, or null if the field has no
+     * metadata at all. `buildersOnly` makes the generated constructor private, so the Builder is
+     * the only way in, and `also { wb -> }` keeps the receiver explicit where `apply { }` would let
+     * an attribute name bind to the enclosing scope instead.
+     * [raw] is the decoded `(meshtastic.field_metadata)` option (may be null);
      * [isDeprecated] is the field's standard `deprecated` option, mirrored in as the `deprecated`
      * attribute so apps can read deprecation at runtime (a hand-set `deprecated` in the annotation
      * is rejected in [collect]). Args are keyed by attribute name and sorted so ordering matches
@@ -121,17 +125,21 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
         (raw as? Map<*, *>)?.forEach { (key, value) ->
             if (value == null) return@forEach
             val name = (key as? ProtoMember)?.simpleName ?: key.toString()
-            args[name] = "$name = ${renderLiteral(name, value, metaFieldTypes[name])}"
+            args[name] = "wb.$name = ${renderLiteral(name, value, metaFieldTypes[name])}"
         }
         if (isDeprecated) {
-            args[DEPRECATED_ATTR] = "$DEPRECATED_ATTR = true"
+            args[DEPRECATED_ATTR] = "wb.$DEPRECATED_ATTR = true"
         }
-        return if (args.isEmpty()) null else "FieldMetadata(${args.values.joinToString(", ")})"
+        return if (args.isEmpty()) {
+            null
+        } else {
+            "FieldMetadata.Builder().also { wb -> ${args.values.joinToString("; ")} }.build()"
+        }
     }
 
     /**
      * Renders one attribute value as a Kotlin literal of the type Wire generates for the
-     * attribute's proto kind, so the `FieldMetadata(...)` call compiles whatever scalar
+     * attribute's proto kind, so the `FieldMetadata.Builder()` call compiles whatever scalar
      * attributes the schema declares. The kinds the other generators reject (64-bit
      * integers, non-finite floats, non-scalars) are rejected here with the same rule.
      */
