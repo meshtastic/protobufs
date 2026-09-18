@@ -569,6 +569,20 @@ message LockdownAuth {
    * 0 = use firmware default (TOKEN_DEFAULT_BOOTS).
    * On reboot the firmware decrements this; when it reaches 0 the
    * device boots fully locked and requires a fresh passphrase.
+   *
+   * SECURITY: a non-zero count is what makes the device able to unlock
+   * itself after a reboot, and it pays for that with a stored key. The
+   * unlock token holds the data-encryption key wrapped under a key the
+   * firmware derives from device identifiers alone - no passphrase. So
+   * for as long as a token exists, anyone who can read the flash can
+   * recover the DEK without knowing the passphrase, and at-rest
+   * encryption protects the data only against a casual dump.
+   *
+   * This bounds exposure by reboot count; it does not eliminate it. Set
+   * 0 (passphrase on every boot) when the threat model includes someone
+   * taking physical possession of the node. Clients offering a default
+   * should prefer 0 and present any non-zero value as an explicit
+   * convenience trade-off.
    */
   uint32 boots_remaining = 2;
 
