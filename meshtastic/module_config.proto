@@ -73,9 +73,10 @@ message ModuleConfig {
     /*
      * Deprecated: JSON packet support on MQTT was removed, and this field is ignored.
      */
-    bool json_enabled = 6 [deprecated = true, (meshtastic.field_metadata) = {
-      deprecated_since: "2.8.0"
-    }];
+    bool json_enabled = 6 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.8.0"}
+    ];
 
     /*
      * If true, we attempt to establish a secure connection using TLS
@@ -809,9 +810,7 @@ message ModuleConfig {
      * Bool indicating that the node should cleanup / destroy it's RangeTest.csv file.
      * ESP32 Only
      */
-    bool clear_on_reboot = 4 [(meshtastic.field_metadata) = {
-      since_firmware: "2.7.11"
-    }];
+    bool clear_on_reboot = 4 [(meshtastic.field_metadata) = {since_firmware: "2.7.11"}];
   }
 
   /*
@@ -939,9 +938,7 @@ message ModuleConfig {
     /*
      * Enable/Disable the air quality telemetry measurement module on-device display
      */
-    bool air_quality_screen_enabled = 15 [(meshtastic.field_metadata) = {
-      since_firmware: "2.7.18"
-    }];
+    bool air_quality_screen_enabled = 15 [(meshtastic.field_metadata) = {since_firmware: "2.7.18"}];
   }
 
   /*
@@ -1060,17 +1057,19 @@ message ModuleConfig {
     /*
      * Enable/disable CannedMessageModule.
      */
-    bool enabled = 9 [deprecated = true, (meshtastic.field_metadata) = {
-      deprecated_since: "2.7.0"
-    }];
+    bool enabled = 9 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.7.0"}
+    ];
 
     /*
      * Input event origin accepted by the canned message module.
      * Can be e.g. "rotEnc1", "upDownEnc1", "scanAndSelect", "cardkb", "serialkb", or keyword "_any"
      */
-    string allow_input_source = 10 [deprecated = true, (meshtastic.field_metadata) = {
-      deprecated_since: "2.7.0"
-    }];
+    string allow_input_source = 10 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.7.0"}
+    ];
 
     /*
      * CannedMessageModule also sends a bell character with the messages.
@@ -1349,30 +1348,22 @@ message ModuleConfig {
     /*
      * TODO: REPLACE
      */
-    StatusMessageConfig statusmessage = 14 [(meshtastic.field_metadata) = {
-      since_firmware: "2.7.20"
-    }];
+    StatusMessageConfig statusmessage = 14 [(meshtastic.field_metadata) = {since_firmware: "2.7.20"}];
 
     /*
      * Traffic management module config for mesh network optimization
      */
-    TrafficManagementConfig traffic_management = 15 [(meshtastic.field_metadata) = {
-      since_firmware: "2.8.0"
-    }];
+    TrafficManagementConfig traffic_management = 15 [(meshtastic.field_metadata) = {since_firmware: "2.8.0"}];
 
     /*
      * TAK team/role configuration for TAK_TRACKER
      */
-    TAKConfig tak = 16 [(meshtastic.field_metadata) = {
-      since_firmware: "2.8.0"
-    }];
+    TAKConfig tak = 16 [(meshtastic.field_metadata) = {since_firmware: "2.8.0"}];
 
     /*
      * MeshBeacon module config
      */
-    MeshBeaconConfig mesh_beacon = 17 [(meshtastic.field_metadata) = {
-      since_firmware: "2.8.0"
-    }];
+    MeshBeaconConfig mesh_beacon = 17 [(meshtastic.field_metadata) = {since_firmware: "2.8.0"}];
   }
 
   /*
