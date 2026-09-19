@@ -1349,22 +1349,30 @@ message ModuleConfig {
     /*
      * TODO: REPLACE
      */
-    StatusMessageConfig statusmessage = 14;
+    StatusMessageConfig statusmessage = 14 [(meshtastic.field_metadata) = {
+      since_firmware: "2.7.20"
+    }];
 
     /*
      * Traffic management module config for mesh network optimization
      */
-    TrafficManagementConfig traffic_management = 15;
+    TrafficManagementConfig traffic_management = 15 [(meshtastic.field_metadata) = {
+      since_firmware: "2.8.0"
+    }];
 
     /*
      * TAK team/role configuration for TAK_TRACKER
      */
-    TAKConfig tak = 16;
+    TAKConfig tak = 16 [(meshtastic.field_metadata) = {
+      since_firmware: "2.8.0"
+    }];
 
     /*
      * MeshBeacon module config
      */
-    MeshBeaconConfig mesh_beacon = 17;
+    MeshBeaconConfig mesh_beacon = 17 [(meshtastic.field_metadata) = {
+      since_firmware: "2.8.0"
+    }];
   }
 
   /*
