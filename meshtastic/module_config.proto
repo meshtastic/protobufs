@@ -138,6 +138,7 @@ message ModuleConfig {
     bool should_report_location = 3 [(meshtastic.field_metadata) = {
       label: "Report Location"
       description: "I have read and understand the above. I voluntarily consent to the unencrypted transmission of my node data via MQTT."
+      since_firmware: "2.6.8"
     }];
   }
 
@@ -806,7 +807,9 @@ message ModuleConfig {
      * Bool indicating that the node should cleanup / destroy it's RangeTest.csv file.
      * ESP32 Only
      */
-    bool clear_on_reboot = 4;
+    bool clear_on_reboot = 4 [(meshtastic.field_metadata) = {
+      since_firmware: "2.7.11"
+    }];
   }
 
   /*
@@ -928,12 +931,15 @@ message ModuleConfig {
     bool device_telemetry_enabled = 14 [(meshtastic.field_metadata) = {
       label: "Broadcast Device Metrics"
       description: "Enable broadcasting device metrics to the mesh network. When disabled, metrics are only sent to connected clients."
+      since_firmware: "2.7.13"
     }];
 
     /*
      * Enable/Disable the air quality telemetry measurement module on-device display
      */
-    bool air_quality_screen_enabled = 15;
+    bool air_quality_screen_enabled = 15 [(meshtastic.field_metadata) = {
+      since_firmware: "2.7.18"
+    }];
   }
 
   /*

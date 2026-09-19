@@ -344,7 +344,9 @@ message Config {
      * Controls buzzer behavior for audio feedback
      * Defaults to ENABLED
      */
-    BuzzerMode buzzer_mode = 13;
+    BuzzerMode buzzer_mode = 13 [(meshtastic.field_metadata) = {
+      since_firmware: "2.7.0"
+    }];
   }
 
   /*
@@ -716,12 +718,15 @@ message Config {
     uint32 enabled_protocols = 10 [(meshtastic.field_metadata) = {
       label: "Enabled Protocols"
       description: "Enable broadcasting packets via UDP over the local network."
+      since_firmware: "2.6.0"
     }];
 
     /*
      * Enable/Disable ipv6 support
      */
-    bool ipv6_enabled = 11;
+    bool ipv6_enabled = 11 [(meshtastic.field_metadata) = {
+      since_firmware: "2.7.16"
+    }];
 
     /*
      * Available flags auxiliary network protocols
@@ -964,18 +969,23 @@ message Config {
     bool use_12h_clock = 12 [(meshtastic.field_metadata) = {
       label: "12 Hour Clock"
       description: "Sets the screen clock format to 12-hour."
+      since_firmware: "2.5.22"
     }];
 
     /*
      * If false (default), the device will use short names for various display screens.
      * If true, node names will show in long format
      */
-    bool use_long_node_name = 13;
+    bool use_long_node_name = 13 [(meshtastic.field_metadata) = {
+      since_firmware: "2.7.13"
+    }];
 
     /*
      * If true, the device will display message bubbles on screen.
      */
-    bool enable_message_bubbles = 14;
+    bool enable_message_bubbles = 14 [(meshtastic.field_metadata) = {
+      since_firmware: "2.7.19"
+    }];
   }
 
   /*
@@ -1486,7 +1496,9 @@ message Config {
     /*
      * Set where LORA FEM is enabled, disabled, or not present
      */
-    FEM_LNA_Mode fem_lna_mode = 106;
+    FEM_LNA_Mode fem_lna_mode = 106 [(meshtastic.field_metadata) = {
+      since_firmware: "2.7.20"
+    }];
 
     /*
      * Don't use radiolib to initialize the radio, instead listen for a serialHal connection
@@ -1630,7 +1642,9 @@ message Config {
     /*
      * Determines the packet signature policy applied to remotely received mesh packets.
      */
-    PacketSignaturePolicy packet_signature_policy = 9;
+    PacketSignaturePolicy packet_signature_policy = 9 [(meshtastic.field_metadata) = {
+      since_firmware: "2.8.0"
+    }];
   }
 
   /*
