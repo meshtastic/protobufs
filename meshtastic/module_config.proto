@@ -1060,7 +1060,9 @@ message ModuleConfig {
     /*
      * Enable/disable CannedMessageModule.
      */
-    bool enabled = 9 [deprecated = true];
+    bool enabled = 9 [deprecated = true, (meshtastic.field_metadata) = {
+      deprecated_since: "2.7.0"
+    }];
 
     /*
      * Input event origin accepted by the canned message module.
