@@ -745,7 +745,8 @@ message Config {
    */
   message DisplayConfig {
     /*
-     * Deprecated in 2.7.4: Unused
+     * Unused. Kept so the deprecated gps_format field still has a type; when
+     * firmware stopped reading that field is recorded on the field itself.
      */
     enum DeprecatedGpsCoordinateFormat {
       UNUSED = 0;
