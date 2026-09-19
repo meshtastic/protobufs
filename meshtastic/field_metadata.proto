@@ -169,8 +169,11 @@ message FieldMetadata {
   optional string since_firmware = 10;
 
   /*
-   * The first firmware version that no longer honours this field, e.g. "2.3.13"
-   * on `compass_north_top` when `compass_orientation` replaced it.
+   * The first firmware version that no longer honours this field, e.g. "2.7.1"
+   * on `compass_north_top`: `compass_orientation` replaced it in 2.3.13, but
+   * firmware went on reading the old field until 2.7.1. The replacement's
+   * arrival and the old field's removal are different releases, which is the
+   * whole reason this is worth writing down.
    *
    * Distinct from `deprecated`, which says only THAT a field is superseded.
    * That is enough to stop offering it on new firmware but not enough to keep

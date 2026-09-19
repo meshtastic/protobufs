@@ -812,7 +812,6 @@ message Config {
     }];
 
     /*
-     * Deprecated in 2.7.4: Unused
      * How the GPS coordinates are formatted on the OLED screen.
      */
     DeprecatedGpsCoordinateFormat gps_format = 2 [
@@ -839,7 +838,7 @@ message Config {
       (meshtastic.field_metadata) = {
         label: "Always point north"
         description: "The compass heading on the screen outside of the circle will always point north."
-        deprecated_since: "2.7.2"
+        deprecated_since: "2.7.1"
       }
     ];
 
