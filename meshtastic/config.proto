@@ -373,12 +373,18 @@ message Config {
       /*
        * Include the DOP value ; PDOP used by default, see below
        */
-      DOP = 0x0008 [(meshtastic.enum_value_metadata) = {label: "Dilution of precision (DOP) PDOP used by default"}];
+      DOP = 0x0008 [(meshtastic.enum_value_metadata) = {
+        label: "DOP"
+        description: "Include the dilution of precision value. PDOP is used by default."
+      }];
 
       /*
        * If POS_DOP set, send separate HDOP / VDOP values instead of PDOP
        */
-      HVDOP = 0x0010 [(meshtastic.enum_value_metadata) = {label: "If DOP is set, use HDOP / VDOP values instead of PDOP"}];
+      HVDOP = 0x0010 [(meshtastic.enum_value_metadata) = {
+        label: "HDOP / VDOP"
+        description: "If DOP is set, send separate HDOP and VDOP values instead of PDOP."
+      }];
 
       /*
        * Include number of "satellites in view"
