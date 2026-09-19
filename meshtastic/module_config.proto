@@ -73,7 +73,9 @@ message ModuleConfig {
     /*
      * Deprecated: JSON packet support on MQTT was removed, and this field is ignored.
      */
-    bool json_enabled = 6 [deprecated = true];
+    bool json_enabled = 6 [deprecated = true, (meshtastic.field_metadata) = {
+      deprecated_since: "2.8.0"
+    }];
 
     /*
      * If true, we attempt to establish a secure connection using TLS
@@ -1064,7 +1066,9 @@ message ModuleConfig {
      * Input event origin accepted by the canned message module.
      * Can be e.g. "rotEnc1", "upDownEnc1", "scanAndSelect", "cardkb", "serialkb", or keyword "_any"
      */
-    string allow_input_source = 10 [deprecated = true];
+    string allow_input_source = 10 [deprecated = true, (meshtastic.field_metadata) = {
+      deprecated_since: "2.7.0"
+    }];
 
     /*
      * CannedMessageModule also sends a bell character with the messages.

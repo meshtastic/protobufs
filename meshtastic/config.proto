@@ -819,7 +819,9 @@ message Config {
      * Deprecated in 2.7.4: Unused
      * How the GPS coordinates are formatted on the OLED screen.
      */
-    DeprecatedGpsCoordinateFormat gps_format = 2 [deprecated = true];
+    DeprecatedGpsCoordinateFormat gps_format = 2 [deprecated = true, (meshtastic.field_metadata) = {
+      deprecated_since: "2.7.10"
+    }];
 
     /*
      * Automatically toggles to the next page on the screen like a carousel, based the specified interval in seconds.
