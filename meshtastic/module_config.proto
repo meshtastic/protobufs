@@ -785,7 +785,8 @@ message ModuleConfig {
     }];
 
     /*
-     * Send out range test messages from this node
+     * Sender interval. How long to wait between sending sequential test packets.
+     * 0 is default which disables sending messages.
      */
     uint32 sender = 2 [(meshtastic.field_metadata) = {
       label: "Sender Interval"
