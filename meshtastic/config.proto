@@ -842,6 +842,7 @@ message Config {
       (meshtastic.field_metadata) = {
         label: "Always point north"
         description: "The compass heading on the screen outside of the circle will always point north."
+        deprecated_since: "2.7.2"
       }
     ];
 
