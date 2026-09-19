@@ -376,51 +376,57 @@ message Config {
       /*
        * Altitude value is MSL
        */
-      ALTITUDE_MSL = 0x0002;
+      ALTITUDE_MSL = 0x0002 [(meshtastic.enum_value_metadata) = {label: "Altitude is Mean Sea Level"}];
 
       /*
        * Include geoidal separation
        */
-      GEOIDAL_SEPARATION = 0x0004;
+      GEOIDAL_SEPARATION = 0x0004 [(meshtastic.enum_value_metadata) = {label: "Altitude Geoidal Separation"}];
 
       /*
        * Include the DOP value ; PDOP used by default, see below
        */
-      DOP = 0x0008;
+      DOP = 0x0008 [(meshtastic.enum_value_metadata) = {
+        label: "DOP"
+        description: "Include the dilution of precision value. PDOP is used by default."
+      }];
 
       /*
        * If POS_DOP set, send separate HDOP / VDOP values instead of PDOP
        */
-      HVDOP = 0x0010;
+      HVDOP = 0x0010 [(meshtastic.enum_value_metadata) = {
+        label: "HDOP / VDOP"
+        description: "If DOP is set, send separate HDOP and VDOP values instead of PDOP."
+      }];
 
       /*
        * Include number of "satellites in view"
        */
-      SATINVIEW = 0x0020;
+      SATINVIEW = 0x0020 [(meshtastic.enum_value_metadata) = {label: "Number of satellites"}];
 
       /*
        * Include a sequence number incremented per packet
        */
-      SEQ_NO = 0x0040;
+      SEQ_NO = 0x0040 [(meshtastic.enum_value_metadata) = {label: "Sequence number"}];
 
       /*
        * Include positional timestamp (from GPS solution)
        */
-      TIMESTAMP = 0x0080;
+      TIMESTAMP = 0x0080 [(meshtastic.enum_value_metadata) = {label: "Timestamp"}];
 
       /*
        * Include positional heading
        * Intended for use with vehicle not walking speeds
        * walking speeds are likely to be error prone like the compass
        */
-      HEADING = 0x0100;
+      HEADING = 0x0100 [(meshtastic.enum_value_metadata) = {label: "Vehicle heading"}];
 
       /*
        * Include positional speed
        * Intended for use with vehicle not walking speeds
        * walking speeds are likely to be error prone like the compass
        */
-      SPEED = 0x0200;
+      SPEED = 0x0200 [(meshtastic.enum_value_metadata) = {label: "Vehicle speed"}];
     }
 
     enum GpsMode {
@@ -624,12 +630,12 @@ message Config {
       /*
        * obtain ip address via DHCP
        */
-      DHCP = 0;
+      DHCP = 0 [(meshtastic.enum_value_metadata) = {label: "DHCP"}];
 
       /*
        * use static ip address
        */
-      STATIC = 1;
+      STATIC = 1 [(meshtastic.enum_value_metadata) = {label: "Static"}];
     }
 
     message IpV4Config {
@@ -730,12 +736,12 @@ message Config {
       /*
        * Do not broadcast packets over any network protocol
        */
-      NO_BROADCAST = 0x0000;
+      NO_BROADCAST = 0x0000 [(meshtastic.enum_value_metadata) = {label: "None"}];
 
       /*
        * Enable broadcasting packets via UDP over the local network
        */
-      UDP_BROADCAST = 0x0001;
+      UDP_BROADCAST = 0x0001 [(meshtastic.enum_value_metadata) = {label: "UDP Broadcast"}];
     }
   }
 
@@ -792,12 +798,12 @@ message Config {
       /*
        * Can not be auto detected but set by proto. Used for 128x128 screens
        */
-      OLED_SH1107_128_128 = 4;
+      OLED_SH1107_128_128 = 4 [(meshtastic.enum_value_metadata) = {label: "SH 1107 128x128"}];
 
       /*
        * Can not be auto detected but set by proto. Used for 64x128 rotated screens
        */
-      OLED_SH1107_ROTATED = 5;
+      OLED_SH1107_ROTATED = 5 [(meshtastic.enum_value_metadata) = {label: "SH 1107 Rotated"}];
     }
 
     /*
