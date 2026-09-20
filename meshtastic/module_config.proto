@@ -945,7 +945,11 @@ message ModuleConfig {
     /*
      * Enable/Disable the air quality telemetry measurement module on-device display
      */
-    bool air_quality_screen_enabled = 15 [(meshtastic.field_metadata) = {since_firmware: "2.7.18"}];
+    bool air_quality_screen_enabled = 15 [(meshtastic.field_metadata) = {
+      label: "Show Air Quality on Device Screen"
+      description: "Display air quality measurements on device"
+      since_firmware: "2.7.18"
+    }];
   }
 
   /*
