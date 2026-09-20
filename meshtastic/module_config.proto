@@ -75,7 +75,11 @@ message ModuleConfig {
      */
     bool json_enabled = 6 [
       deprecated = true,
-      (meshtastic.field_metadata) = {deprecated_since: "2.8.0"}
+      (meshtastic.field_metadata) = {
+        label: "JSON Output Enabled"
+        description: "Send and receive plain JSON copies of packets over MQTT."
+        deprecated_since: "2.8.0"
+      }
     ];
 
     /*
