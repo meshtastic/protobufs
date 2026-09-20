@@ -3022,6 +3022,26 @@ enum ExcludedModules {
    * Network config (not technically a module, but used to indicate network capabilities)
    */
   NETWORK_CONFIG = 0x4000;
+
+  /*
+   * Status Message module
+   */
+  STATUSMESSAGE_CONFIG = 0x8000;
+
+  /*
+   * Traffic Management module
+   */
+  TRAFFICMANAGEMENT_CONFIG = 0x10000;
+
+  /*
+   * TAK module
+   */
+  TAK_CONFIG = 0x20000;
+
+  /*
+   * Mesh Beacon module
+   */
+  MESHBEACON_CONFIG = 0x40000;
 }
 
 /*
