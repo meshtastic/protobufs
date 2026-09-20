@@ -887,7 +887,7 @@ message Config {
       /*
        * Same as TwoColor, but with inverted top bar. Not so good for Epaper displays
        */
-      INVERTED = 2 [(meshtastic.enum_value_metadata) = {label: "Inverted top bar for 2 Color display"}];
+      INVERTED = 2 [(meshtastic.enum_value_metadata) = {label: "Inverted top bar for 2 color displays"}];
 
       /*
        * TFT Full Color Displays (not implemented yet)
@@ -914,7 +914,7 @@ message Config {
      * Should we wake the screen up on accelerometer detected motion or tap
      */
     bool wake_on_tap_or_motion = 10 [(meshtastic.field_metadata) = {
-      label: "Wake Screen on tap or motion"
+      label: "Wake on Tap or Motion"
       description: "Requires that there be an accelerometer on your device."
     }];
 

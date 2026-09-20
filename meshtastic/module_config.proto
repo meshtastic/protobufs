@@ -230,7 +230,7 @@ message ModuleConfig {
      * trigger event is detected
      */
     uint32 minimum_broadcast_secs = 2 [(meshtastic.field_metadata) = {
-      label: "Minimum time between detection broadcasts"
+      label: "Minimum Broadcast Interval"
       unit: "s"
       description: "Minimum time between detection broadcasts."
     }];
@@ -270,7 +270,7 @@ message ModuleConfig {
      * GPIO pin to monitor for state changes
      */
     uint32 monitor_pin = 6 [(meshtastic.field_metadata) = {
-      label: "GPIO Pin to monitor"
+      label: "Monitor GPIO Pin"
       description: "GPIO pin watched for state changes."
     }];
 
@@ -278,7 +278,7 @@ message ModuleConfig {
      * The type of trigger event to be used
      */
     TriggerType detection_trigger_type = 7 [(meshtastic.field_metadata) = {
-      label: "TriggerType"
+      label: "Trigger Type"
       description: "Type of trigger event"
     }];
 
@@ -287,7 +287,7 @@ message ModuleConfig {
      * Only applicable if the board uses pull-up resistors on the pin
      */
     bool use_pullup = 8 [(meshtastic.field_metadata) = {
-      label: "Uses pullup resistor"
+      label: "Pullup Resistor"
       description: "Whether or not use INPUT_PULLUP mode for GPIO pin. Only applicable if the board uses pull-up resistors on the pin"
     }];
   }
@@ -550,7 +550,7 @@ message ModuleConfig {
      * RX pin (should match Arduino gpio pin number)
      */
     uint32 rxd = 3 [(meshtastic.field_metadata) = {
-      label: "Receive data (rxd) GPIO pin"
+      label: "Receive GPIO Pin"
       description: "RX pin number"
     }];
 
@@ -558,7 +558,7 @@ message ModuleConfig {
      * TX pin (should match Arduino gpio pin number)
      */
     uint32 txd = 4 [(meshtastic.field_metadata) = {
-      label: "Transmit data (txd) GPIO pin"
+      label: "Transmit GPIO Pin"
       description: "TX pin number"
     }];
 
@@ -622,7 +622,7 @@ message ModuleConfig {
      * In standalone devices this pin should drive the LED to match the UI.
      */
     uint32 output = 3 [(meshtastic.field_metadata) = {
-      label: "Output pin GPIO"
+      label: "Output GPIO Pin"
       description: "GPIO pin driven on notification. Defaults to the board's EXT_NOTIFY_OUT pin."
     }];
 
@@ -631,7 +631,7 @@ message ModuleConfig {
      * This is used in standalone devices to match the UI.
      */
     uint32 output_vibra = 8 [(meshtastic.field_metadata) = {
-      label: "Output pin vibra GPIO"
+      label: "Vibra Motor GPIO Pin"
       description: "Vibration motor output pin"
     }];
 
@@ -640,7 +640,7 @@ message ModuleConfig {
      * This is used in standalone devices to to match the UI.
      */
     uint32 output_buzzer = 9 [(meshtastic.field_metadata) = {
-      label: "Output pin buzzer GPIO"
+      label: "Buzzer GPIO Pin"
       description: "Buzzer output pin"
     }];
 
@@ -657,7 +657,7 @@ message ModuleConfig {
      * True: Alert when a text message arrives (output)
      */
     bool alert_message = 5 [(meshtastic.field_metadata) = {
-      label: "Alert when receiving a message"
+      label: "Message Alert"
       description: "Alert on incoming message"
     }];
 
@@ -665,7 +665,7 @@ message ModuleConfig {
      * True: Alert when a text message arrives (output_vibra)
      */
     bool alert_message_vibra = 10 [(meshtastic.field_metadata) = {
-      label: "Vibra Motor Alert"
+      label: "Message Vibra Motor Alert"
       description: "Alert GPIO vibra motor when receiving a message"
     }];
 
@@ -673,7 +673,7 @@ message ModuleConfig {
      * True: Alert when a text message arrives (output_buzzer)
      */
     bool alert_message_buzzer = 11 [(meshtastic.field_metadata) = {
-      label: "Alert GPIO buzzer when receiving a message"
+      label: "Message Buzzer Alert"
       description: "Buzz on incoming message"
     }];
 
@@ -681,7 +681,7 @@ message ModuleConfig {
      * True: Alert when the bell character is received (output)
      */
     bool alert_bell = 6 [(meshtastic.field_metadata) = {
-      label: "Alert when receiving a bell"
+      label: "Bell Alert"
       description: "Alert on bell character"
     }];
 
@@ -689,7 +689,7 @@ message ModuleConfig {
      * True: Alert when the bell character is received (output_vibra)
      */
     bool alert_bell_vibra = 12 [(meshtastic.field_metadata) = {
-      label: "Alert GPIO vibra motor when receiving a bell"
+      label: "Bell Vibra Motor Alert"
       description: "Vibrate on bell character"
     }];
 
@@ -697,7 +697,7 @@ message ModuleConfig {
      * True: Alert when the bell character is received (output_buzzer)
      */
     bool alert_bell_buzzer = 13 [(meshtastic.field_metadata) = {
-      label: "Alert GPIO buzzer when receiving a bell"
+      label: "Bell Buzzer Alert"
       description: "Buzz on bell character"
     }];
 
@@ -755,7 +755,7 @@ message ModuleConfig {
     /*
      * TODO: REPLACE
      */
-    uint32 records = 3 [(meshtastic.field_metadata) = {label: "Number of records"}];
+    uint32 records = 3 [(meshtastic.field_metadata) = {label: "Number of Records"}];
 
     /*
      * TODO: REPLACE
