@@ -858,7 +858,7 @@ message ModuleConfig {
      * Enable/Disable the telemetry measurement module on-device display
      */
     bool environment_screen_enabled = 4 [(meshtastic.field_metadata) = {
-      label: "Show on device screen"
+      label: "Show environment on device screen"
       description: "Display environment measurements on device"
     }];
 
@@ -946,7 +946,7 @@ message ModuleConfig {
      * Enable/Disable the air quality telemetry measurement module on-device display
      */
     bool air_quality_screen_enabled = 15 [(meshtastic.field_metadata) = {
-      label: "Show Air Quality on Device Screen"
+      label: "Show air quality on device screen"
       description: "Display air quality measurements on device"
       since_firmware: "2.7.18"
     }];
