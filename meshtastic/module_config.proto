@@ -591,7 +591,10 @@ message ModuleConfig {
      * This is currently only usable in output modes like NMEA / CalTopo and may behave strangely or not work at all in other modes
      * Existing logging over the Serial Console will still be present
      */
-    bool override_console_serial_port = 8;
+    bool override_console_serial_port = 8 [(meshtastic.field_metadata) = {
+      label: "Override Console Serial Port"
+      description: "Use the console serial port for the Serial module. Only works in output modes such as NMEA and CalTopo."
+    }];
   }
 
   /*
