@@ -666,6 +666,15 @@ func swiftLiteral(schema []schemaField, e entry) string {
 	return "FieldMetadata(" + strings.Join(parts, ", ") + ")"
 }
 
+// machineReadableAttributes are the string attributes that are NOT display text
+// and so are emitted as plain literals rather than handed to a localizer. See the
+// note on string attributes in meshtastic/field_metadata.proto: the set is closed
+// on purpose, because every entry is a string no translator will ever see.
+var machineReadableAttributes = map[string]bool{
+	"since_firmware":   true,
+	"deprecated_since": true,
+}
+
 // swiftValue renders one attribute value. Non-string attributes render as plain
 // literals; STRING attributes are user-facing display text (see
 // meshtastic/field_metadata.proto) and are emitted as
@@ -682,6 +691,12 @@ func swiftValue(e entry, f metaField) string {
 	s, isString := f.Value.(string)
 	if !isString {
 		return decimalFloatValue(f.Value)
+	}
+	// A machine-readable string is compared, not read: a translated firmware
+	// version would compare wrongly at runtime. Kept in step with the Swift
+	// plugin's own copy by the parity check.
+	if machineReadableAttributes[f.Name] {
+		return quoteString(s)
 	}
 	full := e.MessageType + "." + e.FieldName
 	return fmt.Sprintf(

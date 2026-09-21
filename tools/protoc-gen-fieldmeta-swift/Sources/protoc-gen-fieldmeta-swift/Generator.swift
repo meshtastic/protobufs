@@ -280,6 +280,12 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         }
     }
 
+    /// The string attributes that are NOT display text and so are emitted as plain
+    /// literals rather than handed to a localizer. See the note on string attributes
+    /// in meshtastic/field_metadata.proto: the set is closed on purpose, because every
+    /// entry is a string no translator will ever see.
+    private static let machineReadableAttributes: Set<String> = ["since_firmware", "deprecated_since"]
+
     /// Renders one attribute value. Non-string attributes become plain literals;
     /// STRING attributes are user-facing display text (see field_metadata.proto) and
     /// become `String(localized:defaultValue:comment:)`, so Xcode's string-catalog
@@ -305,6 +311,12 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         // Exact: the schema guard rejects 64-bit kinds, so this is at most UInt32.max.
         case .uint(let u): return "\(u)"
         case .string(let s):
+            // A machine-readable string is compared, not read: a translated firmware
+            // version would compare wrongly at runtime. Kept in step with the Go
+            // plugin's own copy by the parity check.
+            if Self.machineReadableAttributes.contains(attribute) {
+                return swiftStringLiteral(s)
+            }
             let full = "\(entry.protoTypeName).\(entry.protoFieldName)"
             return "String(localized: \(swiftStringLiteral("\(full).\(attribute)"))"
                 + ", defaultValue: \(swiftStringLiteral(s))"

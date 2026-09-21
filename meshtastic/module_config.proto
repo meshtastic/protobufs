@@ -73,7 +73,10 @@ message ModuleConfig {
     /*
      * Deprecated: JSON packet support on MQTT was removed, and this field is ignored.
      */
-    bool json_enabled = 6 [deprecated = true];
+    bool json_enabled = 6 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.8.0"}
+    ];
 
     /*
      * If true, we attempt to establish a secure connection using TLS
@@ -138,6 +141,7 @@ message ModuleConfig {
     bool should_report_location = 3 [(meshtastic.field_metadata) = {
       label: "Report Location"
       description: "I have read and understand the above. I voluntarily consent to the unencrypted transmission of my node data via MQTT."
+      since_firmware: "2.6.8"
     }];
   }
 
@@ -199,19 +203,19 @@ message ModuleConfig {
   message DetectionSensorConfig {
     enum TriggerType {
       // Event is triggered if pin is low
-      LOGIC_LOW = 0;
+      LOGIC_LOW = 0 [(meshtastic.enum_value_metadata) = {label: "Low"}];
       // Event is triggered if pin is high
-      LOGIC_HIGH = 1;
+      LOGIC_HIGH = 1 [(meshtastic.enum_value_metadata) = {label: "High"}];
       // Event is triggered when pin goes high to low
-      FALLING_EDGE = 2;
+      FALLING_EDGE = 2 [(meshtastic.enum_value_metadata) = {label: "Falling Edge"}];
       // Event is triggered when pin goes low to high
-      RISING_EDGE = 3;
+      RISING_EDGE = 3 [(meshtastic.enum_value_metadata) = {label: "Rising Edge"}];
       // Event is triggered on every pin state change, low is considered to be
       // "active"
-      EITHER_EDGE_ACTIVE_LOW = 4;
+      EITHER_EDGE_ACTIVE_LOW = 4 [(meshtastic.enum_value_metadata) = {label: "Either Edge Low"}];
       // Event is triggered on every pin state change, high is considered to be
       // "active"
-      EITHER_EDGE_ACTIVE_HIGH = 5;
+      EITHER_EDGE_ACTIVE_HIGH = 5 [(meshtastic.enum_value_metadata) = {label: "Either Edge High"}];
     }
     /*
      * Whether the Module is enabled
@@ -296,13 +300,13 @@ message ModuleConfig {
      * Baudrate for codec2 voice
      */
     enum Audio_Baud {
-      CODEC2_DEFAULT = 0;
-      CODEC2_3200 = 1;
-      CODEC2_2400 = 2;
-      CODEC2_1600 = 3;
-      CODEC2_1400 = 4;
-      CODEC2_1300 = 5;
-      CODEC2_1200 = 6;
+      CODEC2_DEFAULT = 0 [(meshtastic.enum_value_metadata) = {label: "Default"}];
+      CODEC2_3200 = 1 [(meshtastic.enum_value_metadata) = {label: "3200 bps"}];
+      CODEC2_2400 = 2 [(meshtastic.enum_value_metadata) = {label: "2400 bps"}];
+      CODEC2_1600 = 3 [(meshtastic.enum_value_metadata) = {label: "1600 bps"}];
+      CODEC2_1400 = 4 [(meshtastic.enum_value_metadata) = {label: "1400 bps"}];
+      CODEC2_1300 = 5 [(meshtastic.enum_value_metadata) = {label: "1300 bps"}];
+      CODEC2_1200 = 6 [(meshtastic.enum_value_metadata) = {label: "1200 bps"}];
 
       /*
        * Removed from libcodec2 upstream. A device configured to one of these
@@ -314,12 +318,12 @@ message ModuleConfig {
       /*
        * Replaces CODEC2_700. Default for new configurations.
        */
-      CODEC2_700C = 9;
+      CODEC2_700C = 9 [(meshtastic.enum_value_metadata) = {label: "700C bps"}];
 
       /*
        * Lowest rate, and the only one usable on slower modem presets.
        */
-      CODEC2_450 = 10;
+      CODEC2_450 = 10 [(meshtastic.enum_value_metadata) = {label: "450 bps"}];
     }
 
     /*
@@ -506,7 +510,7 @@ message ModuleConfig {
      * TODO: REPLACE
      */
     enum Serial_Mode {
-      DEFAULT = 0;
+      DEFAULT = 0 [(meshtastic.enum_value_metadata) = {label: "Default"}];
       SIMPLE = 1 [(meshtastic.enum_value_metadata) = {label: "Simple"}];
       PROTO = 2 [(meshtastic.enum_value_metadata) = {label: "Protobufs"}];
       TEXTMSG = 3 [(meshtastic.enum_value_metadata) = {label: "Text Message"}];
@@ -806,7 +810,7 @@ message ModuleConfig {
      * Bool indicating that the node should cleanup / destroy it's RangeTest.csv file.
      * ESP32 Only
      */
-    bool clear_on_reboot = 4;
+    bool clear_on_reboot = 4 [(meshtastic.field_metadata) = {since_firmware: "2.7.11"}];
   }
 
   /*
@@ -928,12 +932,13 @@ message ModuleConfig {
     bool device_telemetry_enabled = 14 [(meshtastic.field_metadata) = {
       label: "Broadcast Device Metrics"
       description: "Enable broadcasting device metrics to the mesh network. When disabled, metrics are only sent to connected clients."
+      since_firmware: "2.7.13"
     }];
 
     /*
      * Enable/Disable the air quality telemetry measurement module on-device display
      */
-    bool air_quality_screen_enabled = 15;
+    bool air_quality_screen_enabled = 15 [(meshtastic.field_metadata) = {since_firmware: "2.7.18"}];
   }
 
   /*
@@ -1052,13 +1057,19 @@ message ModuleConfig {
     /*
      * Enable/disable CannedMessageModule.
      */
-    bool enabled = 9 [deprecated = true];
+    bool enabled = 9 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.7.0"}
+    ];
 
     /*
      * Input event origin accepted by the canned message module.
      * Can be e.g. "rotEnc1", "upDownEnc1", "scanAndSelect", "cardkb", "serialkb", or keyword "_any"
      */
-    string allow_input_source = 10 [deprecated = true];
+    string allow_input_source = 10 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.7.0"}
+    ];
 
     /*
      * CannedMessageModule also sends a bell character with the messages.
@@ -1337,22 +1348,22 @@ message ModuleConfig {
     /*
      * TODO: REPLACE
      */
-    StatusMessageConfig statusmessage = 14;
+    StatusMessageConfig statusmessage = 14 [(meshtastic.field_metadata) = {since_firmware: "2.7.20"}];
 
     /*
      * Traffic management module config for mesh network optimization
      */
-    TrafficManagementConfig traffic_management = 15;
+    TrafficManagementConfig traffic_management = 15 [(meshtastic.field_metadata) = {since_firmware: "2.8.0"}];
 
     /*
      * TAK team/role configuration for TAK_TRACKER
      */
-    TAKConfig tak = 16;
+    TAKConfig tak = 16 [(meshtastic.field_metadata) = {since_firmware: "2.8.0"}];
 
     /*
      * MeshBeacon module config
      */
-    MeshBeaconConfig mesh_beacon = 17;
+    MeshBeaconConfig mesh_beacon = 17 [(meshtastic.field_metadata) = {since_firmware: "2.8.0"}];
   }
 
   /*

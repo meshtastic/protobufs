@@ -44,12 +44,38 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
 /// not set to inf. A list is therefore a single delimited string - see
 /// `keywords`. See tools/protoc-gen-fieldmeta.
 ///
+/// BOUNDS (`min_value`, `max_value`) are PRESENTATION metadata, deliberately, and
+/// they overlap an existing standard. protovalidate - `(buf.validate.field)`,
+/// buf's successor to protoc-gen-validate - is the industry-standard way to
+/// express a numeric constraint in a schema, and where a constraint must be
+/// ENFORCED that is the thing to reach for, not these two attributes.
+///
+/// They exist here anyway because protovalidate evaluates CEL against a
+/// descriptor at runtime, and the consumers that most need a bound cannot do
+/// that: nanopb on the firmware has no descriptors and no CEL, and neither do
+/// the generated Wire, prost or swift-protobuf types the clients use. A build-
+/// time attribute is the only form that reaches every target.
+///
+/// The cost is that a bound stated here and a bound enforced elsewhere can
+/// drift, and nothing detects it. So: state a bound here only when the firmware
+/// genuinely enforces it, treat the firmware as the source of truth, and if
+/// `(buf.validate.field)` is ever adopted for a field, make these mirror it
+/// rather than compete with it.
+///
 /// STRING attributes are treated as user-facing display text and are emitted for
 /// localization where the target supports it - the Swift target emits
 /// String(localized:defaultValue:comment:) keyed by the field's full name, so the
 /// English here is the SOURCE string and translations live in the consuming app's
 /// catalog. Do not put machine-readable values (regexes, identifiers, format
 /// codes) in a string attribute; they would be handed to translators.
+///
+/// The exception is a short, named set of MACHINE-READABLE string attributes -
+/// currently `since_firmware` and `deprecated_since` - which the generators emit
+/// as plain literals. A firmware version is compared rather than read, and a
+/// translated one would compare wrongly at runtime. The set is deliberately
+/// closed and lives in the generators (`machineReadableAttributes`); adding to it
+/// is a generator change and should stay rare, because every entry is a string a
+/// translator will never see and therefore a place display text can hide.
 ///
 /// To tag a field, set the option on it, e.g.
 ///   uint32 rx_gpio = 8 [(meshtastic.field_metadata) = { diy_only: true }];
@@ -92,7 +118,10 @@ public nonisolated struct FieldMetadata: Sendable {
   public mutating func clearAdminOnly() {self._adminOnly = nil}
 
   ///
-  /// Inclusive lower bound for the field value, for UI validation/clamping.
+  /// Inclusive lower bound, for PRESENTATION: slider and stepper range, and the
+  /// client-side check that stops a user entering a value the firmware would
+  /// reject anyway. It is NOT the wire contract and nothing enforces it on
+  /// receipt - see the note on bounds below.
   public var minValue: Double {
     get {_minValue ?? 0}
     set {_minValue = newValue}
@@ -103,7 +132,7 @@ public nonisolated struct FieldMetadata: Sendable {
   public mutating func clearMinValue() {self._minValue = nil}
 
   ///
-  /// Inclusive upper bound for the field value, for UI validation/clamping.
+  /// Inclusive upper bound, for PRESENTATION. Same status as `min_value`.
   public var maxValue: Double {
     get {_maxValue ?? 0}
     set {_maxValue = newValue}
@@ -183,6 +212,66 @@ public nonisolated struct FieldMetadata: Sendable {
   /// Clears the value of `keywords`. Subsequent reads from it will return its default value.
   public mutating func clearKeywords() {self._keywords = nil}
 
+  ///
+  /// The first firmware version that has this field, e.g. "2.7.12".
+  ///
+  /// A client showing a control for a field the connected node does not have
+  /// offers a setting that will be ignored; one hiding a field the node does
+  /// have loses a setting that works. Today each client answers that from a
+  /// version constant written into its own UI, so the same boundary is stated
+  /// independently in each of them - and when firmware adds a field, every
+  /// client has to learn the number separately.
+  ///
+  /// MACHINE-READABLE (see the note on string attributes above): a version is
+  /// compared, not read, and is emitted as a plain literal rather than as
+  /// localizable text.
+  ///
+  /// Presentation metadata, like `min_value`: firmware still has to defend
+  /// itself, since an older client can always write a field a newer firmware
+  /// ignores, and a newer client a field an older one does not know.
+  ///
+  /// Unset means "as long as anyone needs to care", which is the common case -
+  /// annotate a field only where a client genuinely has to make this decision.
+  public var sinceFirmware: String {
+    get {_sinceFirmware ?? String()}
+    set {_sinceFirmware = newValue}
+  }
+  /// Returns true if `sinceFirmware` has been explicitly set.
+  public var hasSinceFirmware: Bool {self._sinceFirmware != nil}
+  /// Clears the value of `sinceFirmware`. Subsequent reads from it will return its default value.
+  public mutating func clearSinceFirmware() {self._sinceFirmware = nil}
+
+  ///
+  /// The first firmware version that no longer honours this field, e.g. "2.7.1"
+  /// on `compass_north_top`: `compass_orientation` replaced it in 2.3.13, but
+  /// firmware went on reading the old field until 2.7.1. The replacement's
+  /// arrival and the old field's removal are different releases, which is the
+  /// whole reason this is worth writing down.
+  ///
+  /// Distinct from `deprecated`, which says only THAT a field is superseded.
+  /// That is enough to stop offering it on new firmware but not enough to keep
+  /// offering it where it still works: a node below this version needs the field,
+  /// and a client that hides it on the strength of the boolean alone takes a
+  /// working setting away. Both clients do exactly that today.
+  ///
+  /// So the intended rule is: show the field below this version; at or above it,
+  /// treat it as `deprecated` does - hidden unless the node holds a non-default
+  /// value, which keeps a stale setting visible rather than silently saved.
+  ///
+  /// Deprecated is not removed. A field firmware has stopped reading entirely is
+  /// a different statement and wants its own annotation rather than this one.
+  ///
+  /// MACHINE-READABLE, and presentation metadata, on the same terms as
+  /// `since_firmware`.
+  public var deprecatedSince: String {
+    get {_deprecatedSince ?? String()}
+    set {_deprecatedSince = newValue}
+  }
+  /// Returns true if `deprecatedSince` has been explicitly set.
+  public var hasDeprecatedSince: Bool {self._deprecatedSince != nil}
+  /// Clears the value of `deprecatedSince`. Subsequent reads from it will return its default value.
+  public mutating func clearDeprecatedSince() {self._deprecatedSince = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -196,6 +285,8 @@ public nonisolated struct FieldMetadata: Sendable {
   fileprivate var _label: String? = nil
   fileprivate var _description_p: String? = nil
   fileprivate var _keywords: String? = nil
+  fileprivate var _sinceFirmware: String? = nil
+  fileprivate var _deprecatedSince: String? = nil
 }
 
 // MARK: - Extension support defined in field_metadata.proto.
@@ -317,7 +408,7 @@ fileprivate nonisolated let _protobuf_package = "meshtastic"
 
 nonisolated extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FieldMetadata"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}diy_only\0\u{3}admin_only\0\u{3}min_value\0\u{3}max_value\0\u{1}unit\0\u{1}deprecated\0\u{1}label\0\u{1}description\0\u{1}keywords\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}diy_only\0\u{3}admin_only\0\u{3}min_value\0\u{3}max_value\0\u{1}unit\0\u{1}deprecated\0\u{1}label\0\u{1}description\0\u{1}keywords\0\u{3}since_firmware\0\u{3}deprecated_since\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -334,6 +425,8 @@ nonisolated extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._Messa
       case 7: try { try decoder.decodeSingularStringField(value: &self._label) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self._description_p) }()
       case 9: try { try decoder.decodeSingularStringField(value: &self._keywords) }()
+      case 10: try { try decoder.decodeSingularStringField(value: &self._sinceFirmware) }()
+      case 11: try { try decoder.decodeSingularStringField(value: &self._deprecatedSince) }()
       default: break
       }
     }
@@ -371,6 +464,12 @@ nonisolated extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._Messa
     try { if let v = self._keywords {
       try visitor.visitSingularStringField(value: v, fieldNumber: 9)
     } }()
+    try { if let v = self._sinceFirmware {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 10)
+    } }()
+    try { if let v = self._deprecatedSince {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 11)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -384,6 +483,8 @@ nonisolated extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if lhs._label != rhs._label {return false}
     if lhs._description_p != rhs._description_p {return false}
     if lhs._keywords != rhs._keywords {return false}
+    if lhs._sinceFirmware != rhs._sinceFirmware {return false}
+    if lhs._deprecatedSince != rhs._deprecatedSince {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
