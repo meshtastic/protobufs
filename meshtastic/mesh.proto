@@ -1798,6 +1798,44 @@ message MeshPacket {
   }
 
   /*
+   * Outcome of checking Routing.ack_proof on a received ack or nak.
+   *
+   * Reported, never enforced: an ack without a usable proof is acted on exactly as it was before
+   * proofs existed. The value exists so a client can tell a proven delivery receipt from an
+   * unproven one, and can tell "nobody proved this" from "somebody tried and failed".
+   */
+  enum AckProofStatus {
+    /*
+     * No proof was carried. The default, and what every ack from firmware predating
+     * Routing.ack_proof looks like, so an absent field and an absent proof read the same.
+     */
+    ACK_PROOF_ABSENT = 0;
+
+    /*
+     * A proof was carried and verified against the public key of the node the acknowledged packet
+     * was addressed to. The only value that means "the recipient received it".
+     *
+     * Verifying against the key of whoever the ack claims to be from is NOT sufficient: the proof
+     * only shows its author holds a pairwise secret with us, and every keyed peer holds one, so
+     * any of them could otherwise mint a receipt for a packet addressed to someone else.
+     */
+    ACK_PROOF_VALID = 1;
+
+    /*
+     * A proof was carried and did not verify. Someone produced an ack for an outstanding packet
+     * without holding the pairwise secret, so this is an attempted forgery rather than a quiet
+     * absence, and is worth surfacing differently from ACK_PROOF_ABSENT.
+     */
+    ACK_PROOF_INVALID = 2;
+
+    /*
+     * A proof was carried but no authoritative public key was available to check it against, so
+     * the ack is neither proven nor disproven.
+     */
+    ACK_PROOF_NO_KEY = 3;
+  }
+
+  /*
    * The sending node number.
    * Note: Our crypto implementation uses this field as well.
    * See [crypto](/docs/overview/encryption) for details.
@@ -1971,6 +2009,19 @@ message MeshPacket {
    * Indicates whether the packet has a valid signature
    */
   bool xeddsa_signed = 22;
+
+  /*
+   * *Never* sent over the radio links.
+   * Set by the firmware on a received ack or nak, reporting whether its Routing.ack_proof proved
+   * that the node we addressed is the one acknowledging. Clients are not supposed to set this, and
+   * the firmware clears whatever arrives here before evaluating a packet - an inbound value is
+   * attacker-controlled, since MQTT and the client API both carry whole MeshPacket protobufs.
+   *
+   * Distinct from xeddsa_signed, which is an identity signature any holder of the sender's public
+   * key can check. This is a pairwise MAC that only the original sender can check, and it attests
+   * to delivery rather than to authorship.
+   */
+  AckProofStatus ack_proof_status = 23;
 }
 
 /*
