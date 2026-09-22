@@ -578,11 +578,12 @@ message LockdownAuth {
    * recover the DEK without knowing the passphrase, and at-rest
    * encryption protects the data only against a casual dump.
    *
-   * This bounds exposure by reboot count; it does not eliminate it. Set
-   * 0 (passphrase on every boot) when the threat model includes someone
-   * taking physical possession of the node. Clients offering a default
-   * should prefer 0 and present any non-zero value as an explicit
-   * convenience trade-off.
+   * This bounds exposure by reboot count; it does not eliminate it. 0 is
+   * the sentinel for TOKEN_DEFAULT_BOOTS, not a request for zero boots,
+   * so it is the most permissive setting rather than the strictest; 1 is
+   * the lowest, granting a single unlocked boot. No value here gets a
+   * passphrase on every boot. Clients offering a default should send an
+   * explicit count and present it as a convenience trade-off.
    */
   uint32 boots_remaining = 2;
 
