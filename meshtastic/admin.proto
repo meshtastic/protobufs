@@ -580,10 +580,11 @@ message LockdownAuth {
    *
    * This bounds exposure by reboot count; it does not eliminate it. 0 is
    * the sentinel for TOKEN_DEFAULT_BOOTS, not a request for zero boots,
-   * so it is the most permissive setting rather than the strictest; 1 is
-   * the lowest, granting a single unlocked boot. No value here gets a
-   * passphrase on every boot. Clients offering a default should send an
-   * explicit count and present it as a convenience trade-off.
+   * so it selects a lenient default rather than the strictest setting;
+   * 1 is the lowest, granting a single unlocked boot. No value of this
+   * field requires a passphrase on every boot. Clients offering a
+   * default should send an explicit count and present it as a
+   * convenience trade-off.
    */
   uint32 boots_remaining = 2;
 
