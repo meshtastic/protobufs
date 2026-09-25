@@ -721,7 +721,7 @@ message Config {
      */
     uint32 enabled_protocols = 10 [(meshtastic.field_metadata) = {
       label: "Enabled Protocols"
-      description: "Enable broadcasting packets via UDP over the local network."
+      description: "Which auxiliary transports this node carries mesh packets over, as a bitfield of ProtocolFlags."
       since_firmware: "2.6.0"
     }];
 
@@ -743,6 +743,23 @@ message Config {
        * Enable broadcasting packets via UDP over the local network
        */
       UDP_BROADCAST = 0x0001 [(meshtastic.enum_value_metadata) = {label: "UDP Broadcast"}];
+
+      /*
+       * Enable broadcasting packets via connectionless BLE extended advertisements
+       */
+      BLE_BROADCAST = 0x0002 [(meshtastic.enum_value_metadata) = {label: "BLE Broadcast"}];
+
+      /*
+       * Carry mesh packets over the BLE GATT mesh-peer service, in either GATT role: a node
+       * serves the service to peers that connect to it, and a node that can act as a central
+       * connects outward to peers serving it.
+       *
+       * Distinct from bluetooth.enabled, which gates the phone-API BLE interface. These are two
+       * services on the same controller with different UUIDs and different jobs - the phone API
+       * is a client configuring one node, this is mesh traffic between nodes - and a device may
+       * run either, both or neither.
+       */
+      BLE_GATT_PEER = 0x0004 [(meshtastic.enum_value_metadata) = {label: "BLE GATT Peer"}];
     }
   }
 
