@@ -54,7 +54,10 @@ message Config {
 
       ROUTER_CLIENT = 3 [
         deprecated = true,
-        (meshtastic.enum_value_metadata) = {label: "Router Client"}
+        (meshtastic.enum_value_metadata) = {
+          label: "Router Client"
+          deprecated_since: "2.3.15"
+        }
       ];
 
       /*
@@ -68,6 +71,7 @@ message Config {
         (meshtastic.enum_value_metadata) = {
           label: "Repeater"
           description: "Deprecated infrastructure role that creates gaps in the mesh rebroadcast chain. Switch this node to a Router-based role (Router or Router Late)."
+          deprecated_since: "2.7.11"
         }
       ];
 
@@ -266,7 +270,10 @@ message Config {
      * Disabling this will disable the SerialConsole by not initilizing the StreamAPI
      * Moved to SecurityConfig
      */
-    bool serial_enabled = 2 [deprecated = true];
+    bool serial_enabled = 2 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.5.0"}
+    ];
 
     /*
      * For boards without a hard wired button, this is the pin number that will be used
@@ -314,7 +321,10 @@ message Config {
      * Clients should then limit available configuration and administrative options inside the user interface
      * Moved to SecurityConfig
      */
-    bool is_managed = 9 [deprecated = true];
+    bool is_managed = 9 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.5.0"}
+    ];
 
     /*
      * Disables the triple-press of user button to enable or disable GPS
@@ -474,7 +484,10 @@ message Config {
     /*
      * Is GPS enabled for this node?
      */
-    bool gps_enabled = 4 [deprecated = true];
+    bool gps_enabled = 4 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.2.21"}
+    ];
 
     /*
      * How often should we try to get GPS position (in seconds)
@@ -490,7 +503,10 @@ message Config {
     /*
      * Deprecated in favor of using smart / regular broadcast intervals as implicit attempt time
      */
-    uint32 gps_attempt_time = 6 [deprecated = true];
+    uint32 gps_attempt_time = 6 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.2.18"}
+    ];
 
     /*
      * Bit field of boolean configuration options for POSITION messages
@@ -1075,7 +1091,10 @@ message Config {
        */
       UA_868 = 15 [
         deprecated = true,
-        (meshtastic.enum_value_metadata) = {label: "Ukraine 868MHz"}
+        (meshtastic.enum_value_metadata) = {
+          label: "Ukraine 868MHz"
+          deprecated_since: "2.8.0"
+        }
       ];
 
       /*
@@ -1214,11 +1233,14 @@ message Config {
 
       /*
        * Very Long Range - Slow
-       * Deprecated in 2.5: Works only with txco and is unusably slow
+       * Deprecated: works only with a TCXO and is unusably slow.
        */
       VERY_LONG_SLOW = 2 [
         deprecated = true,
-        (meshtastic.enum_value_metadata) = {label: "Very Long Range - Slow"}
+        (meshtastic.enum_value_metadata) = {
+          label: "Very Long Range - Slow"
+          deprecated_since: "2.6.5"
+        }
       ];
 
       /*
