@@ -1560,7 +1560,7 @@ message Config {
        */
       PACKET_SIGNATURE_POLICY_COMPATIBLE = 0 [(meshtastic.enum_value_metadata) = {
         label: "Compatible - Accept Unsigned"
-        description: "Authenticate packets when possible, but accept unsigned traffic for maximum compatibility"
+        description: "Accept unsigned traffic for maximum compatibility. A signature that can be checked and is wrong still drops the packet."
       }];
 
       /*
