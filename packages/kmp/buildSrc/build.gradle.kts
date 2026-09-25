@@ -10,5 +10,5 @@ repositories {
 dependencies {
     // Build-time only: lets the custom Wire SchemaHandler walk the parsed schema and read
     // the (meshtastic.field_metadata) field options. NOT shipped in any published artifact.
-    implementation("com.squareup.wire:wire-schema:7.0.3")
+    implementation("com.squareup.wire:wire-schema:7.0.4")
 }
