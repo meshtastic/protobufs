@@ -75,7 +75,11 @@ message ModuleConfig {
      */
     bool json_enabled = 6 [
       deprecated = true,
-      (meshtastic.field_metadata) = {deprecated_since: "2.8.0"}
+      (meshtastic.field_metadata) = {
+        label: "JSON Output Enabled"
+        description: "Send and receive plain JSON copies of packets over MQTT."
+        deprecated_since: "2.8.0"
+      }
     ];
 
     /*
@@ -591,7 +595,10 @@ message ModuleConfig {
      * This is currently only usable in output modes like NMEA / CalTopo and may behave strangely or not work at all in other modes
      * Existing logging over the Serial Console will still be present
      */
-    bool override_console_serial_port = 8;
+    bool override_console_serial_port = 8 [(meshtastic.field_metadata) = {
+      label: "Override Console Serial Port"
+      description: "Use the console serial port for the Serial module. Only works in output modes such as NMEA and CalTopo."
+    }];
   }
 
   /*
@@ -851,7 +858,7 @@ message ModuleConfig {
      * Enable/Disable the telemetry measurement module on-device display
      */
     bool environment_screen_enabled = 4 [(meshtastic.field_metadata) = {
-      label: "Show on device screen"
+      label: "Show environment on device screen"
       description: "Display environment measurements on device"
     }];
 
@@ -938,7 +945,11 @@ message ModuleConfig {
     /*
      * Enable/Disable the air quality telemetry measurement module on-device display
      */
-    bool air_quality_screen_enabled = 15 [(meshtastic.field_metadata) = {since_firmware: "2.7.18"}];
+    bool air_quality_screen_enabled = 15 [(meshtastic.field_metadata) = {
+      label: "Show air quality on device screen"
+      description: "Display air quality measurements on device"
+      since_firmware: "2.7.18"
+    }];
   }
 
   /*
