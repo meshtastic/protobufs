@@ -974,6 +974,11 @@ enum HardwareModel {
   AXIOMETA_GENESIS_MINI = 148;
 
   /*
+   * RAK3401 WisBlock core with RAK13700 (LR2021) in the IO slot. Distinct from RAK3401 (117), which is the SX1262 1W radio.
+   */
+  RAK3401_LR2021 = 149;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
