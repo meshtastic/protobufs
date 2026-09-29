@@ -4,6 +4,7 @@
 packages/ts/lib/
 packages/kmp/.gradle/
 packages/kmp/build/
+packages/kmp/serialization/build/
 packages/kmp/buildSrc/.gradle/
 packages/kmp/buildSrc/build/
 .bin/
