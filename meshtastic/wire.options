@@ -11,9 +11,6 @@
 *User.long_name max_size:25
 *User.short_name max_size:5
 
-# One route entry per relay, at most the 15 hops a four-bit hop_start allows. Each SNR
-# list holds one more, for the final hop into the destination.
-
 # One frame's worth: no LoRa frame is longer than 256 bytes. The room a frame
 # actually leaves for Data depends on the header, the tag and the path, and firmware
 # enforces it per packet (SCHEMA.md §8, Payload room).
@@ -39,6 +36,9 @@
 *StoreForwardPlusPlus.commit_hash max_size:32
 *StoreForwardPlusPlus.root_hash max_size:32
 *StoreForwardPlusPlus.message max_size:256
+
+# Hop-by-hop bits, one byte wide: the highest is 0x02 here and 0x04 with anycast.
+*HeaderOptions.hop_flags int_size:8
 
 *RemoteShell.payload max_size:200
 *RemoteShell.op int_size:8

@@ -565,6 +565,38 @@ message HeaderOptions {
    * msg_id is a per-sender counter and wraps after 256 fragmented messages.
    */
   uint32 fragment = 1;
+
+  /*
+   * Hop-by-hop booleans: a bitwise OR of HopFlags values.
+   *
+   * Set by the originator and covered by the AAD, so a relay may read them but cannot
+   * forge or strip them. A relay that does not know a bit forwards the block verbatim
+   * and acts on nothing, which is the rule for every field in this range.
+   */
+  enum HopFlags {
+    /* Nothing set */
+    HOP_NONE = 0x00;
+
+    /*
+     * Do not learn a route from this frame. Relays and the destination must not update
+     * next_hop caches from `relay` or the path tail. For unicast that is expected to
+     * move - trackers, ATAK - where a learned route goes stale before it is used.
+     * Steering a reply from the tail is still permitted.
+     */
+    HOP_NO_LEARN = 0x01;
+
+    /*
+     * Retain this frame in store and forward. Set on user-facing traffic: text,
+     * waypoints, alerts. A server stores a flagged frame unconditionally and an
+     * unflagged one only as evictable filler. Never set on position or telemetry.
+     */
+    HOP_STORE = 0x02;
+  }
+
+  /*
+   * Bitwise OR of HopFlags values.
+   */
+  uint32 hop_flags = 2;
 }
 
 /*

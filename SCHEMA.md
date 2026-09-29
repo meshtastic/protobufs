@@ -550,6 +550,13 @@ profile 3  EXT    length-prefixed core         2 + len bytes
 the whole thing: `relay` is the node this frame was last transmitted by, `next_hop` the
 node it is meant for next.
 
+**`0x00` in `next_hop` means "no next hop".** A node whose NodeNum ends in `0x00`
+therefore cannot be named as a next hop by its true suffix. Such a node uses `0x01` as
+its relay suffix in `relay`, in `next_hop` and in the path tail. `relay` and the tail are
+hints resolved against the neighbour table, so the substitution costs at most one extra
+candidate and is never used as an identity. A receiver resolving `0x01` checks both real
+`0x01` suffixes and `0x00` suffixes among its neighbours.
+
 Three profiles ship. `EXT` is an outer layer for traffic that none of the other three
 shapes fit: a floodable frame with a bespoke payload and no addressing. Its framing is
 fixed and no message is defined for its block yet, so its `CORE_LEN` entry maps to a
@@ -690,6 +697,14 @@ that wants a route asks for a response and reads the reply's tail. What the tail
 carry is a reading per hop - `MeshPacket.rx_snr` is the receiver's own measurement of the
 last hop, and nothing collects the others.
 
+**The tail is a steering hint, not an identity.** One byte per hop is enough because a
+reader resolves `path[k]` against the neighbours of `path[k-1]`, never against the whole
+mesh: a collision costs one duplicate forward, which dedup absorbs, and never a lost
+frame. With `hop_start` capped at 15 the tail never exceeds 14 bytes, so payload room
+stays predictable and `hop_limit` stays tamper-evident through frame geometry on every
+relayed hop. A tool that wants unambiguous attribution over a region resolves the tail
+hop by hop from `from`; it does not treat a suffix as a global name.
+
 **The invariant a relay preserves is `path length == max(0, hops taken - 1)`.**
 Appending and decrementing together preserves it, and so does doing neither, at the
 cost of a tail that omits that hop. Decrementing without appending, or setting
@@ -728,13 +743,27 @@ Tags 16 and above cost two bytes and are end-to-end, so a relay has no business 
 at them at all. `fragment` sits in the cheap range even though a relay never reads
 it, because a hop-by-hop field added later will need the space.
 
+`hop_flags` is the one hop-by-hop field a relay is expected to read. `HOP_NO_LEARN`
+switches off route learning for the frame, and `HOP_STORE` marks it for retention by a
+store-and-forward server. Both are originator statements inside the AAD, which is what
+lets a relay or a server trust them without decrypting anything.
+
 What it costs, including the length byte:
+
+<!--
+  Hand-encoded, re-check after any edit. A tag in 1-15 is a one-byte key.
+    hop_flags  = key 0x10 + one varint byte while the mask is under 128       = 2
+    fragment   = key 0x08 + two varint bytes (msg_id|index|total reaches 14 bits) = 3
+    uint16     = key + up to three varint bytes                              = 4
+  Plus one opt_len byte for a non-empty block.
+-->
 
 | options block content | bytes |
 |---|--:|
 | none | 0 |
+| `hop_flags` only | 3 |
 | fragmentation state | 4 |
-| eight future bools as one bitfield | 4 |
+| fragment plus `hop_flags` | 6 |
 | one future `uint16` field | 5 |
 | fragment plus one future field | 8 |
 

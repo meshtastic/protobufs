@@ -255,14 +255,16 @@ message MeshPacket {
   uint32 hop_start = 9;
 
   /*
-   * Last byte of the NodeNum this packet is meant for next: header next_hop, UCAST
-   * only. Set by the firmware; clients do not set it.
+   * Relay suffix of the NodeNum this packet is meant for next (SCHEMA.md §8: the last
+   * byte, or 0x01 when that byte is 0x00): header next_hop, UCAST only. Set by the
+   * firmware; clients do not set it. 0 means no next hop.
    */
   uint32 next_hop = 10;
 
   /*
-   * Last byte of the NodeNum that last transmitted this packet: header relay.
-   * Set by the firmware; clients do not set it.
+   * Relay suffix of the NodeNum that last transmitted this packet (SCHEMA.md §8: the
+   * last byte, or 0x01 when that byte is 0x00): header relay. Set by the firmware;
+   * clients do not set it.
    */
   uint32 relay_node = 11;
 
@@ -337,9 +339,11 @@ message MeshPacket {
   uint32 channel_hash = 20;
 
   /*
-   * The v3 header's path tail: one-byte NodeNum suffixes of the hops between `from`
-   * and relay_node, oldest first. Its length is max(0, hop_start - hop_limit - 1)
-   * when PACKET_RECORD_PATH is set, and it is empty when that flag is clear.
+   * The v3 header's path tail: one relay suffix per hop between `from` and relay_node,
+   * oldest first, each the last byte of a NodeNum or 0x01 when that byte is 0x00
+   * (SCHEMA.md §8). Its length is max(0, hop_start - hop_limit - 1) when
+   * PACKET_RECORD_PATH is set, and it is empty when that flag is clear. A suffix is a
+   * steering hint resolved against the previous hop's neighbours, never an identity.
    */
   bytes path = 21;
 }
