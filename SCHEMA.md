@@ -454,6 +454,15 @@ Which of `to` and `chan` are present is what the profile selects. `opt` is prese
 `flags.opt` is set: a length byte, then that many bytes of `HeaderOptions`. A set bit
 with a zero length is malformed.
 
+**The tag in the diagram is not conditional.** Every encrypted frame carries one, a
+channel frame as much as a direct message, which is what makes the AAD worth computing at
+all: a header field inside the covered span cannot be altered without failing
+verification, and neither can the ciphertext. Channel traffic in 2.8 is AES-CTR with no
+MAC, so anyone holding the channel key - which is everyone on the channel - can flip bits
+in a frame undetectably. Moving channel traffic to an AEAD mode is therefore a 3.0
+prerequisite rather than an option (§10). XEdDSA still does the thing a channel key cannot
+do at all: attribute a frame to one sender rather than to the group that shares the key.
+
 **The split is not byte-aligned, and the covered span is not wholly immutable.** `ctrl`
 and `flags` each carry bits a relay rewrites. Those bits are canonicalised to zero
 before the AAD is computed, so the rest of both bytes stays authenticated; the same
@@ -1043,6 +1052,11 @@ Open work, and decisions deliberately not yet made.
 
 **Firmware work the schema assumes**, named against the 2.8 firmware, the reference until a 3.0 port exists:
 
+- **Channel traffic has to move to an AEAD mode.** §8 assumes a tag on every encrypted
+  frame; 2.8 gives PSK channels AES-CTR with no MAC. Until the port provides it, channel
+  frames are confidential but unauthenticated, and the tamper-evidence §8 claims for the
+  covered span holds only on PKI traffic. The cipher and tag length are a firmware
+  decision: §8 quotes 8 bytes, which is what the payload-room arithmetic assumes.
 - **`DeviceState` is written on configuration changes only.** Nothing in the message
   changes per packet, so a deep sleep is not a reason to rewrite it. Firmware that
   saves it on every sleep pays the flash wear for nothing.
