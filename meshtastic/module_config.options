@@ -48,6 +48,9 @@
 *DetectionSensorConfig.flags int_size:8
 *SerialConfig.flags int_size:8
 *StoreForwardConfig.flags int_size:8
+*StoreForwardConfig.max_per_sync int_size:8
+*StoreForwardConfig.served_hashes max_count:16
+*StoreForwardConfig.served_hashes int_size:8
 *CannedMessageConfig.flags int_size:8
 
 # Mirrors SecurityConfig.admin_key: same shape, same purpose, one list per

@@ -9,219 +9,225 @@ option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
 /*
- * Store and Forward module message for requesting and delivering stored mesh messages.
- * Allows clients to retrieve messages that were sent while they were offline.
+ * A frame as a store-and-forward server kept it: the v3 header fields the AEAD's
+ * additional authenticated data covers, plus the ciphertext and tag. The server decrypts
+ * nothing and holds no channel key. A client rebuilds the AAD from these fields, verifies
+ * the tag with its own keys, and treats what comes out exactly as a live receive - which
+ * is also why a replayed frame keeps its XEdDSA signature and its original sender.
+ */
+message StoredFrame {
+  /*
+   * Header from: the originator, not the server.
+   */
+  fixed32 from = 1;
+
+  /*
+   * Header id, as launched. The cursor is (rx_time, id).
+   */
+  fixed32 id = 2;
+
+  /*
+   * Header chan on a stored BCAST frame; absent on a stored UCAST frame.
+   */
+  optional uint32 channel_hash = 3;
+
+  /*
+   * Header to on a stored UCAST frame; absent on a stored BCAST frame.
+   */
+  optional fixed32 to = 4;
+
+  /*
+   * Header flags.hop_start as launched, which the AAD covers.
+   */
+  uint32 hop_start = 5;
+
+  /*
+   * Originator flags as launched: a bitwise OR of MeshPacket.Flags values, limited to
+   * the bits the header carries and the AAD covers - PACKET_RECORD_PATH and
+   * PACKET_WANT_ACK. PACKET_VIA_MQTT is outside the AAD and is not stored.
+   */
+  uint32 flags = 6;
+
+  /*
+   * The frame's options block, verbatim. Never decoded and re-encoded: nanopb drops
+   * unknown fields, and a re-encode would break the tag (SCHEMA.md §8). A server drops
+   * rather than stores a frame whose block exceeds the 64-byte cap here, which is
+   * deliberately below the 255 a frame allows.
+   */
+  bytes header_options = 7;
+
+  /*
+   * Frame ciphertext and authentication tag, exactly as received.
+   */
+  bytes ciphertext = 8;
+
+  /*
+   * Server receive time, epoch seconds. With id, this is the cursor.
+   */
+  fixed32 rx_time = 9;
+}
+
+/*
+ * Store and forward control and replay, all of it on STORE_FORWARD_APP.
+ *
+ * ANNOUNCE is a broadcast; everything else is a PKI direct message between one client
+ * and one server. A server replays one frame per packet with want_ack and advances the
+ * client's cursor only when that ack arrives, so a lost replay is resent rather than
+ * silently skipped.
  */
 message StoreAndForward {
   /*
-   * 001 - 063 = From Router
-   * 064 - 127 = From Client
+   * Which message this is.
    */
-  enum RequestResponse {
+  enum Type {
     /*
      * Unset/unused
      */
     UNSET = 0;
 
     /*
-     * Router is an in error state.
+     * Server, broadcast: what this server keeps and how far back.
      */
-    ROUTER_ERROR = 1;
+    ANNOUNCE = 1;
 
     /*
-     * Router heartbeat
+     * Client to server: where each of the client's streams stands.
      */
-    ROUTER_HEARTBEAT = 2;
+    SYNC = 2;
 
     /*
-     * Router has requested the client respond. This can work as a
-     * "are you there" message.
+     * Server to client: one StoredFrame, sent with want_ack.
      */
-    ROUTER_PING = 3;
+    FRAME = 3;
 
     /*
-     * The response to a "Ping"
+     * Server to client: end of this sync round, with the cursors it reached.
      */
-    ROUTER_PONG = 4;
+    SYNC_DONE = 4;
 
     /*
-     * Router is currently busy. Please try again later.
+     * Client to server: stop sending. The server keeps the acked positions.
      */
-    ROUTER_BUSY = 5;
+    ABORT = 5;
 
     /*
-     * Router is responding to a request for history.
+     * Server to client: refused, because it is busy, rate limiting, or does not serve
+     * this client.
      */
-    ROUTER_HISTORY = 6;
-
-    /*
-     * Router is responding to a request for stats.
-     */
-    ROUTER_STATS = 7;
-
-    /*
-     * Router sends a text message from its history that was a direct message.
-     */
-    ROUTER_TEXT_DIRECT = 8;
-
-    /*
-     * Router sends a text message from its history that was a broadcast.
-     */
-    ROUTER_TEXT_BROADCAST = 9;
-
-    /*
-     * Client is an in error state.
-     */
-    CLIENT_ERROR = 64;
-
-    /*
-     * Client has requested a replay from the router.
-     */
-    CLIENT_HISTORY = 65;
-
-    /*
-     * Client has requested stats from the router.
-     */
-    CLIENT_STATS = 66;
-
-    /*
-     * Client has requested the router respond. This can work as a
-     * "are you there" message.
-     */
-    CLIENT_PING = 67;
-
-    /*
-     * The response to a "Ping"
-     */
-    CLIENT_PONG = 68;
-
-    /*
-     * Client has requested that the router abort processing the client's request
-     */
-    CLIENT_ABORT = 106;
+    REFUSED = 6;
   }
 
   /*
-   * Statistics about the Store and Forward router's current state and capacity
+   * Position in one stream. A stream is one channel hash, or the client's own direct
+   * messages when channel_hash is absent.
    */
-  message Statistics {
+  message Cursor {
     /*
-     * Number of messages we have ever seen
+     * The channel hash this cursor is for; absent for the direct message stream.
      */
-    uint32 messages_total = 1;
+    optional uint32 channel_hash = 1;
 
     /*
-     * Number of messages we have currently saved our history.
+     * rx_time of the last frame the client holds from this stream. 0 asks from the start
+     * of what the server still has.
      */
-    uint32 messages_saved = 2;
+    fixed32 since_time = 2;
 
     /*
-     * Maximum number of messages we will save
+     * id of that frame, which separates two frames that share an rx_time.
      */
-    uint32 messages_max = 3;
-
-    /*
-     * Router uptime in seconds
-     */
-    uint32 up_time = 4;
-
-    /*
-     * Number of times any client sent a request to the S&F.
-     */
-    uint32 requests = 5;
-
-    /*
-     * Number of times the history was requested.
-     */
-    uint32 requests_history = 6;
-
-    /*
-     * Is the heartbeat enabled on the server?
-     */
-    bool heartbeat = 7;
-
-    /*
-     * Maximum number of messages the server will return.
-     */
-    uint32 return_max = 8;
-
-    /*
-     * Maximum history window in minutes the server will return messages from.
-     */
-    uint32 return_window = 9;
+    fixed32 last_id = 3;
   }
 
   /*
-   * Metadata about a history replay response from the router
+   * What a server broadcasts about itself.
    */
-  message History {
+  message Announce {
     /*
-     * Number of that will be sent to the client
+     * Channel hashes retained. Empty means every hash it hears.
      */
-    uint32 history_messages = 1;
+    repeated uint32 served_hashes = 1;
 
     /*
-     * The window, in minutes, that was used to filter the history the client requested
+     * rx_time of the oldest frame still held, so a client can tell which server reaches
+     * furthest back.
      */
-    uint32 window = 2;
+    fixed32 oldest_rx_time = 2;
 
     /*
-     * Index in the packet history of the last message sent in a previous request to the server.
-     * Will be sent to the client before sending the history and can be set in a subsequent request to avoid getting packets the server already sent to the client.
+     * Frames the server sends in one sync round before ending it with truncated set.
      */
-    uint32 last_request = 3;
+    uint32 max_per_sync = 3;
+
+    /*
+     * Capacity in frames, for display.
+     */
+    uint32 capacity = 4;
+
+    /*
+     * Frames held, for display.
+     */
+    uint32 held = 5;
   }
 
   /*
-   * Periodic heartbeat broadcast from the Store and Forward router to advertise availability
+   * What a client asks for.
    */
-  message Heartbeat {
+  message Sync {
     /*
-     * Period in seconds that the heartbeat is sent out that will be sent to the client
+     * One cursor per stream the client wants, the direct message stream included.
      */
-    uint32 period = 1;
+    repeated Cursor cursors = 1;
 
     /*
-     * If set, this is not the primary Store & Forward router on the mesh
+     * Client's own cap for this round, to spend less receive time. 0 takes the server's
+     * max_per_sync.
      */
-    uint32 secondary = 2;
+    uint32 max_frames = 2;
+
+    /*
+     * Send only frames flagged HOP_STORE and skip the filler.
+     */
+    bool flagged_only = 3;
   }
 
   /*
-   * The request/response type indicating what this message represents
+   * How the round ended.
    */
-  RequestResponse rr = 1;
+  message SyncDone {
+    /*
+     * Where each stream stands after the last acked frame.
+     */
+    repeated Cursor cursors = 1;
+
+    /*
+     * The round hit a cap. Sync again to continue.
+     */
+    bool truncated = 2;
+
+    /*
+     * Streams whose requested cursor is older than what the server still holds, so
+     * history was lost between them. A hash appears here at most once per round.
+     */
+    repeated uint32 gap_hashes = 3;
+  }
 
   /*
-   * The payload variant for this Store and Forward message
+   * Which message this is. Carried separately from the variant so ABORT and REFUSED,
+   * which have no body, still say what they are.
    */
+  Type type = 1;
+
   oneof variant {
-    /*
-     * Router statistics (capacity, uptime, message counts)
-     */
-    Statistics stats = 2;
-
-    /*
-     * History replay metadata (message count, window, last request index)
-     */
-    History history = 3;
-
-    /*
-     * Heartbeat broadcast data (period, primary/secondary status)
-     */
-    Heartbeat heartbeat = 4;
-
-    /*
-     * Text from history message.
-     */
-    bytes text = 5;
+    Announce announce = 2;
+    Sync sync = 3;
+    StoredFrame frame = 4;
+    SyncDone sync_done = 5;
   }
 
   /*
-   * Contains the original ID of the contained message.
-   *
-   * fixed32, as MeshPacket.id is: a packet ID is spread across all 32 bits, so a
-   * varint costs five bytes for most of them where fixed32 always costs four.
+   * On FRAME: how many frames are left in this round after this one, for a progress
+   * display.
    */
-  fixed32 original_id = 6;
+  uint32 remaining = 6;
 }

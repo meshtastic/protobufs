@@ -1,2 +1,22 @@
-*StoreAndForward.text max_size:256
+# nanopb options for storeforward.proto
+# https://jpa.kapsi.fi/nanopb/docs/reference.html#proto-file-options
+
+# Deliberately below the 255 bytes a frame's options block may reach: a server drops a
+# frame whose block does not fit rather than storing a truncated one.
+*StoredFrame.header_options max_size:64
+# The largest ciphertext a 256-byte frame can carry.
+*StoredFrame.ciphertext max_size:240
+*StoredFrame.hop_start int_size:8
+*StoredFrame.flags int_size:8
+*StoredFrame.channel_hash int_size:8
+
 *StoreAndForward.variant anonymous_oneof:true
+*StoreAndForward.Cursor.channel_hash int_size:8
+*StoreAndForward.Announce.served_hashes max_count:16
+*StoreAndForward.Announce.served_hashes int_size:8
+# 16 channels plus the direct message stream.
+*StoreAndForward.Sync.cursors max_count:17
+*StoreAndForward.SyncDone.cursors max_count:17
+*StoreAndForward.SyncDone.gap_hashes max_count:16
+*StoreAndForward.SyncDone.gap_hashes int_size:8
+*StoreAndForward.remaining int_size:16

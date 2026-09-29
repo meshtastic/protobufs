@@ -32,11 +32,6 @@
 *KeyVerification.hash1 max_size:32
 *KeyVerification.hash2 max_size:32
 
-*StoreForwardPlusPlus.message_hash max_size:32
-*StoreForwardPlusPlus.commit_hash max_size:32
-*StoreForwardPlusPlus.root_hash max_size:32
-*StoreForwardPlusPlus.message max_size:256
-
 # Hop-by-hop bits, one byte wide: the highest is 0x02 here and 0x04 with anycast.
 *HeaderOptions.hop_flags int_size:8
 # 16-bit truncated HMAC, so a random code is a three-byte varint more often than not.

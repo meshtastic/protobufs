@@ -853,6 +853,38 @@ membership: nothing may authorise on it. `0` is never a valid code, and a frame 
 one still has to carry a channel or a destination, because this is a filter and not
 addressing.
 
+### Store and forward
+
+A server stores **ciphertext**, not messages. `StoredFrame` holds the header fields the
+AAD covers, the options block verbatim and the ciphertext with its tag, so a server needs
+no channel key, keeps every AEAD tag and XEdDSA signature intact, and a client verifies a
+replayed frame with its own keys and treats the result as a live receive. What a server
+cannot read, it also cannot alter undetectably, which is what makes "store everything you
+hear" a reasonable default.
+
+**A cursor is `(rx_time, id)` per stream**, where a stream is one channel hash or the
+client's own direct messages. `rx_time` is the server's receive time, `id` separates two
+frames that share it, and the pair survives a server reboot and ring eviction because
+neither is server-local state: a client that reconnects to a different server hands it the
+same cursor. That is what the index-keyed design could not do. A cursor older than the
+oldest frame a server still holds comes back in `gap_hashes`, so a client learns that
+history was lost rather than assuming it has everything.
+
+**An ack advances the cursor, nothing else.** A server replays one frame per packet with
+`want_ack` and moves the client's position only when that ack arrives. Acking before the
+frame is delivered is the failure mode this design exists to avoid.
+
+**`HOP_STORE` decides what is worth keeping.** The originator sets it inside the AAD
+(§8, the options block), so a keyless server can tell user-facing traffic from telemetry
+without decrypting anything: flagged frames are retained unconditionally, unflagged ones
+only as evictable filler and only when `STOREFORWARD_KEEP_FILLER` is set.
+
+**Replay does not fit one frame for a full-size original.** `StoredFrame` costs about 20
+bytes over the ciphertext it carries, so a frame near the 256-byte limit cannot be replayed
+in one packet. Until `STORE_FORWARD_APP` opts into `HeaderOptions.fragment`, a server does
+not replay a frame it cannot send whole, and reports that stream in `gap_hashes`. This is
+the first consumer of per-portnum fragmentation.
+
 ### Payload room
 
 A LoRa frame is at most 256 bytes, and the room left for the encoded `Data` comes out
@@ -990,6 +1022,13 @@ Open work, and decisions deliberately not yet made.
   definition, so `regions.yaml` has no entry for them.
 - **52 of the 147 legacy devices are named by slug.** No firmware variant gives them a
   display name.
+
+**Store and forward:**
+
+- **The fragmentation gate for `STORE_FORWARD_APP` is not built.** Replay of a full-size
+  original needs it; until then a server skips those frames and reports the gap.
+- **No client UI for cursor state.** A client that cannot show what it is missing cannot
+  tell a gap from an empty mesh.
 
 **Client work the schema assumes:**
 

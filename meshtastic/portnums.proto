@@ -132,12 +132,10 @@ enum PortNum {
   PAXCOUNTER_APP = 34;
 
   /*
-   * Store and Forward++ module included in the firmware
-   * ENCODING: protobuf
-   * This module is specifically for Native Linux nodes, and provides a Git-style
-   * chain of messages.
+   * 35 was STORE_FORWARD_PLUSPLUS_APP, removed in 3.0 with the hash-chain design it
+   * carried. Store and forward is one protocol again, on STORE_FORWARD_APP.
    */
-  STORE_FORWARD_PLUSPLUS_APP = 35;
+  reserved 35;
 
   /*
    * Node Status module
@@ -175,8 +173,9 @@ enum PortNum {
   SERIAL_APP = 64;
 
   /*
-   * STORE_FORWARD_APP (Work in Progress)
-   * Maintained by Jm Casler (MC Hamster) : jm@casler.org
+   * Store and forward: a server replays the ciphertext frames it kept while a client was
+   * away, and the client verifies each one itself. Payload is a StoreAndForward message
+   * from storeforward.proto.
    * ENCODING: Protobuf
    */
   STORE_FORWARD_APP = 65;

@@ -548,13 +548,23 @@ message StoreForwardConfig {
     STOREFORWARD_NONE = 0x00;
     /* The module is enabled */
     STOREFORWARD_ENABLED = 0x01;
-    /* The server periodically broadcasts a heartbeat to indicate it is available */
+    /* The server broadcasts ANNOUNCE periodically, so clients can find it */
     STOREFORWARD_HEARTBEAT = 0x02;
     /*
-     * Act as a server that stores received messages and resends them on request,
+     * Act as a server that stores the frames it hears and replays them on request,
      * rather than as a client.
      */
     STOREFORWARD_IS_SERVER = 0x04;
+    /*
+     * Also store frames without HOP_STORE, as evictable filler. Clear means only
+     * flagged frames are written.
+     */
+    STOREFORWARD_KEEP_FILLER = 0x08;
+    /*
+     * Do not store or replay direct messages. Clear means a server also keeps the
+     * UCAST ciphertext it hears, which it cannot read.
+     */
+    STOREFORWARD_NO_DIRECT = 0x10;
   }
 
   /*
@@ -563,19 +573,25 @@ message StoreForwardConfig {
   uint32 flags = 1;
 
   /*
-   * Maximum number of message records to store on the server
+   * Bytes of backing store to use. 0 takes everything the platform offers.
    */
-  uint32 records = 2;
+  uint32 storage_bytes = 2;
 
   /*
-   * Maximum number of messages the server will return in a single history request
+   * Frames the server sends in one sync round before ending it. Default 32.
    */
-  uint32 history_return_max = 3;
+  uint32 max_per_sync = 3;
 
   /*
-   * Time window in minutes; only messages within this window will be returned in history requests
+   * Seconds between ANNOUNCE broadcasts while STOREFORWARD_HEARTBEAT is set.
+   * Default 3600.
    */
-  uint32 history_return_window = 4;
+  uint32 announce_secs = 4;
+
+  /*
+   * Channel hashes to retain. Empty keeps every hash the node hears.
+   */
+  repeated uint32 served_hashes = 5;
 }
 
 /*
