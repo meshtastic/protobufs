@@ -17,10 +17,15 @@ import okio.Path
 /**
  * Writes a kotlinx.serialization `KSerializer` for every message and enum in the `meshtastic`
  * package, so any kotlinx format reads and writes the Wire types on every target, with no
- * reflection. The shape is proto3 JSON's: lowerCamelCase keys, enums by name (a number reads
- * too), bytes as base64, 64-bit integers as strings, `uint32` unsigned, and a field at its
- * default left out. Nullability and default-omission follow each field's `EncodeMode`, which
- * is what the Kotlin generator itself decides them from.
+ * reflection. The shape is proto3 JSON's: lowerCamelCase keys, enums by name (a quoted number
+ * reads too), bytes as base64, 64-bit integers as strings (a bare signed one reads too),
+ * `uint32` unsigned, and a field at its default left out. Nullability and default-omission
+ * follow each field's `EncodeMode`, which is what the Kotlin generator itself decides them from.
+ *
+ * Where it parts from protoc: an enum number the proto does not name is an error, since a Wire
+ * enum cannot hold it; of two oneof members in one input the last wins, as Wire's builder keeps
+ * it; and NaN or an infinity needs a format that allows them (`allowSpecialFloatingPointValues`
+ * on a kotlinx `Json`).
  *
  * Reached as `LocalConfig.serializer()`, through an extension on each type's companion.
  */
@@ -79,6 +84,8 @@ class KotlinxSerializersHandler : SchemaHandler() {
         appendLine("// GENERATED CODE -- DO NOT EDIT.")
         appendLine("// Produced by KotlinxSerializersHandler.")
         appendLine("@file:Suppress(\"DEPRECATION\", \"RedundantVisibilityModifier\")")
+        // decodeNullableSerializableElement is experimental API.
+        appendLine("@file:OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)")
         appendLine()
         appendLine("package $KOTLIN_PACKAGE")
         appendLine()
@@ -130,7 +137,7 @@ class KotlinxSerializersHandler : SchemaHandler() {
     private fun StringBuilder.renderMessage(type: MessageType) {
         val name = kotlinName(type.type)
         val ser = serializerName(type.type)
-        // Sorted by key, as a proto3 JSON printer sorts them and PyYAML dumps them.
+        // Sorted by key, as PyYAML dumps them; protoc prints field-number order, which no reader relies on.
         val fields = type.fieldsAndOneOfFields.sortedBy { jsonName(it) }
         val property = propertyNames(type)
         appendLine("public object $ser : KSerializer<$name> {")
@@ -171,6 +178,8 @@ class KotlinxSerializersHandler : SchemaHandler() {
             )
         }
         appendLine("                CompositeDecoder.DECODE_DONE -> break")
+        // A format that surfaces a key this build has no field for, rather than skipping it.
+        appendLine("                CompositeDecoder.UNKNOWN_NAME -> Unit")
         appendLine("                else -> throw SerializationException(\"${type.type}: unexpected index \$index\")")
         appendLine("            }")
         appendLine("        }")
@@ -233,8 +242,9 @@ class KotlinxSerializersHandler : SchemaHandler() {
         ProtoType.INT32, ProtoType.SINT32, ProtoType.SFIXED32, ProtoType.UINT32, ProtoType.FIXED32 -> "it != 0"
         ProtoType.INT64, ProtoType.SINT64, ProtoType.SFIXED64, ProtoType.UINT64, ProtoType.FIXED64 -> "it != 0L"
         ProtoType.BOOL -> "it"
-        ProtoType.FLOAT -> "it != 0f"
-        ProtoType.DOUBLE -> "it != 0.0"
+        // equals, not ==: -0.0 is not the default, as Wire's binary encoder also decides.
+        ProtoType.FLOAT -> "!it.equals(0f)"
+        ProtoType.DOUBLE -> "!it.equals(0.0)"
         ProtoType.STRING -> "it.isNotEmpty()"
         ProtoType.BYTES -> "it.size != 0"
         // An implicit-presence field of message type is NULL_IF_ABSENT, so this is an enum.
@@ -271,21 +281,26 @@ class KotlinxSerializersHandler : SchemaHandler() {
             |public object ProtoUInt32Serializer : KSerializer<Int> {
             |    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("meshtastic.uint32", PrimitiveKind.LONG)
             |    override fun serialize(encoder: Encoder, value: Int): Unit = encoder.encodeLong(value.toUInt().toLong())
-            |    override fun deserialize(decoder: Decoder): Int = decoder.decodeLong().toInt()
+            |    override fun deserialize(decoder: Decoder): Int = decoder.decodeLong().let { value ->
+            |        if (value !in 0L..0xFFFF_FFFFL) throw SerializationException("uint32 out of range: ${'$'}value")
+            |        value.toInt()
+            |    }
             |}
             |
-            |/** The signed 64-bit kinds, a string in proto3 JSON. */
+            |/** The signed 64-bit kinds, a string in proto3 JSON; a bare number reads too. */
             |public object ProtoInt64Serializer : KSerializer<Long> {
             |    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("meshtastic.int64", PrimitiveKind.STRING)
             |    override fun serialize(encoder: Encoder, value: Long): Unit = encoder.encodeString(value.toString())
-            |    override fun deserialize(decoder: Decoder): Long = decoder.decodeString().toLong()
+            |    override fun deserialize(decoder: Decoder): Long = decoder.decodeLong()
             |}
             |
             |/** `uint64` and `fixed64`, a string in proto3 JSON, unsigned. */
             |public object ProtoUInt64Serializer : KSerializer<Long> {
             |    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("meshtastic.uint64", PrimitiveKind.STRING)
             |    override fun serialize(encoder: Encoder, value: Long): Unit = encoder.encodeString(value.toULong().toString())
-            |    override fun deserialize(decoder: Decoder): Long = decoder.decodeString().toULong().toLong()
+            |    override fun deserialize(decoder: Decoder): Long = decoder.decodeString().let { text ->
+            |        (text.toULongOrNull() ?: throw SerializationException("not a uint64: ${'$'}text")).toLong()
+            |    }
             |}
             |
             |/** `bytes`, standard base64 with padding; either alphabet reads. */

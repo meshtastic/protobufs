@@ -131,6 +131,10 @@ implementation("org.meshtastic:protobufs:2.7.23")
 //   org.meshtastic:protobufs-linuxx64
 //   org.meshtastic:protobufs-linuxarm64
 //   org.meshtastic:protobufs-mingwx64
+
+// Optional: kotlinx.serialization serializers for every type, in proto3 JSON's shape,
+// reached as `LocalConfig.serializer()`. Same version as protobufs.
+implementation("org.meshtastic:protobufs-serialization:2.7.23")
 ```
 
 ### Snapshots
