@@ -922,6 +922,52 @@ message SecurityConfig {
 message SessionkeyConfig {}
 
 /*
+ * Anycast Groups
+ *
+ * The groups this node sends to or serves. A group is a key pair like a node: a node
+ * holding only public_key can send to the group, and one that also holds private_key is a
+ * member, which delivers, acknowledges and, with uplink_enabled, hands what it received to
+ * its backhaul. The group id is crc32(public_key) in the NodeNum space, derived by
+ * firmware and never stored here.
+ *
+ * A frame to a group is an ordinary UCAST frame with HOP_ANYCAST set, so it is delivered
+ * to the nearest reachable member by the same next-hop learning as a direct message, and
+ * it never becomes a broadcast.
+ */
+message GroupConfig {
+  /*
+   * One group.
+   */
+  message Group {
+    /*
+     * Display name.
+     */
+    string name = 1;
+
+    /*
+     * X25519 public key of the group. A sender needs only this.
+     */
+    bytes public_key = 2;
+
+    /*
+     * X25519 private key of the group, present only on a member. Handled as
+     * SecurityConfig.private_key is: never returned to a client that did not set it.
+     */
+    bytes private_key = 3;
+
+    /*
+     * Member only: hand a delivered packet to MQTT or another backhaul.
+     */
+    bool uplink_enabled = 4;
+  }
+
+  /*
+   * The groups this node knows.
+   */
+  repeated Group groups = 1;
+}
+
+/*
  * Relay Policy
  *
  * How this node relays broadcast traffic, per channel hash. Evaluated on the ROUTER,
@@ -1009,5 +1055,6 @@ message ConfigPayload {
     SecurityConfig security = 8;
     SessionkeyConfig sessionkey = 9;
     RelayConfig relay = 11;
+    GroupConfig group = 12;
   }
 }

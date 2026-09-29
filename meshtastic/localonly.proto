@@ -67,11 +67,16 @@ message LocalConfig {
   RelayConfig relay = 11;
 
   /*
+   * The part of the config that holds the anycast groups this node sends to or serves
+   */
+  GroupConfig group = 12;
+
+  /*
    * A version integer used to invalidate old save files when we make
    * incompatible changes This integer is set at build time and is private to
    * NodeDB.cpp in the device code.
    */
-  uint32 version = 12;
+  uint32 version = 13;
 }
 
 /*

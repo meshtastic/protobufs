@@ -612,7 +612,8 @@ it in zero bits, so expandability pays for itself before a single extension is a
 **Unicast carries no channel hash.** A PSK is a channel key, so PSK traffic is
 inherently broadcast, and a DM is exclusively PKI - signed but unencrypted in HAM mode,
 encrypted otherwise. That is what buys back the byte `ctrl` costs and lands `UCAST`
-at exactly today's 16.
+at exactly today's 16. An anycast destination is a PKI destination too, a group key pair
+rather than a node's, so it needs no room of its own and `UCAST` stays at 16.
 
 Four sizing rules fix the rest of the layout:
 
@@ -744,8 +745,9 @@ at them at all. `fragment` sits in the cheap range even though a relay never rea
 it, because a hop-by-hop field added later will need the space.
 
 `hop_flags` is the one hop-by-hop field a relay is expected to read. `HOP_NO_LEARN`
-switches off route learning for the frame, and `HOP_STORE` marks it for retention by a
-store-and-forward server. Both are originator statements inside the AAD, which is what
+switches off route learning for the frame, `HOP_STORE` marks it for retention by a
+store-and-forward server, and `HOP_ANYCAST` says `to` is a group identity, which is what
+a relay keys its tables on. Both are originator statements inside the AAD, which is what
 lets a relay or a server trust them without decrypting anything.
 
 What it costs, including the length byte:
@@ -886,6 +888,38 @@ bytes over the ciphertext it carries, so a frame near the 256-byte limit cannot 
 in one packet. Until `STORE_FORWARD_APP` opts into `HeaderOptions.fragment`, a server does
 not replay a frame it cannot send whole, and reports that stream in `gap_hashes`. This is
 the first consumer of per-portnum fragmentation.
+
+### Anycast
+
+Routed traffic often has more than one valid sink: two uplinks, three egress nodes, any of
+which will do. The choices were a direct message to one named node, which has no failover,
+or a broadcast, which reaches everyone. Anycast is the third class.
+
+**A group is a key pair, not a role.** X25519 for encryption and Ed25519 for signing, with
+`group_id = crc32(group_pub)` living in the NodeNum space; the private key is provisioned
+to every member and the public key to every sender, the same way a channel is shared. A
+member keeps its own NodeNum and its own identity - holding a group key changes neither.
+
+**The frame is an ordinary UCAST frame.** `to` is the group id, the payload is PKI
+encrypted against the group public key, and the XEdDSA signature is the real sender's, so
+any member decrypts it and every member knows who sent it. `HOP_ANYCAST` in the options
+block is what tells a relay that `to` names a group: it costs 3 bytes on anycast frames
+and nothing on the rest, and `UCAST` stays 16 bytes.
+
+**Delivery is first flood, then steer.** The first frame to a group floods within the
+sender's channel scope with `flags.path` set, like a first direct message. Every member
+that decrypts it acks from its own NodeNum, so the sender learns which member answered and
+every relay on the reverse path sets `next_hop` for `(anycast, group_id)` from the first
+ack it sees. Later frames follow that path and no other member hears them. When the
+nearest member disappears, `ReliableRouter` retransmits, falls back to a flood, another
+member acks, and the tables relearn - the same path as a direct message to a node that
+moved. Only the delivering member answers a `WANT_RESPONSE`.
+
+**Tables key on `(anycast bit, id)`**, so a group id and a NodeNum that collide in 32 bits
+never share a next-hop or dedup entry.
+
+Multicast, meaning delivery to every member, is not this: members that need every packet
+share it over the backhaul they already have.
 
 ### Direct-message forward secrecy
 
@@ -1058,6 +1092,12 @@ Open work, and decisions deliberately not yet made.
   definition, so `regions.yaml` has no entry for them.
 - **52 of the 147 legacy devices are named by slug.** No firmware variant gives them a
   display name.
+
+**Anycast:**
+
+- **No multicast.** Delivery is to one member, the nearest that acks.
+- **Member selection is nearest-ack, not load-aware.** A busy member that happens to be
+  closest keeps taking the traffic, and nothing measures or balances that.
 
 **Direct-message forward secrecy:**
 

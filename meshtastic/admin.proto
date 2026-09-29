@@ -90,6 +90,11 @@ message AdminMessage {
      * Relay policy configuration
      */
     RELAY_CONFIG = 10;
+
+    /*
+     * Anycast group configuration
+     */
+    GROUP_CONFIG = 11;
   }
 
   /*

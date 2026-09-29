@@ -245,6 +245,10 @@ message User {
 
 /*
  * A Routing control Data packet handled by the routing module
+ *
+ * An ack to an anycast request comes from the member that delivered it, so its header
+ * `from` is that member's NodeNum and not the group the request was addressed to;
+ * `request_id` is what ties the two together.
  */
 message Routing {
   /*
@@ -511,6 +515,14 @@ message HeaderOptions {
      * unflagged one only as evictable filler. Never set on position or telemetry.
      */
     HOP_STORE = 0x02;
+
+    /*
+     * `to` is a group identity rather than a node. Any node holding the group's private
+     * key may deliver and acknowledge it. A relay keys its next-hop and dedup tables on
+     * (this bit, to) and otherwise treats the frame as ordinary unicast. Meaningless on
+     * a broadcast, where a relay ignores it.
+     */
+    HOP_ANYCAST = 0x04;
   }
 
   /*

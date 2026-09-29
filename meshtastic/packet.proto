@@ -237,6 +237,10 @@ message MeshPacket {
      * is not in the header, and nothing on the air states which derivation was used.
      */
     PACKET_RATCHET_ENCRYPTED = 0x40;
+    /*
+     * `to` is an anycast group, mirroring the header's HOP_ANYCAST for clients.
+     */
+    PACKET_ANYCAST = 0x80;
   }
 
   /*

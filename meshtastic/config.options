@@ -42,3 +42,10 @@
 # Region names, as in HeaderOptions.scope_code.
 *RelayConfig.regions max_count:4
 *RelayConfig.regions max_size:16
+
+# A node serving more than a handful of groups is a different design.
+*GroupConfig.groups max_count:4
+*GroupConfig.Group.name max_size:12
+# X25519 keys, as SecurityConfig's.
+*GroupConfig.Group.public_key max_size:32
+*GroupConfig.Group.private_key max_size:32
