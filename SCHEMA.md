@@ -79,6 +79,13 @@ graph TD
     clientonly --> localonly
 ```
 
+The graph shows each file's highest-layer imports. A file that imports a higher layer
+also imports the foundation files it needs, and those edges are elided to keep the shape
+readable: `admin` and `deviceonly` also import `wire` and `channel`, `deviceonly` also
+imports `common` and `telemetry`, `api` and `mqtt` also import `common`, `apponly` also
+imports `channel`, and `clientonly` also imports `wire`. What the graph is load-bearing
+for is the direction of every edge, which `schema_lint`'s `layering` rule enforces.
+
 ### Layering
 
 Imports run one way: **nothing in the air layer imports the client layer.** The air
