@@ -13,12 +13,6 @@
 
 # One route entry per relay, at most the 15 hops a four-bit hop_start allows. Each SNR
 # list holds one more, for the final hop into the destination.
-*RouteDiscovery.route max_count:15
-*RouteDiscovery.snr_towards max_count:16
-*RouteDiscovery.snr_towards int_size:8
-*RouteDiscovery.route_back max_count:15
-*RouteDiscovery.snr_back max_count:16
-*RouteDiscovery.snr_back int_size:8
 
 # One frame's worth: no LoRa frame is longer than 256 bytes. The room a frame
 # actually leaves for Data depends on the header, the tag and the path, and firmware
@@ -59,7 +53,7 @@
 *StatusMessage.status max_size:80
 
 # One frame's worth, as Data.payload.
-*Compressed.data max_size:256
+*InjectedFrame.data max_size:256
 
 *Waypoint.name         max_size:30
 *Waypoint.description  max_size:100

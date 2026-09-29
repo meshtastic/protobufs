@@ -189,6 +189,92 @@ enum RegionCode {
 }
 
 /*
+ * An input event the input broker delivers: a button, a rotary encoder, a key or a
+ * synthetic event injected over the admin channel. The one list of these codes.
+ * Values are the character codes where an event corresponds to one (SELECT is '\n',
+ * BACK is ESC), which is why the list is not dense.
+ */
+enum InputBrokerEvent {
+  /* No event */
+  INPUT_NONE = 0;
+
+  /* Select or confirm, the newline character */
+  INPUT_SELECT = 10;
+
+  /* Select held down */
+  INPUT_SELECT_LONG = 11;
+
+  /* Up held down */
+  INPUT_UP_LONG = 12;
+
+  /* Down held down */
+  INPUT_DOWN_LONG = 13;
+
+  /* Navigate up, the DC1 character */
+  INPUT_UP = 17;
+
+  /* Navigate down, the DC2 character */
+  INPUT_DOWN = 18;
+
+  /* Navigate left, the DC3 character */
+  INPUT_LEFT = 19;
+
+  /* Navigate right, the DC4 character */
+  INPUT_RIGHT = 20;
+
+  /* Cancel, the CAN character */
+  INPUT_CANCEL = 24;
+
+  /* Go back, the ESC character */
+  INPUT_BACK = 27;
+
+  /* The user button was pressed */
+  INPUT_USER_PRESS = 28;
+
+  /* The alternate button was pressed */
+  INPUT_ALT_PRESS = 29;
+
+  /* The alternate button was held down */
+  INPUT_ALT_LONG = 30;
+
+  /* Factory reset */
+  INPUT_FACTORY_RESET = 0x9A;
+
+  /* Shut down */
+  INPUT_SHUTDOWN = 0x9B;
+
+  /* Toggle the GPS */
+  INPUT_GPS_TOGGLE = 0x9E;
+
+  /* Toggle GPS and buzzer together */
+  INPUT_PRIVACY_TOGGLE = 0x9F;
+
+  /* Send a node info ping */
+  INPUT_SEND_PING = 0xAF;
+
+  /* Function key 1 */
+  INPUT_FN_F1 = 0xF1;
+
+  /* Function key 2 */
+  INPUT_FN_F2 = 0xF2;
+
+  /* Function key 3 */
+  INPUT_FN_F3 = 0xF3;
+
+  /* Function key 4 */
+  INPUT_FN_F4 = 0xF4;
+
+  /* Function key 5 */
+  INPUT_FN_F5 = 0xF5;
+
+  /* A matrix keypad key */
+  INPUT_MATRIXKEY = 0xFE;
+
+  /* Any key, for a wake-on-input binding */
+  INPUT_ANYKEY = 0xFF;
+}
+
+/*
  * Standard predefined channel/modem settings.
  * Note: these mappings must match ModemPreset choice in the device code.
  */
@@ -315,22 +401,6 @@ enum LocSource {
   LOC_INTERNAL = 2;
   /* Location from an external device (e.g. phone GPS) */
   LOC_EXTERNAL = 3;
-}
-
-/*
- * How the altitude was acquired
- */
-enum AltSource {
-  /* Altitude source not set */
-  ALT_UNSET = 0;
-  /* Altitude was manually entered by the user */
-  ALT_MANUAL = 1;
-  /* Altitude from the device's onboard GPS */
-  ALT_INTERNAL = 2;
-  /* Altitude from an external device (e.g. phone GPS) */
-  ALT_EXTERNAL = 3;
-  /* Altitude from a barometric pressure sensor */
-  ALT_BAROMETRIC = 4;
 }
 
 /*

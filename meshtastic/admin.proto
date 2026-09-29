@@ -114,69 +114,64 @@ message AdminMessage {
     STOREFORWARD_CONFIG = 3;
 
     /*
-     * Range test module configuration
-     */
-    RANGETEST_CONFIG = 4;
-
-    /*
      * Telemetry module configuration
      */
-    TELEMETRY_CONFIG = 5;
+    TELEMETRY_CONFIG = 4;
 
     /*
      * Canned message module configuration
      */
-    CANNEDMSG_CONFIG = 6;
+    CANNEDMSG_CONFIG = 5;
 
     /*
      * Audio module configuration
      */
-    AUDIO_CONFIG = 7;
+    AUDIO_CONFIG = 6;
 
     /*
      * Remote hardware module configuration
      */
-    REMOTEHARDWARE_CONFIG = 8;
+    REMOTEHARDWARE_CONFIG = 7;
 
     /*
      * Neighbor info module configuration
      */
-    NEIGHBORINFO_CONFIG = 9;
+    NEIGHBORINFO_CONFIG = 8;
 
     /*
      * Ambient lighting module configuration
      */
-    AMBIENTLIGHTING_CONFIG = 10;
+    AMBIENTLIGHTING_CONFIG = 9;
 
     /*
      * Detection sensor module configuration
      */
-    DETECTIONSENSOR_CONFIG = 11;
+    DETECTIONSENSOR_CONFIG = 10;
 
     /*
      * Paxcounter module configuration
      */
-    PAXCOUNTER_CONFIG = 12;
+    PAXCOUNTER_CONFIG = 11;
 
     /*
      * Status message module configuration
      */
-    STATUSMESSAGE_CONFIG = 13;
+    STATUSMESSAGE_CONFIG = 12;
 
     /*
      * Traffic management module config
      */
-    TRAFFICMANAGEMENT_CONFIG = 14;
+    TRAFFICMANAGEMENT_CONFIG = 13;
 
     /*
      * TAK module config
      */
-    TAK_CONFIG = 15;
+    TAK_CONFIG = 14;
 
     /*
      * Mesh Beacon module config
      */
-    MESHBEACON_CONFIG = 16;
+    MESHBEACON_CONFIG = 15;
   }
 
   enum BackupLocation {
@@ -196,11 +191,11 @@ message AdminMessage {
    */
   message InputEvent {
     /*
-     * The input event code
+     * Which event to inject.
      */
-    uint32 event_code = 1;
+    InputBrokerEvent event_code = 1;
     /*
-     * Keyboard character code
+     * Keyboard character code, for an event that carries one.
      */
     uint32 kb_char = 2;
     /*
@@ -235,8 +230,9 @@ message AdminMessage {
    */
   oneof payload_variant {
     /*
-     * Send the specified channel in the response to this message
-     * NOTE: This field is sent with the channel index + 1 (to ensure we never try to send 'zero' - which protobufs treats as not present)
+     * Send the channel at this index in the response to this message. 0-based, as
+     * Channel.index is: a oneof arm is present even when its value is zero, so
+     * nothing has to be added to it.
      */
     uint32 get_channel_request = 2;
 
@@ -375,7 +371,7 @@ message AdminMessage {
 
     /*
      * Set one channel in the table, addressed by its index.
-     * Index 0 is the primary channel, whose name feeds the frequency slot hash.
+     * Index 0 is the primary channel.
      * Sending a Channel with no settings disables that index.
      */
     Channel set_channel = 29;
@@ -711,7 +707,7 @@ message NodeRemoteHardwarePinsResponse {
 
 message SharedContact {
   /*
-   * The node number of the contact. fixed32 for the reason RouteDiscovery.route
+   * The node number of the contact. fixed32 for the reason every NodeNum on the air
    * is: a NodeNum is uniformly distributed over 32 bits, so a varint costs five
    * bytes 15 times in 16.
    */

@@ -82,10 +82,6 @@ ALLOWED = {
         'float on both sides, so a scaled integer would add two conversions '
         'and remove none, and at this magnitude the varint is four bytes too. '
         'Stored to flash, never on air.',
-    ('packed', 'resend_chunks.chunks'):
-        'A resend list has no natural bound - it is however many chunks were '
-        'lost - so a callback is the right field type. Client-facing, over the '
-        'phone link, where the framing is not paid on air.',
 }
 
 # Fields indexed by an enum's values. An array holds one element per value, so its

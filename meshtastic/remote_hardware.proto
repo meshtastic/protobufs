@@ -63,7 +63,9 @@ message HardwareMessage {
   Type type = 1;
 
   /*
-   * What gpios are we changing. Not used for all MessageTypes, see MessageType for details
+   * What gpios are we changing. Not used for all MessageTypes, see MessageType for details.
+   * Bit N is pin N, so an addressable pin number is 0 to 63 - the bound that
+   * RemoteHardwarePin.gpio_pin carries.
    */
   uint64 gpio_mask = 2;
 

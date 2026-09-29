@@ -244,7 +244,11 @@ message SensorReadings {
    *
    * The unit is part of the quantity rather than a separate field: it costs nothing
    * per reading, and two nodes can never report the same quantity in different
-   * units. Values are 1..127 so a key with ordinal 0 fits in a single byte.
+   * units. Where one measurand spans ranges no single scale serves, each range is its
+   * own quantity chosen to suit the sensor - a supply rail in VOLTAGE_MV against an
+   * electrochemical cell's output in VOLTAGE_UV - and a sensor reports under the one
+   * that matches what it measures. Values are 1..127 so a key with ordinal 0 fits in a
+   * single byte.
    *
    * Every quantity names a fixed-point scale, so a value is always an integer and
    * never a float. `_CENTI` means hundredths of the named unit: 23.50 C is 2350 under

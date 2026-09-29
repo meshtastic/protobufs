@@ -841,7 +841,9 @@ message AircraftTrack {
    */
   string category = 6;
   /*
-   * Received signal strength * 10 (e.g. -194 for -19.4 dBm)
+   * Received signal strength * 10 (e.g. -194 for -19.4 dBm). Tenths rather than the
+   * mesh's whole dBm because an ADS-B receiver reports this to one decimal and the
+   * value is passed through, not measured here.
    */
   sint32 rssi_x10 = 7;
   /*

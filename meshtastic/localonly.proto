@@ -95,74 +95,69 @@ message LocalModuleConfig {
   StoreForwardConfig store_forward = 4;
 
   /*
-   * The part of the config that is specific to the RangeTest module
-   */
-  RangeTestConfig range_test = 5;
-
-  /*
    * The part of the config that is specific to the Telemetry module
    */
-  TelemetryConfig telemetry = 6;
+  TelemetryConfig telemetry = 5;
 
   /*
    * The part of the config that is specific to the Canned Message module
    */
-  CannedMessageConfig canned_message = 7;
+  CannedMessageConfig canned_message = 6;
 
   /*
    * The part of the config that is specific to the Audio module
    */
-  AudioConfig audio = 8;
+  AudioConfig audio = 7;
 
   /*
    * The part of the config that is specific to the Remote Hardware module
    */
-  RemoteHardwareConfig remote_hardware = 9;
+  RemoteHardwareConfig remote_hardware = 8;
 
   /*
    * The part of the config that is specific to the Neighbor Info module
    */
-  NeighborInfoConfig neighbor_info = 10;
+  NeighborInfoConfig neighbor_info = 9;
 
   /*
    * The part of the config that is specific to the Ambient Lighting module
    */
-  AmbientLightingConfig ambient_lighting = 11;
+  AmbientLightingConfig ambient_lighting = 10;
 
   /*
    * The part of the config that is specific to the Detection Sensor module
    */
-  DetectionSensorConfig detection_sensor = 12;
+  DetectionSensorConfig detection_sensor = 11;
 
   /*
    * Paxcounter Config
    */
-  PaxcounterConfig paxcounter = 13;
+  PaxcounterConfig paxcounter = 12;
 
   /*
    * StatusMessage Config
    */
-  StatusMessageConfig statusmessage = 14;
+  StatusMessageConfig statusmessage = 13;
 
   /*
    * The part of the config that is specific to the Traffic Management module
    */
-  TrafficManagementConfig traffic_management = 15;
+  TrafficManagementConfig traffic_management = 14;
 
   /*
    * TAK Config
    */
-  TAKConfig tak = 16;
+  TAKConfig tak = 15;
 
   /*
    * MeshBeacon Config
    */
-  MeshBeaconConfig mesh_beacon = 17;
+  MeshBeaconConfig mesh_beacon = 16;
 
   /*
    * A version integer used to invalidate old save files when we make
    * incompatible changes This integer is set at build time and is private to
    * NodeDB.cpp in the device code.
    */
-  uint32 version = 18;
+  uint32 version = 17;
 }

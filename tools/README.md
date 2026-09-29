@@ -111,10 +111,9 @@ python tools/schema_lint.py --list-allowed                   # exemptions, with 
 emits; `indexed` reads both.
 
 Exemptions live in `ALLOWED` and carry their reason, so an entry is a decision on the
-record rather than a way to quieten the rule. There are two: `Nau7802Config.calibrationFactor`
+record rather than a way to quieten the rule. There is one: `Nau7802Config.calibrationFactor`
 stays a `float` because quantising a calibration scale quantises every reading derived
-from it, and `resend_chunks.chunks` stays a callback because a resend list has no natural
-bound.
+from it.
 
 Wired into CI as the `Schema rules` job in `.github/workflows/pull_request.yml`, beside
 the bitfield check and for the same reason: these are properties of the schema, not of
@@ -211,7 +210,6 @@ a table like this cannot tell you, and the only honest source for it is a captur
 
 | message | scenario | 2.x | 3.0 | saved |
 |---|---|--:|--:|--:|
-| `RouteDiscovery` | 8 hops each way, negative SNR throughout | 244 | **88** | 64% |
 | `Position, basic` | lat, lon, altitude, time | 17 | **16** | 6% |
 | `Position, negative altitude` | the same, 120 m below sea level | 26 | **16** | 38% |
 | `DeviceMetrics` | battery, voltage, two utilisations, uptime | 21 | **15** | 29% |
@@ -223,8 +221,8 @@ a table like this cannot tell you, and the only honest source for it is a captur
 Four things the table shows that are easy to miss:
 
 - **The single largest correction is `int32` to `sint32`.** A negative `int32`
-  sign-extends to 64 bits and costs ten bytes whatever its magnitude, which is most of
-  the traceroute row and the whole difference between the two `Position` rows. The same
+  sign-extends to 64 bits and costs ten bytes whatever its magnitude, which is the whole
+  difference between the two `Position` rows and most of the `NeighborInfo` one. The same
   altitude costs 2 bytes above sea level and 11 below it in 2.x.
 - **A live single reading barely moves.** The 15-to-14 row is the honest version of the
   telemetry change: the win is in batching and in never sending a `float`, not in the

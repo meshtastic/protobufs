@@ -1,7 +1,7 @@
 # A bridged PHY payload is one LoRa frame, so its buffer is capped at the frame,
 # 256 bytes. A packet too large for the room a frame leaves is fragmented by the v3
 # header (SCHEMA.md §8, Payload room).
-*LoRaWANBridge.Uplink.rssi_x10 int_size:16
+*LoRaWANBridge.Uplink.rssi_dbm int_size:16
 *LoRaWANBridge.Uplink.snr_x10 int_size:16
 *LoRaWANBridge.Uplink.radio_params int_size:8
 *LoRaWANBridge.Uplink.fsk_bitrate int_size:16

@@ -32,9 +32,10 @@ message ModemPresetInfo {
   ModemPreset preset = 1;
 
   /*
-   * Preset name as firmware displays it, e.g. "LongFast", "ShortTurbo". A primary
-   * channel without a name of its own takes this one, and its frequency slot derives
-   * from the hash, so a change moves every node on such a channel.
+   * The preset's name, and the only place it is written: firmware displays this string,
+   * e.g. "LongFast", "ShortTurbo", and a primary channel with an empty name is named by
+   * it. Because LoRaConfig.channel_num can hash it, changing one of these names moves
+   * every node whose channel took its default from that preset.
    */
   string name = 2;
 

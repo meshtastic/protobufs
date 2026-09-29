@@ -44,7 +44,7 @@ message WifiConnectionStatus {
   string ssid = 2;
 
   /*
-   * RSSI of wireless connection (negative dBm)
+   * RSSI of the WiFi connection in whole dBm, negative in practice.
    */
   sint32 rssi = 3;
 }
@@ -94,7 +94,7 @@ message BluetoothConnectionStatus {
   uint32 pin = 1;
 
   /*
-   * RSSI of bluetooth connection (negative dBm)
+   * RSSI of the Bluetooth connection in whole dBm, negative in practice.
    */
   sint32 rssi = 2;
 

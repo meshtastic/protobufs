@@ -60,7 +60,7 @@ message MeshPacket {
    * Priority that follows from the packet is the node's to derive, not a client's to
    * restate. Whatever priority a packet arrives with, the node sets ACK for a routing
    * packet, ALERT for an ALERT_APP packet, RESPONSE for a packet with request_id, and
-   * RELIABLE for want_ack or want_response. For a packet that arrives UNSET and matches
+   * RELIABLE for want_ack or the WANT_RESPONSE bit. For a packet that arrives UNSET and matches
    * none of those it sets HIGH for text and admin, and DEFAULT otherwise. A client sets
    * priority only to place a packet its contents do not describe: MIN, BACKGROUND,
    * DEFAULT, HIGH or MAX.
@@ -278,7 +278,8 @@ message MeshPacket {
   /*
    * *Never* sent over the radio links.
    * Set during reception to indicate the SNR of this packet.
-   * Value is in dB, scaled by 4 (i.e. multiply raw dB by 4 before storing).
+   * Value is in dB, scaled by 2: half-dB steps, so the whole practical SNR range
+   * of -32 to +31.5 dB is one zigzag byte.
    */
   sint32 rx_snr = 13;
 

@@ -29,12 +29,15 @@ message LoRaWANBridge {
     fixed32 tmst = 2;
 
     /*
-     * Received signal strength in tenths of a dBm. Fits signed 16 bit.
+     * Received signal strength in whole dBm, the scale the Semtech UDP protocol's
+     * "rssi" carries in both directions. Fits signed 16 bit.
      */
-    sint32 rssi_x10 = 3;
+    sint32 rssi_dbm = 3;
 
     /*
-     * Signal to noise ratio in tenths of a dB. Fits signed 16 bit.
+     * Signal to noise ratio in tenths of a dB. Tenths rather than the mesh's half-dB
+     * because this field round-trips the Semtech UDP protocol's "lsnr", which is a
+     * float emitted to one decimal. Fits signed 16 bit.
      */
     sint32 snr_x10 = 4;
 

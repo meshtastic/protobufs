@@ -33,9 +33,10 @@ enum PortNum {
 
   /*
    * A simple UTF-8 text message, which even the little micros in the mesh
-   * can understand and show on their screen eventually in some circumstances
-   * even signal might send messages in this form (see below)
-   * ENCODING: UTF-8 Plaintext (?)
+   * can understand and show on their screen. Every payload on this port is
+   * Unishox2-compressed, without exception, so there is no second port and no
+   * flag to say which form a payload is in: a receiver always decompresses.
+   * ENCODING: Unishox2-compressed UTF-8 text
    */
   TEXT_MESSAGE_APP = 1;
 
@@ -73,15 +74,6 @@ enum PortNum {
    * ENCODING: Protobuf
    */
   ADMIN_APP = 6;
-
-  /*
-   * Compressed TEXT_MESSAGE payloads.
-   * ENCODING: UTF-8 Plaintext (?) with Unishox2 Compression
-   * NOTE: The Device Firmware converts a TEXT_MESSAGE_APP to TEXT_MESSAGE_COMPRESSED_APP if the compressed
-   * payload is shorter. There's no need for app developers to do this themselves. Also the firmware will decompress
-   * any incoming TEXT_MESSAGE_COMPRESSED_APP payload and convert to TEXT_MESSAGE_APP.
-   */
-  TEXT_MESSAGE_COMPRESSED_APP = 7;
 
   /*
    * Waypoint payloads.
@@ -190,13 +182,6 @@ enum PortNum {
   STORE_FORWARD_APP = 65;
 
   /*
-   * Optional port for messages for the range test module.
-   * ENCODING: ASCII Plaintext
-   * NOTE: This portnum traffic is not sent to the public MQTT starting at firmware version 2.2.9
-   */
-  RANGE_TEST_APP = 66;
-
-  /*
    * Provides a format to send and receive telemetry data from the Meshtastic network.
    * Maintained by Charles Crossan (crossan007) : crossan007@gmail.com
    * ENCODING: Protobuf
@@ -213,19 +198,12 @@ enum PortNum {
 
   /*
    * Used to let multiple instances of Linux native applications communicate
-   * as if they did using their LoRa chip.
+   * as if they did using their LoRa chip. Payload is an InjectedFrame.
    * Maintained by GitHub user GUVWAF.
    * Project files at https://github.com/GUVWAF/Meshtasticator
-   * ENCODING: Protobuf (?)
-   */
-  SIMULATOR_APP = 69;
-
-  /*
-   * Provides a traceroute functionality to show the route a packet towards
-   * a certain destination would take on the mesh. Contains a RouteDiscovery message as payload.
    * ENCODING: Protobuf
    */
-  TRACEROUTE_APP = 70;
+  SIMULATOR_APP = 69;
 
   /*
    * Aggregates edge info for the network by sending out a list of each node's neighbors

@@ -76,18 +76,6 @@ def submsg(tag, body):
 # Each returns (2.x bytes, 3.0 bytes, note). Field numbers follow the schema
 # each side actually had, since a tag above 15 costs two bytes for its key.
 
-SNR8 = [-4, -12, -7, -18, -2, -9, -15, -6]  # quarter-dB, eight hops, all negative
-NODES8 = 8
-
-
-def route_discovery():
-    # A completed traceroute carries both directions: route and snr_towards on
-    # the way out, route_back and snr_back on the way home.
-    old = 2 * (packed(1, [4] * NODES8) + unpacked(2, [int32(s) for s in SNR8]))
-    new = 2 * (packed(1, [4] * NODES8) + packed(2, [zigzag(s) for s in SNR8]))
-    return old, new, "8 hops each way, negative SNR throughout"
-
-
 def position_basic():
     # lat/lon/alt/time only.
     old = field(1, f32()) + field(2, f32()) + field(3, int32(120)) + field(4, f32())
@@ -172,7 +160,6 @@ def drawn_shape():
 
 
 SCENARIOS = [
-    ("RouteDiscovery", route_discovery),
     ("Position, basic", position_basic),
     ("Position, negative altitude", position_negative_alt),
     ("DeviceMetrics", device_metrics),

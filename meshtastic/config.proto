@@ -48,7 +48,7 @@ message DeviceConfig {
     NONE = 4;
 
     /*
-     * Ignores packets from non-standard portnums such as: TAK, RangeTest, PaxCounter, etc.
+     * Ignores packets from non-standard portnums such as: TAK, PaxCounter, etc.
      * Only rebroadcasts packets with standard portnums: NodeInfo, Text, Position, Telemetry, and Routing.
      */
     CORE_PORTNUMS_ONLY = 5;
@@ -103,8 +103,10 @@ message DeviceConfig {
   uint32 button_gpio = 2;
 
   /*
-   * For boards without a PWM buzzer, this is the pin number that will be used
-   * Defaults to PIN_BUZZER if defined.
+   * GPIO the PWM buzzer is connected to, used for system tones and, when
+   * ALERT_USE_PWM is set, for notification ringtones. 0 is GPIO0, not "unset":
+   * buzzer_mode says whether the buzzer sounds. Set to PIN_BUZZER, where the board
+   * defines one, when the config is created.
    */
   uint32 buzzer_gpio = 3;
 
@@ -192,11 +194,6 @@ message PositionConfig {
      * Include a sequence number incremented per packet
      */
     SEQ_NO = 0x0040;
-
-    /*
-     * Include positional timestamp (from GPS solution)
-     */
-    TIMESTAMP = 0x0080;
 
     /*
      * Include positional heading
@@ -415,18 +412,18 @@ message NetworkConfig {
   uint32 flags = 1;
 
   /*
-   * If set, this node will try to join the specified wifi network and
-   * acquire an address via DHCP
+   * If set, this node will try to join the specified wifi network, taking its
+   * address as address_mode says
    */
   string wifi_ssid = 2;
 
   /*
-   * If set, will be use to authenticate to the named wifi
+   * If set, used to authenticate to the named wifi
    */
   string wifi_psk = 3;
 
   /*
-   * NTP server to use if WiFi is conneced, defaults to `meshtastic.pool.ntp.org`
+   * NTP server to use if WiFi is connected, defaults to `meshtastic.pool.ntp.org`
    */
   string ntp_server = 4;
 
@@ -446,12 +443,12 @@ message NetworkConfig {
   string rsyslog_server = 7;
 
   /*
-   * Flags for enabling/disabling network protocols
+   * Auxiliary network protocols enabled: a bitwise OR of ProtocolFlags values.
    */
   uint32 enabled_protocols = 8;
 
   /*
-   * Available flags auxiliary network protocols
+   * Auxiliary network protocols, as flags for enabled_protocols
    */
   enum ProtocolFlags {
     /*
@@ -470,21 +467,6 @@ message NetworkConfig {
  * Display Config
  */
 message DisplayConfig {
-  /*
-   * Unit display preference
-   */
-  enum DisplayUnits {
-    /*
-     * Metric (Default)
-     */
-    METRIC = 0;
-
-    /*
-     * Imperial
-     */
-    IMPERIAL = 1;
-  }
-
   /*
    * Override OLED outo detect with this if it fails.
    */
@@ -550,17 +532,18 @@ message DisplayConfig {
     DISPLAY_USE_LONG_NODE_NAME = 0x10;
     /* Draw message bubbles on screen */
     DISPLAY_ENABLE_MESSAGE_BUBBLES = 0x20;
+    /*
+     * Show lengths, speeds and temperatures on this node's own screen in imperial
+     * units. Display only: over the air and to clients every value is SI, and an app
+     * applies its own unit setting.
+     */
+    DISPLAY_IMPERIAL_UNITS = 0x40;
   }
 
   /*
    * Bitwise OR of Flags values.
    */
   uint32 flags = 3;
-
-  /*
-   * Perferred display units
-   */
-  DisplayUnits units = 4;
 
   /*
    * Override auto-detect in screen
@@ -710,29 +693,32 @@ message LoRaConfig {
   uint32 flags = 1;
 
   /*
-   * Either modem_config or bandwidth/spreading/coding will be specified - NOT BOTH.
-   * As a heuristic: If bandwidth is specified, do not use modem_config.
-   * Because protobufs take ZERO space when the value is zero this works out nicely.
-   * This value is replaced by bandwidth/spread_factor/coding_rate.
-   * If you'd like to experiment with other options add them to MeshRadio.cpp in the device code.
+   * The preset the radio uses when LORA_USE_PRESET is set. When it is clear,
+   * bandwidth, spread_factor and coding_rate define the radio instead, and this field
+   * does not configure it.
    */
   ModemPreset modem_preset = 2;
 
   /*
-   * Bandwidth in MHz
-   * Certain bandwidth numbers are 'special' and will be converted to the
-   * appropriate floating point value: 31 -> 31.25MHz
+   * Bandwidth in kHz, used when LORA_USE_PRESET is clear. 0 selects the default,
+   * 250 kHz. Fractional bandwidths are stored as codes: 8 = 7.8, 10 = 10.4,
+   * 16 = 15.6, 21 = 20.8, 31 = 31.25, 42 = 41.7, 62 = 62.5, 200 = 203.125,
+   * 400 = 406.25, 800 = 812.5 and 1600 = 1625 kHz; any other value is kHz as it
+   * stands. Not every LoRa chip supports every bandwidth, the narrow ones such as
+   * 31.25 kHz least of all, and the radio driver rejects one the chip cannot use.
    */
   uint32 bandwidth = 3;
 
   /*
-   * A number from 7 to 12.
-   * Indicates number of chirps per symbol as 1<<spread_factor.
+   * Spreading factor, 5 to 12, used when LORA_USE_PRESET is clear: a symbol is
+   * 1 << spread_factor chirps. Not every LoRa chip supports SF5 and SF6; on an
+   * SX127x-class radio firmware uses the default, 11, instead, as it does for a value
+   * out of range.
    */
   uint32 spread_factor = 4;
 
   /*
-   * The denominator of the coding rate.
+   * The denominator of the coding rate, used when LORA_USE_PRESET is clear.
    * ie for 4/5, the value is 5. 4/8 the value is 8.
    */
   uint32 coding_rate = 5;
@@ -766,13 +752,18 @@ message LoRaConfig {
   sint32 tx_power = 9;
 
   /*
-   * This controls the actual hardware frequency the radio transmits on.
-   * Most users should never need to be exposed to this field/concept.
-   * A channel number between 1 and NUM_CHANNELS (whatever the max is in the current region).
-   * If ZERO then the rule is "use the old channel name hash based
-   * algorithm to derive the channel number")
-   * If using the hash algorithm the channel number will be: hash(channel_name) %
-   * NUM_CHANNELS (Where num channels depends on the regulatory region).
+   * The frequency slot the radio transmits and listens on. This is the one statement of
+   * how a slot is chosen; other fields point here.
+   *
+   * N > 0  slot N, counted from 1, chosen by the user.
+   * 0      derive it: slot = hash(name) % slot_count + 1, where name is what the
+   *        region's RegionInfo.override_slot selects - the primary channel's name, or
+   *        the modem preset's name from ModemPresetInfo.name. An empty primary channel
+   *        name means the preset name, so the two agree on a default channel.
+   *
+   * slot_count follows from the region's frequency range and the profile's
+   * spacing_khz and padding_khz in the region registry, so it depends on region and
+   * preset, not on this field. Most users never see this concept.
    */
   uint32 channel_num = 10;
 
@@ -851,9 +842,9 @@ message SecurityConfig {
   }
 
   /*
-   * The public key of this device, and the one stored copy of it: the owner and the
-   * node's own NodeDB entry do not store it. Sent to other nodes as User.public_key
-   * so they can compute a shared secret key.
+   * The public key of this device, and its source: the owner leaves it unset, and the
+   * node's own NodeDB entry carries a recovery copy. Sent to other nodes as
+   * User.public_key so they can compute a shared secret key.
    */
   bytes public_key = 1;
 

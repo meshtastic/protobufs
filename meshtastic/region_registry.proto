@@ -84,10 +84,11 @@ message RegionInfo {
   bool wide_lora = 9;
 
   /*
-   * Frequency slot used while the user has not chosen one:
-   *   0      the hash of the primary channel name picks the slot
-   *   -1     the hash of the preset name picks the slot
-   *   N > 0  slot N, counted from 1
+   * What this region does while the user has not chosen a slot, which is to say what
+   * LoRaConfig.channel_num = 0 hashes:
+   *   0      the primary channel's name
+   *   -1     the preset's name
+   *   N > 0  no hash, this region is fixed to slot N, counted from 1
    */
   sint32 override_slot = 10;
 }

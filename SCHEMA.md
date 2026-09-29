@@ -131,8 +131,9 @@ fact are a duplicate, because they drift and one of them has to lose. Copies in
 processing messages are not. The same type is often both: `User` is stored as
 `DeviceState.owner` and sent in a `NODEINFO_APP` packet, inside `NodeInfo`, in
 `set_owner` and in `SharedContact`, so the question is asked of each use. `DeviceMetadata`
-is never stored by the node, and the node's public key is stored only in `SecurityConfig`
-although `User` sends it.
+is never stored by the node, and the node's public key has its source in `SecurityConfig`
+although `User` sends it. The one deliberate second store is the node's own entry in the
+node database, a recovery copy of the owner that survives the loss of `DeviceState`.
 
 ### What to compile
 
@@ -220,6 +221,12 @@ Signed quantities use `sint32` (zigzag). A negative `int32` costs **ten bytes** 
 wire regardless of magnitude, which is why temperature, current, SNR and ORP are all
 `sint32`.
 
+One scale per quantity: **SNR is dB x 2** and **RSSI is whole dBm**, wherever either
+appears. Both are chosen so a reading is one zigzag byte across the range a radio
+actually reports. A field that carries a foreign protocol's value keeps that protocol's
+scale instead, and its comment names the protocol - the LoRaWAN bridge's `snr_x10` is
+the Semtech UDP `lsnr`, and ATAK's `rssi_x10` is what an ADS-B receiver reports.
+
 **Match the scale to the instrument, not to a round number.** A scale finer than the
 sensor resolves buys no information and multiplies every delta, which costs a byte per
 sample as soon as the delta crosses 63. The illuminance and particulate quantities are
@@ -241,6 +248,10 @@ scaled integer would add two conversions and remove none.
 
 If a quantity ever needs finer resolution, its enum value gets a finer scale. The
 encoding never varies per reading.
+
+**Units are SI on the air.** Every value a node sends or hands to a client is metric.
+Imperial is a choice of whoever draws it: `DISPLAY_IMPERIAL_UNITS` for the node's own
+screen, and each app's own setting for the app.
 
 ---
 
@@ -340,8 +351,8 @@ nowhere to sit in a pair of parallel arrays, so it stays in that node's own tabl
 **`fixed32` for node numbers.** Since 2.8 a NodeNum is a CRC over the node's public
 key, so it is uniformly distributed over 32 bits: 15 in 16 land above 2²⁸ and cost the
 full five varint bytes, against a flat four for `fixed32`. There is no low-magnitude
-population to make a varint pay, and never will be. `RouteDiscovery.route` was already
-right; the rest now match - `NeighborInfo.node_id`, `last_sent_by_id` and
+population to make a varint pay, and never will be. Every NodeNum on the air is a
+`fixed32` now - `NeighborInfo.node_id`, `last_sent_by_id` and
 `neighbor_ids`, `SharedContact.node_num`, `NodeRemoteHardwarePin.node_num`, and the
 five `num` fields in the node database. The last of those is per stored node,
 so it is flash rather than airtime.
@@ -356,8 +367,7 @@ per-element framing the columns exist to remove, silently, with the `.proto` sti
 saying `repeated sint32`. A bound also makes the message measurable: nanopb emits
 `meshtastic_DrawnShape_size` at 490, which it cannot compute for a callback field. The
 32-vertex pool costs no RAM, because `Route` is the larger arm of the same `oneof`.
-Every `repeated` scalar in the tree carries a bound except `resend_chunks.chunks`, which
-is unbounded by nature and client-facing.
+Every `repeated` scalar in the tree carries a bound, so every message is measurable.
 
 ---
 
@@ -415,7 +425,7 @@ shared. Masking low bits - what 2.x did - still sent four full bytes.
 The device sends the reconstructed full-precision `latitude` on the client link so an
 app never undoes the shift. Two parallel oneofs rather than one submessage, because a
 submessage would add a tag and a length byte to the form being optimised. **Use the
-same form for latitude and longitude.**
+same form for latitude and longitude:** a receiver rejects a position that mixes them.
 
 ---
 
@@ -674,6 +684,12 @@ one hops taken leaves the boundary where it was - which is exactly the edit that
 relayed frame read as an originator retransmission, and why that inference needs its own
 check rather than resting on the geometry.
 
+**The tail is the route record.** There is no traceroute message and no traceroute
+port in 3.0: every frame that carries a tail already states the hops it took, so a node
+that wants a route asks for a response and reads the reply's tail. What the tail does not
+carry is a reading per hop - `MeshPacket.rx_snr` is the receiver's own measurement of the
+last hop, and nothing collects the others.
+
 **The invariant a relay preserves is `path length == max(0, hops taken - 1)`.**
 Appending and decrementing together preserves it, and so does doing neither, at the
 cost of a tail that omits that hop. Decrementing without appending, or setting
@@ -800,8 +816,8 @@ vendors this repo as a submodule. See `tools/README.md`.
 air-layer file importing the client layer (§1), no cap or bitmask indexed by an enum
 that the enum has outgrown, and one numbering across the config section lists. A
 violation of any of them builds and lints clean, which is why each has been introduced
-at least once. It runs in the same CI job as the mask validation, and its two
-exemptions carry their reasons in the source.
+at least once. It runs in the same CI job as the mask validation, and its one
+exemption carries its reason in the source.
 
 `tools/wire_size.py` computes what the 3.0 encoding costs against the 2.x shape for the
 messages whose encoding changed. It is a documentation generator, not a test: the field
@@ -908,7 +924,7 @@ Open work, and decisions deliberately not yet made.
   registry lists only presets the schema has.
 - **`EU_874` and `EU_917` have no data.** Both are `RegionCode` values with no firmware
   definition, so `regions.yaml` has no entry for them.
-- **51 of the 147 legacy devices are named by slug.** No firmware variant gives them a
+- **52 of the 147 legacy devices are named by slug.** No firmware variant gives them a
   display name.
 
 **Documentation:**

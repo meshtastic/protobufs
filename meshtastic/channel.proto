@@ -42,14 +42,13 @@ message ChannelSettings {
   bytes psk = 1;
 
   /*
-   * A SHORT name that will be packed into the URL.
+   * A short name for end users to call the channel by, packed into the sharing URL.
    * Less than 12 bytes.
-   * Something for end users to call the channel
-   * If this is the empty string it is assumed that this channel
-   * is the special (minimally secure) "Default"channel.
-   * In user interfaces it should be rendered as a local language translation of "X".
-   * For channel_num hashing empty string will be treated as "X".
-   * Where "X" is selected based on the English words listed above for ModemPreset
+   *
+   * Empty means the minimally secure default channel: it is named by the modem preset
+   * (ModemPresetInfo.name), which is also the name hashed for the frequency slot when
+   * LoRaConfig.channel_num is 0. A user interface renders that name, translated where
+   * it has a translation.
    */
   string name = 2;
 
@@ -108,10 +107,10 @@ message Channel {
    * The index of this channel in the channel table, 0 to MAX_NUM_CHANNELS-1.
    * MAX_NUM_CHANNELS is 16 in 3.0, up from 8.
    *
-   * Index 0 is the primary channel: its name feeds the frequency slot hash, so
-   * it is the one that decides where the radio listens. Every other index is a
-   * key for decrypting traffic on that same frequency. Position carries this
-   * distinction, so no role field states it.
+   * Index 0 is the primary channel: it is the one whose name LoRaConfig.channel_num
+   * can hash, so it decides where the radio listens. Every other index is a key for
+   * decrypting traffic on that same frequency. Position carries this distinction, so
+   * no role field states it.
    */
   uint32 index = 1;
 

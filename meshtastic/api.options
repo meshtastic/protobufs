@@ -11,7 +11,6 @@
 *MyNodeInfo.firmware_edition int_size:8
 *MyNodeInfo.nodedb_count int_size:16
 
-*QueueStatus.res int_size:8
 *QueueStatus.free int_size:8
 *QueueStatus.maxlen int_size:8
 
@@ -33,12 +32,6 @@
 *KeyVerificationFinal.verification_characters max_size:10
 
 
-*ChunkedPayload.chunk_count int_size:16
-*ChunkedPayload.chunk_index int_size:16
-*ChunkedPayload.payload_chunk max_size:228
-
-*ChunkedPayloadResponse.payload_variant anonymous_oneof:true
-
 # Region->preset compatibility map (FromRadio.region_presets). groups is capped
 # above the current table (6 distinct preset groups). region_groups is indexed by
 # RegionCode value, so it holds the highest value plus one; schema_lint's indexed
@@ -50,5 +43,4 @@
 *LoRaPresetGroup.default_preset    int_size:8
 
 *LockdownStatus.state int_size:8
-*LockdownStatus.lock_reason int_size:8
 *LockdownStatus.boots_remaining int_size:16

@@ -41,11 +41,8 @@ message PositionLite {
   sint32 altitude = 3;
 
   /*
-   * This is usually not sent over the mesh (to save space), but it is sent
-   * from the phone so that the local device can set its RTC If it is sent over
-   * the mesh (because there are devices on the mesh without GPS), it will only
-   * be sent by devices which has a hardware GPS clock.
-   * seconds since 1970
+   * Epoch seconds of this position, as Position.time. Kept from the previous report
+   * when a sender leaves it out.
    */
   fixed32 time = 4;
 
@@ -79,15 +76,14 @@ message NodeInfoLite {
   uint32 hw_model = 2;
 
   /*
-   * The user's role in the mesh. The node's own entry leaves it unset:
-   * DeviceConfig.role is the one stored copy of this node's role.
+   * The user's role in the mesh. The node's own entry carries this node's role as a
+   * recovery copy; DeviceConfig.role is its source.
    */
   Role role = 3;
 
   /*
-   * SNR of the last received message: dB x 4, zigzag-encoded.
-   * Matches the RouteDiscovery convention. Encode: snr = (int32_t)lroundf(snr_db * 4.0f).
-   * Decode: snr_db = snr / 4.0f.
+   * SNR of the last received message: dB x 2, zigzag-encoded, the one SNR scale.
+   * Encode: snr = (int32_t)lroundf(snr_db * 2.0f). Decode: snr_db = snr / 2.0f.
    * A stored 0 does not by itself mean "unknown" - see NODEINFO_BITFIELD_HAS_SNR in
    * src/mesh/NodeDB.h for the presence bit that disambiguates a genuine 0 dB reading
    * from "never measured".
@@ -105,8 +101,9 @@ message NodeInfoLite {
   uint32 channel = 6;
 
   /*
-   * The public key of the user's device, for PKI-based encrypted DMs. Empty in the
-   * node's own entry: SecurityConfig.public_key is the one stored copy of its key.
+   * The public key of the user's device, for PKI-based encrypted DMs. The node's own
+   * entry carries this node's key as a recovery copy; SecurityConfig.public_key is
+   * its source.
    */
   bytes public_key = 7;
 
@@ -154,13 +151,14 @@ message DeviceState {
   // modules that own them.
 
   /*
-   * Read only settings/info about this node
+   * Read only settings/info about this node. nodedb_count is left unset: it is
+   * filled when MyNodeInfo is sent to the phone, and nothing reads a stored value.
    */
   MyNodeInfo my_node = 1;
 
   /*
-   * My owner info. public_key, role and hw_model are left unset: their stored copies
-   * are SecurityConfig.public_key, DeviceConfig.role and the node's own
+   * My owner info. public_key, role and hw_model are left unset: their sources are
+   * SecurityConfig.public_key, DeviceConfig.role and the node's own
    * NodeInfoLite.hw_model, and firmware fills them in when it sends the User.
    */
   User owner = 2;
@@ -210,7 +208,12 @@ message NodeDatabase {
   uint32 version = 1;
 
   /*
-   * New lite version of NodeDB to decrease memory footprint
+   * Every known node, this node's own entry included. The own entry is kept on
+   * purpose as a recovery copy of the owner: when DeviceState fails to load, firmware
+   * restores the owner's names, is_licensed and is_unmessagable from it, and when the
+   * node database is lost, rebuilds it from DeviceState.owner, DeviceConfig and
+   * SecurityConfig. It is otherwise an ordinary row, so nothing has to treat this
+   * node as a special case.
    */
   repeated NodeInfoLite nodes = 2 [(nanopb).callback_datatype = "std::vector<meshtastic_NodeInfoLite>"];
 

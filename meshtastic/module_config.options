@@ -15,6 +15,7 @@
 
 *RemoteHardwareConfig.available_pins max_count:4
 *RemoteHardwarePin.name max_size:15
+# A pin must have a bit in HardwareMessage.gpio_mask, so 0 to 63.
 *RemoteHardwarePin.gpio_pin int_size:8
 
 *AmbientLightingConfig.current int_size:8
@@ -47,7 +48,6 @@
 *DetectionSensorConfig.flags int_size:8
 *SerialConfig.flags int_size:8
 *StoreForwardConfig.flags int_size:8
-*RangeTestConfig.flags int_size:8
 *CannedMessageConfig.flags int_size:8
 
 # Mirrors SecurityConfig.admin_key: same shape, same purpose, one list per

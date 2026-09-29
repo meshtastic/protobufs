@@ -31,7 +31,8 @@ message Position {
    *   21               3 B           ~20 m
    *   14               2 B           ~2.5 km
    *
-   * Sender must use the same form for latitude and longitude.
+   * Both coordinates use the same form: a receiver rejects a position whose latitude
+   * and longitude arrive in different forms.
    */
   oneof latitude_variant {
     /*
@@ -68,9 +69,10 @@ message Position {
   uint32 precision_bits = 5;
 
   /*
-   * Epoch seconds of this position.
-   * Where a GPS supplied the fix this is the timestamp of the GPS solution, otherwise
-   * when the position was recorded.
+   * Epoch seconds of this position: the time of the GPS solution where a GPS supplied
+   * the fix, otherwise when the position was recorded, and 0 when the sender has no
+   * trustworthy clock. A receiver uses it to set its own clock only when
+   * location_source is LOC_INTERNAL or LOC_EXTERNAL.
    */
   fixed32 time = 6;
 
@@ -165,12 +167,6 @@ message Position {
   uint32 gps_accuracy = 20;
 
   /*
-   * How the altitude was acquired: manual, GPS int/ext, etc
-   * Default: same as location_source if present
-   */
-  AltSource altitude_source = 21;
-
-  /*
    * Sensor ID - in case multiple positioning sensors are being used
    */
   uint32 sensor_id = 22;
@@ -238,33 +234,6 @@ message User {
 }
 
 /*
- * A message used in a traceroute
- */
-message RouteDiscovery {
-  /*
-   * The list of nodenums this packet has visited so far to the destination.
-   */
-  repeated fixed32 route = 1;
-
-  /*
-   * The list of SNRs (in dB, scaled by 4) in the route towards the destination.
-   * Wire encoding: sint32 (W1 fix, was int32)
-   */
-  repeated sint32 snr_towards = 2;
-
-  /*
-   * The list of nodenums the packet has visited on the way back from the destination.
-   */
-  repeated fixed32 route_back = 3;
-
-  /*
-   * The list of SNRs (in dB, scaled by 4) in the route back from the destination.
-   * Wire encoding: sint32 (W1 fix, was int32)
-   */
-  repeated sint32 snr_back = 4;
-}
-
-/*
  * A Routing control Data packet handled by the routing module
  */
 message Routing {
@@ -314,7 +283,7 @@ message Routing {
     TOO_LARGE = 7;
 
     /*
-     * The request had want_response set, the request reached the destination node, but no service on that node wants to send a response
+     * The request had the WANT_RESPONSE bit set, the request reached the destination node, but no service on that node wants to send a response
      * (possibly due to bad channel permissions)
      */
     NO_RESPONSE = 8;
@@ -370,20 +339,10 @@ message Routing {
 
   oneof variant {
     /*
-     * A route request going from the requester
-     */
-    RouteDiscovery route_request = 1;
-
-    /*
-     * A route reply
-     */
-    RouteDiscovery route_reply = 2;
-
-    /*
      * A failure in delivering a message (usually used for routing control messages, but might be provided
      * in addition to ack.fail_id to provide details on the type of failure).
      */
-    Error error_reason = 3;
+    Error error_reason = 1;
   }
 }
 
@@ -404,36 +363,15 @@ message Data {
   bytes payload = 2;
 
   /*
-   * Not normally used, but for testing a sender can request that recipient
-   * responds in kind (i.e. if it received a position, it should unicast back its position).
-   * Note: that if you set this on a broadcast you will receive many replies.
-   */
-  bool want_response = 3;
-
-  /*
-   * The address of the destination node.
-   * This field is filled in by the mesh radio device software, application
-   * layer software should never need it.
-   * RouteDiscovery messages _must_ populate this.
-   * Other message types might need to if they are doing multihop routing.
-   */
-  fixed32 dest = 4;
-
-  /*
-   * The address of the original sender for this message.
-   * This field should _only_ be populated for reliable multihop packets (to keep
-   * packets small).
-   */
-  fixed32 source = 5;
-
-  /*
-   * Only used in routing or response messages.
-   * Indicates the original message ID that this message is reporting failure on. (formerly called original_id)
+   * The id of the packet this one answers, on a response or a routing ack. A sender
+   * matches an ack or a nak against it, and cancels a retransmission with it.
    */
   fixed32 request_id = 6;
 
   /*
-   * If set, this message is intended to be a reply to a previously sent message with the defined id.
+   * If set, this message replies to the message with that id: threading a text message
+   * for the people reading it, which store and forward preserves. Distinct from
+   * request_id, which pairs a protocol response with the request it answers.
    */
   fixed32 reply_id = 7;
 
@@ -453,7 +391,11 @@ message Data {
     BITFIELD_NONE = 0x00;
     /* The sender approves this packet being uploaded to MQTT */
     BITFIELD_OK_TO_MQTT = 0x01;
-    /* The sender wants a response to this packet */
+    /*
+     * The sender wants a response to this packet: a recipient answers in kind, so a
+     * position request comes back as a position. Set on a broadcast it invites a reply
+     * from every recipient.
+     */
     BITFIELD_WANT_RESPONSE = 0x02;
   }
 
@@ -669,7 +611,9 @@ message RemoteShell {
 
   /*
    * Monotonic per-session sequence number for this frame.
-   * Zero on unsequenced control frames (ACK, turn grant, RTS).
+   * Zero on unsequenced control frames (ACK, turn grant, RTS), which costs nothing:
+   * proto3 does not encode a zero scalar, so an unsequenced frame carries no seq field.
+   * A receiver ignores seq on those ops rather than trusting it.
    */
   uint32 seq = 3;
 
@@ -883,16 +827,19 @@ message MqttClientProxyMessage {
 }
 
 /*
- * Compressed payload wrapper
+ * A frame handed to a node as if it had arrived off the radio, used by the simulator
+ * and by frame injection. Named for what it does: 2.8 calls this message Compressed,
+ * but nothing ever compressed anything with it.
  */
-message Compressed {
+message InjectedFrame {
   /*
-   * PortNum to determine the how to handle the compressed payload.
+   * The port the payload belongs to, or UNKNOWN_APP when data is verbatim ciphertext
+   * to be decrypted as if it came off the air.
    */
   PortNum portnum = 1;
 
   /*
-   * Compressed data.
+   * The payload for portnum, or the ciphertext when portnum is UNKNOWN_APP.
    */
   bytes data = 2;
 }
@@ -934,10 +881,13 @@ message NeighborInfo {
   repeated fixed32 neighbor_ids = 4;
 
   /*
-   * SNR of the last message heard from each neighbour, in dB scaled by 4.
+   * SNR of the last message heard from each neighbour, in dB scaled by 2.
    *
-   * Scaled by 4 because that is the radio's own quantum - the SX126x reports SNR
-   * in quarter-dB steps - so the scale is exact rather than a rounding choice.
+   * Half-dB steps because this is the one SNR field that goes on the air, once per
+   * neighbour: the whole practical range of -32 to +31.5 dB is a single zigzag byte,
+   * where the radio's own quarter-dB quantum needs two below -16 dB - exactly the
+   * weak links a neighbour table is about. Rounding a quarter-dB reading to halves
+   * loses nothing a link decision uses.
    */
   repeated sint32 neighbor_snr = 5;
 }
