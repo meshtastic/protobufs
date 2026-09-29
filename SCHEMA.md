@@ -754,6 +754,8 @@ What it costs, including the length byte:
   Hand-encoded, re-check after any edit. A tag in 1-15 is a one-byte key.
     hop_flags  = key 0x10 + one varint byte while the mask is under 128       = 2
     fragment   = key 0x08 + two varint bytes (msg_id|index|total reaches 14 bits) = 3
+    scope_code = key + three varint bytes (16 random bits exceed 16383 three
+                 times in four; two bytes below that)                        = 4
     uint16     = key + up to three varint bytes                              = 4
   Plus one opt_len byte for a non-empty block.
 -->
@@ -764,8 +766,10 @@ What it costs, including the length byte:
 | `hop_flags` only | 3 |
 | fragmentation state | 4 |
 | fragment plus `hop_flags` | 6 |
+| `scope_code` only | 5 |
 | one future `uint16` field | 5 |
 | fragment plus one future field | 8 |
+| fragment plus `hop_flags` plus `scope_code` | 10 |
 
 A future field a relay carries blind costs **five bytes on the packets that carry it
 and nothing on the rest**. Growing the fixed header by one field instead costs every
@@ -817,6 +821,37 @@ no mesh can deliver.
 Delivery probability binds long before the field width does, which is also why
 fragmentation ships off by default and opts in per portnum. The byte overhead is ~12%;
 the arrival odds are what kill you.
+
+### Channel scope
+
+Sixteen channels with no statement of reach is sixteen floods. Three independent layers
+bound them, and only the third costs a byte on the air.
+
+**`ChannelSettings.scope` is a sender-side rule, and free.** It rides in the channel URL,
+so every node that joins a channel launches its traffic the same way: `SCOPE_LOCAL` caps
+the launch `hop_start` at 2, `SCOPE_REGIONAL` at the region default, `SCOPE_GLOBAL` at the
+full 15, and only `SCOPE_GLOBAL` may set `uplink_enabled`. Congestion control may raise
+the cap on REGIONAL up to the region maximum and on GLOBAL, never on LOCAL. A relay
+cannot read any of this - the channel is not something it holds - which is why reach is
+also enforced from the other side.
+
+**`RelayConfig` is what a relay enforces, and also free.** A relay sees the one-byte
+`chan` and nothing else of a channel, which is enough for a policy table: per hash,
+forward, forward under a hop cap, or drop, with an action for hashes no rule names. It is
+evaluated on ROUTER, ROUTER_LATE and REPEATER only, and its default forwards everything,
+so an existing mesh behaves as it did. Because hops taken is a hint rather than an
+authenticated value, a hop cap is congestion control and never a security boundary; and
+because a `RELAY_DROP` on the primary hash partitions a mesh, the rules are admin-only and
+every drop is logged with the hash that caused it.
+
+**`HeaderOptions.scope_code` is the opt-in layer, and costs 5 bytes.** A 16-bit truncated
+HMAC over `chan || from || id` under a key derived from the region name, so a relay that
+does not hold the channel can still tell whether a frame belongs to its region, without
+touching the ciphertext, and a code lifted off one frame does not verify on another. The
+key comes from a name people share, so this filters traffic rather than proving
+membership: nothing may authorise on it. `0` is never a valid code, and a frame carrying
+one still has to carry a channel or a destination, because this is a filter and not
+addressing.
 
 ### Payload room
 
@@ -955,6 +990,13 @@ Open work, and decisions deliberately not yet made.
   definition, so `regions.yaml` has no entry for them.
 - **52 of the 147 legacy devices are named by slug.** No firmware variant gives them a
   display name.
+
+**Client work the schema assumes:**
+
+- **No client UI for `RelayConfig`.** The message is admin-reachable and stored, but
+  nothing presents it, so a relay policy today is set by an operator with a CLI. The
+  failure mode it guards against - a `RELAY_DROP` on the primary hash partitioning a
+  mesh - is exactly the one a UI should make hard to reach.
 
 **Documentation:**
 

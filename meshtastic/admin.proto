@@ -85,6 +85,11 @@ message AdminMessage {
      * device-ui config
      */
     DEVICEUI_CONFIG = 9;
+
+    /*
+     * Relay policy configuration
+     */
+    RELAY_CONFIG = 10;
   }
 
   /*

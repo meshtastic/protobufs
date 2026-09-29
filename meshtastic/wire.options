@@ -39,6 +39,8 @@
 
 # Hop-by-hop bits, one byte wide: the highest is 0x02 here and 0x04 with anycast.
 *HeaderOptions.hop_flags int_size:8
+# 16-bit truncated HMAC, so a random code is a three-byte varint more often than not.
+*HeaderOptions.scope_code int_size:16
 
 *RemoteShell.payload max_size:200
 *RemoteShell.op int_size:8

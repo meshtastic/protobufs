@@ -597,6 +597,28 @@ message HeaderOptions {
    * Bitwise OR of HopFlags values.
    */
   uint32 hop_flags = 2;
+
+  /*
+   * Region membership code, 16 bits, hop-by-hop. Optional: a frame without one is an
+   * ordinary frame.
+   *
+   *   scope_code = trunc16(HMAC-SHA256(scope_key, chan || from || id))
+   *   scope_key  = SHA256("#" + region_name)[0:16]
+   *
+   * It binds to this frame's own `from` and `id`, so a code cannot be replayed onto
+   * another frame, and a relay checks it without touching the ciphertext. A relay that
+   * holds the region key checks membership; one that does not may match the code
+   * against an allow list or ignore the field. 0 is never a valid code: an originator
+   * that computes 0 sends 1.
+   *
+   * The key derives from the region name, so the code is only as secret as that name.
+   * It is a relay filter that keeps foreign traffic out of a region's infrastructure,
+   * not a membership proof, and it carries no authorisation weight.
+   *
+   * Region traffic still carries a channel (BCAST) or a destination (UCAST): this
+   * filters, it does not address.
+   */
+  uint32 scope_code = 3;
 }
 
 /*

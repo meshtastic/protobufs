@@ -895,6 +895,79 @@ message SecurityConfig {
 message SessionkeyConfig {}
 
 /*
+ * Relay Policy
+ *
+ * How this node relays broadcast traffic, per channel hash. Evaluated on the ROUTER,
+ * ROUTER_LATE and REPEATER roles only; every other role ignores it. Keyed by the
+ * header's one-byte `chan`, so a rule covers every channel that hashes to that byte,
+ * held or not - which is what lets an operator cap a channel whose key the node does
+ * not have.
+ *
+ * Default is no rules and RELAY_FORWARD, so a node relays as it did until an operator
+ * opts in. A RELAY_DROP on the primary hash partitions a mesh, so rules are admin-only
+ * and firmware logs every drop with the hash that caused it.
+ */
+message RelayConfig {
+  /*
+   * What to do with a matching broadcast.
+   */
+  enum Action {
+    /* Relay it */
+    RELAY_FORWARD = 0;
+
+    /* Relay it while the hops taken so far are below hop_cap */
+    RELAY_CAP = 1;
+
+    /* Do not relay it. The node still receives and decodes it locally. */
+    RELAY_DROP = 2;
+  }
+
+  /*
+   * One policy entry.
+   */
+  message Rule {
+    /*
+     * The header `chan` byte this rule matches.
+     */
+    uint32 channel_hash = 1;
+
+    /*
+     * What to do with a broadcast whose `chan` matches.
+     */
+    Action action = 2;
+
+    /*
+     * For RELAY_CAP: relay only while hop_start - hop_limit is below this. Hops taken
+     * is a hint rather than an authenticated value (SCHEMA.md §8, Hop accounting), so a
+     * cap is a congestion tool and never a security boundary.
+     */
+    uint32 hop_cap = 3;
+  }
+
+  /*
+   * Rules, first match wins. Empty means forward everything.
+   */
+  repeated Rule rules = 1;
+
+  /*
+   * What to do with a broadcast that matches no rule.
+   */
+  Action default_action = 2;
+
+  /*
+   * Region names this relay verifies HeaderOptions.scope_code against. Empty means the
+   * field is ignored.
+   */
+  repeated string regions = 3;
+
+  /*
+   * What to do with a broadcast whose scope_code matches none of `regions`. Only
+   * consulted when `regions` is non-empty and the frame carries a scope_code.
+   */
+  Action scope_miss_action = 4;
+}
+
+/*
  * Payload Variant for admin transport
  */
 message ConfigPayload {
@@ -908,5 +981,6 @@ message ConfigPayload {
     BluetoothConfig bluetooth = 7;
     SecurityConfig security = 8;
     SessionkeyConfig sessionkey = 9;
+    RelayConfig relay = 11;
   }
 }

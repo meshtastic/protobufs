@@ -81,6 +81,44 @@ message ChannelSettings {
    * Per-channel module settings.
    */
   ModuleSettings module_settings = 6;
+
+  /*
+   * Intended reach of this channel. It travels in the channel URL, so everyone who
+   * joins the channel launches its traffic the same way.
+   *
+   * Scope caps the hop_start a node launches with on this channel, decides whether
+   * uplink_enabled may be set, and tells congestion control whether it may raise that
+   * cap. It is a sender-side rule: a relay cannot read it, and enforces reach with
+   * RelayConfig instead.
+   *
+   * | scope    | launch hop_start | uplink_enabled | congestion control may raise |
+   * |----------|------------------|----------------|------------------------------|
+   * | LOCAL    | 2                | refused        | no                           |
+   * | REGIONAL | region default   | refused        | yes, to the region maximum   |
+   * | GLOBAL   | 15               | allowed        | yes                          |
+   *
+   * A direct message launches with the sender's primary-channel scope unless the client
+   * sets hop_start itself; after the first flood it steers by next_hop, so the same
+   * rule bounds its reach.
+   */
+  enum Scope {
+    /* Treated as REGIONAL */
+    SCOPE_UNSET = 0;
+
+    /* One or two hops: a site, an event, a household */
+    SCOPE_LOCAL = 1;
+
+    /* The region's default hop cap */
+    SCOPE_REGIONAL = 2;
+
+    /* Up to the full 15-hop budget, and the only scope that may uplink */
+    SCOPE_GLOBAL = 3;
+  }
+
+  /*
+   * Intended reach of this channel, enforced by senders.
+   */
+  Scope scope = 7;
 }
 
 /*

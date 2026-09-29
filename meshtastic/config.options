@@ -33,3 +33,11 @@
 *DisplayConfig.flags int_size:8
 *LoRaConfig.flags int_size:8
 *SecurityConfig.flags int_size:8
+
+# One rule per channel the node holds, plus room for hashes it does not.
+*RelayConfig.rules max_count:16
+*RelayConfig.Rule.channel_hash int_size:8
+*RelayConfig.Rule.hop_cap int_size:8
+# Region names, as in HeaderOptions.scope_code.
+*RelayConfig.regions max_count:4
+*RelayConfig.regions max_size:16
