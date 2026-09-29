@@ -232,6 +232,11 @@ message MeshPacket {
     PACKET_PKI_ENCRYPTED = 0x10;
     /* The packet carries a valid XEdDSA signature; local, not in the header */
     PACKET_XEDDSA_SIGNED = 0x20;
+    /*
+     * The packet was encrypted or decrypted with a ratchet-derived key. Local only: it
+     * is not in the header, and nothing on the air states which derivation was used.
+     */
+    PACKET_RATCHET_ENCRYPTED = 0x40;
   }
 
   /*

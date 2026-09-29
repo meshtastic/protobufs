@@ -231,6 +231,16 @@ message User {
    * Whether or not the node can be messaged
    */
   optional bool is_unmessagable = 8;
+
+  /*
+   * Current X25519 ratchet public key, present only while this node has forward secrecy
+   * for direct messages enabled (SecurityConfig.ratchet_flags). Rotated every
+   * ratchet_interval_secs. A receiver keeps the newest key it has seen for this node and
+   * discards it once it is older than the sender's retention window, after which it falls
+   * back to the static derivation. Authenticated by the XEdDSA signature on the NodeInfo
+   * that carries it: an unsigned NodeInfo's ratchet key is ignored.
+   */
+  bytes ratchet_key = 9;
 }
 
 /*

@@ -780,7 +780,9 @@ loop over attacker-controlled bytes at any profile, and the block is parsed only
 endpoints, after AEAD verification.
 
 **XEdDSA signs the same set the AAD covers**, canonicalised the same way, so a HAM
-mode frame and an encrypted one protect identical bytes.
+mode frame and an encrypted one protect identical bytes. Ratchet mode changes how a
+direct message's key is derived and nothing else: no header byte, no AAD field and no
+signature input moves.
 
 `from` and `id` are in the nonce derivation and must not be narrowed. `to` is not,
 which is what lets the broadcast profiles elide it.
@@ -884,6 +886,40 @@ bytes over the ciphertext it carries, so a frame near the 256-byte limit cannot 
 in one packet. Until `STORE_FORWARD_APP` opts into `HeaderOptions.fragment`, a server does
 not replay a frame it cannot send whole, and reports that stream in `gap_hashes`. This is
 the first consumer of per-portnum fragmentation.
+
+### Direct-message forward secrecy
+
+A PKI direct message derives its key from two static keys, so whoever later obtains
+either one decrypts every recorded message between the two nodes. The fix that fits this
+frame budget is an announced ratchet: each node publishes a rotating X25519 key in its
+`User`, and mixes it into the derivation.
+
+```
+   dh_ss = X25519(sender_static_priv,  receiver_static_pub)
+   dh_rr = X25519(sender_ratchet_priv, receiver_ratchet_pub)
+   key   = HKDF-SHA256(salt = "meshtastic-ratchet-v1",
+                       ikm  = dh_ss || dh_rr,
+                       info = min(from, to) || max(from, to))
+```
+
+The static half keeps the agreement authenticated to the sender's identity even if a
+ratchet key was published by someone else; erasing ratchet private keys is what buys the
+forward secrecy. A node holds `K = 3` generations, the current one and the two before it,
+and erases the oldest on rotation, so **granularity is one rotation interval, not one
+message**. Nothing depends on a previous message, which is why loss, reordering and
+duplicates cannot desynchronise anything.
+
+**Nothing on the air says which derivation was used.** A receiver tries its own current
+ratchet against the peer's newest, then its remaining generations, then the static-only
+key: at most `K * K + 1` tag checks, in practice two or three, and only on unicast
+addressed to itself. The 8-byte AEAD tag is what rejects a wrong key. That keeps the
+cost at zero wire bytes; an explicit generation byte in the end-to-end options range is
+the fallback if measurement on nRF52 says trial decryption is too slow.
+
+**Fallback is the static derivation**, used whenever either side has no fresh ratchet key
+for the other, so a mesh with the feature half deployed still delivers. What it does not
+give is post-compromise security: a compromised node stays readable until it rotates and
+its peer learns the new key.
 
 ### Payload room
 
@@ -1022,6 +1058,14 @@ Open work, and decisions deliberately not yet made.
   definition, so `regions.yaml` has no entry for them.
 - **52 of the 147 legacy devices are named by slug.** No firmware variant gives them a
   display name.
+
+**Direct-message forward secrecy:**
+
+- **No post-compromise security, and no per-message forward secrecy.** The ratchet buys
+  one rotation interval of exposure, not one message: a per-message chain needs per-peer
+  state, skipped-key storage and a counter per packet, none of which fit this budget.
+- **Trial decryption is unmeasured.** The order is specified and costs no wire bytes, but
+  nobody has timed `K * K + 1` tag checks on an nRF52840.
 
 **Store and forward:**
 

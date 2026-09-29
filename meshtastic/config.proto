@@ -887,6 +887,33 @@ message SecurityConfig {
    * Determines the packet signature policy applied to remotely received mesh packets.
    */
   PacketSignaturePolicy packet_signature_policy = 5;
+
+  /*
+   * Direct message forward secrecy: a bitwise OR of RatchetFlags values.
+   */
+  enum RatchetFlags {
+    /* Nothing enabled: direct messages derive their key from the static keys alone */
+    RATCHET_NONE = 0x00;
+    /* Generate, publish and use ratchet keys for PKI direct messages */
+    RATCHET_ENABLED = 0x01;
+    /*
+     * Refuse to send a direct message with the static derivation when the peer has
+     * published a ratchet key. Off by default: a stale key would cost delivery.
+     */
+    RATCHET_REQUIRE_WHEN_KNOWN = 0x02;
+  }
+
+  /*
+   * Bitwise OR of RatchetFlags values.
+   */
+  uint32 ratchet_flags = 6;
+
+  /*
+   * Seconds between ratchet rotations. 0 takes the default of 86400; the minimum is
+   * 3600. Forward secrecy is per interval, so this is the width of the window a
+   * compromise of both static keys still opens.
+   */
+  uint32 ratchet_interval_secs = 7;
 }
 
 /*

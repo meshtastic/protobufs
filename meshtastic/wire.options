@@ -9,6 +9,8 @@
 # against the 39-byte limit; 3.0 is wire-incompatible with 2.x anyway, so that
 # allowance bought nothing. Matches NodeInfoLite.long_name in deviceonly.options.
 *User.long_name max_size:25
+# X25519 public key, as SecurityConfig.public_key.
+*User.ratchet_key max_size:32
 *User.short_name max_size:5
 
 # One frame's worth: no LoRa frame is longer than 256 bytes. The room a frame
