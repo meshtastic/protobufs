@@ -859,9 +859,9 @@ also enforced from the other side.
 `chan` and nothing else of a channel, which is enough for a policy table: per hash,
 forward, forward under a hop cap, or drop, with an action for hashes no rule names. It is
 evaluated on the relaying roles, ROUTER and ROUTER_LATE, only, and its default forwards
-everything,
-so an existing mesh behaves as it did. Because hops taken is a hint rather than an
-authenticated value, a hop cap is congestion control and never a security boundary; and
+everything, so an existing mesh behaves as it did. Because hops taken is a hint rather
+than an authenticated value, a hop cap is congestion control and never a security
+boundary; and
 because a `RELAY_DROP` on the primary hash partitions a mesh, the rules are admin-only and
 every drop is logged with the hash that caused it.
 
