@@ -1092,7 +1092,7 @@ message MeshBeaconConfig {
   }
 
   /*
-   * Bitwise-OR of Flags values (listen, broadcast and text-split toggles).
+   * Bitwise OR of Flags values (listen, broadcast and text-split toggles).
    */
   uint32 flags = 1;
 
