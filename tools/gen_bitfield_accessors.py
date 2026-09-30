@@ -283,6 +283,7 @@ template <typename T> struct %s {
             out.append('  void clear_%s() { set_%s(false); }\n\n' % (acc, acc))
         out.append('''  bool any(uint64_t m) const { return (raw & m) != 0; }
   bool all(uint64_t m) const { return (raw & m) == m; }
+  void set(uint64_t m, bool on = true) { raw = static_cast<word>(on ? (raw | m) : (raw & ~m)); }
   void clear() { raw = 0; }
 };
 

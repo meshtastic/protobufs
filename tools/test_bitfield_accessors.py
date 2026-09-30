@@ -101,11 +101,16 @@ int main() {
   f.clear_is_muted();
   assert(!f.is_muted() && f.via_mqtt());
 
-  // any/all over a mask pair.
+  // any/all/set over a mask pair.
   assert(f.any(meshtastic_NodeFlags_NODE_FLAG_VIA_MQTT |
                meshtastic_NodeFlags_NODE_FLAG_IS_FAVORITE));
   assert(!f.all(meshtastic_NodeFlags_NODE_FLAG_VIA_MQTT |
                 meshtastic_NodeFlags_NODE_FLAG_IS_FAVORITE));
+  f.set(meshtastic_NodeFlags_NODE_FLAG_IS_FAVORITE);
+  assert(f.all(meshtastic_NodeFlags_NODE_FLAG_VIA_MQTT |
+               meshtastic_NodeFlags_NODE_FLAG_IS_FAVORITE));
+  f.set(meshtastic_NodeFlags_NODE_FLAG_IS_FAVORITE, false);
+  assert(!f.is_favorite() && f.via_mqtt());
   f.clear();
   assert(w == 0);
 

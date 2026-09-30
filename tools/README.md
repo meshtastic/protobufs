@@ -33,6 +33,8 @@ does not carry it: `MeshPacket.flags` is a `uint8_t`, `NodeInfoLite.bitfield` a
 one. Each view `static_assert`s that its masks fit the type it was instantiated with, and
 the generator reads the `.options` files (`--options-dir`, default `../meshtastic`) so
 `--check` rejects a mask wider than its `int_size` before any firmware compiles.
+`any(m)`, `all(m)` and `set(m, on)` take enum masks for code that passes a flag around
+as a value.
 
 ### Discovery
 
