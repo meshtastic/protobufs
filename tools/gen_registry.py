@@ -139,7 +139,9 @@ class Enums:
         m = re.search(r'^enum %s \{(.*?)^\}' % name, proto_text, re.S | re.M)
         if not m:
             raise SystemExit('error: enum %s not found in common.proto' % name)
-        return {k: int(v) for k, v in re.findall(r'^\s+([A-Z][A-Z0-9_]*) = (\d+);', m.group(1), re.M)}
+        # A value may carry a field_metadata annotation, so the line does not end at the ';'.
+        return {k: int(v) for k, v in
+                re.findall(r'^\s+([A-Z][A-Z0-9_]*) = (\d+)\s*(?:;|\[)', m.group(1), re.M)}
 
 
 # --- hardware ---------------------------------------------------------------

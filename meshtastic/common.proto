@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "meshtastic/field_metadata.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "CommonProtos";
@@ -16,12 +18,18 @@ enum Role {
    * Description: App connected or stand alone messaging device.
    * Technical Details: Default Role
    */
-  CLIENT = 0;
+  CLIENT = 0 [(meshtastic.enum_value_metadata) = {
+    label: "Client"
+    description: "App connected or stand alone messaging device."
+  }];
 
   /*
    * Description: Device that does not forward packets from other devices.
    */
-  CLIENT_MUTE = 1;
+  CLIENT_MUTE = 1 [(meshtastic.enum_value_metadata) = {
+    label: "Client Mute"
+    description: "Device that does not forward packets from other devices."
+  }];
 
   /*
    * Description: Infrastructure node for extending network coverage by relaying messages. Visible in Nodes list.
@@ -29,7 +37,10 @@ enum Role {
    *   The wifi radio and the oled screen will be put to sleep.
    *   This mode may still potentially have higher power usage due to it's preference in message rebroadcasting on the mesh.
    */
-  ROUTER = 2;
+  ROUTER = 2 [(meshtastic.enum_value_metadata) = {
+    label: "Router"
+    description: "Infrastructure node on a tower or mountain top only.  Not to be used for roofs or mobile nodes.  Needs exceptional coverage. Visible in Nodes list."
+  }];
 
   /*
    * Description: Broadcasts GPS position packets as priority.
@@ -37,7 +48,10 @@ enum Role {
    *   When used in conjunction with power.is_power_saving = true, nodes will wake up,
    *   send position, and then sleep for position.position_broadcast_secs seconds.
    */
-  TRACKER = 3;
+  TRACKER = 3 [(meshtastic.enum_value_metadata) = {
+    label: "Tracker"
+    description: "Broadcasts GPS position packets as priority."
+  }];
 
   /*
    * Description: Broadcasts telemetry packets as priority.
@@ -45,7 +59,10 @@ enum Role {
    *   When used in conjunction with power.is_power_saving = true, nodes will wake up,
    *   send environment telemetry, and then sleep for telemetry.environment_update_interval seconds.
    */
-  SENSOR = 4;
+  SENSOR = 4 [(meshtastic.enum_value_metadata) = {
+    label: "Sensor"
+    description: "Broadcasts telemetry packets as priority."
+  }];
 
   /*
    * Description: Optimized for ATAK system communication and reduces routine broadcasts.
@@ -53,7 +70,10 @@ enum Role {
    *    Turns off many of the routine broadcasts to favor CoT packet stream
    *    from the Meshtastic ATAK plugin -> IMeshService -> Node
    */
-  TAK = 5;
+  TAK = 5 [(meshtastic.enum_value_metadata) = {
+    label: "TAK"
+    description: "Optimized for ATAK system communication, reduces routine broadcasts."
+  }];
 
   /*
    * Description: Device that only broadcasts as needed for stealth or power savings.
@@ -62,7 +82,10 @@ enum Role {
    *    Still rebroadcasts, but with local only rebroadcast mode (known meshes only)
    *    Can be used for clandestine operation or to dramatically reduce airtime / power consumption
    */
-  CLIENT_HIDDEN = 6;
+  CLIENT_HIDDEN = 6 [(meshtastic.enum_value_metadata) = {
+    label: "Client Hidden"
+    description: "Device that only broadcasts as needed for stealth or power savings."
+  }];
 
   /*
    * Description: Broadcasts location as message to default channel regularly for to assist with device recovery.
@@ -70,7 +93,10 @@ enum Role {
    *    with the current position of the device on a frequent interval:
    *    "I'm lost! Position: lat / long"
    */
-  LOST_AND_FOUND = 7;
+  LOST_AND_FOUND = 7 [(meshtastic.enum_value_metadata) = {
+    label: "Lost and Found"
+    description: "Broadcasts location as message to default channel regularly for to assist with device recovery."
+  }];
 
   /*
    * Description: Enables automatic TAK PLI broadcasts and reduces routine broadcasts.
@@ -78,7 +104,10 @@ enum Role {
    *    and automatic TAK PLI (position location information) broadcasts.
    *    Uses position module configuration to determine TAK PLI broadcast interval.
    */
-  TAK_TRACKER = 8;
+  TAK_TRACKER = 8 [(meshtastic.enum_value_metadata) = {
+    label: "TAK Tracker"
+    description: "Enables automatic TAK PLI broadcasts and reduces routine broadcasts."
+  }];
 
   /*
    * Description: Will always rebroadcast packets, but will do so after all other modes.
@@ -87,7 +116,10 @@ enum Role {
    *    but should not be given priority over other routers in order to avoid unnecessarily
    *    consuming hops.
    */
-  ROUTER_LATE = 9;
+  ROUTER_LATE = 9 [(meshtastic.enum_value_metadata) = {
+    label: "Router Late"
+    description: "Infrastructure node that always rebroadcasts packets once but only after all other modes. Visible in Nodes list. Not a good choice for rooftop nodes."
+  }];
 
   /*
    * Description: Treats packets from or to favorited nodes as ROUTER_LATE, and all other packets as CLIENT.
@@ -95,7 +127,10 @@ enum Role {
    *    from weaker, indoor, or less-well-positioned nodes. Recommended for users with multiple nodes
    *    where one CLIENT_BASE acts as a more powerful base station, such as an attic/roof node.
    */
-  CLIENT_BASE = 10;
+  CLIENT_BASE = 10 [(meshtastic.enum_value_metadata) = {
+    label: "Client Base"
+    description: "Used for rooftop nodes to distribute messages more widely from multiple nearby client mute nodes."
+  }];
 }
 
 /*
@@ -108,88 +143,88 @@ enum RegionCode {
    */
 
   /* Region is not set */
-  REGION_UNSET = 0;
+  REGION_UNSET = 0 [(meshtastic.enum_value_metadata) = {label: "Please set a region"}];
   /* United States (902-928 MHz) */
-  REGION_US = 1;
+  REGION_US = 1 [(meshtastic.enum_value_metadata) = {label: "United States"}];
   /* European Union 433 MHz band */
-  REGION_EU_433 = 2;
+  REGION_EU_433 = 2 [(meshtastic.enum_value_metadata) = {label: "European Union 433MHz"}];
   /* European Union 868 MHz band */
-  REGION_EU_868 = 3;
+  REGION_EU_868 = 3 [(meshtastic.enum_value_metadata) = {label: "European Union 868MHz"}];
   /* China */
-  REGION_CN = 4;
+  REGION_CN = 4 [(meshtastic.enum_value_metadata) = {label: "China"}];
   /* Japan */
-  REGION_JP = 5;
+  REGION_JP = 5 [(meshtastic.enum_value_metadata) = {label: "Japan"}];
   /* Australia / New Zealand (915-928 MHz) */
-  REGION_ANZ = 6;
+  REGION_ANZ = 6 [(meshtastic.enum_value_metadata) = {label: "Australia / New Zealand"}];
   /* South Korea */
-  REGION_KR = 7;
+  REGION_KR = 7 [(meshtastic.enum_value_metadata) = {label: "Korea"}];
   /* Taiwan */
-  REGION_TW = 8;
+  REGION_TW = 8 [(meshtastic.enum_value_metadata) = {label: "Taiwan"}];
   /* Russia */
-  REGION_RU = 9;
+  REGION_RU = 9 [(meshtastic.enum_value_metadata) = {label: "Russia"}];
   /* India */
-  REGION_IN = 10;
+  REGION_IN = 10 [(meshtastic.enum_value_metadata) = {label: "India"}];
   /* New Zealand 865 MHz band */
-  REGION_NZ_865 = 11;
+  REGION_NZ_865 = 11 [(meshtastic.enum_value_metadata) = {label: "New Zealand 865MHz"}];
   /* Thailand */
-  REGION_TH = 12;
+  REGION_TH = 12 [(meshtastic.enum_value_metadata) = {label: "Thailand"}];
   /* 2.4 GHz wide LoRa (worldwide) */
-  REGION_LORA_24 = 13;
+  REGION_LORA_24 = 13 [(meshtastic.enum_value_metadata) = {label: "2.4 Ghz"}];
   /* Ukraine 433 MHz band */
-  REGION_UA_433 = 14;
+  REGION_UA_433 = 14 [(meshtastic.enum_value_metadata) = {label: "Ukraine 433MHz"}];
   /* Malaysia 433 MHz band */
-  REGION_MY_433 = 15;
+  REGION_MY_433 = 15 [(meshtastic.enum_value_metadata) = {label: "Malaysia 433MHz"}];
   /* Malaysia 919 MHz band */
-  REGION_MY_919 = 16;
+  REGION_MY_919 = 16 [(meshtastic.enum_value_metadata) = {label: "Malaysia 919MHz"}];
   /* Singapore 923 MHz band */
-  REGION_SG_923 = 17;
+  REGION_SG_923 = 17 [(meshtastic.enum_value_metadata) = {label: "Singapore 923MHz"}];
   /* Philippines 433 MHz band */
-  REGION_PH_433 = 18;
+  REGION_PH_433 = 18 [(meshtastic.enum_value_metadata) = {label: "Philippines 433MHz"}];
   /* Philippines 868 MHz band */
-  REGION_PH_868 = 19;
+  REGION_PH_868 = 19 [(meshtastic.enum_value_metadata) = {label: "Philippines 868MHz"}];
   /* Philippines 915 MHz band */
-  REGION_PH_915 = 20;
+  REGION_PH_915 = 20 [(meshtastic.enum_value_metadata) = {label: "Philippines 915MHz"}];
   /* Australia / New Zealand 433 MHz band */
-  REGION_ANZ_433 = 21;
+  REGION_ANZ_433 = 21 [(meshtastic.enum_value_metadata) = {label: "Australia / New Zealand 433MHz"}];
   /* Kazakhstan 433 MHz band */
-  REGION_KZ_433 = 22;
+  REGION_KZ_433 = 22 [(meshtastic.enum_value_metadata) = {label: "Kazakhstan 433MHz"}];
   /* Kazakhstan 863 MHz band */
-  REGION_KZ_863 = 23;
+  REGION_KZ_863 = 23 [(meshtastic.enum_value_metadata) = {label: "Kazakhstan 863MHz"}];
   /* Nepal 865 MHz band */
-  REGION_NP_865 = 24;
+  REGION_NP_865 = 24 [(meshtastic.enum_value_metadata) = {label: "Nepal 865MHz"}];
   /* Brazil 902 MHz band */
-  REGION_BR_902 = 25;
+  REGION_BR_902 = 25 [(meshtastic.enum_value_metadata) = {label: "Brazil 902MHz"}];
   /* ITU Region 1 Amateur Radio 2m band (144-146 MHz) */
-  REGION_ITU1_2M = 26;
+  REGION_ITU1_2M = 26 [(meshtastic.enum_value_metadata) = {label: "ITU Region 1 / Amateur 2m"}];
   /* ITU Region 2 Amateur Radio 2m band (144-148 MHz) */
-  REGION_ITU2_2M = 27;
+  REGION_ITU2_2M = 27 [(meshtastic.enum_value_metadata) = {label: "ITU Region 2 / Amateur 2m"}];
   /* EU 866 MHz band (Band no. 47b of 2006/771/EC and subsequent amendments) for Non-specific short-range devices (SRD) */
-  REGION_EU_866 = 28;
+  REGION_EU_866 = 28 [(meshtastic.enum_value_metadata) = {label: "European Union 866MHz"}];
   /* EU 874 MHz band (Band no. 1 of 2022/172/EC and subsequent amendments) for Non-specific short-range devices (SRD) */
-  REGION_EU_874 = 29;
+  REGION_EU_874 = 29 [(meshtastic.enum_value_metadata) = {label: "European Union 874MHz"}];
   /* EU 917 MHz band (Band no. 4 of 2022/172/EC and subsequent amendments) for Non-specific short-range devices (SRD) */
-  REGION_EU_917 = 30;
+  REGION_EU_917 = 30 [(meshtastic.enum_value_metadata) = {label: "European Union 917MHz"}];
   /* EU 868 MHz band, with narrow presets */
-  REGION_EU_N_868 = 31;
+  REGION_EU_N_868 = 31 [(meshtastic.enum_value_metadata) = {label: "European Union 868MHz (Narrow)"}];
   /* ITU Region 3 Amateur Radio 2m band (144-148 MHz) */
-  REGION_ITU3_2M = 32;
+  REGION_ITU3_2M = 32 [(meshtastic.enum_value_metadata) = {label: "ITU Region 3 / Amateur 2m"}];
   /* ITU Region 1 Amateur Radio 70cm band (430-440 MHz) */
-  REGION_ITU1_70CM = 33;
+  REGION_ITU1_70CM = 33 [(meshtastic.enum_value_metadata) = {label: "ITU Region 1 / Amateur 70cm"}];
   /*
    * ITU Region 2 Amateur Radio 70cm band (420-450 MHz)
    * Note: Some countries do not allocate 420-430 MHz or 440-450 MHz. Check local law!
    */
-  REGION_ITU2_70CM = 34;
+  REGION_ITU2_70CM = 34 [(meshtastic.enum_value_metadata) = {label: "ITU Region 2 / Amateur 70cm"}];
   /*
    * ITU Region 3 Amateur Radio 70cm band (430-450 MHz)
    * Note: Some countries do not allocate 440-450 MHz. Check local law!
    */
-  REGION_ITU3_70CM = 35;
+  REGION_ITU3_70CM = 35 [(meshtastic.enum_value_metadata) = {label: "ITU Region 3 / Amateur 70cm"}];
   /*
    * ITU Region 2 Amateur Radio 1.25m '125cm' band (220-225 MHz)
    * Note: Some countries do not allocate 220-222 MHz (Ex: USA/Canada). Check local law!
    */
-  REGION_ITU2_125CM = 36;
+  REGION_ITU2_125CM = 36 [(meshtastic.enum_value_metadata) = {label: "ITU Region 2 / Amateur 1.25m"}];
 }
 
 /*
@@ -200,10 +235,10 @@ enum RegionCode {
  */
 enum InputBrokerEvent {
   /* No event */
-  INPUT_NONE = 0;
+  INPUT_NONE = 0 [(meshtastic.enum_value_metadata) = {label: "None"}];
 
   /* Select or confirm, the newline character */
-  INPUT_SELECT = 10;
+  INPUT_SELECT = 10 [(meshtastic.enum_value_metadata) = {label: "Select"}];
 
   /* Select held down */
   INPUT_SELECT_LONG = 11;
@@ -215,22 +250,22 @@ enum InputBrokerEvent {
   INPUT_DOWN_LONG = 13;
 
   /* Navigate up, the DC1 character */
-  INPUT_UP = 17;
+  INPUT_UP = 17 [(meshtastic.enum_value_metadata) = {label: "Up"}];
 
   /* Navigate down, the DC2 character */
-  INPUT_DOWN = 18;
+  INPUT_DOWN = 18 [(meshtastic.enum_value_metadata) = {label: "Down"}];
 
   /* Navigate left, the DC3 character */
-  INPUT_LEFT = 19;
+  INPUT_LEFT = 19 [(meshtastic.enum_value_metadata) = {label: "Left"}];
 
   /* Navigate right, the DC4 character */
-  INPUT_RIGHT = 20;
+  INPUT_RIGHT = 20 [(meshtastic.enum_value_metadata) = {label: "Right"}];
 
   /* Cancel, the CAN character */
-  INPUT_CANCEL = 24;
+  INPUT_CANCEL = 24 [(meshtastic.enum_value_metadata) = {label: "Cancel"}];
 
   /* Go back, the ESC character */
-  INPUT_BACK = 27;
+  INPUT_BACK = 27 [(meshtastic.enum_value_metadata) = {label: "Back"}];
 
   /* The user button was pressed */
   INPUT_USER_PRESS = 28;
@@ -284,42 +319,45 @@ enum InputBrokerEvent {
  */
 enum ModemPreset {
   /* Long range, fast data rate (default) */
-  MODEM_LONG_FAST = 0;
+  MODEM_LONG_FAST = 0 [(meshtastic.enum_value_metadata) = {
+    label: "Long Range - Fast"
+    keywords: "longfast|default"
+  }];
   /* Medium range, slow data rate */
-  MODEM_MEDIUM_SLOW = 1;
+  MODEM_MEDIUM_SLOW = 1 [(meshtastic.enum_value_metadata) = {label: "Medium Range - Slow"}];
   /* Medium range, fast data rate */
-  MODEM_MEDIUM_FAST = 2;
+  MODEM_MEDIUM_FAST = 2 [(meshtastic.enum_value_metadata) = {label: "Medium Range - Fast"}];
   /* Short range, slow data rate */
-  MODEM_SHORT_SLOW = 3;
+  MODEM_SHORT_SLOW = 3 [(meshtastic.enum_value_metadata) = {label: "Short Range - Slow"}];
   /* Short range, fast data rate */
-  MODEM_SHORT_FAST = 4;
+  MODEM_SHORT_FAST = 4 [(meshtastic.enum_value_metadata) = {label: "Short Range - Fast"}];
   /* Long range, moderate data rate */
-  MODEM_LONG_MODERATE = 5;
+  MODEM_LONG_MODERATE = 5 [(meshtastic.enum_value_metadata) = {label: "Long Range - Moderate"}];
   /* Short range, turbo data rate (highest throughput) */
-  MODEM_SHORT_TURBO = 6;
+  MODEM_SHORT_TURBO = 6 [(meshtastic.enum_value_metadata) = {label: "Short Range - Turbo"}];
   /* Long range, turbo data rate */
-  MODEM_LONG_TURBO = 7;
+  MODEM_LONG_TURBO = 7 [(meshtastic.enum_value_metadata) = {label: "Long Range - Turbo"}];
   /*
    * Medium range preset optimized for the EU 866 MHz SRD band with 125 kHz bandwidth.
    * Comparable link budget to MODEM_MEDIUM_FAST but compliant with Band no. 47b of 2006/771/EC.
    */
-  MODEM_LITE_FAST = 8;
+  MODEM_LITE_FAST = 8 [(meshtastic.enum_value_metadata) = {label: "Lite - Fast"}];
   /*
    * Medium-to-moderate range preset optimized for the EU 866 MHz SRD band with 125 kHz bandwidth.
    * Comparable link budget to MODEM_LONG_FAST but compliant with Band no. 47b of 2006/771/EC.
    */
-  MODEM_LITE_SLOW = 9;
+  MODEM_LITE_SLOW = 9 [(meshtastic.enum_value_metadata) = {label: "Lite - Slow"}];
   /*
    * Medium-to-moderate range preset optimized for the EU 868 MHz band with 62.5 kHz bandwidth.
    * Comparable link budget to MODEM_SHORT_SLOW, but with half the data rate.
    * Intended to avoid interference with other devices.
    */
-  MODEM_NARROW_FAST = 10;
+  MODEM_NARROW_FAST = 10 [(meshtastic.enum_value_metadata) = {label: "Narrow - Fast"}];
   /*
    * Moderate range preset optimized for the EU 868 MHz band with 62.5 kHz bandwidth.
    * Comparable link budget and data rate to MODEM_LONG_FAST.
    */
-  MODEM_NARROW_SLOW = 11;
+  MODEM_NARROW_SLOW = 11 [(meshtastic.enum_value_metadata) = {label: "Narrow - Slow"}];
   /*
    * Preset optimized for compliance with Amateur Radio restrictions: a 15.6 kHz LoRa slot within a 20 kHz raster.
    * Many regions limit data transmission bandwidth in lower amateur bands (2 Meter).
@@ -327,7 +365,7 @@ enum ModemPreset {
    * Only compatible with SX127x and SX126x chipsets.
    * Comparable link budget and data rate to MODEM_LONG_FAST.
    */
-  MODEM_TINY_FAST = 12;
+  MODEM_TINY_FAST = 12 [(meshtastic.enum_value_metadata) = {label: "Tiny - Fast"}];
   /*
    * Preset optimized for compliance with Amateur Radio restrictions: a 15.6 kHz LoRa slot within a 20 kHz raster.
    * Many regions limit data transmission bandwidth in lower amateur bands (2 Meter).
@@ -335,13 +373,13 @@ enum ModemPreset {
    * Only compatible with SX127x and SX126x chipsets.
    * Comparable link budget and data rate to MODEM_LONG_MODERATE.
    */
-  MODEM_TINY_SLOW = 13;
+  MODEM_TINY_SLOW = 13 [(meshtastic.enum_value_metadata) = {label: "Tiny - Slow"}];
   /*
    * Medium range, turbo data rate.
    * Performs similarly to MODEM_MEDIUM_FAST, but with 500 kHz bandwidth.
    * It is not legal to use in all regions due to this wider bandwidth.
    */
-  MODEM_MEDIUM_TURBO = 14;
+  MODEM_MEDIUM_TURBO = 14 [(meshtastic.enum_value_metadata) = {label: "Medium Range - Turbo"}];
 }
 
 /*
