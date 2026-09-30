@@ -457,14 +457,18 @@ Which of `to` and `chan` are present is what the profile selects. `opt` is prese
 `flags.opt` is set: a length byte, then that many bytes of `HeaderOptions`. A set bit
 with a zero length is malformed.
 
-**The tag in the diagram is not conditional.** Every encrypted frame carries one, a
-channel frame as much as a direct message, which is what makes the AAD worth computing at
-all: a header field inside the covered span cannot be altered without failing
-verification, and neither can the ciphertext. Channel traffic in 2.8 is AES-CTR with no
-MAC, so anyone holding the channel key - which is everyone on the channel - can flip bits
-in a frame undetectably. Moving channel traffic to an AEAD mode is therefore a 3.0
-prerequisite rather than an option (§10). XEdDSA still does the thing a channel key cannot
-do at all: attribute a frame to one sender rather than to the group that shares the key.
+**The tag in the diagram is not conditional: it is AES-CCM with an 8-byte tag, on every
+encrypted frame, and there is no switch.** A channel frame is authenticated exactly as a
+direct message is, which is what makes the AAD worth computing at all: a header field inside
+the covered span cannot be altered without failing verification, and neither can the
+ciphertext. 2.8 gives PSK channels AES-CTR with no MAC, so anyone holding the channel key -
+everyone on the channel - can flip bits undetectably; 3.0 goes back to CCM, which the radio
+platforms already have. ChaCha20-Poly1305 is not it: not every hardware module offers it and
+the software implementation is slow. It belongs with the direct-message ratchet, as the
+other half of a hardening profile, rather than here.
+
+XEdDSA still does the thing a channel key cannot do at all: attribute a frame to one sender
+rather than to the group that shares the key.
 And an AEAD channel key still authenticates a frame only to the channel, which is why an
 explicit ack carries `Routing.ack_proof`: a pairwise MAC under the sender and receiver's
 shared PKI secret, so a delivery receipt cannot be minted by another member of the channel.
@@ -856,11 +860,11 @@ bound them, and only the third costs a byte on the air.
 
 **`ChannelSettings.scope` is a sender-side rule, and free.** It rides in the channel URL,
 so every node that joins a channel launches its traffic the same way: `SCOPE_LOCAL` caps
-the launch `hop_start` at 2, `SCOPE_REGIONAL` at the region default, `SCOPE_GLOBAL` at the
-full 15, and only `SCOPE_GLOBAL` may set `uplink_enabled`. Congestion control may raise
-the cap on REGIONAL up to the region maximum and on GLOBAL, never on LOCAL. A relay
-cannot read any of this - the channel is not something it holds - which is why reach is
-also enforced from the other side.
+the launch `hop_start` at 2, `SCOPE_REGIONAL` at `RegionProfile.default_hop_start` from the
+registry, `SCOPE_GLOBAL` at the full 15, and only `SCOPE_GLOBAL` may set `uplink_enabled`.
+Congestion control may raise the cap on REGIONAL up to that registry value and on GLOBAL,
+never on LOCAL. A relay cannot read any of this - the channel is not something it holds -
+which is why reach is also enforced from the other side.
 
 **`RelayConfig` is what a relay enforces, and also free.** A relay sees the one-byte
 `chan` and nothing else of a channel, which is enough for a policy table: per hash,
@@ -873,13 +877,16 @@ because a `RELAY_DROP` on the primary hash partitions a mesh, the rules are admi
 every drop is logged with the hash that caused it.
 
 **`HeaderOptions.scope_code` is the opt-in layer, and costs 5 bytes.** A 16-bit truncated
-HMAC over `chan || from || id` under a key derived from the region name, so a relay that
-does not hold the channel can still tell whether a frame belongs to its region, without
-touching the ciphertext, and a code lifted off one frame does not verify on another. The
-key comes from a name people share, so this filters traffic rather than proving
-membership: nothing may authorise on it. `0` is never a valid code, and a frame carrying
-one still has to carry a channel or a destination, because this is a filter and not
-addressing.
+HMAC over `chan || from || id`, keyed by `SHA256("%" + region_name)[0:16]`, so a relay that
+does not hold the channel can still read which region a frame claims, without touching the
+ciphertext, and a code lifted off one frame does not match another.
+
+**It is declarative and proves nothing.** The key comes from a region name people share, so
+the code is a statement of belonging, not evidence of it: nothing may authorise,
+authenticate or grant on it, and a relay uses it only to keep foreign traffic off its own
+infrastructure. Anything that needs proof uses the AEAD tag or an XEdDSA signature. `0` is
+never a valid code, and a frame carrying one still carries a channel or a destination,
+because this filters rather than addresses.
 
 ### Store and forward
 
@@ -902,6 +909,13 @@ history was lost rather than assuming it has everything.
 `want_ack` and moves the client's position only when that ack arrives. Acking before the
 frame is delivered is the failure mode this design exists to avoid.
 
+**A server announces itself with a pip.** An `ANNOUNCE` is the one store-and-forward
+message that is not an addressed packet: it rides the `MINI` profile, five header bytes and
+no addressing, because a beacon nobody replies to should not pay for a `from`, an `id` and a
+channel hash. `Announce.server` names the node to sync with, since the frame itself does
+not. That makes the S&F announce the first defined consumer of `MINI`, whose payload was
+until now undefined.
+
 **`HOP_STORE` decides what is worth keeping.** The originator sets it inside the AAD
 (§8, the options block), so a keyless server can tell user-facing traffic from telemetry
 without decrypting anything: flagged frames are retained unconditionally, unflagged ones
@@ -920,9 +934,12 @@ which will do. The choices were a direct message to one named node, which has no
 or a broadcast, which reaches everyone. Anycast is the third class.
 
 **A group is a key pair, not a role.** X25519 for encryption and Ed25519 for signing, with
-`group_id = crc32(group_pub)` living in the NodeNum space; the private key is provisioned
-to every member and the public key to every sender, the same way a channel is shared. A
-member keeps its own NodeNum and its own identity - holding a group key changes neither.
+`group_id = crc32(group_pub)` living in the NodeNum space. A sender needs only the public
+half, which `GroupConfig` holds; a member also holds the private half in
+`SecurityConfig.group_private_key`, where the node's own private key lives and where admin
+masks it the same way. There is no channel-URL or QR path for group keys: an operator sets
+them through admin. A member keeps its own NodeNum and its own identity - holding a group
+key changes neither.
 
 **The frame is an ordinary UCAST frame.** `to` is the group id, the payload is PKI
 encrypted against the group public key, and the XEdDSA signature is the real sender's, so
@@ -978,6 +995,11 @@ the fallback if measurement on nRF52 says trial decryption is too slow.
 for the other, so a mesh with the feature half deployed still delivers. What it does not
 give is post-compromise security: a compromised node stays readable until it rotates and
 its peer learns the new key.
+
+**This is one half of a hardening profile.** The ratchet and a ChaCha20-Poly1305 channel
+mode are meant to arrive together, as the two things a deployment turns on when it wants
+more than the baseline: ChaCha is not on every radio platform and is slow in software, so it
+is not the default AEAD, but it is worth having where the ratchet is wanted too.
 
 ### Payload room
 
@@ -1054,7 +1076,9 @@ Open work, and decisions deliberately not yet made.
 
 - **`MINI` frames have no `MeshPacket` form.** A `MINI` frame carries no `from`, `id` or
   `to`, and nothing in `MeshPacket` holds its nonce, so the phone API and MQTT cannot
-  deliver one. A `MINI` deployment needs a decoded representation of its own.
+  deliver one. A `MINI` deployment needs a decoded representation of its own. The
+  store-and-forward `ANNOUNCE` pip is the first defined `MINI` payload, and a client that
+  wants to see one needs that representation.
 - **Header profile 3.** `EXT`'s framing and forwarding rule are fixed in §8; the
   message that goes in its block is not defined, and neither is the hash used for
   duplicate suppression. Its `CORE_LEN` entry maps to a drop until both exist.
@@ -1070,11 +1094,11 @@ Open work, and decisions deliberately not yet made.
 
 **Firmware work the schema assumes**, named against the 2.8 firmware, the reference until a 3.0 port exists:
 
-- **Channel traffic has to move to an AEAD mode.** §8 assumes a tag on every encrypted
-  frame; 2.8 gives PSK channels AES-CTR with no MAC. Until the port provides it, channel
-  frames are confidential but unauthenticated, and the tamper-evidence §8 claims for the
-  covered span holds only on PKI traffic. The cipher and tag length are a firmware
-  decision: §8 quotes 8 bytes, which is what the payload-room arithmetic assumes.
+- **Channel traffic has to move back to AES-CCM.** §8 requires an 8-byte tag on every
+  encrypted frame, and there is no switch to turn it off; 2.8 gives PSK channels AES-CTR
+  with no MAC. Until the port provides it, channel frames are confidential but
+  unauthenticated, and the tamper-evidence §8 claims for the covered span holds only on PKI
+  traffic.
 - **`DeviceState` is written on configuration changes only.** Nothing in the message
   changes per packet, so a deep sleep is not a reason to rewrite it. Firmware that
   saves it on every sleep pays the flash wear for nothing.

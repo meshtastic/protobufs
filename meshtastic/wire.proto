@@ -564,17 +564,17 @@ message HeaderOptions {
    * ordinary frame.
    *
    *   scope_code = trunc16(HMAC-SHA256(scope_key, chan || from || id))
-   *   scope_key  = SHA256("#" + region_name)[0:16]
+   *   scope_key  = SHA256("%" + region_name)[0:16]
    *
-   * It binds to this frame's own `from` and `id`, so a code cannot be replayed onto
-   * another frame, and a relay checks it without touching the ciphertext. A relay that
-   * holds the region key checks membership; one that does not may match the code
-   * against an allow list or ignore the field. 0 is never a valid code: an originator
-   * that computes 0 sends 1.
+   * It binds to this frame's own `from` and `id`, so a code cannot be lifted onto
+   * another frame, and a relay reads it without touching the ciphertext. 0 is never a
+   * valid code: an originator that computes 0 sends 1.
    *
-   * The key derives from the region name, so the code is only as secret as that name.
-   * It is a relay filter that keeps foreign traffic out of a region's infrastructure,
-   * not a membership proof, and it carries no authorisation weight.
+   * **Declarative only.** The key comes from a region name people share, so the code
+   * states which region a frame claims to belong to and proves nothing whatsoever.
+   * Nothing may authorise, authenticate or grant anything on it; a relay uses it to keep
+   * foreign traffic off its own infrastructure and for no other purpose. A node that
+   * wants proof of anything uses the AEAD tag or an XEdDSA signature.
    *
    * Region traffic still carries a channel (BCAST) or a destination (UCAST): this
    * filters, it does not address.

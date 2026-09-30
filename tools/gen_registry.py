@@ -62,7 +62,8 @@ REGION_TABLES = ('preset_lists', 'profiles', 'swap_groups', 'regions')
 REGION_INTS = ('freq_start_mhz_x100', 'freq_end_mhz_x100', 'duty_cycle', 'router_duty_cycle', 'power_limit_dbm')
 REGION_BOOLS = ('frequency_switching', 'wide_lora')
 REGION_KEYS = ('region', 'profile') + REGION_INTS + REGION_BOOLS + ('override_slot',)
-PROFILE_INTS = ('spacing_khz', 'padding_khz', 'position_throttle', 'telemetry_throttle')
+PROFILE_INTS = ('spacing_khz', 'padding_khz', 'position_throttle', 'telemetry_throttle',
+                'default_hop_start')
 PROFILE_BOOLS = ('audio_permitted', 'licensed_only')
 PROFILE_KEYS = ('name', 'preset_list', 'default_preset') + PROFILE_INTS + PROFILE_BOOLS
 PRESET_KEYS = ('preset', 'name', 'bandwidth_khz', 'wide_bandwidth_khz', 'spread_factor', 'coding_rate')
@@ -545,7 +546,8 @@ def selftest(enums):
     preset_registry = build_presets({'revision': 1, 'presets': [fast, narrow]}, enums, Errors())
     lists = ({'name': 'STD', 'presets': ['LONG_FAST']}, {'name': 'NARROW', 'presets': ['NARROW_FAST']})
     std = {'name': 'STD', 'preset_list': 'STD', 'default_preset': 'LONG_FAST', 'spacing_khz': 0, 'padding_khz': 0,
-           'audio_permitted': True, 'licensed_only': False, 'position_throttle': 1, 'telemetry_throttle': 1}
+           'audio_permitted': True, 'licensed_only': False, 'position_throttle': 1, 'telemetry_throttle': 1,
+           'default_hop_start': 3}
     ham = dict(std, name='HAM', preset_list='NARROW', default_preset='NARROW_FAST', padding_khz=18, licensed_only=True)
     us = {'region': 'US', 'profile': 'STD', 'freq_start_mhz_x100': 90200, 'freq_end_mhz_x100': 92800,
           'duty_cycle': 100, 'router_duty_cycle': 0, 'power_limit_dbm': 30, 'frequency_switching': False,

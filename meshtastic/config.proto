@@ -1146,6 +1146,15 @@ message SecurityConfig {
    * compromise of both static keys still opens.
    */
   uint32 ratchet_interval_secs = 7;
+
+  /*
+   * X25519 private keys of the anycast groups this node is a member of, one per group.
+   * Held here rather than in GroupConfig because this is where private key material lives,
+   * with the same handling as private_key: never returned to a client that did not set it.
+   * Firmware derives each key's public half to match it against a GroupConfig.Group entry,
+   * so nothing indexes one list into the other.
+   */
+  repeated bytes group_private_key = 8;
 }
 
 /*
@@ -1156,11 +1165,15 @@ message SessionkeyConfig {}
 /*
  * Anycast Groups
  *
- * The groups this node sends to or serves. A group is a key pair like a node: a node
- * holding only public_key can send to the group, and one that also holds private_key is a
- * member, which delivers, acknowledges and, with uplink_enabled, hands what it received to
- * its backhaul. The group id is crc32(public_key) in the NodeNum space, derived by
- * firmware and never stored here.
+ * The groups this node sends to or serves. A group is a key pair like a node: this message
+ * holds the public half, which is all a sender needs, and a member also holds the private
+ * half in SecurityConfig.group_private_key, where the node's own private key lives. A
+ * member delivers, acknowledges and, with uplink_enabled, hands what it received to its
+ * backhaul. The group id is crc32(public_key) in the NodeNum space, derived by firmware and
+ * never stored here.
+ *
+ * There is no provisioning path through a channel URL or a QR code: group keys are set by an
+ * operator through admin, as node keys are.
  *
  * A frame to a group is an ordinary UCAST frame with HOP_ANYCAST set, so it is delivered
  * to the nearest reachable member by the same next-hop learning as a direct message, and
@@ -1182,15 +1195,9 @@ message GroupConfig {
     bytes public_key = 2;
 
     /*
-     * X25519 private key of the group, present only on a member. Handled as
-     * SecurityConfig.private_key is: never returned to a client that did not set it.
-     */
-    bytes private_key = 3;
-
-    /*
      * Member only: hand a delivered packet to MQTT or another backhaul.
      */
-    bool uplink_enabled = 4;
+    bool uplink_enabled = 3;
   }
 
   /*

@@ -20,6 +20,9 @@
 
 *SecurityConfig.public_key max_size:32
 *SecurityConfig.ratchet_flags int_size:8
+# One X25519 private key per group a node serves, matching GroupConfig.groups.
+*SecurityConfig.group_private_key max_count:4
+*SecurityConfig.group_private_key max_size:32
 *SecurityConfig.private_key max_size:32
 *SecurityConfig.admin_key max_size:32
 *SecurityConfig.admin_key max_count:3
@@ -48,4 +51,3 @@
 *GroupConfig.Group.name max_size:12
 # X25519 keys, as SecurityConfig's.
 *GroupConfig.Group.public_key max_size:32
-*GroupConfig.Group.private_key max_size:32

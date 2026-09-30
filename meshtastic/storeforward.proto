@@ -86,7 +86,11 @@ message StoreAndForward {
     UNSET = 0;
 
     /*
-     * Server, broadcast: what this server keeps and how far back.
+     * Server: what it keeps and how far back. Unlike every other message here, an
+     * ANNOUNCE does not travel as an addressed packet on this port: it rides the MINI
+     * header profile, a five-byte anonymous frame - a pip - because a beacon nobody
+     * replies to has no business paying for addressing. The MINI frame carries no
+     * `from`, so Announce.server names the node to sync with.
      */
     ANNOUNCE = 1;
 
@@ -140,9 +144,16 @@ message StoreAndForward {
   }
 
   /*
-   * What a server broadcasts about itself.
+   * What a server broadcasts about itself, as the payload of a MINI pip rather than an
+   * addressed packet. Keep it small: the point of the profile is that a beacon costs five
+   * header bytes instead of twelve.
    */
   message Announce {
+    /*
+     * The server to sync with. Explicit because a MINI frame has no `from` field.
+     */
+    fixed32 server = 6;
+
     /*
      * Channel hashes retained. Empty means every hash it hears.
      */

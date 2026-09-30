@@ -1,5 +1,5 @@
 {
-  "revision": 1,
+  "revision": 2,
   "regions": [
     {
       "region_code": "REGION_US",
@@ -419,6 +419,7 @@
       "padding_khz": 0,
       "position_throttle": 1,
       "telemetry_throttle": 1,
+      "default_hop_start": 3,
       "audio_permitted": true,
       "licensed_only": false
     },
@@ -430,6 +431,7 @@
       "padding_khz": 0,
       "position_throttle": 1,
       "telemetry_throttle": 1,
+      "default_hop_start": 3,
       "audio_permitted": false,
       "licensed_only": false
     },
@@ -441,6 +443,7 @@
       "padding_khz": 37,
       "position_throttle": 10,
       "telemetry_throttle": 10,
+      "default_hop_start": 3,
       "audio_permitted": false,
       "licensed_only": false
     },
@@ -452,6 +455,7 @@
       "padding_khz": 10,
       "position_throttle": 1,
       "telemetry_throttle": 1,
+      "default_hop_start": 3,
       "audio_permitted": true,
       "licensed_only": false
     },
@@ -463,6 +467,7 @@
       "padding_khz": 2,
       "position_throttle": 2,
       "telemetry_throttle": 2,
+      "default_hop_start": 3,
       "audio_permitted": false,
       "licensed_only": true
     },
@@ -474,6 +479,7 @@
       "padding_khz": 18,
       "position_throttle": 1,
       "telemetry_throttle": 1,
+      "default_hop_start": 3,
       "audio_permitted": false,
       "licensed_only": true
     }

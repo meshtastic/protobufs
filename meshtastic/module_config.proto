@@ -732,7 +732,7 @@ message StoreForwardConfig {
       label: "Store and Forward Enabled"
       description: "Enables the store and forward module."
     }];
-    /* The server broadcasts ANNOUNCE periodically, so clients can find it */
+    /* The server sends its ANNOUNCE pip periodically, so clients can find it */
     STOREFORWARD_HEARTBEAT = 0x02 [(meshtastic.enum_value_metadata) = {
       label: "Send Heartbeat"
       description: "Send a heartbeat to advertise the server's presence."
@@ -773,8 +773,7 @@ message StoreForwardConfig {
   uint32 max_per_sync = 3;
 
   /*
-   * Seconds between ANNOUNCE broadcasts while STOREFORWARD_HEARTBEAT is set.
-   * Default 3600.
+   * Seconds between ANNOUNCE pips while STOREFORWARD_HEARTBEAT is set. Default 3600.
    */
   uint32 announce_secs = 4;
 
