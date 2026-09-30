@@ -4,7 +4,8 @@ Conventions and encodings for anyone implementing against this schema. For why t
 rework happened, see [OVERVIEW.md](OVERVIEW.md).
 
 Everything here is a hard break from 2.x. Field numbers, message shapes and encodings
-all changed; nothing decodes across the boundary, and nothing is expected to.
+all changed; nothing decodes across the boundary, and nothing is expected to. §11 is the
+inventory of what changed, entry by entry, with a porting checklist at the end.
 
 ---
 
@@ -1189,3 +1190,152 @@ Open work, and decisions deliberately not yet made.
 - **`ChannelSettings` under-documents itself.** It does not say how admin messages are
   secured, and its `id` comment refers to a "Well Known Channels" table that does not
   exist.
+
+---
+
+## 11. What changed from 2.8
+
+Everything in this section is a break. The sync word keeps 2.x traffic off the air and no
+stored data is migrated, so this is an inventory for people porting an implementation, not
+a compatibility guide. Each entry points at the section that explains the replacement.
+
+### Removed
+
+| gone | why, and what replaces it |
+|---|---|
+| `RouteDiscovery`, `TRACEROUTE_APP` | the header's path tail already records the route a frame took, so tracing is a property of every packet rather than a module (§8, The path tail is the route record) |
+| `StoreForwardPlusPlus`, portnum 35, and the whole v1 `StoreAndForward` protocol (`RequestResponse`, `Statistics`, `History`, `Heartbeat`) | replaced by a ciphertext log with per-client cursors (§8, Store and forward) |
+| `ChunkedPayload`, `ChunkedPayloadResponse`, `resend_chunks`, `PayloadChunk` | `HeaderOptions.fragment` is the one fragmentation mechanism; no implementation ever used these |
+| `TEXT_MESSAGE_COMPRESSED_APP` | every `TEXT_MESSAGE_APP` payload is Unishox2-compressed, so nothing needs to say which form it is in |
+| `RangeTestConfig`, `RANGE_TEST_APP` | the module is discontinued |
+| `HardwareModel` | `hw_model` is packed `(vendor_id << 8) \| device_id` and the names live in registry data (§6) |
+| `EnvironmentMetrics`, `AirQualityMetrics`, `PowerMetrics`, `HealthMetrics`, `SoilWaterMetrics` | one `SensorReadings` message (§5) |
+| `Neighbor` | two parallel columns on `NeighborInfo` (§5, The same techniques outside telemetry) |
+| `Config` and `ModuleConfig` wrappers | the section messages are top level; `ConfigPayload` and `ModuleConfigPayload` carry the admin `oneof` (§1) |
+| `UserLite`, `NodeInfoLite_Legacy`, `NodeDatabase_Legacy`, `deviceonly_legacy.proto` | `NodeInfoLite` holds the user fields inline; there is no legacy descriptor set to migrate from |
+| `Constants`, `Delayed`, `ExcludedModules`, `AltSource`, `DisplayUnits`, `DeprecatedGpsCoordinateFormat`, `InputEventChar`, `SFPP_message_type` | the payload budget is computed per packet, not a constant; the module mask derives from `AdminMessage.ModuleConfigType`; altitude source derives from field presence; one imperial toggle replaces the units enum; `InputBrokerEvent` is the full input event list |
+| `Channel.role` | index 0 is the primary channel and an absent `settings` disables one, so position and presence carry it |
+| `Data.dest`, `Data.source`, `Data.want_response` | the header's `to` and `from` are a packet's addresses; `BITFIELD_WANT_RESPONSE` is the one form of the flag |
+| `LoRaConfig.ignore_incoming` | `NODE_FLAG_IS_IGNORED` in the node database is the one store |
+| `Position.altitude_source`, `Position.timestamp`, `timestamp_millis_adjust` | one `time` per position, and the altitude form follows from which fields are set (§7) |
+| `LockdownStatus.lock_reason` | one `State` enum carries the state and the reason |
+| `User.id`, `User.macaddr` | a NodeNum is authoritative and its string form is derived |
+| `PositionFlags` `ALTITUDE_MSL`, `HVDOP`, `TIMESTAMP` | the altitude and DOP rules, and one position time, make them redundant |
+| `Role` `REPEATER`, `ROUTER_CLIENT`, and the channel roles `PRIMARY`, `SECONDARY`, `DISABLED` | `RebroadcastMode` carries repeater behaviour on a relaying role; channel position carries the rest |
+| `ModemPreset` `LONG_SLOW`, `VERY_LONG_SLOW`; `RegionCode` `UA_868`; `TelemetrySensorType` `SHTC3`, `SHT21`, `SHT31`, `SHT4X` | presets no region permits; Ukrainian law harmonised with the EU; one `SHTXX` value, because the driver is one |
+| the v1 ATAK messages `Contact`, `Group`, `Status`, `PLI`, and `TAKPacketV2` | one `TAKPacket`, on one port |
+
+### Renamed and moved
+
+| 2.8 | 3.0 |
+|---|---|
+| `mesh.proto` | `wire.proto` (air payloads) plus `packet.proto` (`MeshPacket`), with shared enums in `common.proto` |
+| `Compressed` | `InjectedFrame` - the simulator and frame-injection envelope it always was |
+| `AS3935Config` | `AS3935State` |
+| `CriticalErrorCode` | `ErrorCode`, in `common.proto` |
+| `InputEventChar` | `InputBrokerEvent`, the broker's full event set rather than a subset |
+| `NodeEnvironmentEntry` | `NodeReadingsEntry` |
+| `QueueStatus.res` (`sint32`) | `QueueStatus.result`, a typed `Result` enum |
+| `NodeInfoLite.snr_q4` | `snr`, in dB x 2 |
+| `TAKEnvironment.temperature_c_x10` | `temperature_c_centi` |
+| `LoRaWANBridge.Uplink.rssi_x10` | `rssi_dbm` |
+| `Position.latitude_i` / `longitude_i` | `latitude` / `longitude` with `latitude_scaled` / `longitude_scaled` alongside (§7) |
+| `FromRadio` / `ToRadio` camelCase arms | snake_case, as every other field |
+| bare enum values | prefixed: `REGION_`, `MODEM_`, `EDITION_`, `NODE_FLAG_`, `PACKET_`, `INPUT_`, and the per-message bitfield prefixes |
+
+### Renumbered
+
+Every message's field numbers were rebuilt from 1, with no holes and no reserved tags, and
+the fields a message actually populates sit below tag 15 where the key costs one byte (§2).
+The consequences worth knowing:
+
+- **`AdminMessage` collapses** from a maximum tag of 104 to 58, and `session_passkey` moves
+  to tag 1 because every request carries it.
+- **Enum values are dense**: `Role`, `RegionCode`, `ModemPreset` and `TelemetrySensorType`
+  carry no gaps, so a value's number differs from 2.8 even where its name did not change.
+- **`PortNum` is dense inside its groups** - 0-12, 32-37, 64-76, 112, 256-257 - so every
+  port above a removed one moved down. Anything that hardcodes a port number must be rebuilt.
+- **Module config sections shifted** when the range test module went, in
+  `AdminMessage.ModuleConfigType`, `ModuleConfigPayload` and `LocalModuleConfig` together;
+  `LocalModuleConfig.version` is 17 and `LocalConfig.version` is 13.
+- **`LocalConfig` and `ConfigPayload` keep holes at 9 and 10** on purpose: those sections
+  exist in the enum but are stored elsewhere, and the `sections` lint rule ties tag to value.
+
+### Added
+
+**Header and routing** (§8)
+
+- `HeaderOptions` with `fragment`, `hop_flags` (`HOP_NO_LEARN`, `HOP_STORE`, `HOP_ANYCAST`)
+  and `scope_code`, carried as `MeshPacket.header_options` and never re-encoded in transit.
+- `MeshPacket.channel_hash` and `MeshPacket.path`, the header's `chan` byte and path tail.
+- Four-bit `hop_limit` and `hop_start`, 0 to 15, matching the header.
+- `Routing.ack_proof` and `MeshPacket.ack_proof_status`: a pairwise MAC proving an ack came
+  from the node that received the packet, and a reported verdict that is never enforced.
+
+**Reach control** (§8, Channel scope)
+
+- `ChannelSettings.scope`, a sender-side statement of reach that rides the channel URL.
+- `RelayConfig`, a per-channel-hash relay policy for the relaying roles, with
+  `RegionProfile.default_hop_start` supplying the region cap as registry data.
+
+**Store and forward** (§8, Store and forward)
+
+- `StoredFrame`, plus `StoreAndForward` with `ANNOUNCE`, `SYNC`, `FRAME`, `SYNC_DONE`,
+  `ABORT` and `REFUSED`, `Cursor`, `Announce`, `Sync` and `SyncDone`. A server holds
+  ciphertext and no channel key; a cursor is `(rx_time, id)` per stream; an ack advances it.
+- `StoreForwardConfig` is rebuilt around storage rather than record counts.
+
+**Anycast and forward secrecy** (§8)
+
+- `GroupConfig` with the group public keys, `SecurityConfig.group_private_key` with the
+  private half on a member, and `PACKET_ANYCAST` beside the header's `HOP_ANYCAST`.
+- `User.ratchet_key`, `SecurityConfig.ratchet_flags` and `ratchet_interval_secs`, and
+  `PACKET_RATCHET_ENCRYPTED`: optional per-interval forward secrecy for direct messages.
+
+**Data that used to be code** (§6, §9)
+
+- `hw_vendor_registry`, `hw_device_registry`, `region_registry` and `modem_preset_registry`,
+  generated from the YAML under `registry/` and validated in CI.
+- `field_metadata.proto`: label, description, unit, bounds, keywords and the firmware
+  version a field arrived in or left in, as one option on a field or an enum value - the
+  latter matters here, because the bools 3.0 folded into bitfields keep their labels as
+  values. Generators turn it into a registry per language.
+
+**Everywhere**
+
+- Bitfields: 33 of them, declared as enums of single-bit masks and checked in CI (§3).
+- `DeviceMetadata.capabilities` and `excluded_modules`, replacing a row of booleans and an
+  enum that had to be maintained twice.
+- `NodeFlags`, one word shared by `NodeInfo.flags` and `NodeInfoLite.bitfield`, with the
+  slot fingerprint in bits 12 to 23 and `NODE_FLAG_HEARD_ON_CURRENT_LORA` derived from it.
+- `MeshBeacon.offer_frequency_slot`, omitted when a receiver can derive the slot.
+
+### Units, scales and bounds
+
+- **SI units on the air, always**, with the scale in the field or quantity name.
+  `DISPLAY_IMPERIAL_UNITS` is the one toggle that converts for the screen, and it covers
+  both length and temperature - 2.8 had a units enum and a separate telemetry flag, which
+  is why users toggled one and saw nothing change (§4).
+- **SNR is dB x 2 and RSSI whole dBm**, wherever either appears. A field mirroring a foreign
+  protocol keeps that protocol's scale and says so.
+- **AES-CCM with an 8-byte tag on every encrypted frame**, channel traffic included, with no
+  switch (§8).
+- `MAX_NUM_CHANNELS` is 16, set by the nanopb bound on `ChannelFile.channels` and by nothing
+  else. Canned messages and the ringtone reach 231 bytes, a beacon message 61, a remote
+  hardware pin 63, `NodeInfo.flags` and `NodeInfoLite.bitfield` 32 bits.
+- **No schema bound states a payload budget.** The room a frame leaves for `Data` depends on
+  the profile, the options block, the hops recorded and the signature, so firmware computes
+  it per packet (§8, Payload room).
+
+### Porting checklist
+
+1. Regenerate from this schema; nothing in 2.x decodes and nothing should be migrated.
+2. Build the AAD and the XEdDSA input from the canonicalised header set, and apply it - 2.8
+   passes an empty AAD (§8).
+3. Derive a relay suffix rather than masking a NodeNum, and read the path tail's length from
+   the hop fields.
+4. Move channel traffic to AES-CCM with an 8-byte tag.
+5. Rebuild anything that hardcodes a port number, an enum value or a field tag.
+6. Compress every text payload, unconditionally.
+7. Ship the registry data with clients; firmware needs none of it.
+8. Read §10 before starting: it lists what the schema states and nothing implements yet.

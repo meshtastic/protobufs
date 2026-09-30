@@ -9,7 +9,11 @@ rules a client has to follow.
 2.x traffic off the air, and no stored data is migrated. Field numbers, message shapes
 and encodings were therefore chosen freely, without regard to what 2.x had.
 
-Four changes carry almost all of the value.
+Sections 1 to 4 are the encoding rework: what the schema looks like and why it costs
+fewer bytes. Sections 5 to 9 are what that rework made room for - reach control, a store
+and forward design that holds ciphertext, authentication on every frame, anycast, and the
+tables and UI strings that stop being code. Section 10 lists what went away, and
+[SCHEMA.md §11](SCHEMA.md#11-what-changed-from-28) is the entry-by-entry inventory.
 
 ---
 
@@ -104,6 +108,14 @@ carrying one bit of information that the profile now encodes structurally.
 **Expandability pays for itself before a single extension is added**, and an unknown
 future field costs bytes only on the packets that carry it.
 
+Three fields already live in the block, and each costs nothing on the packets that do not
+carry it: fragmentation state, `hop_flags` - the originator's authenticated instructions to
+relays, "do not learn a route from this" and "a store and forward server should keep this" -
+and a region code. The path tail earns its keep twice over: a reply steers itself from the
+route the request took, so a node learns a whole path from one round trip instead of one hop
+per exchange, and the tail is also the route record, which is why 3.0 needs no traceroute
+message and no traceroute port.
+
 ---
 
 ## 3. Telemetry became a list of readings
@@ -175,7 +187,137 @@ byte-identical instructions to the hand-written mask.
 
 ---
 
-## 5. Why it is still protobuf
+## 5. Reach control, because sixteen channels is sixteen floods
+
+2.x had no statement of how far a channel's traffic should travel. Every broadcast flooded
+to its hop budget on every relay, and 3.0 raises the channel table from 8 to 16, so the
+problem grows with it. Three layers now bound reach, and only the third costs a byte:
+
+- **`ChannelSettings.scope`** travels in the channel URL, so everyone who joins a channel
+  launches its traffic the same way: local, regional or global. It caps the hop budget a
+  sender starts with and decides whether the channel may uplink to MQTT at all.
+- **`RelayConfig`** is the relay's side, and a relay sees only the one-byte channel hash. A
+  small policy table per hash - forward, forward under a hop cap, or drop - lets an operator
+  cap a channel whose key the node does not even hold. Default is forward everything, so an
+  existing mesh behaves as it did.
+- **`HeaderOptions.scope_code`** is a 16-bit keyed code, 5 bytes, for traffic that must cross
+  relays holding none of its channels. It is deliberately **declarative**: the key comes from
+  a region name people share, so the code states which region a frame claims and proves
+  nothing. Nothing may authorise on it.
+
+The regional cap is registry data, not firmware behaviour: `RegionProfile.default_hop_start`
+says what a region launches with.
+
+---
+
+## 6. Store and forward keeps ciphertext, not messages
+
+The 2.x module replayed decoded text keyed by a server-local index, which meant a server
+held the channel keys, a client could not tell one server from another, and a reboot or a
+ring wrap lost the client's place. A second design, Store & Forward++, added a hash chain
+and never converged with the first.
+
+3.0 stores the frame. `StoredFrame` keeps the header fields the AEAD authenticates, the
+options block verbatim and the ciphertext with its tag, so:
+
+- a server needs **no channel key**, and cannot read what it holds
+- every AEAD tag and XEdDSA signature survives replay, so the **client** verifies the
+  original sender rather than trusting the server
+- a cursor is `(rx_time, id)` per stream, not an index, so it survives a server reboot, ring
+  eviction, and moving to a different server
+- a replay is one frame per packet with `want_ack`, and the cursor advances **on the ack** -
+  acking before delivery is the failure mode this design exists to avoid
+
+What is worth keeping is an originator's statement, not a guess: `HOP_STORE` sits in the
+authenticated options block, so a keyless server can tell a text message from telemetry
+without decrypting anything. A server announces itself with a five-byte anonymous pip rather
+than a full addressed packet, because a beacon nobody answers should not pay for addressing.
+
+---
+
+## 7. Authentication, in three layers
+
+2.8 leaves the header unauthenticated, and PSK channel traffic is AES-CTR with **no MAC**:
+anyone holding the channel key - everyone on the channel - can flip bits in a frame and
+nobody can tell. 3.0 closes that from three directions.
+
+**Every encrypted frame carries an 8-byte AES-CCM tag, and there is no switch.** The tag
+covers the header fields a relay must not touch, so budget inflation and address rewriting
+both fail verification. On a frame that records its path, even the hop limit becomes
+tamper-evident, because altering it moves the payload boundary.
+
+**An explicit ack can prove it came from the recipient.** A channel key authenticates a frame
+to the channel, not to a node, so any member could forge a delivery receipt.
+`Routing.ack_proof` is a truncated HMAC under the pairwise PKI secret, bound to the packet
+id it answers, and
+`MeshPacket.ack_proof_status` reports the verdict. Reported, never enforced: an unproven ack
+is acted on exactly as before.
+
+**Direct messages can be forward secret.** Optional, off by default: each node publishes a
+rotating X25519 key in its `User` and mixes it into the DM derivation, erasing old private
+keys as it rotates, so recorded traffic older than the retention window stops decrypting even
+if both long-term keys later leak. Granularity is one rotation interval, not one message -
+per-message chains need state this frame budget cannot carry. Nothing on the air says which
+derivation was used; the receiver tries and the tag decides.
+
+XEdDSA still does the one thing no shared key can: attribute a frame to a single sender.
+
+---
+
+## 8. Anycast: a third traffic class
+
+Routed traffic often has more than one valid sink - two uplinks, three egress nodes, any of
+which will do. 2.x offers a direct message to one named node, which has no failover, or a
+broadcast, which reaches everyone. Anycast is the missing middle: a group is a key pair, its
+id lives in the NodeNum space, and a frame to it is an ordinary unicast with `HOP_ANYCAST`
+set.
+
+The first frame floods within the channel's scope; every member that decrypts it acks from
+its own NodeNum, so the sender learns who answered and every relay on the reverse path
+learns a next hop for the group. Later frames follow that path and no other member hears
+them. When the nearest member disappears, the retry falls back to a flood, another member
+acks, and the tables relearn - the same machinery as a direct message to a node that moved.
+Unicast stays 16 bytes, because a group destination is a PKI destination like any other.
+
+---
+
+## 9. Data that used to be code
+
+Two kinds of knowledge lived in firmware and in every client's source, and drifted:
+
+**Regulatory and radio tables.** Regions, their frequency ranges and duty cycles, the modem
+presets and which presets each region permits are now registry files under `registry/`,
+validated in CI and generated into JSON that clients ship. Each fact appears in exactly one
+table; firmware that builds its tables from the registry loses its private copies, and
+adding a board or a region stops being a schema pull request.
+
+**What a field means to a person.** `field_metadata.proto` carries the label, description,
+unit, bounds, search keywords and the firmware version a field arrived in or left in, as one
+option on the field itself. Generators turn it into a registry for TypeScript, Python, C,
+Rust, Kotlin and Swift, so the strings an app shows come from the schema instead of being
+retyped per platform. Adding an attribute is a schema change with no generator change.
+
+---
+
+## 10. What 3.0 takes away
+
+Removals are the other half of the rework, and most of them are things that had stopped
+earning their bytes:
+
+| gone | because |
+|---|---|
+| `RouteDiscovery` and the traceroute port | the header's path tail already records the route, so every packet is traceable |
+| Store & Forward++ and the v1 S&F protocol | replaced wholesale by the ciphertext log |
+| `ChunkedPayload` and the LoRaWAN bridge's own chunking | `HeaderOptions.fragment` is the one fragmentation mechanism; nothing ever implemented the others |
+| the compressed-text port | text is always compressed, so nothing needs to announce it |
+| the range test module | discontinued |
+| the 120-entry hardware enum, four telemetry metric messages, the channel role enum, two unusable modem presets, four redundant SHT sensor values | data, columns, position and one driver respectively |
+
+Full inventory, entry by entry, in [SCHEMA.md §11](SCHEMA.md#11-what-changed-from-28).
+
+---
+
+## 11. Why it is still protobuf
 
 A break this size is the moment to ask whether protobuf is the right frame at all. It
 was asked, and the answer is that **the protocol was never the bottleneck - the
