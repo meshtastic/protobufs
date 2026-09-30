@@ -1,6 +1,7 @@
-# Vendor 0x00: the device ids of the HardwareModel enum, at their old numbers.
-# Free slots are allocated to new devices. Device ids 0x00 and 0xFF are reserved
-# under every vendor, here as UNSET and PRIVATE_HW, and are not listed.
+# Vendor 0x00: the common pool, for devices that belong to no registered vendor. Free
+# slots are allocated to new such devices. Device ids 0x00 and 0xFF are reserved under
+# every vendor, here as UNSET and PRIVATE_HW, and are not listed. The slug is an
+# allocation identifier and never changes.
 vendor:
   id: 0x00
   slug: "legacy"
