@@ -13,8 +13,11 @@
 *MeshPacket.relay_node int_size:8
 *MeshPacket.priority int_size:8
 
-# The options block's length is the one-byte opt_len in the on-air header.
-*MeshPacket.header_options max_size:255
+# The on-air opt_len byte allows a 255-byte options block, but every field defined so far
+# fits in 9 (fragment, hop_flags, scope_code) and each byte here is RAM in every queued
+# packet. A frame whose block is larger than this is dropped, so raise it before any
+# sender may emit more.
+*MeshPacket.header_options max_size:32
 *MeshPacket.flags int_size:8
 
 # One byte per hop between from and relay: at most 15 hops taken, less the last.

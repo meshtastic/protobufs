@@ -50,6 +50,15 @@ def check_validator() -> list[str]:
     if not any('does not fit' in p for p in gen.validate(wide)):
         fails.append('a value wider than the field was not rejected')
 
+    # nanopb stores an int_size:8 field in a uint8_t, so bit 8 no longer fits.
+    narrow = {'ctype': 'uint32_t', 'bits': 8, 'values': [('NONE', 0), ('A', 0x80), ('B', 0x100)]}
+    if not any('does not fit the 8-bit field' in p for p in gen.validate(narrow)):
+        fails.append('a mask wider than its int_size was not rejected')
+
+    sizes = gen.parse_int_sizes(gen.DEFAULT_OPTIONS_DIR)
+    if gen.field_bits(['MeshPacket'], 'flags', 32, sizes) != 8:
+        fails.append('int_size:8 on MeshPacket.flags was not read from packet.options')
+
     return fails
 
 
@@ -107,6 +116,19 @@ int main() {
   assert(pm.gps_active());
   assert(p == meshtastic_PowerMon_State_GPS_Active);
 
+  // An int_size:8 field is a uint8_t in nanopb; the view deduces that from the
+  // field and writes back at its width.
+  uint8_t pf = 0;
+  meshtastic_MeshPacket_flags_view(pf).set_want_ack();
+  assert(pf == meshtastic_MeshPacket_Flags_PACKET_WANT_ACK);
+  meshtastic_MeshPacket_flags_view(pf).set_want_ack(false);
+  assert(pf == 0);
+
+  // A const field reads through the same view; only the setters need it mutable.
+  const uint8_t cf = meshtastic_MeshPacket_Flags_PACKET_VIA_MQTT;
+  assert(meshtastic_MeshPacket_flags_view(cf).via_mqtt());
+  assert(!meshtastic_MeshPacket_flags_view(cf).want_ack());
+
   // The stored and client-facing node words share one enum, so a value written
   // through one view reads back through the other.
   uint32_t stored = 0;
@@ -132,12 +154,12 @@ def main() -> int:
         print('FAIL: validator: %s' % f, file=sys.stderr)
     if fails:
         return 1
-    print('ok: validator rejects multi-bit, duplicate and oversized masks')
+    print('ok: validator rejects multi-bit, duplicate, oversized and int_size-overflowing masks')
 
     fds = descriptor_pb2.FileDescriptorSet()
     fds.ParseFromString(open(args.descriptor, 'rb').read())
     enums = gen.collect_enums(fds)
-    records = gen.find_bitfields(fds, enums)
+    records = gen.find_bitfields(fds, enums, gen.parse_int_sizes(gen.DEFAULT_OPTIONS_DIR))
     for rec in records:
         problems = gen.validate(rec)
         if problems:

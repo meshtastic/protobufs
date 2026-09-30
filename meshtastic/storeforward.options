@@ -1,9 +1,9 @@
 # nanopb options for storeforward.proto
 # https://jpa.kapsi.fi/nanopb/docs/reference.html#proto-file-options
 
-# Deliberately below the 255 bytes a frame's options block may reach: a server drops a
+# Matches MeshPacket.header_options: a server never receives a larger block, and drops a
 # frame whose block does not fit rather than storing a truncated one.
-*StoredFrame.header_options max_size:64
+*StoredFrame.header_options max_size:32
 # The largest ciphertext a 256-byte frame can carry.
 *StoredFrame.ciphertext max_size:240
 *StoredFrame.hop_start int_size:8

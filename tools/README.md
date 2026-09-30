@@ -26,6 +26,14 @@ if (f.via_mqtt()) { ... }
 f.set_is_muted();
 ```
 
+A view is a class template deduced from the field it wraps (C++17), because nanopb
+picks that integer's width from `int_size` in the `.options` files and the descriptor
+does not carry it: `MeshPacket.flags` is a `uint8_t`, `NodeInfoLite.bitfield` a
+`uint32_t`. A const field reads through the same view; only the setters need a mutable
+one. Each view `static_assert`s that its masks fit the type it was instantiated with, and
+the generator reads the `.options` files (`--options-dir`, default `../meshtastic`) so
+`--check` rejects a mask wider than its `int_size` before any firmware compiles.
+
 ### Discovery
 
 A field is a bitfield when its own comment says `bitwise OR of <Enum> values`. That
