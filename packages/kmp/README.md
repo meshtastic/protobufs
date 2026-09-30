@@ -11,6 +11,79 @@ This package publishes Kotlin Multiplatform models generated from the protobuf s
 
 > This package publishes Kotlin/KMP artifacts to Maven repositories. Native Swift-only distribution (for example an XCFramework/SPM package) is a separate delivery path and is not part of this module.
 
+## Field metadata
+
+Fields in the schema can carry app/UI-relevant metadata via the `(meshtastic.field_metadata)`
+field option (see `meshtastic/field_metadata.proto`). For example, GPIO pins that only matter on
+DIY hardware are annotated:
+
+```proto
+uint32 rx_gpio = 8 [(meshtastic.field_metadata) = { diy_only: true }];
+```
+
+At build time a custom Wire `SchemaHandler` (in `buildSrc`) generates a reflection-free
+`FieldMetadataRegistry` into the published artifact - plain Kotlin, queryable on **every** target
+(JVM, Android, JS, Wasm, Native) with no reflection and no runtime cost.
+
+Prefer the **typed accessors**, generated as extension properties on each message's companion
+object - they hang directly off the real message type, so they're autocomplete-friendly with no
+magic strings or field tags (the IDE auto-imports the extension on use):
+
+```kotlin
+import org.meshtastic.proto.rx_gpio // companion extension on Config.PositionConfig
+
+// e.g. hide a DIY-only setting unless the connected device is a DIY build
+if (!Config.PositionConfig.rx_gpio.diy_only || deviceIsDiy) {
+    /* show the GPIO setting */
+}
+```
+
+Each typed accessor is a per-field extension on the message companion, so it carries its own
+import (the IDE auto-imports on use). To **enumerate** what's annotated on a message - e.g. a
+settings screen iterating a message's fields - use the dynamic lookups keyed by proto message
+name: `forType` returns every annotated field (keyed by tag) and `get` looks up one field:
+
+```kotlin
+// all annotated fields on a message: tag -> FieldMetadata
+for ((tag, meta) in FieldMetadataRegistry.forType("meshtastic.Config.PositionConfig")) { /* … */ }
+
+// a single field
+val isDiyOnly = FieldMetadataRegistry.get("meshtastic.Config.PositionConfig", tag = 8)?.diy_only == true
+```
+
+### Enum values
+
+Enum values carry the same `FieldMetadata` shape through the
+`(meshtastic.enum_value_metadata)` option, so a picker gets its labels from the schema instead of
+a hand-maintained `when`:
+
+```protobuf
+CLIENT = 0 [(meshtastic.enum_value_metadata) = { label: "Client" }];
+```
+
+```kotlin
+import org.meshtastic.proto.metadata
+
+// typed: an extension on the enum TYPE, so it reads off a value you already hold
+val label = role.metadata?.label
+
+// dynamic: enum values share the registry and the key format with fields
+FieldMetadataRegistry.forEnum("meshtastic.Config.DeviceConfig.Role")   // number -> FieldMetadata
+FieldMetadataRegistry.forEnumValue("meshtastic.Config.DeviceConfig.Role", number = 2)
+```
+
+`metadata` is a top-level extension in `org.meshtastic.proto`, so it needs that import outside the
+package (the IDE auto-imports on use), the same as the per-field accessors above.
+
+`forEnum` and `forEnumValue` are aliases for `forType` and `get` - one registry serves both kinds,
+matching `protoc-gen-fieldmeta`. The typed accessor cannot hang off the enum companion: an
+extension named after a value is shadowed by the enum entry itself, since Kotlin resolves members
+before extensions, so it would compile and never be reachable.
+
+Adding a new **scalar** attribute to the `FieldMetadata` message (e.g. `admin_only`, `unit`) is a
+schema-only change - the generator serializes whatever sub-fields are set, so no build code needs
+to change.
+
 ## Versioning
 
 The SDK version is derived automatically from the latest git tag - no manual version file to maintain.

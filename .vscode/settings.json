@@ -1,4 +1,5 @@
 {
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "pbkit.vscode-pbkit"
+  "editor.defaultFormatter": "pbkit.vscode-pbkit",
+  "java.configuration.updateBuildConfiguration": "disabled"
 }

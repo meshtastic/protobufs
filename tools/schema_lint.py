@@ -125,11 +125,17 @@ def walk(file_pb, messages, path=()):
         yield from walk(file_pb, msg.nested_type, here)
 
 
+# A file whose messages only ever live in a descriptor, never in a frame or on flash.
+# The wire-cost rules do not apply to it: a generator reads these values at build time and
+# nothing encodes them. field_metadata carries double bounds for exactly that reason.
+DESCRIPTOR_ONLY = {'meshtastic/field_metadata.proto'}
+
+
 def check_types(fds):
     """The signed and float rules, both read from the descriptor."""
     out = []
     for file_pb in fds.file:
-        if not file_pb.name.startswith('meshtastic/'):
+        if not file_pb.name.startswith('meshtastic/') or file_pb.name in DESCRIPTOR_ONLY:
             continue
         for path, msg in walk(file_pb, file_pb.message_type):
             for field in msg.field:

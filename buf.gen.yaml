@@ -3,3 +3,9 @@ plugins:
   - remote: buf.build/bufbuild/es:v2.1.0
     out: packages/ts/lib
     opt: target=ts,import_extension=.ts
+  # Reflection-free field-metadata registry generated from the
+  # (meshtastic.field_metadata) options (see tools/protoc-gen-fieldmeta).
+  # Invoked via `go run`, so it needs Go on PATH (GitHub-hosted runners ship it).
+  - local: ["go", "run", "-C", "tools/protoc-gen-fieldmeta", "."]
+    out: packages/ts/lib
+    opt: target=typescript
