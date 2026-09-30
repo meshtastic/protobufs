@@ -974,6 +974,11 @@ enum HardwareModel {
   AXIOMETA_GENESIS_MINI = 148;
 
   /*
+   * MakerFabs Nomad Terminal
+   */
+  MAKERFABS_NOMAD_TERMINAL = 149;
+
+  /*
    * Elecrow ThinkNode MX
    */
   THINKNODE_MX = 150;
@@ -1847,6 +1852,37 @@ message MeshPacket {
   }
 
   /*
+   * Which slots of the CSMA backoff grid a transmission may draw from.
+   *
+   * Never sent over the radio links. Like priority, it steers how the local node schedules the
+   * packet: a module sets it on a packet it is queueing, and the radio driver reads it when it
+   * draws the backoff for that packet.
+   *
+   * A node normally draws any slot of the contention window, counted from the moment it draws.
+   * A packet that asks for a parity instead has its slots counted from the end of the last frame
+   * this node sent or heard, and only slots of that parity are taken, so two senders on opposite
+   * parities that redraw after the same frame never land on the same slot, and so are always at
+   * least a slot apart. Useful for a pair of nodes exchanging a stream, where the two ends
+   * otherwise collide with each other far more often than with the rest of the mesh.
+   */
+  enum SlotParity {
+    /*
+     * No parity asked for: the ordinary backoff draw over the whole contention window.
+     */
+    SLOT_PARITY_UNSET = 0;
+
+    /*
+     * Only even-numbered slots, counted from the end of the last frame on air.
+     */
+    SLOT_PARITY_EVEN = 1;
+
+    /*
+     * Only odd-numbered slots, counted from the end of the last frame on air.
+     */
+    SLOT_PARITY_ODD = 2;
+  }
+
+  /*
    * The sending node number.
    * Note: Our crypto implementation uses this field as well.
    * See [crypto](/docs/overview/encryption) for details.
@@ -2033,6 +2069,13 @@ message MeshPacket {
    * to delivery rather than to authorship.
    */
   AckProofStatus ack_proof_status = 23;
+
+  /*
+   * Never sent over the radio links.
+   * Which parity of the CSMA backoff slot grid this packet may be sent in; see SlotParity.
+   * Set by whoever queues the packet, and read by the radio driver when it draws the backoff.
+   */
+  SlotParity slot_parity = 24;
 }
 
 /*
