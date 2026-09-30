@@ -25,8 +25,9 @@ message DeviceConfig {
     ALL = 0;
 
     /*
-     * Same as behavior as ALL but skips packet decoding and simply rebroadcasts them.
-     * Only available in Repeater role. Setting this on any other roles will result in ALL behavior.
+     * Same behaviour as ALL, but skips packet decoding and simply rebroadcasts.
+     * This is what the 2.x REPEATER role did; 3.0 has no such role, so it is available on
+     * the relaying roles, ROUTER and ROUTER_LATE. On any other role it behaves as ALL.
      */
     ALL_SKIP_DECODING = 1;
 
@@ -548,7 +549,7 @@ message DisplayConfig {
   /*
    * Override auto-detect in screen
    */
-  OledType oled = 5;
+  OledType oled = 4;
 
   enum DisplayMode {
     /*
@@ -574,7 +575,7 @@ message DisplayConfig {
   /*
    * Display Mode
    */
-  DisplayMode displaymode = 6;
+  DisplayMode displaymode = 5;
 
   enum CompassOrientation {
     /*
@@ -621,7 +622,7 @@ message DisplayConfig {
   /*
    * Indicates how to rotate or invert the compass output to accurate display on the display.
    */
-  CompassOrientation compass_orientation = 7;
+  CompassOrientation compass_orientation = 6;
 }
 
 /*
@@ -780,7 +781,7 @@ message LoRaConfig {
   /*
    * Set where LORA FEM is enabled, disabled, or not present
    */
-  FEM_LNA_Mode fem_lna_mode = 13;
+  FEM_LNA_Mode fem_lna_mode = 12;
 }
 
 message BluetoothConfig {
@@ -970,8 +971,8 @@ message GroupConfig {
 /*
  * Relay Policy
  *
- * How this node relays broadcast traffic, per channel hash. Evaluated on the ROUTER,
- * ROUTER_LATE and REPEATER roles only; every other role ignores it. Keyed by the
+ * How this node relays broadcast traffic, per channel hash. Evaluated on the relaying
+ * roles, ROUTER and ROUTER_LATE, only; every other role ignores it. Keyed by the
  * header's one-byte `chan`, so a rule covers every channel that hashes to that byte,
  * held or not - which is what lets an operator cap a channel whose key the node does
  * not have.

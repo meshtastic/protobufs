@@ -48,7 +48,7 @@ message HwDevice {
    * build metadata refers to a board by slug rather than by number, and a slug never
    * changes once allocated.
    */
-  string slug = 5;
+  string slug = 4;
 }
 
 /*

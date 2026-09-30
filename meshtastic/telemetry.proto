@@ -82,7 +82,8 @@ message LocalStats {
 
   /*
    * Number of received packets that were duplicates (due to multiple nodes relaying).
-   * If this number is high, there are nodes in the mesh relaying packets when it's unnecessary, for example due to the ROUTER/REPEATER role.
+   * If this number is high, there are nodes in the mesh relaying packets when it is
+   * unnecessary, for example because too many of them carry a relaying role.
    */
   uint32 num_rx_dupe = 9;
 
@@ -93,7 +94,8 @@ message LocalStats {
 
   /*
    * Number of times we canceled a packet to be relayed, because someone else did it before us.
-   * This will always be zero for ROUTERs/REPEATERs. If this number is high, some other node(s) is/are relaying faster than you.
+   * This is always zero on a node that relays without waiting, which is what a ROUTER
+   * does. If this number is high, other nodes are relaying faster than you.
    */
   uint32 num_tx_relay_canceled = 11;
 
@@ -638,255 +640,241 @@ enum TelemetrySensorType {
   BMP280 = 6;
 
   /*
-   * Superseded by SHTXX, which covers the whole SHT family
-   */
-
-  /*
    * High accuracy pressure
    */
-  LPS22 = 8;
+  LPS22 = 7;
 
   /*
    * 3-Axis magnetic sensor
    */
-  QMC6310 = 9;
+  QMC6310 = 8;
 
   /*
    * 6-Axis inertial measurement sensor
    */
-  QMI8658 = 10;
+  QMI8658 = 9;
 
   /*
    * 3-Axis magnetic sensor
    */
-  QMC5883L = 11;
-
-  /*
-   * 12 was SHT31: superseded by SHTXX, which covers the whole SHT family
-   */
+  QMC5883L = 10;
 
   /*
    * PM2.5 air quality sensor
    */
-  PMSA003I = 13;
+  PMSA003I = 11;
 
   /*
    * INA3221 3 Channel Voltage / Current Sensor
    */
-  INA3221 = 14;
+  INA3221 = 12;
 
   /*
    * BMP085/BMP180 High accuracy temperature and pressure (older Version of BMP280)
    */
-  BMP085 = 15;
+  BMP085 = 13;
 
   /*
    * RCWL-9620 Doppler Radar Distance Sensor, used for water level detection
    */
-  RCWL9620 = 16;
-
-  /*
-   * 17 was SHT4X: superseded by SHTXX, which covers the whole SHT family
-   */
+  RCWL9620 = 14;
 
   /*
    * VEML7700 high accuracy ambient light(Lux) digital 16-bit resolution sensor.
    */
-  VEML7700 = 18;
+  VEML7700 = 15;
 
   /*
    * MLX90632 non-contact IR temperature sensor.
    */
-  MLX90632 = 19;
+  MLX90632 = 16;
 
   /*
    * TI OPT3001 Ambient Light Sensor
    */
-  OPT3001 = 20;
+  OPT3001 = 17;
 
   /*
    * Lite On LTR-390UV-01 UV Light Sensor
    */
-  LTR390UV = 21;
+  LTR390UV = 18;
 
   /*
    * AMS TSL25911FN RGB Light Sensor
    */
-  TSL25911FN = 22;
+  TSL25911FN = 19;
 
   /*
    * AHT10 Integrated temperature and humidity sensor
    */
-  AHT10 = 23;
+  AHT10 = 20;
 
   /*
    * DFRobot Lark Weather station (temperature, humidity, pressure, wind speed and direction)
    */
-  DFROBOT_LARK = 24;
+  DFROBOT_LARK = 21;
 
   /*
    * NAU7802 Scale Chip or compatible
    */
-  NAU7802 = 25;
+  NAU7802 = 22;
 
   /*
    * BMP3XX High accuracy temperature and pressure
    */
-  BMP3XX = 26;
+  BMP3XX = 23;
 
   /*
    * ICM-20948 9-Axis digital motion processor
    */
-  ICM20948 = 27;
+  ICM20948 = 24;
 
   /*
    * MAX17048 1S lipo battery sensor (voltage, state of charge, time to go)
    */
-  MAX17048 = 28;
+  MAX17048 = 25;
 
   /*
    * Custom I2C sensor implementation based on https://github.com/meshtastic/i2c-sensor
    */
-  CUSTOM_SENSOR = 29;
+  CUSTOM_SENSOR = 26;
 
   /*
    * MAX30102 Pulse Oximeter and Heart-Rate Sensor
    */
-  MAX30102 = 30;
+  MAX30102 = 27;
 
   /*
    * MLX90614 non-contact IR temperature sensor
    */
-  MLX90614 = 31;
+  MLX90614 = 28;
 
   /*
    * SCD40/SCD41 CO2, humidity, temperature sensor
    */
-  SCD4X = 32;
+  SCD4X = 29;
 
   /*
    * ClimateGuard RadSens, radiation, Geiger-Muller Tube
    */
-  RADSENS = 33;
+  RADSENS = 30;
 
   /*
    * High accuracy current and voltage
    */
-  INA226 = 34;
+  INA226 = 31;
 
   /*
    * DFRobot Gravity tipping bucket rain gauge
    */
-  DFROBOT_RAIN = 35;
+  DFROBOT_RAIN = 32;
 
   /*
    * Infineon DPS310 High accuracy pressure and temperature
    */
-  DPS310 = 36;
+  DPS310 = 33;
 
   /*
    * RAKWireless RAK12035 Soil Moisture Sensor Module
    */
-  RAK12035 = 37;
+  RAK12035 = 34;
 
   /*
    * MAX17261 lipo battery gauge
    */
-  MAX17261 = 38;
+  MAX17261 = 35;
 
   /*
    * PCT2075 Temperature Sensor
    */
-  PCT2075 = 39;
+  PCT2075 = 36;
 
   /*
    * ADS1X15 ADC
    */
-  ADS1X15 = 40;
+  ADS1X15 = 37;
 
   /*
    * ADS1X15 ADC_ALT
    */
-  ADS1X15_ALT = 41;
+  ADS1X15_ALT = 38;
 
   /*
    * Sensirion SFA30 Formaldehyde sensor
    */
-  SFA30 = 42;
+  SFA30 = 39;
 
   /*
    * SEN5X PM SENSORS
    */
-  SEN5X = 43;
+  SEN5X = 40;
 
   /*
    * TSL2561 light sensor
    */
-  TSL2561 = 44;
+  TSL2561 = 41;
 
   /*
    * BH1750 light sensor
    */
-  BH1750 = 45;
+  BH1750 = 42;
 
   /*
    * HDC1080 Temperature and Humidity Sensor
    */
-  HDC1080 = 46;
-
-  /*
-   * 47 was SHT21: superseded by SHTXX, which covers the whole SHT family
-   */
+  HDC1080 = 43;
 
   /*
    * Sensirion STC31 CO2 sensor
    */
-  STC31 = 48;
+  STC31 = 44;
 
   /*
    * SCD30 CO2, humidity, temperature sensor
    */
-  SCD30 = 49;
+  SCD30 = 45;
 
   /*
-   * SHT family of sensors for temperature and humidity
+   * Sensirion SHT family for temperature and humidity: SHTC3, SHT21, SHT31, SHT4X and
+   * the rest. 2.x gave each of them its own value; 3.0 has one, because the driver is
+   * one.
    */
-  SHTXX = 50;
+  SHTXX = 46;
 
   /*
    * DS248X Bridge for one-wire temperature sensors
    */
-  DS248X = 51;
+  DS248X = 47;
 
   /*
    * MMC5983MA 3-Axis Digital Magnetic Sensor
    */
-  MMC5983MA = 52;
+  MMC5983MA = 48;
 
   /*
    * ICM-42607-P 6-Axis IMU
    */
-  ICM42607P = 53;
+  ICM42607P = 49;
 
   /*
    * SPA06 pressure and temperature
    */
-  SPA06 = 54;
+  SPA06 = 50;
 
   /*
    * HM330X PM SENSOR
    */
-  HM330X = 55;
+  HM330X = 51;
 
   /*
    * Sensirion SEN6X PM/RHT/VOC/NOx/CO2/HCHO sensor family (SEN62, SEN63C, SEN65, SEN66, SEN68, SEN69C)
    */
-  SEN6X = 56;
+  SEN6X = 52;
 
   /*
    * AS3935 Franklin lightning sensor
    */
-  AS3935 = 57;
+  AS3935 = 53;
 }
 
 /*

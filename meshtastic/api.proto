@@ -485,20 +485,20 @@ message LockdownStatus {
    * For UNLOCKED: remaining boots on the issued session token.
    * Decrements by 1 on each subsequent boot.
    */
-  uint32 boots_remaining = 3;
+  uint32 boots_remaining = 2;
 
   /*
    * For UNLOCKED: wall-clock expiry of the issued session token,
    * absolute Unix-epoch seconds. 0 = no time limit.
    */
-  fixed32 valid_until_epoch = 4;
+  fixed32 valid_until_epoch = 3;
 
   /*
    * For UNLOCK_FAILED: seconds the client must wait before another
    * passphrase attempt will be accepted. 0 = wrong passphrase, no
    * backoff (immediate retry allowed but advisable to prompt user).
    */
-  uint32 backoff_seconds = 5;
+  uint32 backoff_seconds = 4;
 }
 
 /*
@@ -510,9 +510,9 @@ message LockdownStatus {
 message LoRaPresetGroup {
   /*
    * Bitmask of the modem presets legal for every region referencing this group:
-   * bit N is set when ModemPreset value N is legal. Bit 0 is MODEM_LONG_FAST,
-   * bit 16 is MODEM_MEDIUM_TURBO. Bits 1 and 2 are never set (the LONG_SLOW and
-   * VERY_LONG_SLOW presets they stood for were removed in 3.0).
+   * bit N is set when ModemPreset value N is legal. Bit 0 is MODEM_LONG_FAST and bit 14
+   * MODEM_MEDIUM_TURBO, the highest preset 3.0 defines, so 15 bits are in use and the
+   * mask has room for another 17 presets before the field has to grow.
    *
    * A bitmask rather than a repeated enum: nanopb sizes repeated enums unpacked
    * at ~2 bytes per element, so an 11-preset list cost ~22 bytes where the mask

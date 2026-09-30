@@ -169,7 +169,7 @@ message Position {
   /*
    * Sensor ID - in case multiple positioning sensors are being used
    */
-  uint32 sensor_id = 22;
+  uint32 sensor_id = 21;
 
   /*
    * Estimated/expected time (in seconds) until next update:
@@ -177,7 +177,7 @@ message Position {
    * - if we update at dynamic intervals (based on relative movement etc),
    *   but "AT LEAST every Y seconds", use Y
    */
-  uint32 next_update = 23;
+  uint32 next_update = 22;
 }
 
 /*
@@ -194,43 +194,43 @@ message User {
    * device truncates anything longer before storing or rebroadcasting, with
    * sanitizeUtf8 cleaning up a partial multi-byte sequence at the boundary.
    */
-  string long_name = 2;
+  string long_name = 1;
 
   /*
    * A VERY short name, ideally two characters.
    * Suitable for a tiny OLED screen
    */
-  string short_name = 3;
+  string short_name = 2;
 
   /*
    * Hardware model, packed as (vendor_id << 8 | device_id).
    * Replaces the HardwareModel enum used in 2.x.
    */
-  uint32 hw_model = 4;
+  uint32 hw_model = 3;
 
   /*
    * In some regions Ham radio operators have different bandwidth limitations than others.
    * If this user is a licensed operator, set this flag.
    * Also, "long_name" should be their licence number.
    */
-  bool is_licensed = 5;
+  bool is_licensed = 4;
 
   /*
    * Indicates that the user's role in the mesh.
    * Uses top-level Role enum from common.proto (was Config.DeviceConfig.Role in 2.x).
    */
-  Role role = 6;
+  Role role = 5;
 
   /*
    * The public key of the user's device.
    * This is sent out to other nodes on the mesh to allow them to compute a shared secret key.
    */
-  bytes public_key = 7;
+  bytes public_key = 6;
 
   /*
    * Whether or not the node can be messaged
    */
-  optional bool is_unmessagable = 8;
+  optional bool is_unmessagable = 7;
 
   /*
    * Current X25519 ratchet public key, present only while this node has forward secrecy
@@ -240,7 +240,7 @@ message User {
    * back to the static derivation. Authenticated by the XEdDSA signature on the NodeInfo
    * that carries it: an unsigned NodeInfo's ratchet key is ignored.
    */
-  bytes ratchet_key = 9;
+  bytes ratchet_key = 8;
 }
 
 /*
@@ -380,21 +380,21 @@ message Data {
    * The id of the packet this one answers, on a response or a routing ack. A sender
    * matches an ack or a nak against it, and cancels a retransmission with it.
    */
-  fixed32 request_id = 6;
+  fixed32 request_id = 3;
 
   /*
    * If set, this message replies to the message with that id: threading a text message
    * for the people reading it, which store and forward preserves. Distinct from
    * request_id, which pairs a protocol response with the request it answers.
    */
-  fixed32 reply_id = 7;
+  fixed32 reply_id = 4;
 
   /*
    * Defaults to zero. If nonzero, then what is in the payload should be treated as an emoji like giving
    * a message a heart or poop emoji.
    * Wire encoding: uint32 (W4 fix, was fixed32)
    */
-  uint32 emoji = 8;
+  uint32 emoji = 5;
 
   /*
    * Extra per-payload flags: a bitwise OR of Bitfield values.
@@ -416,12 +416,12 @@ message Data {
   /*
    * Bitwise OR of Bitfield values.
    */
-  optional uint32 bitfield = 9;
+  optional uint32 bitfield = 6;
 
   /*
    * XEdDSA signature for the payload
    */
-  bytes xeddsa_signature = 10;
+  bytes xeddsa_signature = 7;
 }
 
 /*

@@ -38,7 +38,7 @@
 # rule checks the cap against the enum. Worst case is ~120 bytes, well inside the
 # 512-byte MAX_TO_FROM_RADIO_SIZE cap on FromRadio.
 *LoRaRegionPresetMap.groups        max_count:8
-*LoRaRegionPresetMap.region_groups max_count:38
+*LoRaRegionPresetMap.region_groups max_count:37
 *LoRaRegionPresetMap.region_groups int_size:8
 *LoRaPresetGroup.default_preset    int_size:8
 

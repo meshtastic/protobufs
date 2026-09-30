@@ -37,7 +37,7 @@ enum Role {
    *   When used in conjunction with power.is_power_saving = true, nodes will wake up,
    *   send position, and then sleep for position.position_broadcast_secs seconds.
    */
-  TRACKER = 5;
+  TRACKER = 3;
 
   /*
    * Description: Broadcasts telemetry packets as priority.
@@ -45,7 +45,7 @@ enum Role {
    *   When used in conjunction with power.is_power_saving = true, nodes will wake up,
    *   send environment telemetry, and then sleep for telemetry.environment_update_interval seconds.
    */
-  SENSOR = 6;
+  SENSOR = 4;
 
   /*
    * Description: Optimized for ATAK system communication and reduces routine broadcasts.
@@ -53,7 +53,7 @@ enum Role {
    *    Turns off many of the routine broadcasts to favor CoT packet stream
    *    from the Meshtastic ATAK plugin -> IMeshService -> Node
    */
-  TAK = 7;
+  TAK = 5;
 
   /*
    * Description: Device that only broadcasts as needed for stealth or power savings.
@@ -62,7 +62,7 @@ enum Role {
    *    Still rebroadcasts, but with local only rebroadcast mode (known meshes only)
    *    Can be used for clandestine operation or to dramatically reduce airtime / power consumption
    */
-  CLIENT_HIDDEN = 8;
+  CLIENT_HIDDEN = 6;
 
   /*
    * Description: Broadcasts location as message to default channel regularly for to assist with device recovery.
@@ -70,7 +70,7 @@ enum Role {
    *    with the current position of the device on a frequent interval:
    *    "I'm lost! Position: lat / long"
    */
-  LOST_AND_FOUND = 9;
+  LOST_AND_FOUND = 7;
 
   /*
    * Description: Enables automatic TAK PLI broadcasts and reduces routine broadcasts.
@@ -78,7 +78,7 @@ enum Role {
    *    and automatic TAK PLI (position location information) broadcasts.
    *    Uses position module configuration to determine TAK PLI broadcast interval.
    */
-  TAK_TRACKER = 10;
+  TAK_TRACKER = 8;
 
   /*
    * Description: Will always rebroadcast packets, but will do so after all other modes.
@@ -87,7 +87,7 @@ enum Role {
    *    but should not be given priority over other routers in order to avoid unnecessarily
    *    consuming hops.
    */
-  ROUTER_LATE = 11;
+  ROUTER_LATE = 9;
 
   /*
    * Description: Treats packets from or to favorited nodes as ROUTER_LATE, and all other packets as CLIENT.
@@ -95,13 +95,18 @@ enum Role {
    *    from weaker, indoor, or less-well-positioned nodes. Recommended for users with multiple nodes
    *    where one CLIENT_BASE acts as a more powerful base station, such as an attic/roof node.
    */
-  CLIENT_BASE = 12;
+  CLIENT_BASE = 10;
 }
 
 /*
  * Regulatory region codes for LoRa radio configuration
  */
 enum RegionCode {
+  /*
+   * 2.x's REGION_UA_868 is gone: Ukrainian law harmonised with the EU, so a Ukrainian
+   * node uses REGION_EU_868. The enum is renumbered in 3.0, so no value is a tombstone.
+   */
+
   /* Region is not set */
   REGION_UNSET = 0;
   /* United States (902-928 MHz) */
@@ -132,60 +137,59 @@ enum RegionCode {
   REGION_LORA_24 = 13;
   /* Ukraine 433 MHz band */
   REGION_UA_433 = 14;
-  /* 15 was REGION_UA_868: Ukrainian law harmonised with the EU, use REGION_EU_868 */
   /* Malaysia 433 MHz band */
-  REGION_MY_433 = 16;
+  REGION_MY_433 = 15;
   /* Malaysia 919 MHz band */
-  REGION_MY_919 = 17;
+  REGION_MY_919 = 16;
   /* Singapore 923 MHz band */
-  REGION_SG_923 = 18;
+  REGION_SG_923 = 17;
   /* Philippines 433 MHz band */
-  REGION_PH_433 = 19;
+  REGION_PH_433 = 18;
   /* Philippines 868 MHz band */
-  REGION_PH_868 = 20;
+  REGION_PH_868 = 19;
   /* Philippines 915 MHz band */
-  REGION_PH_915 = 21;
+  REGION_PH_915 = 20;
   /* Australia / New Zealand 433 MHz band */
-  REGION_ANZ_433 = 22;
+  REGION_ANZ_433 = 21;
   /* Kazakhstan 433 MHz band */
-  REGION_KZ_433 = 23;
+  REGION_KZ_433 = 22;
   /* Kazakhstan 863 MHz band */
-  REGION_KZ_863 = 24;
+  REGION_KZ_863 = 23;
   /* Nepal 865 MHz band */
-  REGION_NP_865 = 25;
+  REGION_NP_865 = 24;
   /* Brazil 902 MHz band */
-  REGION_BR_902 = 26;
+  REGION_BR_902 = 25;
   /* ITU Region 1 Amateur Radio 2m band (144-146 MHz) */
-  REGION_ITU1_2M = 27;
+  REGION_ITU1_2M = 26;
   /* ITU Region 2 Amateur Radio 2m band (144-148 MHz) */
-  REGION_ITU2_2M = 28;
+  REGION_ITU2_2M = 27;
   /* EU 866 MHz band (Band no. 47b of 2006/771/EC and subsequent amendments) for Non-specific short-range devices (SRD) */
-  REGION_EU_866 = 29;
+  REGION_EU_866 = 28;
   /* EU 874 MHz band (Band no. 1 of 2022/172/EC and subsequent amendments) for Non-specific short-range devices (SRD) */
-  REGION_EU_874 = 30;
+  REGION_EU_874 = 29;
   /* EU 917 MHz band (Band no. 4 of 2022/172/EC and subsequent amendments) for Non-specific short-range devices (SRD) */
-  REGION_EU_917 = 31;
+  REGION_EU_917 = 30;
   /* EU 868 MHz band, with narrow presets */
-  REGION_EU_N_868 = 32;
+  REGION_EU_N_868 = 31;
   /* ITU Region 3 Amateur Radio 2m band (144-148 MHz) */
-  REGION_ITU3_2M = 33;
+  REGION_ITU3_2M = 32;
   /* ITU Region 1 Amateur Radio 70cm band (430-440 MHz) */
-  REGION_ITU1_70CM = 34;
+  REGION_ITU1_70CM = 33;
   /*
    * ITU Region 2 Amateur Radio 70cm band (420-450 MHz)
    * Note: Some countries do not allocate 420-430 MHz or 440-450 MHz. Check local law!
    */
-  REGION_ITU2_70CM = 35;
+  REGION_ITU2_70CM = 34;
   /*
    * ITU Region 3 Amateur Radio 70cm band (430-450 MHz)
    * Note: Some countries do not allocate 440-450 MHz. Check local law!
    */
-  REGION_ITU3_70CM = 36;
+  REGION_ITU3_70CM = 35;
   /*
    * ITU Region 2 Amateur Radio 1.25m '125cm' band (220-225 MHz)
    * Note: Some countries do not allocate 220-222 MHz (Ex: USA/Canada). Check local law!
    */
-  REGION_ITU2_125CM = 37;
+  REGION_ITU2_125CM = 36;
 }
 
 /*
@@ -282,40 +286,40 @@ enum ModemPreset {
   /* Long range, fast data rate (default) */
   MODEM_LONG_FAST = 0;
   /* Medium range, slow data rate */
-  MODEM_MEDIUM_SLOW = 3;
+  MODEM_MEDIUM_SLOW = 1;
   /* Medium range, fast data rate */
-  MODEM_MEDIUM_FAST = 4;
+  MODEM_MEDIUM_FAST = 2;
   /* Short range, slow data rate */
-  MODEM_SHORT_SLOW = 5;
+  MODEM_SHORT_SLOW = 3;
   /* Short range, fast data rate */
-  MODEM_SHORT_FAST = 6;
+  MODEM_SHORT_FAST = 4;
   /* Long range, moderate data rate */
-  MODEM_LONG_MODERATE = 7;
+  MODEM_LONG_MODERATE = 5;
   /* Short range, turbo data rate (highest throughput) */
-  MODEM_SHORT_TURBO = 8;
+  MODEM_SHORT_TURBO = 6;
   /* Long range, turbo data rate */
-  MODEM_LONG_TURBO = 9;
+  MODEM_LONG_TURBO = 7;
   /*
    * Medium range preset optimized for the EU 866 MHz SRD band with 125 kHz bandwidth.
    * Comparable link budget to MODEM_MEDIUM_FAST but compliant with Band no. 47b of 2006/771/EC.
    */
-  MODEM_LITE_FAST = 10;
+  MODEM_LITE_FAST = 8;
   /*
    * Medium-to-moderate range preset optimized for the EU 866 MHz SRD band with 125 kHz bandwidth.
    * Comparable link budget to MODEM_LONG_FAST but compliant with Band no. 47b of 2006/771/EC.
    */
-  MODEM_LITE_SLOW = 11;
+  MODEM_LITE_SLOW = 9;
   /*
    * Medium-to-moderate range preset optimized for the EU 868 MHz band with 62.5 kHz bandwidth.
    * Comparable link budget to MODEM_SHORT_SLOW, but with half the data rate.
    * Intended to avoid interference with other devices.
    */
-  MODEM_NARROW_FAST = 12;
+  MODEM_NARROW_FAST = 10;
   /*
    * Moderate range preset optimized for the EU 868 MHz band with 62.5 kHz bandwidth.
    * Comparable link budget and data rate to MODEM_LONG_FAST.
    */
-  MODEM_NARROW_SLOW = 13;
+  MODEM_NARROW_SLOW = 11;
   /*
    * Preset optimized for compliance with Amateur Radio restrictions: a 15.6 kHz LoRa slot within a 20 kHz raster.
    * Many regions limit data transmission bandwidth in lower amateur bands (2 Meter).
@@ -323,7 +327,7 @@ enum ModemPreset {
    * Only compatible with SX127x and SX126x chipsets.
    * Comparable link budget and data rate to MODEM_LONG_FAST.
    */
-  MODEM_TINY_FAST = 14;
+  MODEM_TINY_FAST = 12;
   /*
    * Preset optimized for compliance with Amateur Radio restrictions: a 15.6 kHz LoRa slot within a 20 kHz raster.
    * Many regions limit data transmission bandwidth in lower amateur bands (2 Meter).
@@ -331,13 +335,13 @@ enum ModemPreset {
    * Only compatible with SX127x and SX126x chipsets.
    * Comparable link budget and data rate to MODEM_LONG_MODERATE.
    */
-  MODEM_TINY_SLOW = 15;
+  MODEM_TINY_SLOW = 13;
   /*
    * Medium range, turbo data rate.
    * Performs similarly to MODEM_MEDIUM_FAST, but with 500 kHz bandwidth.
    * It is not legal to use in all regions due to this wider bandwidth.
    */
-  MODEM_MEDIUM_TURBO = 16;
+  MODEM_MEDIUM_TURBO = 14;
 }
 
 /*

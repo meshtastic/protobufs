@@ -858,7 +858,8 @@ also enforced from the other side.
 **`RelayConfig` is what a relay enforces, and also free.** A relay sees the one-byte
 `chan` and nothing else of a channel, which is enough for a policy table: per hash,
 forward, forward under a hop cap, or drop, with an action for hashes no rule names. It is
-evaluated on ROUTER, ROUTER_LATE and REPEATER only, and its default forwards everything,
+evaluated on the relaying roles, ROUTER and ROUTER_LATE, only, and its default forwards
+everything,
 so an existing mesh behaves as it did. Because hops taken is a hint rather than an
 authenticated value, a hop cap is congestion control and never a security boundary; and
 because a `RELAY_DROP` on the primary hash partitions a mesh, the rules are admin-only and
@@ -929,7 +930,7 @@ every relay on the reverse path sets `next_hop` for `(anycast, group_id)` from t
 ack it sees. Later frames follow that path and no other member hears them. When the
 nearest member disappears, `ReliableRouter` retransmits, falls back to a flood, another
 member acks, and the tables relearn - the same path as a direct message to a node that
-moved. Only the delivering member answers a `WANT_RESPONSE`.
+moved. Only the delivering member answers a request that set `BITFIELD_WANT_RESPONSE`.
 
 **Tables key on `(anycast bit, id)`**, so a group id and a NodeNum that collide in 32 bits
 never share a next-hop or dedup entry.
@@ -1105,8 +1106,8 @@ Open work, and decisions deliberately not yet made.
   returns EU_866's router duty cycle from code, and every `RDEF` row repeats the
   default preset its profile already determines. The registry holds both once, as
   `RegionInfo.router_duty_cycle` and `RegionProfile.default_preset`; firmware that
-  generates its table from the registry loses the copies. `RegionProfile.textThrottle`
-  is not carried: firmware sets it to 0 everywhere and reads it nowhere.
+  generates its table from the registry loses the copies. the firmware's `textThrottle`
+  is not carried at all: it is set to 0 in every `RDEF` row and read nowhere.
 - **`LONG_SLOW` is not a `ModemPreset`**, while firmware permits it in 25 regions. The
   registry lists only presets the schema has.
 - **`EU_874` and `EU_917` have no data.** Both are `RegionCode` values with no firmware
