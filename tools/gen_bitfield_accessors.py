@@ -11,10 +11,12 @@ view over the plain integer nanopb generates. The generated struct and the wire
 format are both untouched: the view is a wrapper, and at -Os it compiles to the
 same instructions as the hand-written mask.
 
-A view is a class template over the integer it wraps, deduced from the field, because
-nanopb sizes that integer from the .options file (int_size:8 gives a uint8_t) and the
-descriptor does not carry it. The same view reads a const field; only the setters need
-a mutable one. Each view asserts at instantiation that every mask fits the type it was
+A view is a class template over the integer it wraps (X_view_t<T>), made by a function
+of the same name without the suffix (X_view(field)), because nanopb sizes that integer
+from the .options file (int_size:8 gives a uint8_t) and the descriptor does not carry it.
+A function deduces T in C++11; class template argument deduction would need C++17, and
+GCC 9 mis-parses it in some expressions. The same view reads a const field; only the
+setters need a mutable one. Each view asserts at instantiation that every mask fits the type it was
 given, and the .options files are read here too so --check catches a mask wider than
 its int_size before any firmware compiles.
 
@@ -27,7 +29,7 @@ Usage:
     python tools/gen_bitfield_accessors.py descriptor.binpb -o meshtastic_bitfields.h
     python tools/gen_bitfield_accessors.py descriptor.binpb --check   # CI
 
-Then in C++17:
+Then in C++11 or later:
     meshtastic_MeshPacket_flags_view(p.flags).want_ack()
     meshtastic_MeshPacket_flags_view(p.flags).set_want_ack(true)
 
@@ -284,14 +286,14 @@ def emit(records) -> str:
                    % (' + '.join('%s_%s' % (rec['enum_c'], n) for n, _ in vals) or '0',
                       total, rec['field']))
         out.append('''
-template <typename T> struct %s {
+template <typename T> struct %s_t {
   typedef typename std::remove_const<T>::type word;
   static_assert(std::is_unsigned<word>::value, "%s wraps an unsigned field");
   static_assert(0x%XULL <= std::numeric_limits<word>::max(), "%s masks do not fit the field");
 
   T &raw;
 
-  explicit %s(T &v) : raw(v) {}
+  explicit %s_t(T &v) : raw(v) {}
 
 ''' % (view, view, total, rec['field'], view))
         for name, num in vals:
@@ -307,7 +309,9 @@ template <typename T> struct %s {
   void clear() { raw = 0; }
 };
 
-''')
+template <typename T> inline %s_t<T> %s(T &v) { return %s_t<T>(v); }
+
+''' % (view, view, view))
     out.append('#endif // MESHTASTIC_BITFIELDS_H\n')
     return ''.join(out)
 

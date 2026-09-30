@@ -85,7 +85,7 @@ MAIN = '''#include "stubs.h"
 int main() {
   // A round trip through a view must set exactly the bit its mask names.
   uint32_t w = 0;
-  meshtastic_NodeInfo_flags_view f(w);
+  auto f = meshtastic_NodeInfo_flags_view(w);
   assert(!f.is_muted());
   f.set_is_muted();
   assert(f.is_muted());
@@ -116,7 +116,7 @@ int main() {
 
   // A 64-bit bitfield works the same way.
   uint64_t p = 0;
-  meshtastic_PowerConfig_powermon_enables_view pm(p);
+  auto pm = meshtastic_PowerConfig_powermon_enables_view(p);
   pm.set_gps_active();
   assert(pm.gps_active());
   assert(p == meshtastic_PowerMon_State_GPS_Active);
@@ -134,12 +134,16 @@ int main() {
   assert(meshtastic_MeshPacket_flags_view(cf).via_mqtt());
   assert(!meshtastic_MeshPacket_flags_view(cf).want_ack());
 
+  // GCC 9 rejects class template argument deduction in this shape; a function call is fine.
+  if (!(meshtastic_MeshPacket_flags_view(cf).want_ack()) && cf)
+    assert(meshtastic_MeshPacket_flags_view(cf).via_mqtt());
+
   // The stored and client-facing node words share one enum, so a value written
   // through one view reads back through the other.
   uint32_t stored = 0;
-  meshtastic_NodeInfoLite_bitfield_view s(stored);
+  auto s = meshtastic_NodeInfoLite_bitfield_view(stored);
   s.set_is_favorite();
-  meshtastic_NodeInfo_flags_view mirror(stored);
+  auto mirror = meshtastic_NodeInfo_flags_view(stored);
   assert(mirror.is_favorite());
 
   std::puts("bitfield accessors OK");
@@ -181,7 +185,7 @@ def main() -> int:
             open(os.path.join(d, h), 'w', newline='\n').write('#include "stubs.h"\n')
         open(os.path.join(d, 'main.cpp'), 'w', newline='\n').write(MAIN)
         exe = os.path.join(d, 'a.exe' if os.name == 'nt' else 'a.out')
-        cmd = [args.cxx, '-std=c++17', '-Os', '-Wall', '-Wextra', '-Werror',
+        cmd = [args.cxx, '-std=c++11', '-Os', '-Wall', '-Wextra', '-Werror',
                '-I', d, os.path.join(d, 'main.cpp'), '-o', exe]
         # An MSYS2/mingw g++ given by absolute path cannot find its own runtime
         # DLLs unless its bin directory is on PATH, and fails silently if not.

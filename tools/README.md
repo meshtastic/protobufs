@@ -21,13 +21,14 @@ python tools/gen_bitfield_accessors.py descriptor.binpb --list   # what it found
 Then in firmware:
 
 ```cpp
-meshtastic_NodeInfo_flags_view f(node->flags);
+auto f = meshtastic_NodeInfo_flags_view(node->flags);
 if (f.via_mqtt()) { ... }
 f.set_is_muted();
 ```
 
-A view is a class template deduced from the field it wraps (C++17), because nanopb
-picks that integer's width from `int_size` in the `.options` files and the descriptor
+A view is a class template over the field it wraps (`X_view_t<T>`), made by the function
+`X_view(field)` so the type is deduced in C++11 without class template argument deduction,
+because nanopb picks that integer's width from `int_size` in the `.options` files and the descriptor
 does not carry it: `MeshPacket.flags` is a `uint8_t`, `NodeInfoLite.bitfield` a
 `uint32_t`. A const field reads through the same view; only the setters need a mutable
 one. Each view `static_assert`s that its masks fit the type it was instantiated with, and
