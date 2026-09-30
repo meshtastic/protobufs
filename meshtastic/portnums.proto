@@ -154,6 +154,13 @@ enum PortNum {
   PAGING_APP = 37;
 
   /*
+   * Node discovery: a signed identity record, and the queries a server answers with it.
+   * Payload is a DiscoveryMessage from discovery.proto.
+   * ENCODING: Protobuf
+   */
+  NODE_DISCOVERY_APP = 38;
+
+  /*
    * Provides a hardware serial interface to send and receive from the Meshtastic network.
    * Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic
    * network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network.

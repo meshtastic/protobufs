@@ -1,0 +1,36 @@
+# nanopb options for discovery.proto
+# https://jpa.kapsi.fi/nanopb/docs/reference.html#proto-file-options
+
+# X25519 key and XEdDSA signature, as SecurityConfig.public_key and Data.xeddsa_signature.
+*NodeRecord.public_key max_size:32
+*NodeRecord.signature max_size:64
+# Names as User's: 24 bytes plus the terminator, and 4 plus the terminator.
+*NodeRecord.long_name max_size:25
+*NodeRecord.short_name max_size:5
+# The packed (vendor_id << 8) | device_id value spans 16 bits.
+*NodeRecord.hw_model int_size:16
+# A NodeFlags word, sized as every other one is: NodeInfo.flags and NodeInfoLite.bitfield are
+# 32 bits because that enum reaches bit 24. Only the three public bits may be set in a record,
+# so the encoded value stays two bytes on the air.
+*NodeRecord.flags int_size:32
+
+# 1 to 8 leading bytes of a public key.
+*DiscoveryQuery.key_prefix max_size:8
+# 0 to 15, the top four bits of a key.
+*DiscoveryQuery.bucket int_size:8
+*DiscoveryQuery.max_records int_size:8
+
+# A record is about 135 bytes encoded, so four of them plus the tier column is one frame's
+# worth once the header and tag are paid for. A server with more to say sets truncated.
+*DiscoveryReply.records max_count:4
+*DiscoveryReply.tiers max_count:4
+
+# Sixteen buckets, the top four bits of a public key.
+*SyncDigest.counts max_count:16
+*SyncDigest.counts int_size:16
+*SyncDigest.hashes max_count:16
+# A bitmask over the same sixteen buckets.
+*SyncRequest.buckets int_size:16
+*SyncRequest.max_records int_size:8
+
+*DiscoveryMessage.variant anonymous_oneof:true

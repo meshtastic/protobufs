@@ -1,0 +1,258 @@
+syntax = "proto3";
+
+package meshtastic;
+
+import "meshtastic/common.proto";
+
+option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "DiscoveryProtos";
+option java_package = "org.meshtastic.proto";
+option swift_prefix = "";
+
+/*
+ * A node's identity, signed by the node it describes.
+ *
+ * A record is valid wherever it is found. The signature covers the content under the key the
+ * content claims, so a router, a backhaul or a file can carry it and a receiver still knows
+ * it is genuine: whoever serves a record cannot forge one, alter one, or roll one back. That
+ * is what lets discovery move off a flood and onto infrastructure without anyone having to
+ * trust the infrastructure.
+ *
+ * The signed bytes are exactly, with no separators beyond the two terminators shown:
+ *
+ *   "mnr1" || public_key || varint(seq) || long_name || 0x00 || short_name || 0x00
+ *          || hw_model (2 bytes, little-endian) || role (1 byte) || flags (2 bytes, LE)
+ *
+ * A verifier checks the signature first, then checks that CRC32 of public_key equals the
+ * NodeNum the record was filed under, and drops the record if either fails.
+ *
+ * What is NOT in a record: position, telemetry, and the forward-secrecy ratchet key. The
+ * ratchet key rotates daily (SecurityConfig.ratchet_interval_secs), and a record that changes
+ * daily is a record that is always stale, so it stays in live NodeInfo where freshness is
+ * worth its airtime.
+ */
+message NodeRecord {
+  /*
+   * X25519/Ed25519 identity, and the only identity a record has. A NodeNum is CRC32 of this
+   * key, which is a 32-bit function: a targeted collision costs about 2^32 key generations,
+   * so a NodeNum is a handle for display and indexing and never proof of identity. A lookup
+   * by NodeNum may legitimately return more than one record.
+   */
+  bytes public_key = 1;
+
+  /*
+   * Monotone per key, persisted before the record is first sent, and bumped only when the
+   * content below changes. A receiver keeps the highest seq it has seen for a key and ignores
+   * anything lower, so a captured older record cannot be replayed over a newer one. Values
+   * are only ever compared within one key.
+   */
+  uint32 seq = 2;
+
+  /*
+   * As User.long_name.
+   */
+  string long_name = 3;
+
+  /*
+   * As User.short_name.
+   */
+  string short_name = 4;
+
+  /*
+   * Device hardware model, packed as (vendor_id << 8) | device_id.
+   */
+  uint32 hw_model = 5;
+
+  /*
+   * The node's role.
+   */
+  Role role = 6;
+
+  /*
+   * A bitwise OR of NodeFlags values, limited to the bits that describe the node to others:
+   * NODE_FLAG_IS_LICENSED, NODE_FLAG_IS_UNMESSAGABLE and NODE_FLAG_HAS_IS_UNMESSAGABLE. The
+   * rest of NodeFlags is a receiver's own opinion - favourite, ignored, muted, verified - and
+   * a record that sets one of those is signed nonsense: a receiver ignores those bits rather
+   * than rejecting the record.
+   */
+  uint32 flags = 7;
+
+  /*
+   * XEdDSA over the canonical bytes above.
+   */
+  bytes signature = 8;
+}
+
+/*
+ * How close the server that answered was to the node it described. A server's statement about
+ * itself, so it sits beside a record rather than inside it: anything inside would have to be
+ * signed by the node, which cannot know who will serve it.
+ */
+enum RecordTier {
+  /*
+   * Not stated.
+   */
+  TIER_UNSET = 0;
+
+  /*
+   * The server heard this announce itself, over RF.
+   */
+  TIER_FIRST_HAND = 1;
+
+  /*
+   * Another server heard it and passed it on. Admitted under a per-peer quota.
+   */
+  TIER_SECOND_HAND = 2;
+
+  /*
+   * Held past its TTL and served only because nothing fresher exists. A client shows it as
+   * stale and does not pin a key from it.
+   */
+  TIER_EXPIRED = 3;
+}
+
+/*
+ * Ask a server for records. A PKI direct message, so the reply is authenticated to the asker
+ * by the pairwise key and no server can answer as another.
+ */
+message DiscoveryQuery {
+  oneof selector {
+    /*
+     * By NodeNum. The reply carries every record whose key hashes to it, which is how a
+     * collision becomes visible rather than silent.
+     */
+    fixed32 node_num = 1;
+
+    /*
+     * By leading bytes of a public key, 1 to 8 of them, for a client that has a key fragment
+     * from a QR code or a signature it could not check.
+     */
+    bytes key_prefix = 2;
+
+    /*
+     * Everything the server filed in this bucket since `since_time`: bucket is the top four
+     * bits of the public key, 0 to 15. This is how a client bootstraps and how a server pages
+     * through a peer, one bucket at a time.
+     */
+    uint32 bucket = 3;
+  }
+
+  /*
+   * Server-local filing time to start from, for a bucket query. 0 asks for everything the
+   * server holds in that bucket.
+   */
+  fixed32 since_time = 4;
+
+  /*
+   * The asker's cap on records in the reply, because the asker pays the airtime. 0 takes the
+   * server's own cap.
+   */
+  uint32 max_records = 5;
+}
+
+/*
+ * Records, with the server's provenance for each.
+ */
+message DiscoveryReply {
+  /*
+   * The records themselves.
+   */
+  repeated NodeRecord records = 1;
+
+  /*
+   * One tier per record, in the same order: two parallel columns rather than a tier field
+   * inside NodeRecord, because the tier is the server's statement and the record is the
+   * node's.
+   */
+  repeated RecordTier tiers = 2;
+
+  /*
+   * The server had more to send than the cap allowed. Ask again from a later since_time.
+   */
+  bool truncated = 3;
+}
+
+/*
+ * A summary of what a server holds, so two servers can find their differences without
+ * sending records. Sixteen buckets by the top four bits of the public key: a count and an XOR
+ * of the record hashes per bucket, about 150 bytes in all, and a bucket whose count or hash
+ * differs is the only one worth transferring.
+ *
+ * Servers exchange this over the mesh or a wired backhaul between co-located nodes. Not over
+ * MQTT: a broker that aggregates every record of every mesh is a directory, which is a
+ * different thing from a mesh that will answer a question about one node.
+ */
+message SyncDigest {
+  /*
+   * Records held per bucket, 16 entries, bucket 0 first.
+   */
+  repeated uint32 counts = 1;
+
+  /*
+   * XOR of the record hashes per bucket, 16 entries. A record's hash is the first eight bytes
+   * of SHA-256 over its signed bytes, so two servers holding the same records agree bit for
+   * bit regardless of what order they arrived in.
+   */
+  repeated fixed64 hashes = 2;
+}
+
+/*
+ * Ask a peer for the buckets a digest showed to differ.
+ */
+message SyncRequest {
+  /*
+   * Bitmask of the buckets wanted: bit N asks for bucket N.
+   */
+  uint32 buckets = 1;
+
+  /*
+   * Only records the peer filed at or after this time.
+   */
+  fixed32 since_time = 2;
+
+  /*
+   * Cap on records in each reply.
+   */
+  uint32 max_records = 3;
+}
+
+/*
+ * Everything on NODE_DISCOVERY_APP.
+ *
+ * A publish is a broadcast: at the full hop budget while a mesh has no discovery server, and
+ * at hop_limit 1 once it has, which reaches two hops and so finds a server one hop beyond the
+ * sender's neighbours. Everything else is a direct message.
+ *
+ * A server admits a record only when it heard the publish itself, or when a peer that heard
+ * it first-hand passed it on under a quota. Airtime is what makes inventing nodes expensive:
+ * signing a thousand records is free, transmitting for them is not.
+ */
+message DiscoveryMessage {
+  oneof variant {
+    /*
+     * A node announcing itself, or a server refreshing what it holds.
+     */
+    NodeRecord publish = 1;
+
+    /*
+     * Client or server asking a server.
+     */
+    DiscoveryQuery query = 2;
+
+    /*
+     * A server answering.
+     */
+    DiscoveryReply reply = 3;
+
+    /*
+     * Server to server: what I hold.
+     */
+    SyncDigest digest = 4;
+
+    /*
+     * Server to server: send me these buckets.
+     */
+    SyncRequest sync = 5;
+  }
+}

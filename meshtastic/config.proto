@@ -192,6 +192,50 @@ message DeviceConfig {
    * Defaults to ENABLED
    */
   BuzzerMode buzzer_mode = 8 [(meshtastic.field_metadata) = {since_firmware: "2.7.0"}];
+
+  /*
+   * Node discovery behaviour: a bitwise OR of DiscoveryFlags values.
+   */
+  enum DiscoveryFlags {
+    /* Nothing set */
+    DISCOVERY_NONE = 0x00;
+    /*
+     * This node serves discovery records: it files what it hears, answers queries and syncs
+     * with peer servers. Set on a node with the storage to hold a database, which in practice
+     * means the store and forward server hardware.
+     */
+    DISCOVERY_SERVE = 0x01;
+    /*
+     * Stay at the announce cadence and full hop budget whatever the mesh looks like. For a
+     * test mesh that wants the traffic, and for a node whose operator has a reason.
+     */
+    DISCOVERY_NO_TAPER = 0x02;
+  }
+
+  /*
+   * Bitwise OR of DiscoveryFlags values.
+   */
+  uint32 discovery_flags = 9;
+
+  /*
+   * Node count at which announcements taper: at or above it a node lengthens its NodeInfo
+   * interval by taper_factor, whether or not it has seen a discovery server. 0 takes the
+   * default of 40.
+   */
+  uint32 discovery_node_threshold = 10;
+
+  /*
+   * What the NodeInfo interval is multiplied by once a mesh is dense enough to taper, floored
+   * at 30 minutes and capped at 24 hours. 0 takes the default of 4.
+   */
+  uint32 taper_factor = 11;
+
+  /*
+   * Seconds between the full-budget announcements a node keeps making even while discovery
+   * servers carry its record, which is what seeds a server that came up after it did. 0 takes
+   * the default of 86400.
+   */
+  uint32 full_announce_secs = 12;
 }
 
 /*

@@ -179,6 +179,24 @@ message StoreAndForward {
      * Frames held, for display.
      */
     uint32 held = 5;
+
+    /*
+     * What else this server does: a bitwise OR of Flags values.
+     */
+    enum Flags {
+      /* Nothing set */
+      ANNOUNCE_NONE = 0x00;
+      /*
+       * This server also serves node discovery records on NODE_DISCOVERY_APP, so one pip tells
+       * a client where to find both.
+       */
+      ANNOUNCE_SERVES_DISCOVERY = 0x01;
+    }
+
+    /*
+     * Bitwise OR of Flags values.
+     */
+    uint32 flags = 7;
   }
 
   /*

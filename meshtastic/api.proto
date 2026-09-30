@@ -6,6 +6,7 @@ import "meshtastic/channel.proto";
 import "meshtastic/common.proto";
 import "meshtastic/config.proto";
 import "meshtastic/device_ui.proto";
+import "meshtastic/discovery.proto";
 import "meshtastic/module_config.proto";
 import "meshtastic/packet.proto";
 import "meshtastic/telemetry.proto";
@@ -78,6 +79,13 @@ message NodeInfo {
    * Number of hops away from us this node is (0 if direct neighbor)
    */
   optional uint32 hops_away = 9;
+
+  /*
+   * Where this node's identity came from: heard over RF by this node, served by a discovery
+   * server that heard it, or passed along by one that did not. A client shows "heard directly"
+   * differently from "a server told me", and never pins a key from an expired record.
+   */
+  RecordTier record_tier = 10;
 }
 
 /*
@@ -655,6 +663,8 @@ message ClientNotification {
     DuplicatedPublicKey duplicated_public_key = 8;
     /* Notification that a low-entropy (weak) key was detected */
     LowEntropyKey low_entropy_key = 9;
+    /* Two different public keys hash to one NodeNum */
+    NodeNumCollision node_num_collision = 10;
   }
 }
 
@@ -703,6 +713,22 @@ message DuplicatedPublicKey {}
  * Notification that the device's key has low entropy and should be regenerated
  */
 message LowEntropyKey {}
+
+/*
+ * Two nodes hold different public keys that hash to the same NodeNum.
+ *
+ * A NodeNum is CRC32 of a public key, a 32-bit function, so a targeted collision costs about
+ * 2^32 key generations: cheap enough that this is a normal event rather than an anomaly, and
+ * cheap enough to be an impersonation attempt. Neither record is dropped and neither replaces
+ * the other; the client shows both and a person picks, and a key already verified through the
+ * KeyVerification exchange is never displaced by the newcomer.
+ */
+message NodeNumCollision {
+  /*
+   * The NodeNum both keys hash to.
+   */
+  fixed32 node_num = 1;
+}
 
 /*
  * Individual File info for the device

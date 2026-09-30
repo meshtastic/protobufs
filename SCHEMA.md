@@ -21,7 +21,7 @@ graph TD
         telemetry[telemetry.proto<br/><i>Telemetry, SensorReadings</i>]
         deviceui[device_ui.proto]
         atak[atak.proto]
-        modules[storeforward, paxcount,<br/>remote_hardware, xmodem, powermon,<br/>interdevice, rtttl, cannedmessages,<br/>connection_status, serial_hal,<br/>lorawan_bridge]
+        modules[storeforward, discovery, paxcount,<br/>remote_hardware, xmodem, powermon,<br/>interdevice, rtttl, cannedmessages,<br/>connection_status, serial_hal,<br/>lorawan_bridge]
         registries[hw_vendor_registry<br/>hw_device_registry]
         fieldmeta[field_metadata.proto<br/><i>UI annotations, descriptor-only</i>]
     end
@@ -931,6 +931,58 @@ in one packet. Until `STORE_FORWARD_APP` opts into `HeaderOptions.fragment`, a s
 not replay a frame it cannot send whole, and reports that stream in `gap_hashes`. This is
 the first consumer of per-portnum fragmentation.
 
+### Node discovery
+
+A node's identity has to reach whoever wants to message it, and the two obvious ways are both
+wrong at scale: flooding every record on a timer costs airtime quadratic in nodes, and
+announcing to neighbours only leaves a node two hops away unable to open a PKI message, check
+a signature or show a name. Cadence and reach are separate knobs, and a dense mesh has
+somewhere better to keep records than everyone's flash.
+
+**A `NodeRecord` is signed by the node it describes.** Key, `seq`, names, hardware, role and
+the public flag bits, under an XEdDSA signature over a canonical byte string that starts with
+the domain tag `"mnr1"`. A record is therefore valid wherever it is found: a discovery server
+is a cache, not an authority, and one that lies can withhold, delay or pollute but cannot
+forge, alter or roll back. A verifier checks the signature, then checks `CRC32(public_key)`
+against the NodeNum the record was filed under, and drops it on either failure.
+
+**The public key is the identity; the NodeNum is a handle.** `CRC32` is a 32-bit function, so
+a targeted NodeNum collision costs about 2^32 key generations - hours on a desktop. Discovery
+is keyed by public key, a lookup by NodeNum may return more than one record, and a collision
+raises `NodeNumCollision` rather than resolving itself: both records are kept, neither replaces
+the other, and a key already verified through the `KeyVerification` exchange is never displaced.
+
+**`seq` is monotone per key** and bumped only when content changes, so a captured older record
+cannot be replayed over a newer one. A record expires after `record_ttl_secs` without a
+refresh, which is also how an identity retires - there is no tombstone, so nothing can be
+replayed to retire an identity against its owner's wishes.
+
+**Admission costs airtime.** A server files a record when it heard the announce itself, or when
+a peer that heard it first-hand passed it on under a quota. Signing a thousand records is free;
+transmitting for them is not. `RecordTier` travels beside a record rather than inside it,
+because provenance is the server's statement and the record is the node's.
+
+**Announcement cadence is a ladder**, and `DeviceConfig` carries its knobs
+(`discovery_flags`, `discovery_node_threshold`, `taper_factor`, `full_announce_secs`):
+
+| stage | when | cadence | launch budget |
+|---|---|---|--:|
+| announce | no server heard, few nodes | `node_info_broadcast_secs` | scope cap |
+| taper | a server heard, or `discovery_node_threshold` nodes | interval x `taper_factor` | scope cap |
+| serve | servers heard and settled | tapered interval, plus one full announce per `full_announce_secs` | 1 |
+
+A serving mesh announces with `hop_limit` 1 rather than zero, which allows one relay and so
+reaches two hops: a node whose only server sits a hop past its neighbours still registers.
+`DISCOVERY_NO_TAPER` pins a node to the first stage, and the ladder moves one stage at a time
+with hysteresis so a server rebooting cannot push a mesh back to flooding. A node in any stage
+still answers a direct NodeInfo request at full budget, so pull works with no server at all.
+
+**Servers reconcile with a digest, not a dump.** `SyncDigest` carries a count and an XOR of
+record hashes for each of sixteen buckets, about 150 bytes, and `SyncRequest` asks for the
+buckets that differ. They sync over the mesh or a wired backhaul, never over MQTT: a broker
+holding every record of every mesh is a directory, which is a different thing from a mesh that
+will answer a question about one node.
+
 ### Anycast
 
 Routed traffic often has more than one valid sink: two uplinks, three egress nodes, any of
@@ -1150,6 +1202,17 @@ meet for the rules above to hold:
   no allocation defines yet, so `regions.yaml` has no entry for them.
 - **52 of the 148 devices under vendor 0 are named by slug.** No board variant supplies a
   display name for them.
+
+**Node discovery:**
+
+- **Nothing implements it.** The schema carries the record, the queries and the ladder's knobs;
+  no node signs a record, serves one or changes cadence yet.
+- **The ladder's thresholds are guesses.** 40 nodes, two servers and a factor of four are
+  placeholders until a simulation measures airtime per node per hour and time-to-first-contact
+  for a node joining a serving mesh.
+- **A server that holds no record is indistinguishable from one that hides it.** Asking a second
+  server, and falling back to the node itself, is the only answer; a signed "I do not have it"
+  would prove nothing about whether it ever did.
 
 **Anycast:**
 

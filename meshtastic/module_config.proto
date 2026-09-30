@@ -781,6 +781,20 @@ message StoreForwardConfig {
    * Channel hashes to retain. Empty keeps every hash the node hears.
    */
   repeated uint32 served_hashes = 5;
+
+  /*
+   * Node discovery records to hold, when DeviceConfig sets DISCOVERY_SERVE. A record is about
+   * 135 bytes encoded and 150 with the index, so 1000 records is 150 kB of the same backing
+   * store the frame log uses. 0 takes what the platform offers.
+   */
+  uint32 discovery_max_records = 6;
+
+  /*
+   * Seconds a discovery record survives without a refresh, after which it is evicted. This is
+   * also how an identity retires: there is no tombstone to replay, so a node that stops
+   * announcing simply ages out. 0 takes the default of 30 days.
+   */
+  uint32 record_ttl_secs = 7;
 }
 
 /*
