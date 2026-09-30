@@ -66,8 +66,10 @@ message NodeInfo {
   /*
    * Per-node boolean flags: a bitwise OR of NodeFlags values (common.proto).
    * Shares its definition with the stored NodeInfoLite.bitfield, so the two words
-   * are interchangeable. The HAS_USER, HAS_IS_UNMESSAGABLE and HAS_SNR presence
-   * bits are storage-only and are not set here.
+   * are interchangeable. The HAS_USER, HAS_IS_UNMESSAGABLE, HAS_SNR and HAS_RF_HEAR
+   * presence bits are storage-only and are not set here, and neither is the slot
+   * fingerprint in bits 12 to 23; NODE_FLAG_HEARD_ON_CURRENT_LORA is derived from those
+   * two and set only here.
    * All of these persist across NodeDB cleanups.
    */
   uint32 flags = 8;

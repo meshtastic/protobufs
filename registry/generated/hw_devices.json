@@ -1,5 +1,5 @@
 {
-  "revision": 147,
+  "revision": 148,
   "devices": [
     {
       "vendor_id": 0,
@@ -882,6 +882,12 @@
       "device_id": 147,
       "slug": "T_CONNECT_PRO",
       "name": "T_CONNECT_PRO"
+    },
+    {
+      "vendor_id": 0,
+      "device_id": 148,
+      "slug": "AXIOMETA_GENESIS_MINI",
+      "name": "Axiometa Genesis Mini"
     }
   ]
 }

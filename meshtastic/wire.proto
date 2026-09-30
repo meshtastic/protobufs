@@ -358,6 +358,35 @@ message Routing {
      */
     Error error_reason = 1;
   }
+
+  /*
+   * Optional proof that this ack or nak was produced by the node that actually received the
+   * packet named by Data.request_id, rather than by anyone holding the channel key.
+   *
+   * An explicit ack usually travels on the channel, and a channel frame is encrypted but not
+   * authenticated, so any listener holding the PSK can forge one. When the acknowledged
+   * packet was PKI encrypted the two endpoints already share a Curve25519 secret, so the
+   * receiver proves receipt with a MAC rather than a signature:
+   *
+   *   ack_proof = HMAC-SHA256(shared_key,
+   *                           "ack" | LE32(from) | LE32(to) | LE32(request_id) | routing)[0..8)
+   *
+   * where shared_key is the SHA256(X25519(sender_private, receiver_public)) that PKI packet
+   * encryption uses, and `routing` is this encoded Routing message without this field.
+   *
+   * Every input earns its place. request_id stops a captured proof being replayed against a
+   * different outstanding packet. The Routing bytes stop a bit flip turning a proven success
+   * into a failure, since an ack and a nak for one packet share every other input. Integers
+   * are little-endian so the value is a property of the protocol rather than of the host that
+   * computed it.
+   *
+   * Unset when no pairwise key is available, which includes the PKI_UNKNOWN_PUBKEY and
+   * NO_CHANNEL naks, emitted precisely because the packet could not be decrypted. A receiver
+   * that does not understand the field ignores it. It does not replace
+   * Data.xeddsa_signature, which remains the only option for traffic with no pairwise key
+   * and the only proof a third party can check.
+   */
+  bytes ack_proof = 2;
 }
 
 /*

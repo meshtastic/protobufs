@@ -879,8 +879,21 @@ message LoRaConfig {
   }];
 
   /*
-   * The denominator of the coding rate, used when LORA_USE_PRESET is clear.
+   * The denominator of the coding rate.
    * ie for 4/5, the value is 5. 4/8 the value is 8.
+   *
+   * With LORA_USE_PRESET clear this is the coding rate, clamped to 5 through 8.
+   *
+   * With LORA_USE_PRESET set, since firmware 2.7.18 this raises the preset's coding rate
+   * when it is 5 through 8 and higher than the preset's own. A lower value, a value out of
+   * range, and 0 all leave the preset's coding rate in place, so 0 is how a client says "use
+   * the preset's". Bandwidth and spread factor still come from the preset, and the coding
+   * rate travels in the explicit LoRa header, so nodes on the same preset hear each other
+   * either way.
+   *
+   * No bound is stated here because the valid set differs between the two cases: 5 through 8
+   * with the preset off, and 0 plus anything above the preset's own coding rate up to 8 with
+   * it on.
    */
   uint32 coding_rate = 5 [(meshtastic.field_metadata) = {
     label: "Coding Rate"

@@ -428,7 +428,30 @@ enum NodeFlags {
    * over MQTT, which reaches us over the internet rather than over the air -
    * see NODE_FLAG_VIA_MQTT.
    */
-  NODE_FLAG_HEARD_ON_CURRENT_LORA = 0x0800;
+  NODE_FLAG_HAS_RF_HEAR = 0x0800;
+
+  /*
+   * Bits 12 to 23 are not flags: they hold a fingerprint of the LoRa slot this node was last
+   * heard on, and they exist only in the stored NodeInfoLite.bitfield. Nothing may assign a
+   * flag there.
+   */
+
+  /*
+   * This node has been heard over RF on the LoRa configuration the radio is using right now.
+   *
+   * Derived rather than stored, and set only on NodeInfo.flags: the device compares the slot
+   * fingerprint it recorded for the node against the slot the radio is currently committed
+   * to. The slot covers the region, the modem preset (or the custom bandwidth, spread factor
+   * and coding rate when LORA_USE_PRESET is clear), override_frequency, channel_num and the
+   * primary channel name.
+   *
+   * Because it is derived, leaving a configuration and returning to it restores the previous
+   * answers, so a client sweeping through presets to listen for traffic does not disturb
+   * them. Never set for a node heard only over MQTT, which reaches us over the internet
+   * rather than over the air - see NODE_FLAG_VIA_MQTT - nor for one added as a shared
+   * contact, which has never been heard over RF at all.
+   */
+  NODE_FLAG_HEARD_ON_CURRENT_LORA = 0x01000000;
 }
 
 /*

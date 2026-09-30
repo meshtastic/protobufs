@@ -23,6 +23,7 @@ graph TD
         atak[atak.proto]
         modules[storeforward, paxcount,<br/>remote_hardware, xmodem, powermon,<br/>interdevice, rtttl, cannedmessages,<br/>connection_status, serial_hal,<br/>lorawan_bridge]
         registries[hw_vendor_registry<br/>hw_device_registry]
+        fieldmeta[field_metadata.proto<br/><i>UI annotations, descriptor-only</i>]
     end
 
     subgraph Wire["Wire - over the air"]
@@ -83,8 +84,10 @@ The graph shows each file's highest-layer imports. A file that imports a higher 
 also imports the foundation files it needs, and those edges are elided to keep the shape
 readable: `admin` and `deviceonly` also import `wire` and `channel`, `deviceonly` also
 imports `common` and `telemetry`, `api` and `mqtt` also import `common`, `apponly` also
-imports `channel`, and `clientonly` also imports `wire`. What the graph is load-bearing
-for is the direction of every edge, which `schema_lint`'s `layering` rule enforces.
+imports `channel`, and `clientonly` also imports `wire`. `field_metadata` has no edge drawn
+at all: any file may import it to annotate a field, and four do today. What the graph is
+load-bearing for is the direction of every edge, which `schema_lint`'s `layering` rule
+enforces.
 
 ### Layering
 
@@ -462,6 +465,10 @@ MAC, so anyone holding the channel key - which is everyone on the channel - can 
 in a frame undetectably. Moving channel traffic to an AEAD mode is therefore a 3.0
 prerequisite rather than an option (§10). XEdDSA still does the thing a channel key cannot
 do at all: attribute a frame to one sender rather than to the group that shares the key.
+And an AEAD channel key still authenticates a frame only to the channel, which is why an
+explicit ack carries `Routing.ack_proof`: a pairwise MAC under the sender and receiver's
+shared PKI secret, so a delivery receipt cannot be minted by another member of the channel.
+`MeshPacket.ack_proof_status` reports the verdict without acting on it.
 
 **The split is not byte-aligned, and the covered span is not wholly immutable.** `ctrl`
 and `flags` each carry bits a relay rewrites. Those bits are canonicalised to zero
@@ -1014,6 +1021,16 @@ its YAML, that no allocated hardware id is removed or renamed, that an edit to r
 or presets raises their revision, and that each generated file decodes against its
 registry message.
 
+`field_metadata.proto` carries what a client needs to present a field - label,
+description, unit, bounds, keywords, the firmware version a field arrived in or left in -
+as one `FieldOptions` extension, so adding an attribute is a schema change and no generator
+changes with it. `tools/protoc-gen-fieldmeta` emits the registry for TypeScript, Python, C,
+Rust and Kotlin, `tools/protoc-gen-fieldmeta-swift` for Swift, and the KMP build handler
+wires it into that package; the `field-metadata` workflow checks them against each other.
+These values live only in descriptors: nothing encodes them, which is why `schema_lint`
+exempts that file from the wire-cost rules, and why bounds there are presentation metadata
+rather than validation.
+
 `buf breaking` will fail against the registry baseline. That is the intended 3.0
 break, not a regression.
 
@@ -1112,7 +1129,7 @@ Open work, and decisions deliberately not yet made.
   registry lists only presets the schema has.
 - **`EU_874` and `EU_917` have no data.** Both are `RegionCode` values with no firmware
   definition, so `regions.yaml` has no entry for them.
-- **52 of the 147 legacy devices are named by slug.** No firmware variant gives them a
+- **52 of the 148 legacy devices are named by slug.** No firmware variant gives them a
   display name.
 
 **Anycast:**

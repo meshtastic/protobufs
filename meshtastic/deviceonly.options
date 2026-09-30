@@ -24,6 +24,7 @@
 # it is the packed (vendor_id << 8) | device_id value, so it spans 16 bits.
 *NodeInfoLite.hw_model int_size:16
 *NodeInfoLite.role int_size:8
-# NodeFlags (common.proto) reaches bit 11, NODE_FLAG_HEARD_ON_CURRENT_LORA, so 16 bits.
-*NodeInfoLite.bitfield int_size:16
+# NodeFlags (common.proto) reaches bit 24, and bits 12 to 23 hold the slot fingerprint that
+# NODE_FLAG_HEARD_ON_CURRENT_LORA is derived from, so the stored word needs 32 bits.
+*NodeInfoLite.bitfield int_size:32
 *PositionLite.precision_bits int_size:8

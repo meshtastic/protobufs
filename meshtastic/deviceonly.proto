@@ -120,7 +120,9 @@ message NodeInfoLite {
   /*
    * Per-node boolean flags: a bitwise OR of NodeFlags values (common.proto).
    * Shares its definition with NodeInfo.flags, so the stored and client-facing
-   * words are interchangeable.
+   * words are interchangeable, with two deliberate exceptions: bits 12 to 23 hold a
+   * fingerprint of the LoRa slot this node was last heard on, which never travels, and
+   * NODE_FLAG_HEARD_ON_CURRENT_LORA is derived from that fingerprint rather than stored.
    */
   uint32 bitfield = 10;
 

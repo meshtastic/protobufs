@@ -447,3 +447,6 @@ devices:
   - id: 0x93
     slug: "T_CONNECT_PRO"
     name: "T_CONNECT_PRO"
+  - id: 0x94
+    slug: "AXIOMETA_GENESIS_MINI"
+    name: "Axiometa Genesis Mini"

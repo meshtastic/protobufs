@@ -3,8 +3,9 @@
 
 *NodeInfo.channel int_size:8
 *NodeInfo.hops_away int_size:8
-# NodeFlags (common.proto) reaches bit 11, NODE_FLAG_HEARD_ON_CURRENT_LORA, so 16 bits.
-*NodeInfo.flags int_size:16
+# NodeFlags (common.proto) reaches bit 24, NODE_FLAG_HEARD_ON_CURRENT_LORA, so 32 bits. The
+# slot fingerprint in bits 12 to 23 is storage-only and never travels here.
+*NodeInfo.flags int_size:32
 
 *MyNodeInfo.device_id max_size:16
 *MyNodeInfo.pio_env max_size:40

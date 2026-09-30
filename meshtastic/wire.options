@@ -21,6 +21,8 @@
 *Data.xeddsa_signature max_size:64
 
 *Routing.variant anonymous_oneof:true
+# Truncated HMAC, eight bytes.
+*Routing.ack_proof max_size:8
 
 *Position.latitude_variant anonymous_oneof:true
 *Position.longitude_variant anonymous_oneof:true
