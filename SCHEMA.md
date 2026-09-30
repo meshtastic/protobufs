@@ -1244,6 +1244,5 @@ meet for the rules above to hold:
 
 **Documentation:**
 
-- **`ChannelSettings` under-documents itself.** It does not say how admin messages are
-  secured, and its `id` comment refers to a "Well Known Channels" table that does not
-  exist.
+- **Nothing outstanding.** `ChannelSettings` now states what a channel key does and does not
+  authorise, and what an id with the default PSK is worth.

@@ -22,9 +22,17 @@ option swift_prefix = "";
  * The PSK is hashed into this letter by "0x41 + [xor all bytes of the psk ] modulo 26"
  * This also allows the option of someday if people have the PSK off (zero), the
  * users COULD type in a channel name and be able to talk.
- * FIXME: Add description of multi-channel support and how primary vs secondary channels are used.
- * FIXME: explain how apps use channels for security.
- * explain how remote settings and remote gpio are managed as an example
+ *
+ * A node holds up to sixteen channels. Index 0 is the primary: its name feeds the frequency
+ * slot hash, so it decides where the radio listens, and every other index is an additional key
+ * for traffic on that same frequency. An index with no settings is disabled. Position and
+ * presence carry that distinction, so there is no role field.
+ *
+ * What a channel key buys is confidentiality and integrity for everyone who holds it, and
+ * nothing more. It cannot say which member sent a frame, so per-sender attribution is XEdDSA
+ * (Data.xeddsa_signature), and anything that must be authorised to one node rather than to a
+ * group travels as a PKI direct message instead: remote administration and remote hardware
+ * both work that way.
  */
 message ChannelSettings {
   /*
@@ -60,10 +68,8 @@ message ChannelSettings {
    * And the penalty for collision is low as well, it just means that anyone trying to decrypt channel messages might need to
    * try multiple candidate channels.
    * Any time a non wire compatible change is made to a channel, this field should be regenerated.
-   * There are a small number of 'special' globally known (and fairly) insecure standard channels.
-   * Those channels do not have a numeric id included in the settings, but instead it is pulled from
-   * a table of well known IDs.
-   * (see Well Known Channels FIXME)
+   * A channel shared by name alone, with no id and the default PSK, is as insecure as its name
+   * is public; a sender that wants privacy generates both.
    */
   fixed32 id = 3;
 

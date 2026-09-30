@@ -139,11 +139,11 @@ message NodeInfoLite {
 }
 
 /*
- * This message is never sent over the wire, but it is used for serializing DB
- * state to flash in the device code
- * FIXME, since we write this each time we enter deep sleep (and have infinite
- * flash) it would be better to use some sort of append only data structure for
- * the receive queue and use the preferences store for the other stuff
+ * This message is never sent over the wire; it serialises device state to flash.
+ *
+ * Nothing in it changes per packet, so it is written when configuration changes and not when
+ * the node sleeps: a node that rewrites it on every deep sleep pays the flash wear for
+ * nothing.
  */
 message DeviceState {
   // Everything here changes only when someone reconfigures the node, so the
