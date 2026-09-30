@@ -222,8 +222,9 @@ Four things the table shows that are easy to miss:
 
 - **The single largest correction is `int32` to `sint32`.** A negative `int32`
   sign-extends to 64 bits and costs ten bytes whatever its magnitude, which is the whole
-  difference between the two `Position` rows and most of the `NeighborInfo` one. The same
-  altitude costs 2 bytes above sea level and 11 below it in 2.x.
+  difference between the two `Position` rows: the same altitude costs 2 bytes above sea
+  level and 11 below it in 2.x. `NeighborInfo` wins for a different reason - its 2.x form
+  already zigzagged the SNRs, so what the columns remove there is per-element framing.
 - **A live single reading barely moves.** The 15-to-14 row is the honest version of the
   telemetry change: the win is in batching and in never sending a `float`, not in the
   layout, and a node that reports one sample at a time collects almost none of it.
