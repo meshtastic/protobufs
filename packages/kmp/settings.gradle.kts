@@ -16,3 +16,5 @@ dependencyResolutionManagement {
 apply(from = "gradle/build-cache.settings.gradle")
 
 rootProject.name = "protobufs"
+
+include(":serialization")
