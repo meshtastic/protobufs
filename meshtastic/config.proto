@@ -29,9 +29,9 @@ message DeviceConfig {
     }];
 
     /*
-     * Same behaviour as ALL, but skips packet decoding and simply rebroadcasts.
-     * This is what the 2.x REPEATER role did; 3.0 has no such role, so it is available on
-     * the relaying roles, ROUTER and ROUTER_LATE. On any other role it behaves as ALL.
+     * Same behaviour as ALL, but skips packet decoding and simply rebroadcasts: a node
+     * that repeats everything it hears without looking inside. Available on the relaying
+     * roles, ROUTER and ROUTER_LATE; on any other role it behaves as ALL.
      */
     ALL_SKIP_DECODING = 1 [(meshtastic.enum_value_metadata) = {
       label: "All Skip Decoding"
@@ -884,12 +884,11 @@ message LoRaConfig {
    *
    * With LORA_USE_PRESET clear this is the coding rate, clamped to 5 through 8.
    *
-   * With LORA_USE_PRESET set, since firmware 2.7.18 this raises the preset's coding rate
-   * when it is 5 through 8 and higher than the preset's own. A lower value, a value out of
-   * range, and 0 all leave the preset's coding rate in place, so 0 is how a client says "use
-   * the preset's". Bandwidth and spread factor still come from the preset, and the coding
-   * rate travels in the explicit LoRa header, so nodes on the same preset hear each other
-   * either way.
+   * With LORA_USE_PRESET set, this raises the preset's coding rate when it is 5 through 8
+   * and higher than the preset's own. A lower value, a value out of range, and 0 all leave
+   * the preset's coding rate in place, so 0 is how a client says "use the preset's".
+   * Bandwidth and spread factor still come from the preset, and the coding rate travels in
+   * the explicit LoRa header, so nodes on the same preset hear each other either way.
    *
    * No bound is stated here because the valid set differs between the two cases: 5 through 8
    * with the preset off, and 0 plus anything above the preset's own coding rate up to 8 with
@@ -1029,7 +1028,7 @@ message SecurityConfig {
   enum PacketSignaturePolicy {
     /*
      * Accept unsigned packets for maximum compatibility while still rejecting malformed or invalid signatures.
-     * This is the default to avoid legacy nodes dropping signed packets during rebroadcast.
+     * This is the default, so a node that does not sign still relays signed packets.
      */
     PACKET_SIGNATURE_POLICY_COMPATIBLE = 0 [(meshtastic.enum_value_metadata) = {
       label: "Compatible - Accept Unsigned"
@@ -1106,7 +1105,7 @@ message SecurityConfig {
       label: "Debug Logs"
       description: "Output live debug logging over serial, view and export position-redacted device logs over Bluetooth."
     }];
-    /* Allow incoming device control over the insecure legacy admin channel */
+    /* Allow incoming device control over the insecure admin channel */
     SECURITY_ADMIN_CHANNEL_ENABLED = 0x08;
   }
 

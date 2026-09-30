@@ -202,9 +202,8 @@ message LogRecord {
  */
 message QueueStatus {
   /*
-   * What happened to the last attempt to queue a packet. 2.8 sends the firmware's
-   * internal ErrorCode int here, which shares numbers with Routing.Error while
-   * meaning something else entirely.
+   * What happened to the last attempt to queue a packet. Typed, so nothing confuses it
+   * with Routing.Error: a queue result and a routing error are different questions.
    */
   enum Result {
     /*

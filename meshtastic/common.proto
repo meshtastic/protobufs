@@ -138,8 +138,8 @@ enum Role {
  */
 enum RegionCode {
   /*
-   * 2.x's REGION_UA_868 is gone: Ukrainian law harmonised with the EU, so a Ukrainian
-   * node uses REGION_EU_868. The enum is renumbered in 3.0, so no value is a tombstone.
+   * Ukrainian law is harmonised with the EU, so a Ukrainian node uses REGION_EU_868 and
+   * there is no separate 868 MHz Ukrainian region.
    */
 
   /* Region is not set */

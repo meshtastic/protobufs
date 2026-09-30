@@ -18,13 +18,10 @@ option swift_prefix = "";
  * 64-127 Registered 3rd party apps, send in a pull request that adds a new entry to portnums.proto to  register your application
  * 256-511 Use one of these portnums for your private applications that you don't want to register publically
  * All other values are reserved.
- * Note: This was formerly a Type enum named 'typ' with the same id #
- * We have change to this 'portnum' based scheme for specifying app handlers for particular payloads.
- * This change is backwards compatible by treating the legacy OPAQUE/CLEAR_TEXT values identically.
  */
 enum PortNum {
   /*
-   * Deprecated: do not use in new code (formerly called OPAQUE)
+   * Deprecated: do not use in new code.
    * A message sent from a device outside of the mesh, in a form the mesh does not understand
    * NOTE: This must be 0, because it is documented in IMeshService.aidl to be so
    * ENCODING: binary undefined
@@ -93,7 +90,7 @@ enum PortNum {
 
   /*
    * Same as Text Message but originating from Detection Sensor Module.
-   * NOTE: This portnum traffic is not sent to the public MQTT starting at firmware version 2.2.9
+   * NOTE: This portnum traffic is not sent to the public MQTT broker.
    */
   DETECTION_SENSOR_APP = 9;
 

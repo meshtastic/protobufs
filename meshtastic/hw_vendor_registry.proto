@@ -21,7 +21,7 @@ option swift_prefix = "";
  * most 0x3FFF and fits a two-byte varint. A seventh vendor bit would put vendors
  * 0x40 and up at three bytes on every User broadcast.
  *
- * Vendor ID 0x00       = Legacy/Meshtastic community. Old HardwareModel values keep
+ * Vendor ID 0x00       = the common pool, for devices with no registered vendor. Its ids keep
  *                        their device IDs; free slots are allocated to new devices.
  * Vendor IDs 0x01-0x3F = Registered vendors.
  *

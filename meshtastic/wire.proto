@@ -204,7 +204,7 @@ message User {
 
   /*
    * Hardware model, packed as (vendor_id << 8 | device_id).
-   * Replaces the HardwareModel enum used in 2.x.
+   * Names live in the hardware registry, not in this schema.
    */
   uint32 hw_model = 3;
 
@@ -217,7 +217,8 @@ message User {
 
   /*
    * Indicates that the user's role in the mesh.
-   * Uses top-level Role enum from common.proto (was Config.DeviceConfig.Role in 2.x).
+   * The top-level Role enum from common.proto, so an air-layer message does not depend on
+   * the configuration tree.
    */
   Role role = 5;
 
@@ -390,13 +391,13 @@ message Routing {
 }
 
 /*
- * (Formerly called SubPacket)
  * The payload portion of a packet, this is the actual bytes that are sent
  * inside a radio packet (because from/to are broken out by the comms library)
  */
 message Data {
   /*
-   * Formerly named typ and of type Type
+   * Which application this payload belongs to. A receiver dispatches on it, and a payload
+   * whose port it does not know is passed on untouched.
    */
   PortNum portnum = 1;
 
@@ -843,8 +844,7 @@ message MqttClientProxyMessage {
 
 /*
  * A frame handed to a node as if it had arrived off the radio, used by the simulator
- * and by frame injection. Named for what it does: 2.8 calls this message Compressed,
- * but nothing ever compressed anything with it.
+ * and by frame injection. Named for what it does: nothing here compresses anything.
  */
 message InjectedFrame {
   /*

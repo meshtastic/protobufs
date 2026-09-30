@@ -5,9 +5,7 @@
 *public_key max_size:32 # public key
 
 # 24 bytes is the name limit devices enforce, so 25 covers it with the terminator.
-# The old 40-byte decode width existed to accept names from 2.x senders built
-# against the 39-byte limit; 3.0 is wire-incompatible with 2.x anyway, so that
-# allowance bought nothing. Matches NodeInfoLite.long_name in deviceonly.options.
+# Matches NodeInfoLite.long_name in deviceonly.options.
 *User.long_name max_size:25
 # X25519 public key, as SecurityConfig.public_key.
 *User.ratchet_key max_size:32

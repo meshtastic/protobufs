@@ -3,9 +3,8 @@
 Conventions and encodings for anyone implementing against this schema. For why the
 rework happened, see [OVERVIEW.md](OVERVIEW.md).
 
-Everything here is a hard break from 2.x. Field numbers, message shapes and encodings
-all changed; nothing decodes across the boundary, and nothing is expected to. §11 is the
-inventory of what changed, entry by entry, with a porting checklist at the end.
+This document is the whole schema. Field numbers, message shapes, encodings and bounds are
+as stated here.
 
 ---
 
@@ -86,7 +85,7 @@ also imports the foundation files it needs, and those edges are elided to keep t
 readable: `admin` and `deviceonly` also import `wire` and `channel`, `deviceonly` also
 imports `common` and `telemetry`, `api` and `mqtt` also import `common`, `apponly` also
 imports `channel`, and `clientonly` also imports `wire`. `field_metadata` has no edge drawn
-at all: any file may import it to annotate a field, and four do today. What the graph is
+at all: any file may import it to annotate a field, and four of them do. What the graph is
 load-bearing for is the direction of every edge, which `schema_lint`'s `layering` rule
 enforces.
 
@@ -359,11 +358,11 @@ a list of measurements or edges.
 Columns also constrain what a message can carry: a value that is local to one node has
 nowhere to sit in a pair of parallel arrays, so it stays in that node's own table.
 
-**`fixed32` for node numbers.** Since 2.8 a NodeNum is a CRC over the node's public
-key, so it is uniformly distributed over 32 bits: 15 in 16 land above 2²⁸ and cost the
-full five varint bytes, against a flat four for `fixed32`. There is no low-magnitude
-population to make a varint pay, and never will be. Every NodeNum on the air is a
-`fixed32` now - `NeighborInfo.node_id`, `last_sent_by_id` and
+**`fixed32` for node numbers.** A NodeNum is a CRC over the node's public key, so it is
+uniformly distributed over 32 bits: 15 in 16 land above 2²⁸ and cost the full five varint
+bytes, against a flat four for `fixed32`. There is no low-magnitude population to make a
+varint pay, and never will be. Every NodeNum on the air is a `fixed32` -
+`NeighborInfo.node_id`, `last_sent_by_id` and
 `neighbor_ids`, `SharedContact.node_num`, `NodeRemoteHardwarePin.node_num`, and the
 five `num` fields in the node database. The last of those is per stored node,
 so it is flash rather than airtime.
@@ -385,9 +384,10 @@ Every `repeated` scalar in the tree carries a bound, so every message is measura
 ## 6. Hardware identifiers
 
 `hw_model` is a packed `uint32`: `(vendor_id << 8) | device_id`. Vendor ids are six
-bits, `0x00`-`0x3F`; device ids are a full byte. Vendor 0 holds the legacy
-`HardwareModel` values at their old numbers, and its free slots are allocated to new
-devices. `0x01`-`0x3F` are registered vendors. There is no private vendor range.
+bits, `0x00`-`0x3F`; device ids are a full byte. Vendor 0 is the common pool: devices that
+belong to no registered vendor, and the free slots new such devices are allocated from. Its
+slug is `legacy`, which is an allocation identifier and not a statement about the devices.
+`0x01`-`0x3F` are registered vendors. There is no private vendor range.
 
 Two device ids are reserved under every vendor, leaving 254 to assign:
 
@@ -425,7 +425,8 @@ oneof latitude_variant {
 
 `latitude_scaled` is the 1e-7 degree value shifted right by `(32 - precision_bits)`,
 zigzag encoded, so a coordinate costs bytes in proportion to the precision actually
-shared. Masking low bits - what 2.x did - still sent four full bytes.
+shared. Masking the low bits of a full-width field saves nothing: it still sends four
+bytes.
 
 | precision_bits | cost | scale |
 |--:|--:|---|
@@ -462,14 +463,14 @@ with a zero length is malformed.
 encrypted frame, and there is no switch.** A channel frame is authenticated exactly as a
 direct message is, which is what makes the AAD worth computing at all: a header field inside
 the covered span cannot be altered without failing verification, and neither can the
-ciphertext. 2.8 gives PSK channels AES-CTR with no MAC, so anyone holding the channel key -
-everyone on the channel - can flip bits undetectably; 3.0 goes back to CCM, which the radio
-platforms already have. ChaCha20-Poly1305 is not it: not every hardware module offers it and
-the software implementation is slow. It belongs with the direct-message ratchet, as the
-other half of a hardening profile, rather than here.
+ciphertext. A confidentiality-only mode is not an option here - everyone on a channel holds
+its key, so without a tag any of them could flip bits undetectably. CCM is the choice because
+every radio platform already has it; ChaCha20-Poly1305 is not universal in hardware and is
+slow in software, so it belongs with the direct-message ratchet as the other half of a
+hardening profile rather than here.
 
-XEdDSA still does the thing a channel key cannot do at all: attribute a frame to one sender
-rather than to the group that shares the key.
+XEdDSA does the thing a channel key cannot do at all: attribute a frame to one sender rather
+than to the group that shares the key.
 And an AEAD channel key still authenticates a frame only to the channel, which is why an
 explicit ack carries `Routing.ack_proof`: a pairwise MAC under the sender and receiver's
 shared PKI secret, so a delivery receipt cannot be minted by another member of the channel.
@@ -546,7 +547,6 @@ partial `switch` with a fallthrough is a vulnerability.
 | 1 | `BCAST` | `ctrl flags from4 id4 chan relay` | 12 |
 | 2 | `UCAST` | `ctrl flags from4 id4 to4 relay next_hop` | 16 |
 | 3 | `EXT` **(tbd)** | `ctrl len block` | 2 + len |
-| | today's fixed `PacketHeader` | | 16 |
 
 ```
 profile 0  MINI   no addressing                 5 bytes
@@ -633,15 +633,15 @@ variant without `relay` would save a byte and cost a code path and a table entry
 `relay` is what `NextHopRouter` learns routes from. The third bit is reserved in
 `ctrl`.
 
-**The expandable header is smaller than the fixed one on the dominant traffic class.**
-A broadcast `to` is four bytes of `0xFFFFFFFF` today, and the broadcast profiles encode
-it in zero bits, so expandability pays for itself before a single extension is added.
+**Broadcast, the dominant traffic class, is the cheapest.** A broadcast destination is
+"everyone", which the profile encodes in zero bits rather than in four bytes of
+`0xFFFFFFFF`, so the profile field pays for itself before a single extension is added.
 
 **Unicast carries no channel hash.** A PSK is a channel key, so PSK traffic is
 inherently broadcast, and a DM is exclusively PKI - signed but unencrypted in HAM mode,
-encrypted otherwise. That is what buys back the byte `ctrl` costs and lands `UCAST`
-at exactly today's 16. An anycast destination is a PKI destination too, a group key pair
-rather than a node's, so it needs no room of its own and `UCAST` stays at 16.
+encrypted otherwise. That is what pays for the byte `ctrl` costs and holds `UCAST` at 16.
+An anycast destination is a PKI destination too, a group key pair rather than a node's, so
+it needs no room of its own and `UCAST` stays at 16.
 
 Four sizing rules fix the rest of the layout:
 
@@ -1032,10 +1032,11 @@ violation of any of them builds and lints clean, which is why each has been intr
 at least once. It runs in the same CI job as the mask validation, and its one
 exemption carries its reason in the source.
 
-`tools/wire_size.py` computes what the 3.0 encoding costs against the 2.x shape for the
-messages whose encoding changed. It is a documentation generator, not a test: the field
-numbers in it are written down rather than read from the schema, so it cannot notice a
-regression. `schema_lint.py` is the one that can.
+`tools/wire_size.py` computes what each of this schema's encodings costs against the naive
+form of the same data - a `float` where a scaled integer is used, an unpacked repeated field
+where a packed one is, a submessage per record where columns are. It is a documentation
+generator, not a test: the field numbers in it are written down rather than read from the
+schema, so it cannot notice a regression. `schema_lint.py` is the one that can.
 
 `tools/gen_registry.py` validates the registry data under `registry/` - hardware ids,
 regions, modem presets - and generates the committed JSON from it. CI checks the
@@ -1093,69 +1094,59 @@ Open work, and decisions deliberately not yet made.
 - **Fragmentation off by default, opt-in per portnum.** §8 states the policy; nothing
   implements the gate.
 
-**Firmware work the schema assumes**, named against the 2.8 firmware, the reference until a 3.0 port exists:
+**What the schema assumes of firmware.** These are requirements an implementation has to
+meet for the rules above to hold:
 
-- **Channel traffic has to move back to AES-CCM.** §8 requires an 8-byte tag on every
-  encrypted frame, and there is no switch to turn it off; 2.8 gives PSK channels AES-CTR
-  with no MAC. Until the port provides it, channel frames are confidential but
+- **Channel traffic is AES-CCM with an 8-byte tag.** §8 requires the tag on every encrypted
+  frame and offers no switch. Without it a channel frame is confidential but
   unauthenticated, and the tamper-evidence §8 claims for the covered span holds only on PKI
   traffic.
 - **`DeviceState` is written on configuration changes only.** Nothing in the message
-  changes per packet, so a deep sleep is not a reason to rewrite it. Firmware that
-  saves it on every sleep pays the flash wear for nothing.
-- **`RemoteHardware` authorisation.** `RemoteHardwareConfig.authorized_key` exists;
-  the module must reject a `HardwareMessage` that did not arrive as a PKI direct
-  message from a listed key, the way `AdminMessage` already does. Until that lands the
-  module stays off by default, because a channel key is shared by everyone on the
-  channel and so authorises everyone on it.
-- **Hop exhaustion has to stop rebroadcasting rather than zero the budget.**
-  `shouldExhaustHops` in the traffic management module sets `hop_limit = 0` in one
-  step while appending a single path byte, which breaks
+  changes per packet, so a deep sleep is not a reason to rewrite it: saving it on every
+  sleep pays the flash wear for nothing.
+- **`RemoteHardware` authorisation.** The module must reject a `HardwareMessage` that did
+  not arrive as a PKI direct message from a key listed in
+  `RemoteHardwareConfig.authorized_key`, as `AdminMessage` does. Until that is enforced the
+  module stays off by default, because a channel key is shared by everyone on the channel
+  and so authorises everyone on it.
+- **Hop exhaustion drops the packet; it never zeroes the budget.** Setting `hop_limit = 0`
+  in one step while appending a single path byte breaks
   `path length == max(0, hops taken - 1)` and makes the frame undecodable downstream.
-  Dropping the packet instead achieves the same end - the packet stops here - without a
-  wire inconsistency. The favourite router-to-router path that skips the decrement is
-  fine as it stands, since it appends nothing either.
-- **Event mode must stop rewriting `hop_start`.** `capEventRelayHops` in
-  `NextHopRouter.cpp` clamps `hop_limit` at a relay and reduces `hop_start` by the same
-  amount to keep `hops_away` accurate downstream. `hop_start` is in the AAD, so a relay
-  cannot change it without invalidating the tag. The clamp on `hop_limit` stays; what
-  goes is the compensating edit, which means `hops_away` over-reports past an
-  event-mode relay. That is a display and heuristic inaccuracy in one build flavour,
-  against an authenticated statement of the originator's budget everywhere - which is
-  what makes the `hop_limit > hop_start` check mean anything.
-- **Sixteen channels.** `MAX_NUM_CHANNELS` is not a firmware constant: `mesh-pb-constants.h`
-  derives it from `sizeof(ChannelFile.channels) / sizeof(channels[0])`, so the count is set
-  by `*ChannelFile.channels max_count` in `deviceonly.options` and by nothing else. It is
-  16, with `ChannelSet.settings` matched to it. `ChannelFile` costs 1096 bytes of RAM at
-  16 against 552 at 8. `Channels.cpp` carries a `static_assert(MAX_NUM_CHANNELS == 8)`
-  guarding a `userPrefs` switch that covers indices 0 to 7; that switch has to grow before
-  the firmware will build.
-- **Channel storage should be allocated dynamically.** `Channels.cpp` sets
-  `channels_count = MAX_NUM_CHANNELS` and `NodeDB.cpp` validates that it equals the
-  maximum, so the table is always full: a node using two channels holds sixteen records
-  and pays 1096 bytes for them. A node should hold the channels it has. Note that this
-  is not purely a firmware change - `MAX_NUM_CHANNELS` is derived from
-  `sizeof(ChannelFile.channels)`, so a pointer-based field removes the thing that
-  defines it, and the limit has to be declared somewhere rather than inferred.
-  16 is the cap chosen for the fixed array; it is not a reason to keep one.
-- **The channel role enum is gone.** Index 0 is the primary channel and an absent
-  `settings` disables one, so firmware and clients that switched on `Channel.role`
-  need to read position and presence instead.
+  Dropping achieves the same end - the packet stops here - without a wire inconsistency. A
+  relay that neither decrements nor appends is equally consistent.
+- **A relay never rewrites `hop_start`.** Clamping `hop_limit` at a relay is allowed;
+  compensating by reducing `hop_start` is not, because `hop_start` is in the AAD and a relay
+  cannot change it without invalidating the tag. Where a build clamps, `hops_away`
+  over-reports past that relay: a display and heuristic inaccuracy, against an authenticated
+  statement of the originator's budget everywhere, which is what makes the
+  `hop_limit > hop_start` check mean anything.
+- **Sixteen channels.** The channel count is not a firmware constant: it follows from
+  `*ChannelFile.channels max_count` in `deviceonly.options` and from nothing else. It is 16,
+  with `ChannelSet.settings` matched to it, and `ChannelFile` costs 1096 bytes of RAM at that
+  size. Firmware that derives the count from `sizeof` gets it for free; anything that
+  hardcodes a smaller bound, in a `static_assert` or a per-index switch, has to cover all
+  sixteen.
+- **Channel storage should be allocated dynamically.** A fixed array means a node using two
+  channels still holds sixteen records and pays 1096 bytes for them; it should hold the
+  channels it has. This is not purely a firmware change: the count is derived from
+  `sizeof(ChannelFile.channels)`, so a pointer-based field removes the thing that defines
+  it, and the limit then has to be declared somewhere rather than inferred. 16 is the cap
+  chosen for the fixed array, not a reason to keep one.
+- **A channel has no role field.** Index 0 is the primary channel and an absent `settings`
+  disables one, so firmware and clients read position and presence rather than a role.
 
 **Registry data:**
 
-- **Firmware states two region facts outside its tables.** `getEffectiveDutyCycle`
-  returns EU_866's router duty cycle from code, and every `RDEF` row repeats the
-  default preset its profile already determines. The registry holds both once, as
-  `RegionInfo.router_duty_cycle` and `RegionProfile.default_preset`; firmware that
-  generates its table from the registry loses the copies. the firmware's `textThrottle`
-  is not carried at all: it is set to 0 in every `RDEF` row and read nowhere.
-- **`LONG_SLOW` is not a `ModemPreset`**, while firmware permits it in 25 regions. The
-  registry lists only presets the schema has.
-- **`EU_874` and `EU_917` have no data.** Both are `RegionCode` values with no firmware
-  definition, so `regions.yaml` has no entry for them.
-- **52 of the 148 legacy devices are named by slug.** No firmware variant gives them a
-  display name.
+- **The registry is the only source for a region fact.** A router duty cycle belongs to
+  `RegionInfo.router_duty_cycle` and a default preset to `RegionProfile.default_preset`;
+  firmware that generates its tables from the registry holds no second copy and states
+  neither in code. A throttle that is set everywhere and read nowhere is not carried at all.
+- **The registry lists only presets the schema defines.** A preset an implementation
+  permits but the schema does not have cannot appear in a preset list.
+- **`REGION_EU_874` and `REGION_EU_917` have no data.** Both are `RegionCode` values that
+  no allocation defines yet, so `regions.yaml` has no entry for them.
+- **52 of the 148 devices under vendor 0 are named by slug.** No board variant supplies a
+  display name for them.
 
 **Anycast:**
 
@@ -1181,161 +1172,12 @@ Open work, and decisions deliberately not yet made.
 **Client work the schema assumes:**
 
 - **No client UI for `RelayConfig`.** The message is admin-reachable and stored, but
-  nothing presents it, so a relay policy today is set by an operator with a CLI. The
-  failure mode it guards against - a `RELAY_DROP` on the primary hash partitioning a
-  mesh - is exactly the one a UI should make hard to reach.
+  nothing presents it, so a relay policy is set by an operator with a CLI. The failure mode
+  it guards against - a `RELAY_DROP` on the primary hash partitioning a mesh - is exactly
+  the one a UI should make hard to reach.
 
 **Documentation:**
 
 - **`ChannelSettings` under-documents itself.** It does not say how admin messages are
   secured, and its `id` comment refers to a "Well Known Channels" table that does not
   exist.
-
----
-
-## 11. What changed from 2.8
-
-Everything in this section is a break. The sync word keeps 2.x traffic off the air and no
-stored data is migrated, so this is an inventory for people porting an implementation, not
-a compatibility guide. Each entry points at the section that explains the replacement.
-
-### Removed
-
-| gone | why, and what replaces it |
-|---|---|
-| `RouteDiscovery`, `TRACEROUTE_APP` | the header's path tail already records the route a frame took, so tracing is a property of every packet rather than a module (§8, The path tail is the route record) |
-| `StoreForwardPlusPlus`, portnum 35, and the whole v1 `StoreAndForward` protocol (`RequestResponse`, `Statistics`, `History`, `Heartbeat`) | replaced by a ciphertext log with per-client cursors (§8, Store and forward) |
-| `ChunkedPayload`, `ChunkedPayloadResponse`, `resend_chunks`, `PayloadChunk` | `HeaderOptions.fragment` is the one fragmentation mechanism; no implementation ever used these |
-| `TEXT_MESSAGE_COMPRESSED_APP` | every `TEXT_MESSAGE_APP` payload is Unishox2-compressed, so nothing needs to say which form it is in |
-| `RangeTestConfig`, `RANGE_TEST_APP` | the module is discontinued |
-| `HardwareModel` | `hw_model` is packed `(vendor_id << 8) \| device_id` and the names live in registry data (§6) |
-| `EnvironmentMetrics`, `AirQualityMetrics`, `PowerMetrics`, `HealthMetrics`, `SoilWaterMetrics` | one `SensorReadings` message (§5) |
-| `Neighbor` | two parallel columns on `NeighborInfo` (§5, The same techniques outside telemetry) |
-| `Config` and `ModuleConfig` wrappers | the section messages are top level; `ConfigPayload` and `ModuleConfigPayload` carry the admin `oneof` (§1) |
-| `UserLite`, `NodeInfoLite_Legacy`, `NodeDatabase_Legacy`, `deviceonly_legacy.proto` | `NodeInfoLite` holds the user fields inline; there is no legacy descriptor set to migrate from |
-| `Constants`, `Delayed`, `ExcludedModules`, `AltSource`, `DisplayUnits`, `DeprecatedGpsCoordinateFormat`, `InputEventChar`, `SFPP_message_type` | the payload budget is computed per packet, not a constant; the module mask derives from `AdminMessage.ModuleConfigType`; altitude source derives from field presence; one imperial toggle replaces the units enum; `InputBrokerEvent` is the full input event list |
-| `Channel.role` | index 0 is the primary channel and an absent `settings` disables one, so position and presence carry it |
-| `Data.dest`, `Data.source`, `Data.want_response` | the header's `to` and `from` are a packet's addresses; `BITFIELD_WANT_RESPONSE` is the one form of the flag |
-| `LoRaConfig.ignore_incoming` | `NODE_FLAG_IS_IGNORED` in the node database is the one store |
-| `Position.altitude_source`, `Position.timestamp`, `timestamp_millis_adjust` | one `time` per position, and the altitude form follows from which fields are set (§7) |
-| `LockdownStatus.lock_reason` | one `State` enum carries the state and the reason |
-| `User.id`, `User.macaddr` | a NodeNum is authoritative and its string form is derived |
-| `PositionFlags` `ALTITUDE_MSL`, `HVDOP`, `TIMESTAMP` | the altitude and DOP rules, and one position time, make them redundant |
-| `Role` `REPEATER`, `ROUTER_CLIENT`, and the channel roles `PRIMARY`, `SECONDARY`, `DISABLED` | `RebroadcastMode` carries repeater behaviour on a relaying role; channel position carries the rest |
-| `ModemPreset` `LONG_SLOW`, `VERY_LONG_SLOW`; `RegionCode` `UA_868`; `TelemetrySensorType` `SHTC3`, `SHT21`, `SHT31`, `SHT4X` | presets no region permits; Ukrainian law harmonised with the EU; one `SHTXX` value, because the driver is one |
-| the v1 ATAK messages `Contact`, `Group`, `Status`, `PLI`, and `TAKPacketV2` | one `TAKPacket`, on one port |
-
-### Renamed and moved
-
-| 2.8 | 3.0 |
-|---|---|
-| `mesh.proto` | `wire.proto` (air payloads) plus `packet.proto` (`MeshPacket`), with shared enums in `common.proto` |
-| `Compressed` | `InjectedFrame` - the simulator and frame-injection envelope it always was |
-| `AS3935Config` | `AS3935State` |
-| `CriticalErrorCode` | `ErrorCode`, in `common.proto` |
-| `InputEventChar` | `InputBrokerEvent`, the broker's full event set rather than a subset |
-| `NodeEnvironmentEntry` | `NodeReadingsEntry` |
-| `QueueStatus.res` (`sint32`) | `QueueStatus.result`, a typed `Result` enum |
-| `NodeInfoLite.snr_q4` | `snr`, in dB x 2 |
-| `TAKEnvironment.temperature_c_x10` | `temperature_c_centi` |
-| `LoRaWANBridge.Uplink.rssi_x10` | `rssi_dbm` |
-| `Position.latitude_i` / `longitude_i` | `latitude` / `longitude` with `latitude_scaled` / `longitude_scaled` alongside (§7) |
-| `FromRadio` / `ToRadio` camelCase arms | snake_case, as every other field |
-| bare enum values | prefixed: `REGION_`, `MODEM_`, `EDITION_`, `NODE_FLAG_`, `PACKET_`, `INPUT_`, and the per-message bitfield prefixes |
-
-### Renumbered
-
-Every message's field numbers were rebuilt from 1, with no holes and no reserved tags, and
-the fields a message actually populates sit below tag 15 where the key costs one byte (§2).
-The consequences worth knowing:
-
-- **`AdminMessage` collapses** from a maximum tag of 104 to 58, and `session_passkey` moves
-  to tag 1 because every request carries it.
-- **Enum values are dense**: `Role`, `RegionCode`, `ModemPreset` and `TelemetrySensorType`
-  carry no gaps, so a value's number differs from 2.8 even where its name did not change.
-- **`PortNum` is dense inside its groups** - 0-12, 32-37, 64-76, 112, 256-257 - so every
-  port above a removed one moved down. Anything that hardcodes a port number must be rebuilt.
-- **Module config sections shifted** when the range test module went, in
-  `AdminMessage.ModuleConfigType`, `ModuleConfigPayload` and `LocalModuleConfig` together;
-  `LocalModuleConfig.version` is 17 and `LocalConfig.version` is 13.
-- **`LocalConfig` and `ConfigPayload` keep holes at 9 and 10** on purpose: those sections
-  exist in the enum but are stored elsewhere, and the `sections` lint rule ties tag to value.
-
-### Added
-
-**Header and routing** (§8)
-
-- `HeaderOptions` with `fragment`, `hop_flags` (`HOP_NO_LEARN`, `HOP_STORE`, `HOP_ANYCAST`)
-  and `scope_code`, carried as `MeshPacket.header_options` and never re-encoded in transit.
-- `MeshPacket.channel_hash` and `MeshPacket.path`, the header's `chan` byte and path tail.
-- Four-bit `hop_limit` and `hop_start`, 0 to 15, matching the header.
-- `Routing.ack_proof` and `MeshPacket.ack_proof_status`: a pairwise MAC proving an ack came
-  from the node that received the packet, and a reported verdict that is never enforced.
-
-**Reach control** (§8, Channel scope)
-
-- `ChannelSettings.scope`, a sender-side statement of reach that rides the channel URL.
-- `RelayConfig`, a per-channel-hash relay policy for the relaying roles, with
-  `RegionProfile.default_hop_start` supplying the region cap as registry data.
-
-**Store and forward** (§8, Store and forward)
-
-- `StoredFrame`, plus `StoreAndForward` with `ANNOUNCE`, `SYNC`, `FRAME`, `SYNC_DONE`,
-  `ABORT` and `REFUSED`, `Cursor`, `Announce`, `Sync` and `SyncDone`. A server holds
-  ciphertext and no channel key; a cursor is `(rx_time, id)` per stream; an ack advances it.
-- `StoreForwardConfig` is rebuilt around storage rather than record counts.
-
-**Anycast and forward secrecy** (§8)
-
-- `GroupConfig` with the group public keys, `SecurityConfig.group_private_key` with the
-  private half on a member, and `PACKET_ANYCAST` beside the header's `HOP_ANYCAST`.
-- `User.ratchet_key`, `SecurityConfig.ratchet_flags` and `ratchet_interval_secs`, and
-  `PACKET_RATCHET_ENCRYPTED`: optional per-interval forward secrecy for direct messages.
-
-**Data that used to be code** (§6, §9)
-
-- `hw_vendor_registry`, `hw_device_registry`, `region_registry` and `modem_preset_registry`,
-  generated from the YAML under `registry/` and validated in CI.
-- `field_metadata.proto`: label, description, unit, bounds, keywords and the firmware
-  version a field arrived in or left in, as one option on a field or an enum value - the
-  latter matters here, because the bools 3.0 folded into bitfields keep their labels as
-  values. Generators turn it into a registry per language.
-
-**Everywhere**
-
-- Bitfields: 33 of them, declared as enums of single-bit masks and checked in CI (§3).
-- `DeviceMetadata.capabilities` and `excluded_modules`, replacing a row of booleans and an
-  enum that had to be maintained twice.
-- `NodeFlags`, one word shared by `NodeInfo.flags` and `NodeInfoLite.bitfield`, with the
-  slot fingerprint in bits 12 to 23 and `NODE_FLAG_HEARD_ON_CURRENT_LORA` derived from it.
-- `MeshBeacon.offer_frequency_slot`, omitted when a receiver can derive the slot.
-
-### Units, scales and bounds
-
-- **SI units on the air, always**, with the scale in the field or quantity name.
-  `DISPLAY_IMPERIAL_UNITS` is the one toggle that converts for the screen, and it covers
-  both length and temperature - 2.8 had a units enum and a separate telemetry flag, which
-  is why users toggled one and saw nothing change (§4).
-- **SNR is dB x 2 and RSSI whole dBm**, wherever either appears. A field mirroring a foreign
-  protocol keeps that protocol's scale and says so.
-- **AES-CCM with an 8-byte tag on every encrypted frame**, channel traffic included, with no
-  switch (§8).
-- `MAX_NUM_CHANNELS` is 16, set by the nanopb bound on `ChannelFile.channels` and by nothing
-  else. Canned messages and the ringtone reach 231 bytes, a beacon message 61, a remote
-  hardware pin 63, `NodeInfo.flags` and `NodeInfoLite.bitfield` 32 bits.
-- **No schema bound states a payload budget.** The room a frame leaves for `Data` depends on
-  the profile, the options block, the hops recorded and the signature, so firmware computes
-  it per packet (§8, Payload room).
-
-### Porting checklist
-
-1. Regenerate from this schema; nothing in 2.x decodes and nothing should be migrated.
-2. Build the AAD and the XEdDSA input from the canonicalised header set, and apply it - 2.8
-   passes an empty AAD (§8).
-3. Derive a relay suffix rather than masking a NodeNum, and read the path tail's length from
-   the hop fields.
-4. Move channel traffic to AES-CCM with an 8-byte tag.
-5. Rebuild anything that hardcodes a port number, an enum value or a field tag.
-6. Compress every text payload, unconditionally.
-7. Ship the registry data with clients; firmware needs none of it.
-8. Read §10 before starting: it lists what the schema states and nothing implements yet.

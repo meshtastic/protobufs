@@ -835,9 +835,8 @@ enum TelemetrySensorType {
   SCD30 = 45;
 
   /*
-   * Sensirion SHT family for temperature and humidity: SHTC3, SHT21, SHT31, SHT4X and
-   * the rest. 2.x gave each of them its own value; 3.0 has one, because the driver is
-   * one.
+   * Sensirion SHT family for temperature and humidity: SHTC3, SHT21, SHT31, SHT4X and the
+   * rest. One value, because the driver is one.
    */
   SHTXX = 46;
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Encoded size of the messages 3.0 changed, against their 2.x shapes.
+"""Encoded size of this schema's encodings, against the naive form of the same data.
 
 Prints the table in this directory's README. Every number is computed from the
 protobuf wire rules below rather than measured on a device, so it is exact for
@@ -34,7 +34,7 @@ def zigzag(v):
 
 def int32(v):
     """Bytes a plain int32 occupies. A negative value sign-extends to 64 bits
-    and costs ten, whatever its magnitude. This is the 2.x mistake."""
+    and costs ten, whatever its magnitude, which is what sint32 exists to avoid."""
     return 10 if v < 0 else varint(v)
 
 
@@ -73,13 +73,13 @@ def submsg(tag, body):
 
 
 # --- scenarios -------------------------------------------------------------
-# Each returns (2.x bytes, 3.0 bytes, note). Field numbers follow the schema
+# Each returns (naive bytes, schema bytes, note). Field numbers follow the schema
 # each side actually had, since a tag above 15 costs two bytes for its key.
 
 def position_basic():
     # lat/lon/alt/time only.
     old = field(1, f32()) + field(2, f32()) + field(3, int32(120)) + field(4, f32())
-    # 3.0: scaled coordinates in the packed arm of the oneof, sint32 altitude.
+    # Scaled coordinates in the packed arm of the oneof, sint32 altitude.
     new = field(1, zigzag(0x0D5F1E >> 3)) + field(3, zigzag(0x0A21C4 >> 3))
     new += field(6, f32()) + field(7, zigzag(120))
     return old, new, "lat, lon, altitude, time"
@@ -93,10 +93,10 @@ def position_negative_alt():
 
 
 def device_metrics():
-    # 2.x carried voltage, channel_utilization and air_util_tx as floats.
+    # The naive form carries voltage, channel utilisation and air util as floats.
     old = field(1, varint(87)) + field(2, flt()) + field(3, flt()) + field(4, flt())
     old += field(5, varint(864000))
-    # 3.0 scales them to integers: millivolts and centi-percent.
+    # Scaled to integers: millivolts and centi-percent.
     new = field(1, varint(87)) + field(2, varint(4021)) + field(3, varint(1250))
     new += field(4, varint(310)) + field(5, varint(864000))
     return old, new, "battery, voltage, two utilisations, uptime"
@@ -106,9 +106,9 @@ ENV = [("temperature", 1582), ("humidity", 6550), ("pressure", 98801)]
 
 
 def environment_one():
-    # 2.x EnvironmentMetrics: one float field per quantity, tags 1..3.
+    # The naive form: one float field per quantity, tags 1..3.
     old = sum(field(t, flt()) for t in (1, 2, 3))
-    # 3.0 SensorReadings: a one-byte key per quantity, one absolute value each.
+    # SensorReadings: a one-byte key per quantity, one absolute value each.
     new = packed(1, [1] * len(ENV)) + packed(2, [zigzag(v) for _, v in ENV])
     return old, new, "temperature, humidity, pressure, one sample"
 
@@ -134,12 +134,12 @@ NEIGHBOURS = [
 
 
 def neighbor_info():
-    # 2.x: uint32 self ids, then one Neighbor submessage per edge.
+    # Naive: uint32 self ids, then one Neighbor submessage per edge.
     old = field(1, varint(NEIGHBOURS[0][0])) + field(2, varint(NEIGHBOURS[0][0]))
     old += field(3, varint(900))
     for nid, snr in NEIGHBOURS:
         old += submsg(4, field(1, varint(nid)) + field(2, zigzag(snr)))
-    # 3.0: fixed32 self ids, then two parallel columns.
+    # Schema: fixed32 self ids, then two parallel columns.
     new = field(1, f32()) + field(2, f32()) + field(3, varint(900))
     new += packed(4, [4] * len(NEIGHBOURS))
     new += packed(5, [zigzag(snr) for _, snr in NEIGHBOURS])
@@ -177,7 +177,7 @@ def rows():
 
 
 def table():
-    out = ["| message | scenario | 2.x | 3.0 | saved |",
+    out = ["| message | scenario | naive | this schema | saved |",
            "|---|---|--:|--:|--:|"]
     for name, old, new, note in rows():
         pct = round(100 * (old - new) / old)
