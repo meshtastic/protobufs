@@ -175,6 +175,10 @@ def main() -> int:
     with tempfile.TemporaryDirectory() as d:
         open(os.path.join(d, 'bitfields.h'), 'w', newline='\n').write(gen.emit(records))
         open(os.path.join(d, 'stubs.h'), 'w', newline='\n').write(stub_enums(records))
+        # The header includes the nanopb headers it needs; point each at the stubs.
+        for h in {h for rec in records for h in rec['headers']}:
+            os.makedirs(os.path.join(d, os.path.dirname(h)), exist_ok=True)
+            open(os.path.join(d, h), 'w', newline='\n').write('#include "stubs.h"\n')
         open(os.path.join(d, 'main.cpp'), 'w', newline='\n').write(MAIN)
         exe = os.path.join(d, 'a.exe' if os.name == 'nt' else 'a.out')
         cmd = [args.cxx, '-std=c++17', '-Os', '-Wall', '-Wextra', '-Werror',
