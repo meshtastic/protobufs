@@ -495,10 +495,10 @@ covered span is byte-for-byte immutable in flight.
 `EXT` has no `flags` byte and no mutable core fields, so its AAD is `ctrl` with the hop
 bits zeroed plus its length byte and block: the whole header.
 
-### The two always-present bytes
+### `ctrl`, and the `flags` byte the addressed profiles add
 
-`ctrl` is the one byte whose meaning can never change, because it is what says how to
-read everything after it.
+`ctrl` is the only byte every frame carries, and the one whose meaning can never change,
+because it is what says how to read everything after it.
 
 ```
      7     6   5  4   3     2     1  0
@@ -518,7 +518,9 @@ bit distinguishes the format being migrated from the one being migrated to; a co
 conversion frees it to flip back for the next. A break that cannot be done gradually
 changes the PHY sync word, which is a different mechanism at a lower layer.
 
-`flags` is present on profiles 1 to 3.
+`flags` follows `ctrl` on the two addressed profiles, `BCAST` and `UCAST`. `MINI` and `EXT`
+have no `flags` byte, which is why neither carries a `hop_start`, an ack request, an options
+block or a path tail - see below for what that leaves them.
 
 ```
      7   6  5   4      3     2      1     0
@@ -533,7 +535,8 @@ changes the PHY sync word, which is a different mechanism at a lower layer.
            +-- 0..15, the budget the originator launched with
 ```
 
-Both bytes are fully assigned. `hop_start` matches `hop_limit` at four bits, so a
+Both bytes are fully assigned where they appear. `hop_start` matches `hop_limit` at four
+bits, so a
 packet can be launched with up to fifteen hops of budget.
 
 ### Profiles
