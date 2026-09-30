@@ -1646,6 +1646,32 @@ message MqttClientProxyMessage {
 }
 
 /*
+ * Which slots of the CSMA backoff grid a transmission is allowed to draw from.
+ * A node normally draws any slot of the contention window, counted from the moment it draws.
+ * A sender that asks for a parity instead counts slots from the end of the last frame it sent or
+ * heard, and takes only slots of that parity, so two senders on opposite parities that redraw
+ * after the same frame can never land on the same or an adjacent slot.
+ * Useful for a pair of nodes exchanging a stream, where the two ends otherwise collide with each
+ * other far more often than with the rest of the mesh.
+ */
+enum SlotParity {
+  /*
+   * No parity asked for: the ordinary backoff draw over the whole contention window.
+   */
+  SLOT_PARITY_UNSET = 0;
+
+  /*
+   * Only even-numbered slots, counted from the end of the last frame on air.
+   */
+  SLOT_PARITY_EVEN = 1;
+
+  /*
+   * Only odd-numbered slots, counted from the end of the last frame on air.
+   */
+  SLOT_PARITY_ODD = 2;
+}
+
+/*
  * A packet envelope sent/received over the mesh
  * only payload_variant is sent in the payload portion of the LORA packet.
  * The other fields are either not sent at all, or sent in the special 16 byte LORA header.
