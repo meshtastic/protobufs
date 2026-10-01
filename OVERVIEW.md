@@ -208,10 +208,11 @@ A shared channel key authenticates nothing on its own: everyone on the channel h
 confidentiality without integrity lets any of them flip bits in a frame undetectably, and
 integrity alone still cannot say which member sent something. Three layers answer that.
 
-**Every encrypted frame carries an 8-byte AES-CCM tag, and there is no switch.** The tag
-covers the header fields a relay must not touch, so budget inflation and address rewriting
-both fail verification. On a frame that records its path, even the hop limit becomes
-tamper-evident, because altering it moves the payload boundary.
+**Every encrypted frame carries an AES-CCM tag, and there is no switch:** 4 bytes on a
+channel frame, 8 on a direct message. The tag covers the header fields a relay must not
+touch, so budget inflation and address rewriting both fail verification. On a frame that
+records its path, even the hop limit becomes tamper-evident, because altering it moves the
+payload boundary.
 
 **An explicit ack can prove it came from the recipient.** A channel key authenticates a frame
 to the channel, not to a node, so any member could forge a delivery receipt.

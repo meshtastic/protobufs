@@ -459,11 +459,13 @@ Which of `to` and `chan` are present is what the profile selects. `opt` is prese
 `flags.opt` is set: a length byte, then that many bytes of `HeaderOptions`. A set bit
 with a zero length is malformed.
 
-**The tag in the diagram is not conditional: it is AES-CCM with an 8-byte tag, on every
-encrypted frame, and there is no switch.** A channel frame is authenticated exactly as a
-direct message is, which is what makes the AAD worth computing at all: a header field inside
-the covered span cannot be altered without failing verification, and neither can the
-ciphertext. A confidentiality-only mode is not an option here - everyone on a channel holds
+**The tag in the diagram is not conditional: it is AES-CCM on every encrypted frame, 4 bytes
+on a channel frame and 8 on a direct message, and there is no switch.** Each forgery attempt
+costs airtime, so 4 bytes (2^-32 per attempt) holds a channel against outsiders, and a member
+can forge at any length. A direct message keeps 8 because its tag is the only pairwise
+authentication. A channel frame is authenticated exactly as a direct message is, which is
+what makes the AAD worth computing at all: a header field inside the covered span cannot be
+altered without failing verification, and neither can the ciphertext. A confidentiality-only mode is not an option here - everyone on a channel holds
 its key, so without a tag any of them could flip bits undetectably. CCM is the choice because
 every radio platform already has it; ChaCha20-Poly1305 is not universal in hardware and is
 slow in software, so it belongs with the direct-message ratchet as the other half of a
@@ -1043,7 +1045,7 @@ duplicates cannot desynchronise anything.
 **Nothing on the air says which derivation was used.** A receiver tries its own current
 ratchet against the peer's newest, then its remaining generations, then the static-only
 key: at most `K * K + 1` tag checks, in practice two or three, and only on unicast
-addressed to itself. The 8-byte AEAD tag is what rejects a wrong key. That keeps the
+addressed to itself. The 8-byte unicast tag is what rejects a wrong key. That keeps the
 cost at zero wire bytes; an explicit generation byte in the end-to-end options range is
 the fallback if measurement on nRF52 says trial decryption is too slow.
 
@@ -1152,8 +1154,8 @@ Open work, and decisions deliberately not yet made.
 **What the schema assumes of firmware.** These are requirements an implementation has to
 meet for the rules above to hold:
 
-- **Channel traffic is AES-CCM with an 8-byte tag.** §8 requires the tag on every encrypted
-  frame and offers no switch. Without it a channel frame is confidential but
+- **Channel traffic is AES-CCM with a 4-byte tag; direct messages keep 8.** §8 requires the
+  tag on every encrypted frame and offers no switch. Without it a channel frame is confidential but
   unauthenticated, and the tamper-evidence §8 claims for the covered span holds only on PKI
   traffic.
 - **`DeviceState` is written on configuration changes only.** Nothing in the message
