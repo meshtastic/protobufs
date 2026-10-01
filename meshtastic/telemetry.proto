@@ -118,6 +118,12 @@ message LocalStats {
    * Noise floor in dBm (negative)
    */
   sint32 noise_floor = 15;
+
+  /*
+   * Broadcasts this node did not relay because client auto-mute was in force
+   * (DeviceConfig.auto_mute_router_count).
+   */
+  uint32 num_tx_relay_suppressed = 16;
 }
 
 /*

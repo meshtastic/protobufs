@@ -33,6 +33,8 @@
 # Packed boolean flags. LoRaConfig reaches bit 7 and DisplayConfig bit 5, so all
 # of these stay inside a byte.
 *DeviceConfig.flags int_size:8
+*DeviceConfig.auto_mute_router_count int_size:8
+*DeviceConfig.auto_mute_min_snr int_size:8
 *NetworkConfig.flags int_size:8
 *DisplayConfig.flags int_size:8
 *LoRaConfig.flags int_size:8

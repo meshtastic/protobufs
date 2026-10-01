@@ -172,6 +172,11 @@ message DeviceConfig {
       label: "LED Heartbeat"
       description: "Controls the blinking LED on the device.  For most devices this will control one of the up to 4 LEDS, the charger and GPS LEDs are not controllable."
     }];
+    /* Turn client auto-mute off: a CLIENT keeps relaying broadcasts however many routers it hears */
+    DEVICE_AUTO_MUTE_DISABLED = 0x08 [(meshtastic.enum_value_metadata) = {
+      label: "Disable Client Auto-mute"
+      description: "Keep relaying broadcasts as a client even when routers already cover the area. For sensor and event deployments."
+    }];
   }
 
   /*
@@ -236,6 +241,29 @@ message DeviceConfig {
    * the default of 86400.
    */
   uint32 full_announce_secs = 12;
+
+  /*
+   * Client auto-mute, CLIENT role only. A client that hears at least auto_mute_router_count
+   * ROUTER or ROUTER_LATE neighbours directly, at auto_mute_min_snr or better, within
+   * auto_mute_window_secs stops relaying broadcasts: those routers already reach everyone it
+   * would. Unicast it is asked to carry is relayed as before. It resumes once the condition has
+   * not held for a whole window. DEVICE_AUTO_MUTE_DISABLED turns it off.
+   *
+   * Router neighbours needed to mute. 0 takes the default of 2.
+   */
+  uint32 auto_mute_router_count = 13 [(meshtastic.field_metadata) = {label: "Auto-mute Router Count"}];
+
+  /*
+   * Weakest link, as SNR in dB x 2, at which a router neighbour counts toward
+   * auto_mute_router_count. 0 is 0 dB, which is also the default.
+   */
+  sint32 auto_mute_min_snr = 14 [(meshtastic.field_metadata) = {label: "Auto-mute Minimum SNR"}];
+
+  /*
+   * Seconds within which a router neighbour must have been heard to count, and how long the
+   * condition must stay false before a muted client relays again. 0 takes the default of 3600.
+   */
+  uint32 auto_mute_window_secs = 15 [(meshtastic.field_metadata) = {label: "Auto-mute Window"}];
 }
 
 /*
