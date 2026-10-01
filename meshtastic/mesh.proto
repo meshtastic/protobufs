@@ -979,6 +979,11 @@ enum HardwareModel {
   MAKERFABS_NOMAD_TERMINAL = 149;
 
   /*
+   * Elecrow ThinkNode MX
+   */
+  THINKNODE_MX = 150;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
