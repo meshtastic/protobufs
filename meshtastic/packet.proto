@@ -169,6 +169,13 @@ message MeshPacket {
      * Arrived via Unicast UDP
      */
     TRANSPORT_UNICAST_UDP = 8;
+
+    /*
+     * Replayed by a store-and-forward server (storeforward.proto). The frame is the
+     * original, verified with the receiver's own keys; rx_time is when the server heard
+     * it, not when this node did. Never relayed.
+     */
+    TRANSPORT_STORE_FORWARD = 9;
   }
 
   /*
