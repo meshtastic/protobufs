@@ -2764,12 +2764,12 @@ message DisplayPalette {
   uint32 signature = 1;
 
   /*
-   * RGB565 for set pixels outside all regions.
+   * RGB565 for set pixels outside all regions. The region_offset 0 chunk is authoritative.
    */
   uint32 default_on_color = 2;
 
   /*
-   * RGB565 for clear pixels outside all regions.
+   * RGB565 for clear pixels outside all regions. The region_offset 0 chunk is authoritative.
    */
   uint32 default_off_color = 3;
 
@@ -3152,7 +3152,7 @@ message DisplayInfo {
    */
   enum PanelClass {
     /*
-     * Default; should not be sent.
+     * Unknown, or selected at runtime (e.g. a native build's configured panel).
      */
     PANEL_CLASS_UNSPECIFIED = 0;
 
