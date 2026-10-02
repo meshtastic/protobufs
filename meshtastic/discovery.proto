@@ -173,9 +173,9 @@ message DiscoveryReply {
   bool truncated = 3;
 
   /*
-   * With truncated set: the since_time that continues where this reply stopped. Filing times
-   * are server-local and strictly increasing, so asking from here repeats nothing and skips
-   * nothing.
+   * The since_time that continues where this reply stopped, set whenever it carries a record.
+   * Filing times are server-local and strictly increasing, so asking from here repeats nothing
+   * and skips nothing; a server keeps it as its cursor into a peer.
    */
   fixed32 next_since_time = 4;
 }

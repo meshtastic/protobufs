@@ -34,4 +34,5 @@
 *SyncRequest.buckets int_size:16
 *SyncRequest.max_records int_size:8
 
+*DiscoveryQuery.selector anonymous_oneof:true
 *DiscoveryMessage.variant anonymous_oneof:true
