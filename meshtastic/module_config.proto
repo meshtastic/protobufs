@@ -57,6 +57,7 @@ message ModuleConfig {
     string password = 4 [(meshtastic.field_metadata) = {
       label: "Password"
       description: "MQTT password"
+      sensitive: true
     }];
 
     /*
