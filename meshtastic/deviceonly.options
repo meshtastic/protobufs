@@ -28,4 +28,5 @@
 # NodeFlags (common.proto) reaches bit 24, and bits 12 to 23 hold the slot fingerprint that
 # NODE_FLAG_HEARD_ON_CURRENT_LORA is derived from, so the stored word needs 32 bits.
 *NodeInfoLite.bitfield int_size:32
+*NodeInfoLite.record_tier int_size:8
 *PositionLite.precision_bits int_size:8

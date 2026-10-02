@@ -6,6 +6,7 @@ package meshtastic;
 import "meshtastic/api.proto";
 import "meshtastic/channel.proto";
 import "meshtastic/common.proto";
+import "meshtastic/discovery.proto";
 import "meshtastic/localonly.proto";
 import "meshtastic/module_config.proto";
 import "meshtastic/storeforward.proto";
@@ -137,6 +138,17 @@ message NodeInfoLite {
    * Suitable for a tiny OLED screen.
    */
   string short_name = 12;
+
+  /*
+   * Highest NodeRecord.seq accepted for this node's key. A record at or below it is a replay
+   * and changes nothing.
+   */
+  uint32 record_seq = 13;
+
+  /*
+   * Where the identity above came from, as NodeInfo.record_tier reports it.
+   */
+  RecordTier record_tier = 14;
 }
 
 /*
@@ -184,6 +196,18 @@ message DeviceState {
    * ends, so it changes about as often as a server announces.
    */
   repeated StoreAndForward.Cursor sf_cursors = 5;
+
+  /*
+   * NodeRecord.seq of this node's own record. Written before a record carrying it is first
+   * sent, and bumped only when the record's content changes.
+   */
+  uint32 record_seq = 6;
+
+  /*
+   * CRC32 of the content record_seq was issued for: the canonical signed bytes with seq left
+   * out. A record built at boot whose content hashes differently gets the next seq.
+   */
+  fixed32 record_crc = 7;
 }
 
 // Satellite per-node entries; stored alongside the slim NodeInfoLite so nodes

@@ -168,9 +168,16 @@ message DiscoveryReply {
   repeated RecordTier tiers = 2;
 
   /*
-   * The server had more to send than the cap allowed. Ask again from a later since_time.
+   * The server had more to send than the cap allowed. Ask again from next_since_time.
    */
   bool truncated = 3;
+
+  /*
+   * With truncated set: the since_time that continues where this reply stopped. Filing times
+   * are server-local and strictly increasing, so asking from here repeats nothing and skips
+   * nothing.
+   */
+  fixed32 next_since_time = 4;
 }
 
 /*

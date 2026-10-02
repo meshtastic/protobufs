@@ -20,8 +20,9 @@
 *DiscoveryQuery.bucket int_size:8
 *DiscoveryQuery.max_records int_size:8
 
-# A record is about 135 bytes encoded, so four of them plus the tier column is one frame's
-# worth once the header and tag are paid for. A server with more to say sets truncated.
+# A record is about 135 bytes encoded, so one fits a PKI frame once the header, envelope and
+# tag are paid for; a server sends one reply frame per record that fits and sets truncated
+# when it stops early. Four bounds the decoded struct, not what one frame carries.
 *DiscoveryReply.records max_count:4
 *DiscoveryReply.tiers max_count:4
 

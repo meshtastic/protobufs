@@ -4,6 +4,8 @@
 *LocalStats.num_online_nodes int_size:16
 *LocalStats.num_total_nodes int_size:16
 *LocalStats.num_tx_dropped int_size:16
+*LocalStats.discovery_stage int_size:8
+*LocalStats.discovery_servers int_size:8
 
 *Telemetry.variant anonymous_oneof:true
 

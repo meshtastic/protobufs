@@ -124,6 +124,43 @@ message LocalStats {
    * (DeviceConfig.auto_mute_router_count).
    */
   uint32 num_tx_relay_suppressed = 16;
+
+  /*
+   * Where this node stands on the node discovery cadence ladder (SCHEMA.md section 8).
+   */
+  enum DiscoveryStage {
+    /*
+     * Not reported.
+     */
+    DISCOVERY_STAGE_UNSET = 0;
+
+    /*
+     * Full-budget NodeInfo at node_info_broadcast_secs: no discovery server, few nodes.
+     */
+    DISCOVERY_STAGE_ANNOUNCE = 1;
+
+    /*
+     * Interval times taper_factor: a discovery server heard, or discovery_node_threshold nodes.
+     */
+    DISCOVERY_STAGE_TAPER = 2;
+
+    /*
+     * Enough servers heard for long enough: NodeInfo at hop_limit 1, plus one full-budget
+     * announce per full_announce_secs.
+     */
+    DISCOVERY_STAGE_SERVE = 3;
+  }
+
+  /*
+   * The stage, and below it the reason: how many discovery servers this node hears.
+   * num_online_nodes is the other input.
+   */
+  DiscoveryStage discovery_stage = 17;
+
+  /*
+   * Distinct discovery servers heard within the last three hours.
+   */
+  uint32 discovery_servers = 18;
 }
 
 /*
