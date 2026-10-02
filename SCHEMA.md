@@ -979,6 +979,24 @@ reaches two hops: a node whose only server sits a hop past its neighbours still 
 with hysteresis so a server rebooting cannot push a mesh back to flooding. A node in any stage
 still answers a direct NodeInfo request at full budget, so pull works with no server at all.
 
+**NodeInfo stays the announcement; a record rides beside it while a server listens.** A node
+that hears a discovery server (`ANNOUNCE_SERVES_DISCOVERY` on its store-and-forward pip)
+publishes its record with each NodeInfo until a server serves the record back to it, then only
+with the full-budget announce once per `full_announce_secs`. Every node verifies the publishes it
+hears and learns identities from them, so a record also reaches nodes with no server at all.
+
+**A missing key is pulled, never waited for.** A send that fails for want of a key, or a
+signature that cannot be checked, starts a lookup: a `DiscoveryQuery` by NodeNum to a server,
+then, if the server has nothing, the same query broadcast on the channel, which only the named
+node answers, with its publish at full budget. A node answers that broadcast at most once per ten
+minutes and asks about any one node at most once an hour.
+
+**A reply carries one record.** About 135 bytes leaves no room for a second in a PKI frame, so a
+server answers every query and `SyncRequest` with the record filed earliest at or after
+`since_time` and sets `next_since_time` past it; filing times are strictly increasing, so paging
+on it repeats and skips nothing. A server passes on everything it holds, first-hand or not, and
+admits at most a fixed number of new records per peer per day.
+
 **Servers reconcile with a digest, not a dump.** `SyncDigest` carries a count and an XOR of
 record hashes for each of sixteen buckets, about 150 bytes, and `SyncRequest` asks for the
 buckets that differ. They sync over the mesh or a wired backhaul, never over MQTT: a broker
@@ -1207,8 +1225,13 @@ meet for the rules above to hold:
 
 **Node discovery:**
 
-- **Nothing implements it.** The schema carries the record, the queries and the ladder's knobs;
-  no node signs a record, serves one or changes cadence yet.
+- **The quorum, the settle time and the per-peer quota have no fields.** Two servers, one
+  hour and 200 new records a day are firmware constants until measurement says what they
+  should be.
+- **There is no wired backhaul between servers.** Reconciliation runs over the mesh only.
+- **A collision is reported, not resolved.** `NodeNumCollision` names the NodeNum; a node that is
+  not a server keeps the pinned record and drops the newcomer, so a client cannot show both
+  until it asks a server, which holds both.
 - **The ladder's thresholds are guesses.** 40 nodes, two servers and a factor of four are
   placeholders until a simulation measures airtime per node per hour and time-to-first-contact
   for a node joining a serving mesh.
