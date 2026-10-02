@@ -272,6 +272,30 @@ public nonisolated struct FieldMetadata: Sendable {
   /// Clears the value of `deprecatedSince`. Subsequent reads from it will return its default value.
   public mutating func clearDeprecatedSince() {self._deprecatedSince = nil}
 
+  ///
+  /// Field holds a SECRET: a password, PIN, passphrase or key whose value grants
+  /// access to the node, to its network, or to the traffic it carries. Knowing a
+  /// public key or a username does not, so neither is marked.
+  ///
+  /// Apps should mask the value by default (a password-style control with an
+  /// explicit reveal), keep it out of logs, crash reports, analytics and debug
+  /// dumps, and not include it in a shared export, QR code or screenshot without
+  /// the user knowingly choosing to.
+  ///
+  /// Handling metadata, not protection: it changes nothing on the wire, and the
+  /// firmware treats the field no differently. It marks the field alone. A
+  /// message that merely CONTAINS a sensitive field (`Config` holding
+  /// `SecurityConfig.private_key`) is not marked itself, so a consumer redacting
+  /// a whole message should walk into its submessages.
+  public var sensitive: Bool {
+    get {_sensitive ?? false}
+    set {_sensitive = newValue}
+  }
+  /// Returns true if `sensitive` has been explicitly set.
+  public var hasSensitive: Bool {self._sensitive != nil}
+  /// Clears the value of `sensitive`. Subsequent reads from it will return its default value.
+  public mutating func clearSensitive() {self._sensitive = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -287,6 +311,7 @@ public nonisolated struct FieldMetadata: Sendable {
   fileprivate var _keywords: String? = nil
   fileprivate var _sinceFirmware: String? = nil
   fileprivate var _deprecatedSince: String? = nil
+  fileprivate var _sensitive: Bool? = nil
 }
 
 // MARK: - Extension support defined in field_metadata.proto.
@@ -408,7 +433,7 @@ fileprivate nonisolated let _protobuf_package = "meshtastic"
 
 nonisolated extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FieldMetadata"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}diy_only\0\u{3}admin_only\0\u{3}min_value\0\u{3}max_value\0\u{1}unit\0\u{1}deprecated\0\u{1}label\0\u{1}description\0\u{1}keywords\0\u{3}since_firmware\0\u{3}deprecated_since\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}diy_only\0\u{3}admin_only\0\u{3}min_value\0\u{3}max_value\0\u{1}unit\0\u{1}deprecated\0\u{1}label\0\u{1}description\0\u{1}keywords\0\u{3}since_firmware\0\u{3}deprecated_since\0\u{1}sensitive\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -427,6 +452,7 @@ nonisolated extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._Messa
       case 9: try { try decoder.decodeSingularStringField(value: &self._keywords) }()
       case 10: try { try decoder.decodeSingularStringField(value: &self._sinceFirmware) }()
       case 11: try { try decoder.decodeSingularStringField(value: &self._deprecatedSince) }()
+      case 12: try { try decoder.decodeSingularBoolField(value: &self._sensitive) }()
       default: break
       }
     }
@@ -470,6 +496,9 @@ nonisolated extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._Messa
     try { if let v = self._deprecatedSince {
       try visitor.visitSingularStringField(value: v, fieldNumber: 11)
     } }()
+    try { if let v = self._sensitive {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 12)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -485,6 +514,7 @@ nonisolated extension FieldMetadata: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if lhs._keywords != rhs._keywords {return false}
     if lhs._sinceFirmware != rhs._sinceFirmware {return false}
     if lhs._deprecatedSince != rhs._deprecatedSince {return false}
+    if lhs._sensitive != rhs._sensitive {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

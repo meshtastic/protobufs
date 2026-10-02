@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "meshtastic/field_metadata.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "DeviceUIProtos";
@@ -33,7 +35,7 @@ message DeviceUIConfig {
    */
   bool screen_lock = 4;
   bool settings_lock = 5;
-  uint32 pin_code = 6;
+  uint32 pin_code = 6 [(meshtastic.field_metadata) = {sensitive: true}];
 
   /*
    * Color theme

@@ -683,6 +683,7 @@ message Config {
     string wifi_psk = 4 [(meshtastic.field_metadata) = {
       label: "Password"
       description: "WiFi password for authentication"
+      sensitive: true
     }];
 
     /*
@@ -1566,6 +1567,7 @@ message Config {
     uint32 fixed_pin = 3 [(meshtastic.field_metadata) = {
       label: "Fixed Pin"
       description: "Fixed PIN for Bluetooth pairing. Used when pairing mode is set to fixed PIN"
+      sensitive: true
     }];
   }
 
@@ -1618,6 +1620,7 @@ message Config {
     bytes private_key = 2 [(meshtastic.field_metadata) = {
       label: "Private Key"
       description: "Used to create a shared key with a remote device"
+      sensitive: true
     }];
 
     /*

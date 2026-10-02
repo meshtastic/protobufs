@@ -3,6 +3,8 @@ syntax = "proto3";
 /* trunk-ignore(buf-lint/PACKAGE_DIRECTORY_MATCH) */
 package meshtastic;
 
+import "meshtastic/field_metadata.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "ChannelProtos";
@@ -44,7 +46,7 @@ message ChannelSettings {
    * `2` through 10 = The default channel key, except with 1 through 9 added to the last byte.
    * Shown to user as simple1 through 10
    */
-  bytes psk = 2;
+  bytes psk = 2 [(meshtastic.field_metadata) = {sensitive: true}];
 
   /*
    * A SHORT name that will be packed into the URL.
