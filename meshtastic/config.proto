@@ -754,10 +754,11 @@ message Config {
        * serves the service to peers that connect to it, and a node that can act as a central
        * connects outward to peers serving it.
        *
-       * Distinct from bluetooth.enabled, which gates the phone-API BLE interface. These are two
+       * A separate flag from bluetooth.enabled, which gates the phone-API BLE interface: two
        * services on the same controller with different UUIDs and different jobs - the phone API
-       * is a client configuring one node, this is mesh traffic between nodes - and a device may
-       * run either, both or neither.
+       * is a client configuring one node, this is mesh traffic between nodes. On firmware this
+       * flag still depends on that one: the service runs only while the node's Bluetooth is up,
+       * so it is inert when bluetooth.enabled is false, and on an ESP32 while Wi-Fi is in use.
        */
       BLE_GATT_PEER = 0x0004 [(meshtastic.enum_value_metadata) = {label: "BLE GATT Peer"}];
     }
