@@ -4,7 +4,9 @@ permissions:
   contents: read
   pull-requests: write
 
-on: pull_request
+on:
+  pull_request:
+  merge_group:
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,3 +24,5 @@ jobs:
           format: true
           lint: true
           breaking: true
+          # buf-action derives the base only for push and pull_request events.
+          breaking_against: ${{ github.server_url }}/${{ github.repository }}.git#format=git,commit=${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
