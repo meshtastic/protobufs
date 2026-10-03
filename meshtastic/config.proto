@@ -731,6 +731,19 @@ message Config {
     bool ipv6_enabled = 11 [(meshtastic.field_metadata) = {since_firmware: "2.7.16"}];
 
     /*
+     * Turn WiFi off once the node has been on battery for this many seconds,
+     * and back on when external power returns. The delay keeps a brief
+     * interruption from toggling the radio. Zero, the default, disables this:
+     * WiFi then stays up regardless of the power source. Does not change
+     * wifi_enabled.
+     */
+    uint32 wifi_power_loss_timeout_secs = 12 [(meshtastic.field_metadata) = {
+      label: "WiFi Off On Battery After"
+      description: "Seconds on battery before WiFi is turned off, until the node is plugged in again. Zero keeps WiFi on."
+      unit: "s"
+    }];
+
+    /*
      * Available flags auxiliary network protocols
      */
     enum ProtocolFlags {
