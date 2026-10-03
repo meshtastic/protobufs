@@ -959,9 +959,11 @@ cannot be replayed over a newer one. A record expires after `record_ttl_secs` wi
 refresh, which is also how an identity retires - there is no tombstone, so nothing can be
 replayed to retire an identity against its owner's wishes.
 
-**Admission costs airtime.** A server files a record when it heard the announce itself, or when
-a peer that heard it first-hand passed it on under a quota. Signing a thousand records is free;
-transmitting for them is not. `RecordTier` travels beside a record rather than inside it,
+**Admission costs airtime.** A server files a record when it heard the announce itself, at most
+`discovery_admit_per_hour` new records an hour (default 60), or when a peer that heard it
+first-hand passed it on under a quota. Signing a thousand records is free; transmitting for them
+is not, and the hourly limit stops one transmitter from emptying a store faster than its owners
+refresh it. `RecordTier` travels beside a record rather than inside it,
 because provenance is the server's statement and the record is the node's.
 
 **Announcement cadence is a ladder**, and `DeviceConfig` carries its knobs
@@ -979,11 +981,13 @@ reaches two hops: a node whose only server sits a hop past its neighbours still 
 with hysteresis so a server rebooting cannot push a mesh back to flooding. A node in any stage
 still answers a direct NodeInfo request at full budget, so pull works with no server at all.
 
-**NodeInfo stays the announcement; a record rides beside it while a server listens.** A node
-that hears a discovery server (`ANNOUNCE_SERVES_DISCOVERY` on its store-and-forward pip)
-publishes its record with each NodeInfo until a server serves the record back to it, then only
-with the full-budget announce once per `full_announce_secs`. Every node verifies the publishes it
-hears and learns identities from them, so a record also reaches nodes with no server at all.
+**While a server listens, the announce that carries a record is the record.** A node that hears
+a discovery server (`ANNOUNCE_SERVES_DISCOVERY` on its store-and-forward pip) publishes its record
+once as soon as it first hears one, and then in place of NodeInfo on each announce until a server
+serves the record back, and after that on the full-budget announce once per `full_announce_secs`.
+Its other announces stay NodeInfo, so the record never doubles an announcement. Every node
+verifies the publishes it hears and learns identities from them, so a record also reaches nodes
+with no server at all.
 
 **A missing key is pulled, never waited for.** A send that fails for want of a key, or a
 signature that cannot be checked, starts a lookup: a `DiscoveryQuery` by NodeNum to a server,
@@ -1228,6 +1232,9 @@ meet for the rules above to hold:
 - **The quorum, the settle time and the per-peer quota have no fields.** Two servers, one
   hour and 200 new records a day are firmware constants until measurement says what they
   should be.
+- **The hourly admission limit slows a new server down.** At 60 records an hour a server that
+  comes up beside 300 nodes needs at least five hours to file them all; nodes it turned away
+  publish again at their next announce.
 - **There is no wired backhaul between servers.** Reconciliation runs over the mesh only.
 - **A collision is reported, not resolved.** `NodeNumCollision` names the NodeNum; a node that is
   not a server keeps the pinned record and drops the newcomer, so a client cannot show both

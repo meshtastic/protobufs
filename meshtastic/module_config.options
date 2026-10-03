@@ -49,6 +49,7 @@
 *SerialConfig.flags int_size:8
 *StoreForwardConfig.flags int_size:8
 *StoreForwardConfig.max_per_sync int_size:8
+*StoreForwardConfig.discovery_admit_per_hour int_size:16
 *StoreForwardConfig.served_hashes max_count:16
 *StoreForwardConfig.served_hashes int_size:8
 *CannedMessageConfig.flags int_size:8

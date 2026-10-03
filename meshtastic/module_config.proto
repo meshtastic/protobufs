@@ -795,6 +795,14 @@ message StoreForwardConfig {
    * announcing simply ages out. 0 takes the default of 30 days.
    */
   uint32 record_ttl_secs = 7;
+
+  /*
+   * New records the server files per hour from what it hears over RF. A newer seq or a refresh
+   * of a record already held does not count. This bounds how fast one transmitter can push real
+   * records out with invented ones, at the cost of a slower start for a new server: a record
+   * turned away is published again at its owner's next announce. 0 takes the default of 60.
+   */
+  uint32 discovery_admit_per_hour = 8;
 }
 
 /*

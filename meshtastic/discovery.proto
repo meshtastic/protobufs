@@ -227,12 +227,15 @@ message SyncRequest {
 /*
  * Everything on NODE_DISCOVERY_APP.
  *
- * A publish is a broadcast: at the full hop budget while a mesh has no discovery server, and
- * at hop_limit 1 once it has, which reaches two hops and so finds a server one hop beyond the
- * sender's neighbours. Everything else is a direct message.
+ * A publish is a broadcast, and while a node hears a discovery server it is the node's
+ * announcement: it goes out in place of NodeInfo, at that announce's hop limit, until a server
+ * serves the record back, and after that on the daily full-budget announce. A node also
+ * publishes once when it first hears a server, and in answer to a broadcast query for itself.
+ * Everything else is a direct message.
  *
- * A server admits a record only when it heard the publish itself, or when a peer that heard
- * it first-hand passed it on under a quota. Airtime is what makes inventing nodes expensive:
+ * A server admits a record only when it heard the publish itself, at most
+ * StoreForwardConfig.discovery_admit_per_hour new ones an hour, or when a peer that heard it
+ * first-hand passed it on under a quota. Airtime is what makes inventing nodes expensive:
  * signing a thousand records is free, transmitting for them is not.
  */
 message DiscoveryMessage {
