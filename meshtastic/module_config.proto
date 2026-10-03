@@ -528,6 +528,8 @@ message ModuleConfig {
       // Logs mesh traffic to the serial pins, ideal for logging via openLog or similar.
       LOG = 9; // includes other packets
       LOGTEXT = 10; // only text (channel & DM)
+      // Modbus-RTU master, polls an RS485 sensor and sends telemetry
+      MODBUS = 11;
     }
 
     /*
