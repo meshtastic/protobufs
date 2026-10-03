@@ -36,7 +36,7 @@ permissions:
 
 jobs:
   codegen:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       version: ${{ steps.version.outputs.VERSION }}
       tag: ${{ steps.version.outputs.TAG }}
@@ -120,7 +120,7 @@ jobs:
           path: packages/ts
 
   build-typescript:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: codegen
     steps:
       - name: Download TypeScript code
@@ -172,7 +172,7 @@ jobs:
             LICENSE
             README.md
   create-release-zips:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [codegen, build-typescript]
     steps:
       - name: Download NPM package
@@ -199,7 +199,7 @@ jobs:
             meshtastic-protobufs-npm.zip
             meshtastic-protobufs-jsr.zip
   upload-release-assets:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [codegen, create-release-zips]
     if: ${{ !inputs.dry_run }}
     steps:
@@ -216,7 +216,7 @@ jobs:
             meshtastic-protobufs-npm.zip
             meshtastic-protobufs-jsr.zip
   push-buf-registry:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: codegen
     if: ${{ !inputs.dry_run }}
     steps:
@@ -234,7 +234,7 @@ jobs:
         run: buf push --tag ${{ needs.codegen.outputs.tag }}
 
   publish-npm:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [codegen, build-typescript]
     if: ${{ !inputs.dry_run }}
     steps:
@@ -255,7 +255,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-jsr:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [codegen, build-typescript]
     if: ${{ !inputs.dry_run }}
     permissions:
