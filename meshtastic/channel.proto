@@ -91,7 +91,7 @@ message ChannelSettings {
    *
    * | scope    | launch hop_start | CHANNEL_UPLINK | congestion control may raise |
    * |----------|------------------|----------------|------------------------------|
-   * | LOCAL    | 2                | refused        | no                           |
+   * | LOCAL    | 1                | refused        | no                           |
    * | REGIONAL | region default   | refused        | yes, to the region maximum   |
    * | GLOBAL   | 15               | allowed        | yes                          |
    *
@@ -103,7 +103,7 @@ message ChannelSettings {
     /* Treated as REGIONAL */
     SCOPE_UNSET = 0;
 
-    /* One or two hops: a site, an event, a household */
+    /* Neighbours and one relay: a site, an event, a household */
     SCOPE_LOCAL = 1;
 
     /* The region's default hop cap */

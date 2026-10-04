@@ -932,9 +932,10 @@ bound them, and only the third costs a byte on the air.
 
 **`ChannelSettings.scope` is a sender-side rule, and free.** It rides in the channel URL,
 so every node that joins a channel launches its traffic the same way: `SCOPE_LOCAL` caps
-the launch `hop_start` at 2, `SCOPE_REGIONAL` at `RegionProfile.default_hop_start` from the
+the launch `hop_start` at 1, `SCOPE_REGIONAL` at `RegionProfile.default_hop_start` from the
 registry, `SCOPE_GLOBAL` at the full 15, and only on `SCOPE_GLOBAL` may a node set
-`CHANNEL_UPLINK`.
+`CHANNEL_UPLINK`. A direct message launches with the primary channel's scope unless its
+client sets `hop_start` itself.
 Congestion control may raise the cap on REGIONAL up to that registry value and on GLOBAL,
 never on LOCAL. A relay cannot read any of this - the channel is not something it holds -
 which is why reach is also enforced from the other side.
