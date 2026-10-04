@@ -154,6 +154,24 @@ node database, a recovery copy of the owner that survives the loss of `DeviceSta
 | web dashboard | common, portnums, wire, packet, telemetry, mqtt |
 | MQTT bridge | common, portnums, wire, packet, mqtt |
 
+### Links and MQTT topics
+
+Two identifiers outside the schema name an encoding, and each moves when its payload
+stops decoding under the old schema. 3.0 moves all three.
+
+| identifier | form | payload | earlier forms |
+|---|---|---|---|
+| channel link / QR | `https://meshtastic.org/f/#<b64>` | `ChannelSet` | `/c/` (1.0, one `ChannelSettings`), `/d/` (1.2, `ChannelSet`), `/e/` (2.x, with `lora_config`) |
+| contact link / QR | `https://meshtastic.org/u/#<b64>` | `SharedContact` | `/v/` (2.x) |
+| MQTT topic | `<root>/3/e/<channel_id>/<gateway_id>`, `<root>/3/map/` | `ServiceEnvelope`, `MapReport` | `msh/1/c/` (1.2), `msh/2/c/` (1.3), `msh/<region>/2/e/` (2.x) |
+
+`<b64>` is unpadded URL-safe base64; a channel link that only adds channels reads
+`/f/?add=true#<b64>`. A client refuses a link whose letter is not its own rather than
+decode another generation's bytes: field numbers moved, so an old payload parses into the
+wrong fields without an error. The `3` in a topic is the MQTT protocol version, the same
+segment that kept 1.2 and 1.3 payloads apart; `e` (encrypted envelope) and `map` name the
+payload kind and do not change with it. `<root>` is `msh` or `msh/<region>`.
+
 ---
 
 ## 2. Field numbering

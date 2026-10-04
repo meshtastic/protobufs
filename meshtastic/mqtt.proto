@@ -13,6 +13,7 @@ option swift_prefix = "";
 
 /*
  * This message wraps a MeshPacket with extra metadata about the sender and how it arrived.
+ * Published on <root>/3/e/<channel_id>/<gateway_id> (SCHEMA.md "Links and MQTT topics").
  */
 message ServiceEnvelope {
   /*

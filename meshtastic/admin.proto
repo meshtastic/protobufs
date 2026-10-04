@@ -715,6 +715,10 @@ message NodeRemoteHardwarePinsResponse {
   repeated NodeRemoteHardwarePin node_remote_hardware_pins = 1;
 }
 
+/*
+ * A node shared as a contact, as a link or QR code:
+ * https://meshtastic.org/u/#<unpadded url-safe base64> (SCHEMA.md "Links and MQTT topics").
+ */
 message SharedContact {
   /*
    * The node number of the contact. fixed32 for the reason every NodeNum on the air
