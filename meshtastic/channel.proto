@@ -3,6 +3,8 @@ syntax = "proto3";
 /* trunk-ignore(buf-lint/PACKAGE_DIRECTORY_MATCH) */
 package meshtastic;
 
+import "meshtastic/field_metadata.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "ChannelProtos";
@@ -74,30 +76,20 @@ message ChannelSettings {
   fixed32 id = 3;
 
   /*
-   * If true, messages on the mesh will be sent to the *public* internet by any gateway ndoe
-   */
-  bool uplink_enabled = 4;
-
-  /*
-   * If true, messages seen on the internet will be forwarded to the local mesh.
-   */
-  bool downlink_enabled = 5;
-
-  /*
    * Per-channel module settings.
    */
-  ModuleSettings module_settings = 6;
+  ModuleSettings module_settings = 4;
 
   /*
    * Intended reach of this channel. It travels in the channel URL, so everyone who
    * joins the channel launches its traffic the same way.
    *
-   * Scope caps the hop_start a node launches with on this channel, decides whether
-   * uplink_enabled may be set, and tells congestion control whether it may raise that
-   * cap. It is a sender-side rule: a relay cannot read it, and enforces reach with
+   * Scope caps the hop_start a node launches with on this channel, decides whether a
+   * node may set CHANNEL_UPLINK on it, and tells congestion control whether it may raise
+   * that cap. It is a sender-side rule: a relay cannot read it, and enforces reach with
    * RelayConfig instead.
    *
-   * | scope    | launch hop_start | uplink_enabled | congestion control may raise |
+   * | scope    | launch hop_start | CHANNEL_UPLINK | congestion control may raise |
    * |----------|------------------|----------------|------------------------------|
    * | LOCAL    | 2                | refused        | no                           |
    * | REGIONAL | region default   | refused        | yes, to the region maximum   |
@@ -124,7 +116,7 @@ message ChannelSettings {
   /*
    * Intended reach of this channel, enforced by senders.
    */
-  Scope scope = 7;
+  Scope scope = 5;
 }
 
 /*
@@ -162,4 +154,32 @@ message Channel {
    * The settings for this channel. Absent means the channel is disabled.
    */
   ChannelSettings settings = 2;
+
+  /*
+   * What this node does with the channel on MQTT. These belong to the node, not the
+   * channel: a channel URL carries settings only, so joining a channel never makes a node
+   * a gateway for it.
+   */
+  enum Flags {
+    /* Not bridged */
+    CHANNEL_NONE = 0x00;
+    /*
+     * Publish this channel's traffic to the MQTT broker. Only a SCOPE_GLOBAL channel may
+     * set it.
+     */
+    CHANNEL_UPLINK = 0x01 [(meshtastic.enum_value_metadata) = {
+      label: "Uplink Enabled"
+      description: "Send this channel's messages to the MQTT broker"
+    }];
+    /* Forward this channel's traffic from the MQTT broker to the mesh */
+    CHANNEL_DOWNLINK = 0x02 [(meshtastic.enum_value_metadata) = {
+      label: "Downlink Enabled"
+      description: "Forward this channel's messages from the MQTT broker to the mesh"
+    }];
+  }
+
+  /*
+   * Bitwise OR of Flags values.
+   */
+  uint32 flags = 3;
 }

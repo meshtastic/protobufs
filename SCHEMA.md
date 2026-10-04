@@ -166,7 +166,9 @@ stops decoding under the old schema. 3.0 moves all three.
 | MQTT topic | `<root>/3/e/<channel_id>/<gateway_id>`, `<root>/3/map/` | `ServiceEnvelope`, `MapReport` | `msh/1/c/` (1.2), `msh/2/c/` (1.3), `msh/<region>/2/e/` (2.x) |
 
 `<b64>` is unpadded URL-safe base64; a channel link that only adds channels reads
-`/f/?add=true#<b64>`. A client refuses a link whose letter is not its own rather than
+`/f/?add=true#<b64>`. A channel link carries `ChannelSettings` only: whether a node bridges
+the channel to MQTT is `Channel.flags`, the node's own choice, so joining a channel never
+makes a node a gateway. A client refuses a link whose letter is not its own rather than
 decode another generation's bytes: field numbers moved, so an old payload parses into the
 wrong fields without an error. The `3` in a topic is the MQTT protocol version, the same
 segment that kept 1.2 and 1.3 payloads apart; `e` (encrypted envelope) and `map` name the
@@ -924,7 +926,8 @@ bound them, and only the third costs a byte on the air.
 **`ChannelSettings.scope` is a sender-side rule, and free.** It rides in the channel URL,
 so every node that joins a channel launches its traffic the same way: `SCOPE_LOCAL` caps
 the launch `hop_start` at 2, `SCOPE_REGIONAL` at `RegionProfile.default_hop_start` from the
-registry, `SCOPE_GLOBAL` at the full 15, and only `SCOPE_GLOBAL` may set `uplink_enabled`.
+registry, `SCOPE_GLOBAL` at the full 15, and only on `SCOPE_GLOBAL` may a node set
+`CHANNEL_UPLINK`.
 Congestion control may raise the cap on REGIONAL up to that registry value and on GLOBAL,
 never on LOCAL. A relay cannot read any of this - the channel is not something it holds -
 which is why reach is also enforced from the other side.

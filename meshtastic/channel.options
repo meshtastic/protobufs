@@ -1,4 +1,5 @@
 *Channel.index int_size:8
+*Channel.flags int_size:8
 
 # 256 bit or 128 bit psk key
 *ChannelSettings.psk max_size:32
