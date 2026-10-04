@@ -1,15 +1,20 @@
 # Regulatory regions, the profiles they share and the preset lists those permit.
 # Region and preset names are RegionCode and ModemPreset values without their
-# REGION_ / MODEM_ prefix. Fractional values are rounded down to the field unit,
-# and firmware keeps the exact value. Any change to this file raises revision;
+# REGION_ / MODEM_ prefix. Frequencies are exact hertz. A band edge that has no
+# exact value rounds inward: the lower edge up, the upper edge down. Every region
+# states edge_clearance with its reason. Any change to this file raises revision;
 # tools/gen_registry.py --check enforces it.
-revision: 2
+revision: 3
 
 preset_lists:
   - name: "STD"
     presets: [LONG_FAST, MEDIUM_SLOW, MEDIUM_FAST, SHORT_SLOW, SHORT_FAST, LONG_MODERATE, SHORT_TURBO, LONG_TURBO, MEDIUM_TURBO]
   - name: "EU_868"
     presets: [LONG_FAST, MEDIUM_SLOW, MEDIUM_FAST, SHORT_SLOW, SHORT_FAST, LONG_MODERATE]
+  # STD without the 125 kHz presets: LONG_MODERATE takes about 7.7 s for a full packet,
+  # over ARIB STD-T108's 4 s transmission limit.
+  - name: "JP"
+    presets: [LONG_FAST, MEDIUM_SLOW, MEDIUM_FAST, SHORT_SLOW, SHORT_FAST, NARROW_SLOW, NARROW_FAST, SHORT_TURBO, LONG_TURBO, MEDIUM_TURBO]
   - name: "LITE"
     presets: [LITE_FAST, LITE_SLOW]
   - name: "NARROW"
@@ -21,8 +26,10 @@ profiles:
   - name: "STD"
     preset_list: "STD"
     default_preset: LONG_FAST
-    spacing_khz: 0
-    padding_khz: 0
+    spacing_hz: 0
+    padding_hz: 0
+    unit_channel_hz: 0
+    max_bandwidth_hz: 0
     audio_permitted: true
     licensed_only: false
     position_throttle: 1
@@ -31,18 +38,48 @@ profiles:
   - name: "EU868"
     preset_list: "EU_868"
     default_preset: LONG_FAST
-    spacing_khz: 0
-    padding_khz: 0
+    spacing_hz: 0
+    padding_hz: 0
+    unit_channel_hz: 0
+    max_bandwidth_hz: 0
     audio_permitted: false
     licensed_only: false
     position_throttle: 1
     telemetry_throttle: 1
     default_hop_start: 3
+  # ARIB STD-T108 200 kHz unit channels: a signal bonds ceil(bw / 200 kHz) of them and
+  # is centred on the bond.
+  - name: "JP"
+    preset_list: "JP"
+    default_preset: LONG_FAST
+    spacing_hz: 0
+    unit_channel_hz: 200000
+    max_bandwidth_hz: 0
+    audio_permitted: true
+    licensed_only: false
+    position_throttle: 1
+    telemetry_throttle: 1
+    default_hop_start: 3
+  # EU_866: each 200 kHz block is one unit channel holding one slot at its centre.
   - name: "LITE"
     preset_list: "LITE"
     default_preset: LITE_FAST
-    spacing_khz: 400
-    padding_khz: 37
+    spacing_hz: 0
+    unit_channel_hz: 200000
+    max_bandwidth_hz: 0
+    audio_permitted: false
+    licensed_only: false
+    position_throttle: 10
+    telemetry_throttle: 10
+    default_hop_start: 3
+  # EU_874, EU_917: continuous within each block, bandwidth at most 200 kHz.
+  - name: "LITE_FLEX"
+    preset_list: "LITE"
+    default_preset: LITE_FAST
+    spacing_hz: 0
+    padding_hz: 0
+    unit_channel_hz: 0
+    max_bandwidth_hz: 200000
     audio_permitted: false
     licensed_only: false
     position_throttle: 10
@@ -51,28 +88,34 @@ profiles:
   - name: "NARROW"
     preset_list: "NARROW"
     default_preset: NARROW_SLOW
-    spacing_khz: 0
-    padding_khz: 10
+    spacing_hz: 0
+    padding_hz: 10400
+    unit_channel_hz: 0
+    max_bandwidth_hz: 0
     audio_permitted: true
     licensed_only: false
     position_throttle: 1
     telemetry_throttle: 1
     default_hop_start: 3
+  # 15.6 kHz on a 20 kHz channel grid.
   - name: "HAM_20KHZ"
     preset_list: "TINY"
     default_preset: TINY_FAST
-    spacing_khz: 0
-    padding_khz: 2
+    spacing_hz: 0
+    unit_channel_hz: 20000
+    max_bandwidth_hz: 0
     audio_permitted: false
     licensed_only: true
     position_throttle: 2
     telemetry_throttle: 2
     default_hop_start: 3
+  # 62.5 kHz on a 100 kHz channel grid.
   - name: "HAM_100KHZ"
     preset_list: "NARROW"
     default_preset: NARROW_SLOW
-    spacing_khz: 0
-    padding_khz: 18
+    spacing_hz: 0
+    unit_channel_hz: 100000
+    max_bandwidth_hz: 0
     audio_permitted: false
     licensed_only: true
     position_throttle: 1
@@ -82,344 +125,421 @@ profiles:
 swap_groups:
   - regions: [EU_868, EU_866, EU_N_868]
 
+# edge_clearance: true drops one slot when the outer slots' RF edges would sit closer
+# than a quarter bandwidth to the band edge, unless that leaves fewer than four gaps.
+# Raster profiles always say false.
 regions:
-  - region: "US"
+  # Not yet provisioned: geometry copies US, and the radio neither transmits nor
+  # receives. Any field but the code differing from US is rejected.
+  - region: "UNSET"
     profile: "STD"
-    freq_start_mhz_x100: 90200
-    freq_end_mhz_x100: 92800
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 902000000
+    freq_end_hz: 928000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 30
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # mirrors US
+  # https://www.thethingsnetwork.org/docs/lorawan/regional-parameters/
+  - region: "US"
+    profile: "STD"
+    freq_start_hz: 902000000
+    freq_end_hz: 928000000
+    duty_cycle_permille: 1000
+    power_limit_dbm: 30
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+    edge_clearance: true # raster fills the band exactly
+  # ERC/REC 70-03 Annex 1 non-specific SRD, 433.05-434.79 MHz, 10 mW e.r.p., 10 %;
+  # ITU Region 1 ISM (RR 5.138).
   - region: "EU_433"
     profile: "STD"
-    freq_start_mhz_x100: 43300
-    freq_end_mhz_x100: 43400
-    duty_cycle: 10
-    router_duty_cycle: 0
+    freq_start_hz: 433050000
+    freq_end_hz: 434790000
+    duty_cycle_permille: 100
     power_limit_dbm: 10
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: false # ETSI boundary specs govern
+  # EN 300 220 band P, 869.4-869.65 MHz, 500 mW e.r.p., 10 %.
+  # https://www.etsi.org/deliver/etsi_en/300200_300299/30022002/03.02.01_60/en_30022002v030201p.pdf
   - region: "EU_868"
     profile: "EU868"
-    freq_start_mhz_x100: 86940
-    freq_end_mhz_x100: 86965
-    duty_cycle: 10
-    router_duty_cycle: 0
+    freq_start_hz: 869400000
+    freq_end_hz: 869650000
+    duty_cycle_permille: 100
     power_limit_dbm: 27
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: false # ETSI boundary specs govern; the arrangement is deliberate
+  # https://lora-alliance.org/wp-content/uploads/2020/11/lorawan_regional_parameters_v1.0.3reva_0.pdf
   - region: "CN"
     profile: "STD"
-    freq_start_mhz_x100: 47000
-    freq_end_mhz_x100: 51000
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 470000000
+    freq_end_hz: 510000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 19
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # raster fills the band exactly
+  # ARIB STD-T108, 920.5-923.5 MHz.
+  # https://www.arib.or.jp/english/html/overview/doc/5-STD-T108v1_5-E1.pdf
   - region: "JP"
-    profile: "STD"
-    freq_start_mhz_x100: 92050
-    freq_end_mhz_x100: 92350
-    duty_cycle: 100
-    router_duty_cycle: 0
+    profile: "JP"
+    freq_start_hz: 920500000
+    freq_end_hz: 923500000
+    duty_cycle_permille: 1000
     power_limit_dbm: 13
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: false # raster profile
+  # https://www.iot.org.au/wp/wp-content/uploads/2016/12/IoTSpectrumFactSheet.pdf
+  # https://iotalliance.org.nz/wp-content/uploads/sites/4/2019/05/IoT-Spectrum-in-NZ-Briefing-Paper.pdf
   - region: "ANZ"
     profile: "STD"
-    freq_start_mhz_x100: 91500
-    freq_end_mhz_x100: 92800
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 915000000
+    freq_end_hz: 928000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 30
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # raster fills the band exactly
+  # https://www.law.go.kr/LSW/admRulLsInfoP.do?admRulId=53943&efYd=0
   - region: "KR"
     profile: "STD"
-    freq_start_mhz_x100: 92000
-    freq_end_mhz_x100: 92300
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 920000000
+    freq_end_hz: 923000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 23
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # raster fills the band exactly
+  # Low-power Radio-frequency Devices Technical Regulations 5.8.1.
+  # https://www.ncc.gov.tw/english/files/23070/102_5190_230703_1_doc_C.PDF
   - region: "TW"
     profile: "STD"
-    freq_start_mhz_x100: 92000
-    freq_end_mhz_x100: 92500
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 920000000
+    freq_end_hz: 925000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 27
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # raster fills the band exactly
+  # GKRCh 18-46-03-1; LBT, so no duty cycle.
+  # https://digital.gov.ru/uploaded/files/prilozhenie-12-k-reshenyu-gkrch-18-46-03-1.pdf
   - region: "RU"
     profile: "STD"
-    freq_start_mhz_x100: 86870
-    freq_end_mhz_x100: 86920
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 868700000
+    freq_end_hz: 869200000
+    duty_cycle_permille: 1000
     power_limit_dbm: 20
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # inert: four or fewer slots are held
   - region: "IN"
     profile: "STD"
-    freq_start_mhz_x100: 86500
-    freq_end_mhz_x100: 86700
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 865000000
+    freq_end_hz: 867000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 30
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # raster fills the band exactly; 500 kHz held at four
+  # https://rrf.rsm.govt.nz/smart-web/smart/page/-smart/domain/licence/LicenceSummary.wdk?id=219752
   - region: "NZ_865"
     profile: "STD"
-    freq_start_mhz_x100: 86400
-    freq_end_mhz_x100: 86800
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 864000000
+    freq_end_hz: 868000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 36
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # raster fills the band exactly
+  # NBTC, 920-925 MHz, 27 dBm, 10 %.
   - region: "TH"
     profile: "STD"
-    freq_start_mhz_x100: 92000
-    freq_end_mhz_x100: 92500
-    duty_cycle: 10
-    router_duty_cycle: 0
+    freq_start_hz: 920000000
+    freq_end_hz: 925000000
+    duty_cycle_permille: 100
     power_limit_dbm: 27
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # raster fills the band exactly
+  # 2.4 GHz WLAN band, SX128x and other wide radios only.
   - region: "LORA_24"
     profile: "STD"
-    freq_start_mhz_x100: 240000
-    freq_end_mhz_x100: 248350
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 2400000000
+    freq_end_hz: 2483500000
+    duty_cycle_permille: 1000
     power_limit_dbm: 10
     frequency_switching: false
     wide_lora: true
     override_slot: 0
-  - region: "UA_433"
-    profile: "STD"
-    freq_start_mhz_x100: 43300
-    freq_end_mhz_x100: 43470
-    duty_cycle: 10
-    router_duty_cycle: 0
-    power_limit_dbm: 10
-    frequency_switching: false
-    wide_lora: false
-    override_slot: 0
+    edge_clearance: false # by decision; centring already leaves clearance
+  # MCMC Class Assignment No. 1 of 2024, 433-435 MHz, 100 mW EIRP.
   - region: "MY_433"
     profile: "STD"
-    freq_start_mhz_x100: 43300
-    freq_end_mhz_x100: 43500
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 433000000
+    freq_end_hz: 435000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 20
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # raster fills the band exactly; 500 kHz held at four
+  # 919-924 MHz, 500 mW; frequency hopping above 923 MHz.
+  # https://www.mcmc.gov.my/skmmgovmy/media/General/pdf/Short-Range-Devices-Specification.pdf
   - region: "MY_919"
     profile: "STD"
-    freq_start_mhz_x100: 91900
-    freq_end_mhz_x100: 92400
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 919000000
+    freq_end_hz: 924000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 27
     frequency_switching: true
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # raster fills the band exactly
+  # IMDA TS SRD band 30d, 917-925 MHz, 100 mW.
   - region: "SG_923"
     profile: "STD"
-    freq_start_mhz_x100: 91700
-    freq_end_mhz_x100: 92500
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 917000000
+    freq_end_hz: 925000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 20
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # raster fills the band exactly
+  # NTC MC 03-05-2007 non-specific SRD, 433.050-434.790 MHz, 10 mW erp, no duty cycle.
   - region: "PH_433"
     profile: "STD"
-    freq_start_mhz_x100: 43300
-    freq_end_mhz_x100: 43470
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 433050000
+    freq_end_hz: 434790000
+    duty_cycle_permille: 1000
     power_limit_dbm: 10
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: false # by decision; centring already leaves clearance
+  # NTC MC 03-05-2007 non-specific SRD, 868.000-868.600 and 868.700-869.200 MHz,
+  # 25 mW erp; the gap between them is an alarm allocation.
   - region: "PH_868"
     profile: "STD"
-    freq_start_mhz_x100: 86800
-    freq_end_mhz_x100: 86940
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 868000000
+    freq_end_hz: 869200000
+    sub_bands_hz: [[868000000, 868600000], [868700000, 869200000]]
+    duty_cycle_permille: 1000
     power_limit_dbm: 14
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # inert: the upper block is held at four, the lower has clearance
+  # LoRa Alliance RP002-1.0.3 Table 1 (AS923-3).
   - region: "PH_915"
     profile: "STD"
-    freq_start_mhz_x100: 91500
-    freq_end_mhz_x100: 91800
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 915000000
+    freq_end_hz: 918000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 24
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # raster fills the band exactly
+  # 433.05-434.79 MHz, 25 mW EIRP, no duty cycle.
+  # https://www.acma.gov.au/licences/low-interference-potential-devices-lipd-class-licence
+  # https://gazette.govt.nz/notice/id/2022-go3100
   - region: "ANZ_433"
     profile: "STD"
-    freq_start_mhz_x100: 43305
-    freq_end_mhz_x100: 43479
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 433050000
+    freq_end_hz: 434790000
+    duty_cycle_permille: 1000
     power_limit_dbm: 14
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: false # by decision; centring already leaves clearance
+  # 433.075-434.775 MHz, 10 mW EIRP. https://github.com/meshtastic/firmware/issues/7204
   - region: "KZ_433"
     profile: "STD"
-    freq_start_mhz_x100: 43307
-    freq_end_mhz_x100: 43477
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 433075000
+    freq_end_hz: 434775000
+    duty_cycle_permille: 1000
     power_limit_dbm: 10
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: false # by decision; centring already leaves clearance
+  # 863-868 MHz, 25 mW EIRP, not at airfields. https://github.com/meshtastic/firmware/issues/7204
   - region: "KZ_863"
     profile: "STD"
-    freq_start_mhz_x100: 86300
-    freq_end_mhz_x100: 86800
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 863000000
+    freq_end_hz: 868000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 30
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # raster fills the band exactly
+  # https://www.nta.gov.np/uploads/contents/Radio-Frequency-Policy-2080-English.pdf
   - region: "NP_865"
     profile: "STD"
-    freq_start_mhz_x100: 86500
-    freq_end_mhz_x100: 86800
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 865000000
+    freq_end_hz: 868000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 30
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # raster fills the band exactly
+  # 902-907.5 MHz, 1 W. https://github.com/meshtastic/firmware/issues/3741
   - region: "BR_902"
     profile: "STD"
-    freq_start_mhz_x100: 90200
-    freq_end_mhz_x100: 90750
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 902000000
+    freq_end_hz: 907500000
+    duty_cycle_permille: 1000
     power_limit_dbm: 30
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: true # raster fills the band exactly
+  # ITU Region 1 amateur 2 m. Slot 26 is 144.510 MHz.
+  # https://www.iaru-r1.org/wp-content/uploads/2020/12/VHF-Bandplan.pdf
   - region: "ITU1_2M"
     profile: "HAM_20KHZ"
-    freq_start_mhz_x100: 14400
-    freq_end_mhz_x100: 14600
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 144000000
+    freq_end_hz: 146000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 30
     frequency_switching: false
     wide_lora: false
     override_slot: 26
+    edge_clearance: false # raster profile
+  # ITU Region 2 amateur 2 m. Slot 51 is 145.010 MHz. https://www.arrl.org/band-plan
   - region: "ITU2_2M"
     profile: "HAM_20KHZ"
-    freq_start_mhz_x100: 14400
-    freq_end_mhz_x100: 14800
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 144000000
+    freq_end_hz: 148000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 30
     frequency_switching: false
     wide_lora: false
     override_slot: 51
+    edge_clearance: false # raster profile
+  # 2006/771/EC band 47b: 500 mW e.r.p., only 865.6-865.8, 866.2-866.4, 866.8-867.0 and
+  # 867.4-867.6 MHz; 10 % for network access points, 2.5 % otherwise (a firmware hook).
   - region: "EU_866"
     profile: "LITE"
-    freq_start_mhz_x100: 86560
-    freq_end_mhz_x100: 86760
-    duty_cycle: 2
-    router_duty_cycle: 10
+    freq_start_hz: 865600000
+    freq_end_hz: 867600000
+    sub_bands_hz: [[865600000, 865800000], [866200000, 866400000], [866800000, 867000000], [867400000, 867600000]]
+    duty_cycle_permille: 25
     power_limit_dbm: 27
     frequency_switching: false
     wide_lora: false
     override_slot: 0
+    edge_clearance: false # raster profile
+  # 2018/1538 as amended by 2022/172, band 1: 500 mW e.r.p., at most 200 kHz, 10 % for
+  # network access points, 2.5 % otherwise. Not implemented in every member state.
+  - region: "EU_874"
+    profile: "LITE_FLEX"
+    freq_start_hz: 874000000
+    freq_end_hz: 874400000
+    duty_cycle_permille: 25
+    power_limit_dbm: 27
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+    edge_clearance: false # ETSI boundary specs govern
+  # 2018/1538 as amended by 2022/172, band 4: as band 1, but only 917.3-917.7 and
+  # 918.5-918.9 MHz. Not a harmonised core band.
+  - region: "EU_917"
+    profile: "LITE_FLEX"
+    freq_start_hz: 917300000
+    freq_end_hz: 918900000
+    sub_bands_hz: [[917300000, 917700000], [918500000, 918900000]]
+    duty_cycle_permille: 25
+    power_limit_dbm: 27
+    frequency_switching: false
+    wide_lora: false
+    override_slot: 0
+    edge_clearance: false # ETSI boundary specs govern
+  # EN 300 220 band P with narrow presets, 10.4 kHz padding.
   - region: "EU_N_868"
     profile: "NARROW"
-    freq_start_mhz_x100: 86940
-    freq_end_mhz_x100: 86965
-    duty_cycle: 10
-    router_duty_cycle: 0
+    freq_start_hz: 869400000
+    freq_end_hz: 869650000
+    duty_cycle_permille: 100
     power_limit_dbm: 27
     frequency_switching: false
     wide_lora: false
     override_slot: 1
+    edge_clearance: false # ETSI boundary specs govern
+  # ITU Region 3 amateur 2 m. Slot 33 is 144.650 MHz.
+  # https://www.iaru.org/wp-content/uploads/2020/01/R3-004-IARU-Region-3-Bandplan-rev.2.pdf
   - region: "ITU3_2M"
     profile: "HAM_20KHZ"
-    freq_start_mhz_x100: 14400
-    freq_end_mhz_x100: 14800
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 144000000
+    freq_end_hz: 148000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 30
     frequency_switching: false
     wide_lora: false
     override_slot: 33
+    edge_clearance: false # raster profile
+  # ITU Region 1 amateur 70 cm. Slot 37 is 433.650 MHz.
   - region: "ITU1_70CM"
     profile: "HAM_100KHZ"
-    freq_start_mhz_x100: 43000
-    freq_end_mhz_x100: 44000
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 430000000
+    freq_end_hz: 440000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 30
     frequency_switching: false
     wide_lora: false
     override_slot: 37
+    edge_clearance: false # raster profile
+  # ITU Region 2 amateur 70 cm. Slot 137 is 433.650 MHz. https://www.arrl.org/band-plan
   - region: "ITU2_70CM"
     profile: "HAM_100KHZ"
-    freq_start_mhz_x100: 42000
-    freq_end_mhz_x100: 45000
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 420000000
+    freq_end_hz: 450000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 30
     frequency_switching: false
     wide_lora: false
     override_slot: 137
+    edge_clearance: false # raster profile
+  # ITU Region 3 amateur 70 cm. Slot 37 is 433.650 MHz.
   - region: "ITU3_70CM"
     profile: "HAM_100KHZ"
-    freq_start_mhz_x100: 43000
-    freq_end_mhz_x100: 45000
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 430000000
+    freq_end_hz: 450000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 30
     frequency_switching: false
     wide_lora: false
     override_slot: 37
+    edge_clearance: false # raster profile
+  # ITU Region 2 amateur 1.25 m. Slot 37 is 223.650 MHz. https://www.arrl.org/band-plan
   - region: "ITU2_125CM"
     profile: "HAM_100KHZ"
-    freq_start_mhz_x100: 22000
-    freq_end_mhz_x100: 22500
-    duty_cycle: 100
-    router_duty_cycle: 0
+    freq_start_hz: 220000000
+    freq_end_hz: 225000000
+    duty_cycle_permille: 1000
     power_limit_dbm: 30
     frequency_switching: false
     wide_lora: false
     override_slot: 37
+    edge_clearance: false # raster profile

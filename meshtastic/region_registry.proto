@@ -19,8 +19,9 @@ option swift_prefix = "";
  *
  * Each fact is stated in exactly one table, and tables refer to each other by name:
  *
- *   RegionInfo       band, duty cycle, power limit, slot      -> one RegionProfile
- *   RegionProfile    slot layout, audio, licensing,
+ *   RegionInfo       band, sub-bands, duty cycle, power limit,
+ *                    slot, edge clearance                     -> one RegionProfile
+ *   RegionProfile    slot layout, raster, audio, licensing,
  *                    throttles, default preset                -> one ModemPresetList
  *   ModemPresetList  the presets a profile permits            -> ModemPreset values
  *   RegionSwapGroup  regions a preset moves a node between    -> RegionCode values
@@ -28,7 +29,12 @@ option swift_prefix = "";
  * Many regions share one profile, and profiles can share one preset list: NARROW
  * and HAM_100KHZ permit the same presets and differ in licensing, padding and
  * audio. Whatever follows from the tables is not stored, such as a preset being
- * reachable only by licensed operators, or the presets a swap group offers.
+ * reachable only by licensed operators, the presets a swap group offers, or the
+ * slot plan, which SCHEMA.md derives from the band, the profile and the bandwidth.
+ *
+ * Frequencies are exact hertz. Regulation beyond band edges, power and one duty
+ * cycle (airtime caps, listen-before-talk, role-dependent duty cycles) is firmware
+ * region hooks, not data.
  *
  * The radio parameters of each preset are in modem_preset_registry.proto.
  *
@@ -48,25 +54,27 @@ message RegionInfo {
   string profile = 2;
 
   /*
-   * Frequency range start in MHz x100 (e.g. 90200 = 902.00 MHz). A finer band edge
-   * is rounded down, 433.075 MHz to 43307; firmware holds the exact value.
+   * Lower band edge in Hz. An edge that has no exact value rounds inward, so this
+   * one rounds up.
    */
-  uint32 freq_start_mhz_x100 = 3;
+  uint32 freq_start_hz = 3;
 
-  /* Frequency range end in MHz x100 (e.g. 92800 = 928.00 MHz), rounded down */
-  uint32 freq_end_mhz_x100 = 4;
-
-  /*
-   * Duty cycle percentage (1-100, where 100 = no duty cycle restriction). A
-   * fractional limit is rounded down, 2.5% to 2; firmware holds the exact value.
-   */
-  uint32 duty_cycle = 5;
+  /* Upper band edge in Hz, rounded down when it has no exact value */
+  uint32 freq_end_hz = 4;
 
   /*
-   * Duty cycle percentage for a node in the ROUTER role, where regulation grants it
-   * more airtime than other nodes. 0 = duty_cycle applies to every role.
+   * The blocks the regulation permits inside the band edges, ascending and not
+   * overlapping, the first starting at freq_start_hz and the last ending at
+   * freq_end_hz. Empty means one block equal to the band edges; otherwise at least two.
+   * Each block gets its own slots and no slot straddles a gap.
    */
-  uint32 router_duty_cycle = 6;
+  repeated SubBand sub_bands = 5;
+
+  /*
+   * Duty cycle limit in per mille, 1-1000, where 1000 is no limit. A limit that
+   * depends on the node's role is a firmware region hook, not data.
+   */
+  uint32 duty_cycle_permille = 6;
 
   /* Maximum TX power in dBm. A licensed operator (User.is_licensed) may exceed it. */
   uint32 power_limit_dbm = 7;
@@ -77,7 +85,7 @@ message RegionInfo {
   /*
    * Whether this region uses wide LoRa. The boundary is 1 GHz: narrow LoRa is sub-GHz,
    * wide LoRa above it, and newer chips reach 6 GHz. A wide region needs a
-   * wide-capable radio, and its presets use their wide_bandwidth_khz. Kept as its own
+   * wide-capable radio, and its presets use their wide_bandwidth_hz. Kept as its own
    * field rather than read from the frequency range, because frequency mixing, or
    * tuning a wideband transmitter, can open ranges where the band does not decide it.
    */
@@ -91,6 +99,24 @@ message RegionInfo {
    *   N > 0  no hash, this region is fixed to slot N, counted from 1
    */
   sint32 override_slot = 10;
+
+  /*
+   * Drop one slot when the outermost slots' RF edges would sit closer to the band edge
+   * than a quarter of the bandwidth, unless fewer than five slots remain. Never set on
+   * a region whose profile has a unit_channel_hz.
+   */
+  bool edge_clearance = 11;
+}
+
+/*
+ * A block of permitted spectrum inside a region's band edges
+ */
+message SubBand {
+  /* Lower edge in Hz */
+  uint32 start_hz = 1;
+
+  /* Upper edge in Hz */
+  uint32 end_hz = 2;
 }
 
 /*
@@ -109,29 +135,38 @@ message RegionProfile {
    */
   ModemPreset default_preset = 3;
 
-  /* Gap between adjacent frequency slots in kHz, rounded down */
-  uint32 spacing_khz = 4;
+  /* Gap between adjacent frequency slots in Hz; a whole multiple of unit_channel_hz */
+  uint32 spacing_hz = 4;
 
   /*
-   * Guard band on each side of a frequency slot in kHz, rounded down. It widens the
-   * slot beyond the preset bandwidth, placing 62.5 kHz presets on a 100 kHz raster.
+   * Guard band on each side of a frequency slot in Hz, widening the slot beyond the
+   * bandwidth. Not stored when unit_channel_hz is set, which derives it.
    */
-  uint32 padding_khz = 5;
+  uint32 padding_hz = 5;
+
+  /*
+   * Regulatory channel raster in Hz, 0 for continuous spectrum. A signal occupies
+   * ceil(bandwidth / unit_channel_hz) bonded unit channels and is centred on the bond.
+   */
+  uint32 unit_channel_hz = 6;
+
+  /* Widest bandwidth in Hz the regions of this profile permit, 0 for no cap */
+  uint32 max_bandwidth_hz = 7;
 
   /* Whether audio mode is permitted */
-  bool audio_permitted = 6;
+  bool audio_permitted = 8;
 
   /*
    * Only a licensed operator (User.is_licensed) may select a region using this
    * profile; firmware rejects the region otherwise.
    */
-  bool licensed_only = 7;
+  bool licensed_only = 9;
 
   /* Multiplier on the position broadcast interval; 0 and 1 leave it unchanged */
-  uint32 position_throttle = 8;
+  uint32 position_throttle = 10;
 
   /* Multiplier on the telemetry broadcast interval; 0 and 1 leave it unchanged */
-  uint32 telemetry_throttle = 9;
+  uint32 telemetry_throttle = 11;
 
   /*
    * Hop budget a node launches with on this profile's regions, 1 to 15. This is the
@@ -139,7 +174,7 @@ message RegionProfile {
    * at 2 regardless and SCOPE_GLOBAL at the full 15. Congestion control may raise a
    * REGIONAL launch to this value and no further.
    */
-  uint32 default_hop_start = 10;
+  uint32 default_hop_start = 12;
 }
 
 /*
@@ -160,8 +195,8 @@ message ModemPresetList {
  * members' presets in each of them.
  *
  * Members need not share a frequency range. EU_868 and EU_N_868 overlap, while
- * EU_866 is a bespoke RFID band that overlaps neither. EU_874 and EU_917 follow
- * the same pattern if they are allocated.
+ * EU_866 is a bespoke band that overlaps neither. EU_874 and EU_917 permit the same
+ * presets as EU_866, so they cannot join the group.
  */
 message RegionSwapGroup {
   /* The member regions */

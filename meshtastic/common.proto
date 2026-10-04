@@ -138,8 +138,8 @@ enum Role {
  */
 enum RegionCode {
   /*
-   * Ukrainian law is harmonised with the EU, so a Ukrainian node uses REGION_EU_868 and
-   * there is no separate 868 MHz Ukrainian region.
+   * Ukrainian law is harmonised with the EU, so a Ukrainian node uses REGION_EU_868 or
+   * REGION_EU_433 and there is no separate Ukrainian region.
    */
 
   /* Region is not set */
@@ -170,61 +170,59 @@ enum RegionCode {
   REGION_TH = 12 [(meshtastic.enum_value_metadata) = {label: "Thailand"}];
   /* 2.4 GHz wide LoRa (worldwide) */
   REGION_LORA_24 = 13 [(meshtastic.enum_value_metadata) = {label: "2.4 Ghz"}];
-  /* Ukraine 433 MHz band */
-  REGION_UA_433 = 14 [(meshtastic.enum_value_metadata) = {label: "Ukraine 433MHz"}];
   /* Malaysia 433 MHz band */
-  REGION_MY_433 = 15 [(meshtastic.enum_value_metadata) = {label: "Malaysia 433MHz"}];
+  REGION_MY_433 = 14 [(meshtastic.enum_value_metadata) = {label: "Malaysia 433MHz"}];
   /* Malaysia 919 MHz band */
-  REGION_MY_919 = 16 [(meshtastic.enum_value_metadata) = {label: "Malaysia 919MHz"}];
+  REGION_MY_919 = 15 [(meshtastic.enum_value_metadata) = {label: "Malaysia 919MHz"}];
   /* Singapore 923 MHz band */
-  REGION_SG_923 = 17 [(meshtastic.enum_value_metadata) = {label: "Singapore 923MHz"}];
+  REGION_SG_923 = 16 [(meshtastic.enum_value_metadata) = {label: "Singapore 923MHz"}];
   /* Philippines 433 MHz band */
-  REGION_PH_433 = 18 [(meshtastic.enum_value_metadata) = {label: "Philippines 433MHz"}];
+  REGION_PH_433 = 17 [(meshtastic.enum_value_metadata) = {label: "Philippines 433MHz"}];
   /* Philippines 868 MHz band */
-  REGION_PH_868 = 19 [(meshtastic.enum_value_metadata) = {label: "Philippines 868MHz"}];
+  REGION_PH_868 = 18 [(meshtastic.enum_value_metadata) = {label: "Philippines 868MHz"}];
   /* Philippines 915 MHz band */
-  REGION_PH_915 = 20 [(meshtastic.enum_value_metadata) = {label: "Philippines 915MHz"}];
+  REGION_PH_915 = 19 [(meshtastic.enum_value_metadata) = {label: "Philippines 915MHz"}];
   /* Australia / New Zealand 433 MHz band */
-  REGION_ANZ_433 = 21 [(meshtastic.enum_value_metadata) = {label: "Australia / New Zealand 433MHz"}];
+  REGION_ANZ_433 = 20 [(meshtastic.enum_value_metadata) = {label: "Australia / New Zealand 433MHz"}];
   /* Kazakhstan 433 MHz band */
-  REGION_KZ_433 = 22 [(meshtastic.enum_value_metadata) = {label: "Kazakhstan 433MHz"}];
+  REGION_KZ_433 = 21 [(meshtastic.enum_value_metadata) = {label: "Kazakhstan 433MHz"}];
   /* Kazakhstan 863 MHz band */
-  REGION_KZ_863 = 23 [(meshtastic.enum_value_metadata) = {label: "Kazakhstan 863MHz"}];
+  REGION_KZ_863 = 22 [(meshtastic.enum_value_metadata) = {label: "Kazakhstan 863MHz"}];
   /* Nepal 865 MHz band */
-  REGION_NP_865 = 24 [(meshtastic.enum_value_metadata) = {label: "Nepal 865MHz"}];
+  REGION_NP_865 = 23 [(meshtastic.enum_value_metadata) = {label: "Nepal 865MHz"}];
   /* Brazil 902 MHz band */
-  REGION_BR_902 = 25 [(meshtastic.enum_value_metadata) = {label: "Brazil 902MHz"}];
+  REGION_BR_902 = 24 [(meshtastic.enum_value_metadata) = {label: "Brazil 902MHz"}];
   /* ITU Region 1 Amateur Radio 2m band (144-146 MHz) */
-  REGION_ITU1_2M = 26 [(meshtastic.enum_value_metadata) = {label: "ITU Region 1 / Amateur 2m"}];
+  REGION_ITU1_2M = 25 [(meshtastic.enum_value_metadata) = {label: "ITU Region 1 / Amateur 2m"}];
   /* ITU Region 2 Amateur Radio 2m band (144-148 MHz) */
-  REGION_ITU2_2M = 27 [(meshtastic.enum_value_metadata) = {label: "ITU Region 2 / Amateur 2m"}];
+  REGION_ITU2_2M = 26 [(meshtastic.enum_value_metadata) = {label: "ITU Region 2 / Amateur 2m"}];
   /* EU 866 MHz band (Band no. 47b of 2006/771/EC and subsequent amendments) for Non-specific short-range devices (SRD) */
-  REGION_EU_866 = 28 [(meshtastic.enum_value_metadata) = {label: "European Union 866MHz"}];
+  REGION_EU_866 = 27 [(meshtastic.enum_value_metadata) = {label: "European Union 866MHz"}];
   /* EU 874 MHz band (Band no. 1 of 2022/172/EC and subsequent amendments) for Non-specific short-range devices (SRD) */
-  REGION_EU_874 = 29 [(meshtastic.enum_value_metadata) = {label: "European Union 874MHz"}];
+  REGION_EU_874 = 28 [(meshtastic.enum_value_metadata) = {label: "European Union 874MHz"}];
   /* EU 917 MHz band (Band no. 4 of 2022/172/EC and subsequent amendments) for Non-specific short-range devices (SRD) */
-  REGION_EU_917 = 30 [(meshtastic.enum_value_metadata) = {label: "European Union 917MHz"}];
+  REGION_EU_917 = 29 [(meshtastic.enum_value_metadata) = {label: "European Union 917MHz"}];
   /* EU 868 MHz band, with narrow presets */
-  REGION_EU_N_868 = 31 [(meshtastic.enum_value_metadata) = {label: "European Union 868MHz (Narrow)"}];
+  REGION_EU_N_868 = 30 [(meshtastic.enum_value_metadata) = {label: "European Union 868MHz (Narrow)"}];
   /* ITU Region 3 Amateur Radio 2m band (144-148 MHz) */
-  REGION_ITU3_2M = 32 [(meshtastic.enum_value_metadata) = {label: "ITU Region 3 / Amateur 2m"}];
+  REGION_ITU3_2M = 31 [(meshtastic.enum_value_metadata) = {label: "ITU Region 3 / Amateur 2m"}];
   /* ITU Region 1 Amateur Radio 70cm band (430-440 MHz) */
-  REGION_ITU1_70CM = 33 [(meshtastic.enum_value_metadata) = {label: "ITU Region 1 / Amateur 70cm"}];
+  REGION_ITU1_70CM = 32 [(meshtastic.enum_value_metadata) = {label: "ITU Region 1 / Amateur 70cm"}];
   /*
    * ITU Region 2 Amateur Radio 70cm band (420-450 MHz)
    * Note: Some countries do not allocate 420-430 MHz or 440-450 MHz. Check local law!
    */
-  REGION_ITU2_70CM = 34 [(meshtastic.enum_value_metadata) = {label: "ITU Region 2 / Amateur 70cm"}];
+  REGION_ITU2_70CM = 33 [(meshtastic.enum_value_metadata) = {label: "ITU Region 2 / Amateur 70cm"}];
   /*
    * ITU Region 3 Amateur Radio 70cm band (430-450 MHz)
    * Note: Some countries do not allocate 440-450 MHz. Check local law!
    */
-  REGION_ITU3_70CM = 35 [(meshtastic.enum_value_metadata) = {label: "ITU Region 3 / Amateur 70cm"}];
+  REGION_ITU3_70CM = 34 [(meshtastic.enum_value_metadata) = {label: "ITU Region 3 / Amateur 70cm"}];
   /*
    * ITU Region 2 Amateur Radio 1.25m '125cm' band (220-225 MHz)
    * Note: Some countries do not allocate 220-222 MHz (Ex: USA/Canada). Check local law!
    */
-  REGION_ITU2_125CM = 36 [(meshtastic.enum_value_metadata) = {label: "ITU Region 2 / Amateur 1.25m"}];
+  REGION_ITU2_125CM = 35 [(meshtastic.enum_value_metadata) = {label: "ITU Region 2 / Amateur 1.25m"}];
 }
 
 /*

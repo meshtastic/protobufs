@@ -38,8 +38,8 @@
 # RegionCode value, so it holds the highest value plus one; schema_lint's indexed
 # rule checks the cap against the enum. Worst case is ~120 bytes, well inside the
 # 512-byte MAX_TO_FROM_RADIO_SIZE cap on FromRadio.
-*LoRaRegionPresetMap.groups        max_count:8
-*LoRaRegionPresetMap.region_groups max_count:37
+*LoRaRegionPresetMap.groups        max_count:9
+*LoRaRegionPresetMap.region_groups max_count:36
 *LoRaRegionPresetMap.region_groups int_size:8
 *LoRaPresetGroup.default_preset    int_size:8
 

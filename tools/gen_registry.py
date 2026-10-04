@@ -26,9 +26,10 @@ Regions and presets: entries name a RegionCode or ModemPreset, values are in ran
 and any change to the data must raise `revision` in its YAML. regions.yaml holds
 four tables - regions, profiles, preset lists, swap groups - that refer to each
 other by name, and each fact is stated once: an unreferenced or duplicated table
-entry is rejected. Registry fields keep integer units (MHz x100, percent, kHz); a
-value firmware holds as a fraction is entered rounded down, and firmware keeps the
-exact value.
+entry is rejected. Frequencies and bandwidths are exact hertz and duty cycles per
+mille; a band edge with no exact value rounds inward. UNSET is a copy of US. Every
+preset a region permits, and every bandwidth code that is not NO_PLAN_CELLS, gets a
+slot plan (SCHEMA.md section 6) that stays inside its block.
 """
 from __future__ import annotations
 
@@ -49,6 +50,7 @@ REGISTRY = os.path.join(ROOT, 'registry')
 HARDWARE = os.path.join(REGISTRY, 'hardware')
 GENERATED = os.path.join(REGISTRY, 'generated')
 COMMON_PROTO = os.path.join(ROOT, 'meshtastic', 'common.proto')
+CONFIG_PROTO = os.path.join(ROOT, 'meshtastic', 'config.proto')
 
 LEGACY_FILE = '00-legacy.yaml'
 VENDOR_MAX = 0x3F
@@ -59,14 +61,28 @@ VENDOR_SLUG = re.compile(r'^[a-z0-9]+(?:-[a-z0-9]+)*$')
 UPPER_WORDS = re.compile(r'^[A-Z0-9]+(?:_[A-Z0-9]+)*$')
 
 REGION_TABLES = ('preset_lists', 'profiles', 'swap_groups', 'regions')
-REGION_INTS = ('freq_start_mhz_x100', 'freq_end_mhz_x100', 'duty_cycle', 'router_duty_cycle', 'power_limit_dbm')
-REGION_BOOLS = ('frequency_switching', 'wide_lora')
-REGION_KEYS = ('region', 'profile') + REGION_INTS + REGION_BOOLS + ('override_slot',)
-PROFILE_INTS = ('spacing_khz', 'padding_khz', 'position_throttle', 'telemetry_throttle',
+REGION_INTS = ('freq_start_hz', 'freq_end_hz', 'duty_cycle_permille', 'power_limit_dbm')
+REGION_BOOLS = ('frequency_switching', 'wide_lora', 'edge_clearance')
+REGION_KEYS = ('region', 'profile') + REGION_INTS + ('frequency_switching', 'wide_lora', 'override_slot',
+                                                     'edge_clearance')
+PROFILE_INTS = ('spacing_hz', 'unit_channel_hz', 'max_bandwidth_hz', 'position_throttle', 'telemetry_throttle',
                 'default_hop_start')
 PROFILE_BOOLS = ('audio_permitted', 'licensed_only')
 PROFILE_KEYS = ('name', 'preset_list', 'default_preset') + PROFILE_INTS + PROFILE_BOOLS
-PRESET_KEYS = ('preset', 'name', 'bandwidth_khz', 'wide_bandwidth_khz', 'spread_factor', 'coding_rate')
+PRESET_KEYS = ('preset', 'name', 'bandwidth_hz', 'wide_bandwidth_hz', 'spread_factor', 'coding_rate')
+
+# Region and bandwidth code pairs with no slot plan: the bandwidth is wider than every
+# sub-band or above the profile's cap. A change to this set is a change to what users
+# can select, so it is stated here rather than accepted silently.
+NO_PLAN_CELLS = frozenset(
+    [(r, hz) for r in ('EU_866', 'EU_874', 'EU_917')
+     for hz in (203125, 250000, 406250, 500000, 812500, 1625000)] +
+    [('EU_868', hz) for hz in (406250, 500000, 812500, 1625000)] +
+    [('EU_N_868', hz) for hz in (250000, 406250, 500000, 812500, 1625000)] +
+    [(r, hz) for r in ('RU', 'PH_868') for hz in (812500, 1625000)])
+
+# The slot plan keeps at least this many gaps when it drops a slot for edge clearance.
+CLEARANCE_MIN_GAPS = 4
 
 OUTPUTS = ('hw_vendors.json', 'hw_devices.json', 'regions.json', 'modem_presets.json')
 
@@ -244,14 +260,49 @@ def build_revision(errors, where, doc):
     return revision
 
 
-def build_presets(doc, enums, errors):
+def documented_bandwidth_codes(config_text):
+    """The fractional codes LoRaConfig.bandwidth's comment lists, as {code: Hz}."""
+    m = re.search(r'/\*((?:(?!\*/).)*?)\*/\s*uint32 bandwidth = ', config_text, re.S)
+    if not m:
+        raise SystemExit('error: LoRaConfig.bandwidth not found in config.proto')
+    return {int(code): round(float(khz) * 1000) for code, khz in re.findall(r'(\d+) = (\d+(?:\.\d+)?)', m.group(1))}
+
+
+def build_bandwidth_codes(errors, where, entries, documented):
+    """The LoRaConfig.bandwidth code table, which config.proto's comment must agree with."""
+    if not isinstance(entries, list) or not entries:
+        errors.add(where, 'bandwidth_codes must be a non-empty list')
+        return []
+    out, seen = [], set()
+    for index, entry in enumerate(entries):
+        cwhere = '%s bandwidth_codes[%d]' % (where, index)
+        if not exact_keys(errors, cwhere, entry, ('code', 'bandwidth_hz')):
+            continue
+        if not check_ints(errors, cwhere, entry, ('code', 'bandwidth_hz'), low=1):
+            continue
+        if entry['code'] in seen:
+            errors.add(cwhere, 'code %d is listed twice' % entry['code'])
+        seen.add(entry['code'])
+        if entry['code'] not in documented and entry['bandwidth_hz'] != entry['code'] * 1000:
+            errors.add(cwhere, 'code %d is kHz as it stands unless config.proto documents it' % entry['code'])
+        out.append({'code': entry['code'], 'bandwidth_hz': entry['bandwidth_hz']})
+    for code, hz in sorted(documented.items()):
+        listed = next((e['bandwidth_hz'] for e in out if e['code'] == code), None)
+        if listed != hz:
+            errors.add(where, 'config.proto documents bandwidth code %d as %d Hz, the table has %s'
+                       % (code, hz, listed))
+    return out
+
+
+def build_presets(doc, enums, errors, documented_codes=None):
     where = 'modem_presets.yaml'
-    if not exact_keys(errors, where, doc, ('revision', 'presets')):
+    if not exact_keys(errors, where, doc, ('revision', 'presets', 'bandwidth_codes')):
         return None
     revision = build_revision(errors, where, doc)
     if not isinstance(doc['presets'], list):
         errors.add(where, 'presets must be a list')
         return None
+    codes = build_bandwidth_codes(errors, where, doc['bandwidth_codes'], documented_codes or {})
 
     out, seen = [], set()
     for index, preset in enumerate(doc['presets']):
@@ -265,8 +316,8 @@ def build_presets(doc, enums, errors):
         if name in seen:
             errors.add(pwhere, 'defined twice')
         seen.add(name)
-        check_ints(errors, pwhere, preset, ('bandwidth_khz',), low=1)
-        check_ints(errors, pwhere, preset, ('wide_bandwidth_khz',))
+        check_ints(errors, pwhere, preset, ('bandwidth_hz',), low=1)
+        check_ints(errors, pwhere, preset, ('wide_bandwidth_hz',))
         if not is_int(preset['spread_factor']) or not 5 <= preset['spread_factor'] <= 12:
             errors.add(pwhere, 'spread_factor must be 5-12')
         if not is_int(preset['coding_rate']) or not 5 <= preset['coding_rate'] <= 8:
@@ -276,7 +327,7 @@ def build_presets(doc, enums, errors):
         out.append(entry)
 
     out.sort(key=lambda e: enums.presets[e['preset']])
-    return {'revision': revision, 'presets': out}
+    return {'revision': revision, 'presets': out, 'bandwidth_codes': codes}
 
 
 # --- regions ----------------------------------------------------------------
@@ -291,6 +342,91 @@ def table_name(errors, where, entry, names, label):
         errors.add(where, '%s %s is defined twice' % (label, name))
         return None
     return name
+
+
+def build_sub_bands(errors, where, entry):
+    """sub_bands_hz as SubBand messages; absent is one block equal to the band edges."""
+    if 'sub_bands_hz' not in entry:
+        return []
+    value = entry['sub_bands_hz']
+    if (not isinstance(value, list) or len(value) < 2 or
+            not all(isinstance(b, list) and len(b) == 2 and all(is_int(e) for e in b) for b in value)):
+        errors.add(where, 'sub_bands_hz must list at least two [start, end] pairs of integers')
+        return []
+    if value[0][0] != entry['freq_start_hz'] or value[-1][1] != entry['freq_end_hz']:
+        errors.add(where, 'sub_bands_hz must start at freq_start_hz and end at freq_end_hz')
+    for (start, end), following in zip(value, value[1:] + [None]):
+        if start >= end:
+            errors.add(where, 'sub-band [%d, %d] is empty or reversed' % (start, end))
+        if following is not None and end > following[0]:
+            errors.add(where, 'sub-bands [%d, %d] and [%d, %d] overlap or are out of order'
+                       % (start, end, following[0], following[1]))
+    return [{'start_hz': start, 'end_hz': end} for start, end in value]
+
+
+def segment_plan(start, end, bandwidth, profile, edge_clearance):
+    """One block's slots as (count, pitch, first_centre) in half-hertz, or None (SCHEMA.md section 6)."""
+    span, bw = 2 * (end - start), 2 * bandwidth
+    spacing, unit = 2 * profile['spacing_hz'], 2 * profile['unit_channel_hz']
+    if unit:
+        padding = (-(-bw // unit) * unit - bw) // 2
+    else:
+        padding = 2 * profile.get('padding_hz', 0)
+    if span < 2 * padding + bw:
+        return None
+    pitch = spacing + 2 * padding + bw
+    count = (span + spacing) // pitch
+
+    def extent(n):
+        return n * (bw + 2 * padding) + (n - 1) * spacing
+
+    if edge_clearance and 2 * (span - extent(count)) + 4 * padding < bw and count - 1 >= CLEARANCE_MIN_GAPS:
+        count -= 1
+    offset = (span - extent(count)) // 2
+    if unit:
+        offset = offset // unit * unit
+    return count, pitch, 2 * start + offset + padding + bw // 2
+
+
+def slot_plan(region, profile, bandwidth):
+    """[(start, end, count, pitch, first_centre)] per block holding a slot; empty is no plan."""
+    if profile['max_bandwidth_hz'] and bandwidth > profile['max_bandwidth_hz']:
+        return []
+    blocks = [(b['start_hz'], b['end_hz']) for b in region.get('sub_bands', [])] or \
+        [(region['freq_start_hz'], region['freq_end_hz'])]
+    plan = []
+    for start, end in blocks:
+        segment = segment_plan(start, end, bandwidth, profile, region['edge_clearance'])
+        if segment:
+            plan.append((start, end) + segment)
+    return plan
+
+
+def check_slot_plans(errors, where, regions, profiles, lists, presets, codes):
+    """Every permitted preset has a plan, and every plan's slots stay inside their block."""
+    def inside(label, plan, bandwidth):
+        for start, end, count, pitch, first in plan:
+            if count < 1 or first - bandwidth < 2 * start or first + (count - 1) * pitch + bandwidth > 2 * end:
+                errors.add(label, 'slots leave the block %d-%d Hz' % (start, end))
+
+    no_plan = set()
+    for code, region in regions.items():
+        name, profile = code[len('REGION_'):], profiles[region['profile']]
+        for preset in lists[profile['preset_list']]:
+            bandwidth = presets[preset]['wide_bandwidth_hz' if region['wide_lora'] else 'bandwidth_hz']
+            plan = slot_plan(region, profile, bandwidth)
+            if not plan:
+                errors.add('%s %s' % (where, name), 'permits %s but has no slot for %d Hz' % (preset, bandwidth))
+            inside('%s %s %s' % (where, name, preset), plan, bandwidth)
+        for entry in codes:
+            plan = slot_plan(region, profile, entry['bandwidth_hz'])
+            if not plan:
+                no_plan.add((name, entry['bandwidth_hz']))
+            inside('%s %s bandwidth code %d' % (where, name, entry['code']), plan, entry['bandwidth_hz'])
+    expected = {(name, hz) for name, hz in NO_PLAN_CELLS if 'REGION_' + name in regions}
+    for name, hz in sorted(no_plan ^ expected):
+        errors.add(where, '%s %s a slot plan for %d Hz; NO_PLAN_CELLS says otherwise'
+                   % (name, 'has no' if (name, hz) in no_plan else 'has', hz))
 
 
 def build_regions(doc, enums, preset_registry, errors):
@@ -336,7 +472,7 @@ def build_regions(doc, enums, preset_registry, errors):
     profiles, profile_by_content, lists_used = {}, {}, set()
     for index, entry in enumerate(doc['profiles']):
         pwhere = '%s profiles[%d]' % (where, index)
-        if not exact_keys(errors, pwhere, entry, PROFILE_KEYS):
+        if not exact_keys(errors, pwhere, entry, PROFILE_KEYS, ('padding_hz',)):
             continue
         pname = table_name(errors, pwhere, entry, profiles, 'profile')
         if not pname:
@@ -350,8 +486,20 @@ def build_regions(doc, enums, preset_registry, errors):
             errors.add(pwhere, 'default_preset %s is not in preset list %s' % (entry['default_preset'], entry['preset_list']))
         if not check_ints(errors, pwhere, entry, PROFILE_INTS) or not check_bools(errors, pwhere, entry, PROFILE_BOOLS):
             continue
+        unit = entry['unit_channel_hz']
+        # A raster derives its padding, so a stored one would be a dead second value.
+        if unit and 'padding_hz' in entry:
+            errors.add(pwhere, 'has unit_channel_hz, which derives the padding; drop padding_hz')
+        elif not unit and 'padding_hz' not in entry:
+            errors.add(pwhere, 'missing padding_hz')
+        elif not unit and not check_ints(errors, pwhere, entry, ('padding_hz',)):
+            continue
+        if unit and entry['spacing_hz'] % unit:
+            errors.add(pwhere, 'spacing_hz must be a whole multiple of unit_channel_hz, or slots leave the raster')
         profile = {key: entry[key] for key in PROFILE_KEYS}
         profile['default_preset'] = default
+        if not unit and 'padding_hz' in entry:
+            profile = dict(list(profile.items())[:4] + [('padding_hz', entry['padding_hz'])] + list(profile.items())[4:])
         content = tuple(v for k, v in profile.items() if k != 'name')
         if content in profile_by_content:
             errors.add(pwhere, 'is identical to profile %s' % profile_by_content[content])
@@ -364,10 +512,9 @@ def build_regions(doc, enums, preset_registry, errors):
     regions, profiles_used = {}, set()
     for index, entry in enumerate(doc['regions']):
         rwhere = '%s regions[%d]' % (where, index)
-        if not exact_keys(errors, rwhere, entry, REGION_KEYS):
+        if not exact_keys(errors, rwhere, entry, REGION_KEYS, ('sub_bands_hz',)):
             continue
-        code = enum_name(errors, rwhere, 'REGION_', entry['region'], enums.regions, 'RegionCode',
-                         reserved=('REGION_UNSET',))
+        code = enum_name(errors, rwhere, 'REGION_', entry['region'], enums.regions, 'RegionCode')
         if not code:
             continue
         rwhere = '%s %s' % (where, entry['region'])
@@ -381,26 +528,41 @@ def build_regions(doc, enums, preset_registry, errors):
             continue
         if not check_ints(errors, rwhere, entry, REGION_INTS) or not check_bools(errors, rwhere, entry, REGION_BOOLS):
             continue
-        if entry['freq_start_mhz_x100'] >= entry['freq_end_mhz_x100']:
-            errors.add(rwhere, 'freq_start_mhz_x100 must be below freq_end_mhz_x100')
-        if not 1 <= entry['duty_cycle'] <= 100:
-            errors.add(rwhere, 'duty_cycle must be 1-100')
-        if entry['router_duty_cycle'] > 100:
-            errors.add(rwhere, 'router_duty_cycle must be 0-100')
-        if entry['router_duty_cycle'] == entry['duty_cycle']:
-            errors.add(rwhere, 'router_duty_cycle repeats duty_cycle; leave it 0')
+        if entry['freq_start_hz'] >= entry['freq_end_hz']:
+            errors.add(rwhere, 'freq_start_hz must be below freq_end_hz')
+        if not 1 <= entry['duty_cycle_permille'] <= 1000:
+            errors.add(rwhere, 'duty_cycle_permille must be 1-1000')
         if not is_int(entry['override_slot']) or not -1 <= entry['override_slot'] <= 32767:
             errors.add(rwhere, 'override_slot must be -1, 0 or a slot number')
+        # Raster quantisation can leave the dropped slot's room all on one side, so the
+        # clearance rule's guarantee does not hold there.
+        if entry['edge_clearance'] and profile['unit_channel_hz']:
+            errors.add(rwhere, 'edge_clearance needs a continuous profile, and %s has a raster' % entry['profile'])
         if entry['wide_lora'] and presets is not None:
             for name in lists[profile['preset_list']]:
-                if not presets[name]['wide_bandwidth_khz']:
-                    errors.add(rwhere, 'is wide_lora but permits %s, which has no wide_bandwidth_khz' % name)
-        region = {key: entry[key] for key in REGION_KEYS}
-        del region['region']
-        regions[code] = dict(region_code=code, **region)
+                if not presets[name]['wide_bandwidth_hz']:
+                    errors.add(rwhere, 'is wide_lora but permits %s, which has no wide_bandwidth_hz' % name)
+        sub_bands = build_sub_bands(errors, rwhere, entry)
+        region = {'region_code': code, 'profile': entry['profile'],
+                  'freq_start_hz': entry['freq_start_hz'], 'freq_end_hz': entry['freq_end_hz']}
+        if sub_bands:
+            region['sub_bands'] = sub_bands
+        region.update((key, entry[key]) for key in REGION_KEYS[4:])
+        regions[code] = region
     for pname in profiles:
         if pname not in profiles_used:
             errors.add(where, 'profile %s is not used by any region' % pname)
+
+    us, unset = regions.get('REGION_US'), regions.get('REGION_UNSET')
+    if unset is None:
+        errors.add(where, 'UNSET has no entry; it is a copy of US')
+    elif us is not None:
+        differ = sorted(k for k in set(us) | set(unset) if k != 'region_code' and us.get(k) != unset.get(k))
+        if differ:
+            errors.add(where, 'UNSET is a copy of US but differs in %s' % ', '.join(differ))
+
+    if presets is not None and not errors:
+        check_slot_plans(errors, where, regions, profiles, lists, presets, preset_registry['bandwidth_codes'])
 
     swap_groups, grouped = [], {}
     for index, entry in enumerate(doc['swap_groups']):
@@ -470,7 +632,9 @@ def generate(enums, errors):
         if fname.endswith('.yaml'):
             files[fname] = load_yaml(os.path.join(HARDWARE, fname), errors)
     vendors, devices = build_hardware(files, errors)
-    presets = build_presets(load_yaml(os.path.join(REGISTRY, 'modem_presets.yaml'), errors), enums, errors)
+    with open(CONFIG_PROTO, encoding='utf-8') as fh:
+        documented = documented_bandwidth_codes(fh.read())
+    presets = build_presets(load_yaml(os.path.join(REGISTRY, 'modem_presets.yaml'), errors), enums, errors, documented)
     regions = build_regions(load_yaml(os.path.join(REGISTRY, 'regions.yaml'), errors), enums, presets, errors)
     return dict(zip(OUTPUTS, (vendors, devices, regions, presets)))
 
@@ -528,53 +692,86 @@ def selftest(enums):
     expect('an allocated slug changed', True, against_base([dict(board, slug='RENAMED_BOARD')]))
     expect('an allocation kept under a new name', False, against_base([dict(board, name='Better')]))
 
-    fast = {'preset': 'LONG_FAST', 'name': 'LongFast', 'bandwidth_khz': 250, 'wide_bandwidth_khz': 812,
+    fast = {'preset': 'LONG_FAST', 'name': 'LongFast', 'bandwidth_hz': 250000, 'wide_bandwidth_hz': 812500,
             'spread_factor': 11, 'coding_rate': 5}
-    narrow = {'preset': 'NARROW_FAST', 'name': 'NarrowFast', 'bandwidth_khz': 62, 'wide_bandwidth_khz': 0,
+    narrow = {'preset': 'NARROW_FAST', 'name': 'NarrowFast', 'bandwidth_hz': 62500, 'wide_bandwidth_hz': 0,
               'spread_factor': 7, 'coding_rate': 6}
+    codes = [{'code': 125, 'bandwidth_hz': 125000}, {'code': 62, 'bandwidth_hz': 62500}]
+    documented = {62: 62500}
 
-    def presets(*entries):
-        return lambda errors: build_presets({'revision': 1, 'presets': list(entries)}, enums, errors)
+    def presets(*entries, codes=codes):
+        doc = {'revision': 1, 'presets': list(entries), 'bandwidth_codes': list(codes)}
+        return lambda errors: build_presets(doc, enums, errors, documented)
 
     expect('valid presets', False, presets(fast, narrow))
     expect('an unknown preset', True, presets(dict(fast, preset='WARP')))
     expect('a preset defined twice', True, presets(fast, fast))
     expect('spread factor 13', True, presets(dict(fast, spread_factor=13)))
     expect('coding rate 9', True, presets(dict(fast, coding_rate=9)))
-    expect('zero bandwidth', True, presets(dict(fast, bandwidth_khz=0)))
+    expect('zero bandwidth', True, presets(dict(fast, bandwidth_hz=0)))
+    expect('a bandwidth code config.proto documents differently', True,
+           presets(fast, codes=[codes[0], {'code': 62, 'bandwidth_hz': 62000}]))
+    expect('a documented bandwidth code missing', True, presets(fast, codes=[codes[0]]))
+    expect('an undocumented bandwidth code that is not kHz', True,
+           presets(fast, codes=[{'code': 125, 'bandwidth_hz': 125500}, codes[1]]))
+    expect('a bandwidth code listed twice', True, presets(fast, codes=codes + [codes[0]]))
 
-    preset_registry = build_presets({'revision': 1, 'presets': [fast, narrow]}, enums, Errors())
+    preset_registry = build_presets({'revision': 1, 'presets': [fast, narrow], 'bandwidth_codes': codes},
+                                    enums, Errors(), documented)
     lists = ({'name': 'STD', 'presets': ['LONG_FAST']}, {'name': 'NARROW', 'presets': ['NARROW_FAST']})
-    std = {'name': 'STD', 'preset_list': 'STD', 'default_preset': 'LONG_FAST', 'spacing_khz': 0, 'padding_khz': 0,
-           'audio_permitted': True, 'licensed_only': False, 'position_throttle': 1, 'telemetry_throttle': 1,
-           'default_hop_start': 3}
-    ham = dict(std, name='HAM', preset_list='NARROW', default_preset='NARROW_FAST', padding_khz=18, licensed_only=True)
-    us = {'region': 'US', 'profile': 'STD', 'freq_start_mhz_x100': 90200, 'freq_end_mhz_x100': 92800,
-          'duty_cycle': 100, 'router_duty_cycle': 0, 'power_limit_dbm': 30, 'frequency_switching': False,
-          'wide_lora': False, 'override_slot': 0}
-    ham70 = dict(us, region='ITU1_70CM', profile='HAM', freq_start_mhz_x100=43000, freq_end_mhz_x100=44000,
-                 override_slot=37)
+    std = {'name': 'STD', 'preset_list': 'STD', 'default_preset': 'LONG_FAST', 'spacing_hz': 0, 'padding_hz': 0,
+           'unit_channel_hz': 0, 'max_bandwidth_hz': 0, 'audio_permitted': True, 'licensed_only': False,
+           'position_throttle': 1, 'telemetry_throttle': 1, 'default_hop_start': 3}
+    ham = {k: v for k, v in std.items() if k != 'padding_hz'}
+    ham.update(name='HAM', preset_list='NARROW', default_preset='NARROW_FAST', unit_channel_hz=100000,
+               licensed_only=True)
+    us = {'region': 'US', 'profile': 'STD', 'freq_start_hz': 902000000, 'freq_end_hz': 928000000,
+          'duty_cycle_permille': 1000, 'power_limit_dbm': 30, 'frequency_switching': False, 'wide_lora': False,
+          'override_slot': 0, 'edge_clearance': True}
+    unset = dict(us, region='UNSET')
+    ham70 = dict(us, region='ITU1_70CM', profile='HAM', freq_start_hz=430000000, freq_end_hz=440000000,
+                 override_slot=37, edge_clearance=False)
     cn = dict(us, region='CN')
 
-    def regions(lists=lists, profiles=(std, ham), regions=(us, ham70), swap_groups=(), revision=1):
+    def regions(lists=lists, profiles=(std, ham), regions=(unset, us, ham70), swap_groups=(), revision=1):
         doc = {'revision': revision, 'preset_lists': list(lists), 'profiles': list(profiles),
                'regions': list(regions), 'swap_groups': list(swap_groups)}
         return lambda errors: build_regions(doc, enums, preset_registry, errors)
 
+    def with_cn(**fields):
+        return regions(regions=(unset, us, ham70, dict(cn, **fields)))
+
+    def without(entry, key):
+        return {k: v for k, v in entry.items() if k != key}
+
     expect('valid region tables', False, regions())
     expect('revision 0', True, regions(revision=0))
-    expect('an unknown region', True, regions(regions=(us, dict(ham70, region='MARS'))))
-    expect('the UNSET region', True, regions(regions=(us, ham70, dict(us, region='UNSET'))))
-    expect('a region defined twice', True, regions(regions=(us, ham70, us)))
-    expect('an undefined profile', True, regions(regions=(us, ham70, dict(cn, profile='NOPE'))))
-    expect('reversed frequencies', True, regions(regions=(dict(us, freq_end_mhz_x100=90000), ham70)))
-    expect('a zero duty cycle', True, regions(regions=(dict(us, duty_cycle=0), ham70)))
-    expect('a router duty cycle repeating duty_cycle', True,
-           regions(regions=(dict(us, duty_cycle=10, router_duty_cycle=10), ham70)))
-    expect('a router duty cycle of its own', False, regions(regions=(dict(us, duty_cycle=2, router_duty_cycle=10), ham70)))
-    expect('override slot -2', True, regions(regions=(us, dict(ham70, override_slot=-2))))
+    expect('an unknown region', True, regions(regions=(unset, us, dict(ham70, region='MARS'))))
+    expect('no UNSET region', True, regions(regions=(us, ham70)))
+    expect('an UNSET region differing from US', True, regions(regions=(dict(unset, power_limit_dbm=20), us, ham70)))
+    expect('a region defined twice', True, regions(regions=(unset, us, ham70, us)))
+    expect('an undefined profile', True, with_cn(profile='NOPE'))
+    expect('reversed frequencies', True, with_cn(freq_end_hz=460000000))
+    expect('a zero duty cycle', True, with_cn(duty_cycle_permille=0))
+    expect('a duty cycle above 1000 per mille', True, with_cn(duty_cycle_permille=1001))
+    expect('a region without edge_clearance', True, regions(regions=(unset, us, ham70, without(cn, 'edge_clearance'))))
+    expect('edge clearance on a raster profile', True, regions(regions=(unset, us, dict(ham70, edge_clearance=True))))
+    expect('a raster profile storing padding', True, regions(profiles=(std, dict(ham, padding_hz=18750))))
+    expect('a continuous profile without padding', True, regions(profiles=(without(std, 'padding_hz'), ham)))
+    expect('spacing off the raster', True, regions(profiles=(std, dict(ham, spacing_hz=50000))))
+    expect('override slot -2', True, regions(regions=(unset, us, dict(ham70, override_slot=-2))))
     expect('a wide region permitting a preset without a wide form', True,
-           regions(regions=(us, dict(ham70, wide_lora=True))))
+           regions(regions=(unset, us, dict(ham70, wide_lora=True))))
+    expect('a region too narrow for a preset it permits', True, with_cn(freq_end_hz=470100000))
+    expect('valid sub-bands', False, with_cn(sub_bands_hz=[[902000000, 910000000], [920000000, 928000000]]))
+    expect('one sub-band', True, with_cn(sub_bands_hz=[[902000000, 928000000]]))
+    expect('sub-bands out of order', True,
+           with_cn(sub_bands_hz=[[902000000, 910000000], [920000000, 928000000], [912000000, 914000000]]))
+    expect('overlapping sub-bands', True, with_cn(sub_bands_hz=[[902000000, 915000000], [910000000, 928000000]]))
+    expect('sub-bands starting above the band', True,
+           with_cn(sub_bands_hz=[[903000000, 910000000], [920000000, 928000000]]))
+    expect('sub-bands ending below the band', True,
+           with_cn(sub_bands_hz=[[902000000, 910000000], [920000000, 927000000]]))
     expect('a default preset outside its list', True, regions(profiles=(std, dict(ham, default_preset='LONG_FAST'))))
     expect('a listed preset without parameters', True,
            regions(lists=({'name': 'STD', 'presets': ['LONG_FAST', 'SHORT_FAST']}, lists[1])))
@@ -584,15 +781,46 @@ def selftest(enums):
     expect('two lists holding the same presets', True,
            regions(lists=lists + ({'name': 'COPY', 'presets': ['LONG_FAST']},),
                    profiles=(std, ham, dict(std, name='OTHER', preset_list='COPY')),
-                   regions=(us, ham70, dict(cn, profile='OTHER'))))
+                   regions=(unset, us, ham70, dict(cn, profile='OTHER'))))
     expect('two identical profiles', True,
-           regions(profiles=(std, ham, dict(std, name='OTHER')), regions=(us, ham70, dict(cn, profile='OTHER'))))
+           regions(profiles=(std, ham, dict(std, name='OTHER')), regions=(unset, us, ham70, dict(cn, profile='OTHER'))))
     expect('a valid swap group', False, regions(swap_groups=({'regions': ['US', 'ITU1_70CM']},)))
     expect('a swap group of one region', True, regions(swap_groups=({'regions': ['US']},)))
     expect('a region in two swap groups', True,
            regions(swap_groups=({'regions': ['US', 'ITU1_70CM']}, {'regions': ['ITU1_70CM', 'US']})))
     expect('swap siblings permitting the same preset', True,
-           regions(regions=(us, ham70, cn), swap_groups=({'regions': ['US', 'CN']},)))
+           regions(regions=(unset, us, ham70, cn), swap_groups=({'regions': ['US', 'CN']},)))
+
+    def plan_is(label, start, end, bandwidth, expected, clearance=False, sub_bands=(), **profile):
+        region = {'freq_start_hz': start, 'freq_end_hz': end, 'edge_clearance': clearance,
+                  'sub_bands': [{'start_hz': a, 'end_hz': b} for a, b in sub_bands]}
+        profile = dict({'spacing_hz': 0, 'padding_hz': 0, 'unit_channel_hz': 0, 'max_bandwidth_hz': 0}, **profile)
+
+        def run(errors):
+            got = [segment[2:] for segment in slot_plan(region, profile, bandwidth)]
+            if got != expected:
+                errors.add(label, 'plan is %r, not %r' % (got, expected))
+        expect(label, False, run)
+
+    # (count, pitch, first centre), all in half-hertz.
+    plan_is('US at 250 kHz drops one slot for edge clearance', 902000000, 928000000, 250000,
+            [(103, 500000, 1804500000)], clearance=True)
+    plan_is('RU at 125 kHz keeps four slots', 868700000, 869200000, 125000, [(4, 250000, 1737525000)], clearance=True)
+    plan_is('JP at 250 kHz stays on the two-channel bond raster', 920500000, 923500000, 250000,
+            [(7, 800000, 1841400000)], unit_channel_hz=200000)
+    plan_is('a 20 kHz raster gives 15.6 kHz a 20 kHz pitch', 144000000, 146000000, 15600,
+            [(100, 40000, 288020000)], unit_channel_hz=20000)
+    plan_is('a 20 kHz raster gives 15.625 kHz the same grid', 144000000, 146000000, 15625,
+            [(100, 40000, 288020000)], unit_channel_hz=20000)
+    plan_is('one slot fits a block that has no room for spacing', 865600000, 865850000, 125000,
+            [(1, 1200000, 1731450000)], spacing_hz=400000, padding_hz=37500)
+    plan_is('no slot in a block narrower than slot and padding', 865600000, 865750000, 125000, [],
+            spacing_hz=400000, padding_hz=37500)
+    plan_is('a bandwidth over the cap has no plan', 874000000, 874400000, 203125, [], max_bandwidth_hz=200000)
+    plan_is('each sub-band gets its own slots', 917300000, 918900000, 125000,
+            [(3, 250000, 1834750000), (3, 250000, 1837150000)],
+            sub_bands=((917300000, 917700000), (918500000, 918900000)), max_bandwidth_hz=200000)
+    plan_is('203.125 kHz keeps its half hertz', 2400000000, 2483500000, 203125, [(411, 406250, 4800218750)])
 
     before = {'revision': 3, 'regions': [{'name': 'US'}]}
     changed = {'revision': 3, 'regions': [{'name': 'EU'}]}

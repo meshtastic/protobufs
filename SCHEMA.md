@@ -381,7 +381,9 @@ Every `repeated` scalar in the tree carries a bound, so every message is measura
 
 ---
 
-## 6. Hardware identifiers
+## 6. Registry data
+
+### Hardware identifiers
 
 `hw_model` is a packed `uint32`: `(vendor_id << 8) | device_id`. Vendor ids are six
 bits, `0x00`-`0x3F`; device ids are a full byte. Vendor 0 is the common pool: devices that
@@ -408,6 +410,43 @@ allocated id is permanent: CI rejects a change that removes one or changes its s
 its continuation flag, so two bytes carry 14 value bits and top out at `0x3FFF`. Six
 vendor bits and eight device bits are exactly those 14. A seventh vendor bit would put
 every vendor from `0x40` up at three bytes on every `User` broadcast.
+
+### Region slot plan
+
+A region's frequency slots follow from its band, its profile and a bandwidth: the
+preset's `bandwidth_hz` (`wide_bandwidth_hz` in a `wide_lora` region), or for a custom
+setting the `bandwidth_codes` entry for `LoRaConfig.bandwidth`, where a code not listed is
+kHz. Every quantity is a 64-bit integer in half-hertz - `bw` below is `2 * bandwidth_hz` -
+and every division floors. There is no floating point and no rounding.
+
+For each block, which is each `RegionInfo.sub_bands` entry or the band edges when there are
+none, in ascending order:
+
+```text
+if max_bandwidth and bw > max_bandwidth:  no block has slots
+span    = end - start
+padding = unit ? ((bw + unit - 1) / unit * unit - bw) / 2 : padding_hz
+if span < 2*padding + bw:                 this block has no slots
+pitch   = spacing + 2*padding + bw
+count   = (span + spacing) / pitch
+extent  = count*(bw + 2*padding) + (count - 1)*spacing
+if edge_clearance and 2*(span - extent) + 4*padding < bw and count - 1 >= 4:
+    count  = count - 1
+    extent = count*(bw + 2*padding) + (count - 1)*spacing
+offset  = (span - extent) / 2
+if unit:
+    offset = offset / unit * unit
+first   = start + offset + padding + bw/2
+centre(n) = first + n*pitch, for 0 <= n < count
+```
+
+`unit`, `spacing`, `padding_hz` and `max_bandwidth` are the profile's `unit_channel_hz`,
+`spacing_hz`, `padding_hz` and `max_bandwidth_hz`. Slots are numbered across blocks in
+ascending frequency, and their total is the slot count that `LoRaConfig.channel_num` and
+`RegionInfo.override_slot` count in. No slots at all means the region cannot use that
+bandwidth. The raster step keeps a slot centred on its bond of unit channels, so a raster
+region can have unequal clearance at its two edges: JP at 250 kHz starts at 920.700 MHz,
+the centre of a two-channel bond, with 75 kHz below and 275 kHz above.
 
 ---
 
@@ -1122,7 +1161,9 @@ regions, modem presets - and generates the committed JSON from it. CI checks the
 hardware id rules and the references between the region tables, that the JSON matches
 its YAML, that no allocated hardware id is removed or renamed, that an edit to regions
 or presets raises their revision, and that each generated file decodes against its
-registry message.
+registry message. It computes the slot plan (§6) for every preset a region permits and
+every bandwidth code, and rejects a slot outside its block, a permitted preset with no
+slot, and any change to the set of region and bandwidth pairs that have none.
 
 `field_metadata.proto` carries what a client needs to present a field - label,
 description, unit, bounds, keywords, the firmware version a field arrived in or left in -
@@ -1216,14 +1257,14 @@ meet for the rules above to hold:
 
 **Registry data:**
 
-- **The registry is the only source for a region fact.** A router duty cycle belongs to
-  `RegionInfo.router_duty_cycle` and a default preset to `RegionProfile.default_preset`;
+- **The registry is the only source for a region fact.** A band edge belongs to
+  `RegionInfo.freq_start_hz` and a default preset to `RegionProfile.default_preset`;
   firmware that generates its tables from the registry holds no second copy and states
-  neither in code. A throttle that is set everywhere and read nowhere is not carried at all.
+  neither in code. Regulation that is behaviour rather than a fact - a duty cycle that
+  depends on the node's role, an airtime cap, listen-before-talk - is a firmware region
+  hook, not data. A throttle that is set everywhere and read nowhere is not carried at all.
 - **The registry lists only presets the schema defines.** A preset an implementation
   permits but the schema does not have cannot appear in a preset list.
-- **`REGION_EU_874` and `REGION_EU_917` have no data.** Both are `RegionCode` values that
-  no allocation defines yet, so `regions.yaml` has no entry for them.
 - **52 of the 148 devices under vendor 0 are named by slug.** No board variant supplies a
   display name for them.
 

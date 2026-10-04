@@ -185,16 +185,24 @@ rejected.
 `regions.yaml` holds four tables, as firmware does: a region refers to a profile, a
 profile to a preset list, and a swap group lists regions a node moves between by preset. A fact is
 stated once, and the generator rejects anything that would state one twice: two
-identical preset lists or profiles, a list or profile nothing refers to, a router duty
-cycle equal to the ordinary one. It checks the tables against each other as well: a
+identical preset lists or profiles, a list or profile nothing refers to, a padding stored
+on a raster profile, which derives it. It checks the tables against each other as well: a
 default preset belongs to its profile's list, every listed preset has an entry in
 `modem_presets.yaml`, a wide LoRa region permits only presets with a wide bandwidth, and
-the members of a swap group permit disjoint presets.
+the members of a swap group permit disjoint presets. Every region states
+`edge_clearance`, and a raster profile's regions state it false. `sub_bands_hz` lists at
+least two ascending, non-overlapping blocks from the first band edge to the last. `UNSET`
+is a copy of `US` in every field but its code.
 
-Fields keep integer units (MHz x100, percent, kHz): a value firmware holds as a
-fraction is entered rounded down, so EU_866's 2.5% duty cycle is `2` and an 812.5 kHz
-bandwidth is `812`, and firmware keeps the exact value. Both files are edited in place,
-so each carries its own `revision`, and any change to the data must raise it.
+The generator computes the slot plan (`SCHEMA.md` section 6) for every preset a region
+permits and every `bandwidth_codes` entry. A slot outside its block, a permitted preset
+with no slot, or a change to the region and bandwidth pairs with none (`NO_PLAN_CELLS`)
+is rejected. `bandwidth_codes` must agree with the codes the `LoRaConfig.bandwidth`
+comment in `config.proto` documents.
+
+Frequencies and bandwidths are exact hertz, duty cycles per mille. A band edge with no
+exact value rounds inward: the lower edge up, the upper edge down. Both files are edited
+in place, so each carries its own `revision`, and any change to the data must raise it.
 
 CI runs all of it as the `Registry data` job in `.github/workflows/pull_request.yml`:
 the self-test, `--check --base` against the pull request's target branch, and a
