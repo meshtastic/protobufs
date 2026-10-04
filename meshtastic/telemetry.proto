@@ -180,29 +180,24 @@ message TrafficManagementStats {
   uint32 position_dedup_drops = 2;
 
   /*
-   * Number of NodeInfo requests answered from cache
-   */
-  uint32 nodeinfo_cache_hits = 3;
-
-  /*
    * Number of packets dropped due to rate limiting
    */
-  uint32 rate_limit_drops = 4;
+  uint32 rate_limit_drops = 3;
 
   /*
    * Number of unknown/undecryptable packets dropped
    */
-  uint32 unknown_packet_drops = 5;
+  uint32 unknown_packet_drops = 4;
 
   /*
    * Number of packets with hop_limit exhausted for local-only broadcast
    */
-  uint32 hop_exhausted_packets = 6;
+  uint32 hop_exhausted_packets = 5;
 
   /*
    * Number of times router hop preservation was applied
    */
-  uint32 router_hops_preserved = 7;
+  uint32 router_hops_preserved = 6;
 }
 
 /*

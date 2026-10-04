@@ -436,20 +436,10 @@ message TrafficManagementConfig {
   }];
 
   /*
-   * Maximum hop distance from the requestor at which direct NodeInfo responses
-   * are served from the local cache. A non-zero value implicitly enables direct
-   * response; 0 disables it.
-   */
-  uint32 nodeinfo_direct_response_max_hops = 2 [(meshtastic.field_metadata) = {
-    label: "Direct NodeInfo Max Hops"
-    description: "Only answer requestors within this many hops."
-  }];
-
-  /*
    * Time window in seconds for per-node rate limiting.
    * A non-zero value implicitly enables rate limiting; 0 disables it.
    */
-  uint32 rate_limit_window_secs = 3 [(meshtastic.field_metadata) = {
+  uint32 rate_limit_window_secs = 2 [(meshtastic.field_metadata) = {
     label: "Rate Limit Window"
     unit: "s"
     description: "The time window packets are counted over."
@@ -459,7 +449,7 @@ message TrafficManagementConfig {
    * Maximum packets allowed per node within the rate limit window.
    * A non-zero value implicitly enables rate limiting; 0 disables it.
    */
-  uint32 rate_limit_max_packets = 4 [(meshtastic.field_metadata) = {
+  uint32 rate_limit_max_packets = 3 [(meshtastic.field_metadata) = {
     label: "Rate Limit Max Packets"
     description: "The most packets one node may send per window."
   }];
@@ -469,7 +459,7 @@ message TrafficManagementConfig {
    * is dropped. A non-zero value implicitly enables unknown-packet filtering;
    * 0 disables it.
    */
-  uint32 unknown_packet_threshold = 5 [(meshtastic.field_metadata) = {
+  uint32 unknown_packet_threshold = 4 [(meshtastic.field_metadata) = {
     label: "Unknown Packet Threshold"
     description: "How many per window before the sender is dropped."
   }];
