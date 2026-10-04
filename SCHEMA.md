@@ -283,6 +283,13 @@ encoding never varies per reading.
 Imperial is a choice of whoever draws it: `DISPLAY_IMPERIAL_UNITS` for the node's own
 screen, and each app's own setting for the app.
 
+**A duration names its unit.** A duration a user or client sets - a broadcast
+interval, a timeout - is in seconds and its field ends in `_secs`, or `_ms` where a
+second is too coarse. One unit everywhere is what keeps clients and people from being
+off by sixty; the varint a coarser unit would save is a byte at most, in config that
+rarely goes on the air. A duration a node sends on the air again and again uses the
+coarsest unit the quantity needs and says so in its name: `DeviceMetrics.uptime_minutes`.
+
 ---
 
 ## 5. Telemetry - `SensorReadings`

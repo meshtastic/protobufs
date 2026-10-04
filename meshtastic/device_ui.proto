@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "meshtastic/field_metadata.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "DeviceUIProtos";
@@ -27,9 +29,9 @@ message DeviceUIConfig {
   uint32 screen_brightness = 2;
 
   /*
-   * Screen timeout 0..900
+   * Screen timeout in seconds, 0..900
    */
-  uint32 screen_timeout = 3;
+  uint32 screen_timeout_secs = 3 [(meshtastic.field_metadata) = {unit: "s"}];
 
   /*
    * Device UI toggles: a bitwise OR of Flags values.

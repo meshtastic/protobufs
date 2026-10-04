@@ -8,6 +8,7 @@ import "meshtastic/common.proto";
 import "meshtastic/config.proto";
 import "meshtastic/connection_status.proto";
 import "meshtastic/device_ui.proto";
+import "meshtastic/field_metadata.proto";
 import "meshtastic/module_config.proto";
 import "meshtastic/wire.proto";
 
@@ -946,9 +947,9 @@ message SCD30_config {
   optional uint32 set_altitude = 4;
 
   /*
-   * Power mode for sensor (true for low power, false for normal)
+   * Seconds between measurements, 2..1800
    */
-  optional uint32 set_measurement_interval = 5;
+  optional uint32 set_measurement_interval_secs = 5 [(meshtastic.field_metadata) = {unit: "s"}];
 
   /*
    * Perform a factory reset of the sensor

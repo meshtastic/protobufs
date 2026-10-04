@@ -33,9 +33,11 @@ message DeviceMetrics {
   optional uint32 air_util_tx = 4;
 
   /*
-   * How long the device has been running since the last reboot (in seconds)
+   * How long the device has been running since the last reboot, in minutes. Sent on
+   * the air with every device telemetry packet, where a second's resolution has no use
+   * and minutes cost one byte less for any uptime from 4.5 hours to 11 days.
    */
-  optional uint32 uptime_seconds = 5;
+  optional uint32 uptime_minutes = 5;
 }
 
 /*

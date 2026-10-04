@@ -377,7 +377,7 @@ message PositionConfig {
    * or zero for the default of once every 30 seconds
    * or a very large value (maxint) to update only once at boot.
    */
-  uint32 gps_update_interval = 4 [(meshtastic.field_metadata) = {
+  uint32 gps_update_interval_secs = 4 [(meshtastic.field_metadata) = {
     label: "Update Interval"
     unit: "s"
     description: "How often to try to get a GPS position."
