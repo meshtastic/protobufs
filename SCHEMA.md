@@ -953,7 +953,10 @@ every drop is logged with the hash that caused it.
 **`HeaderOptions.scope_code` is the opt-in layer, and costs 5 bytes.** A 16-bit truncated
 HMAC over `chan || from || id`, keyed by `SHA256("%" + region_name)[0:16]`, so a relay that
 does not hold the channel can still read which region a frame claims, without touching the
-ciphertext, and a code lifted off one frame does not match another.
+ciphertext, and a code lifted off one frame does not match another. The message is 9 bytes,
+`chan` then `from` and `id` little-endian as in the AAD; the code is the first two bytes of
+the HMAC-SHA256 digest read big-endian, and a code that comes out 0 is sent as 1. Region
+`eu-west`, `chan` 0x5A, `from` 0x12345678, `id` 0xCAFEBABE gives 0xEB96.
 
 **It is declarative and proves nothing.** The key comes from a region name people share, so
 the code is a statement of belonging, not evidence of it: nothing may authorise,
