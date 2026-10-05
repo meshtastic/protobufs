@@ -132,7 +132,7 @@ enum PortNum {
    * Node Status module
    * ENCODING: protobuf
    * This module allows setting an extra string of status for a node.
-   * Broadcasts on change and on a timer, possibly once a day.
+   * Broadcasts two minutes after boot, then every 12 hours.
    */
   NODE_STATUS_APP = 35;
 

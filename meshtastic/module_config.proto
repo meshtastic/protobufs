@@ -32,9 +32,8 @@ message MQTTConfig {
       description: "Enable MQTT gateway"
     }];
     /*
-     * Send encrypted rather than decrypted packets. Only honoured when a custom
-     * server is set; the default mqtt.meshtastic.org server handles encrypted
-     * packets. Decrypted packets suit external systems consuming meshtastic traffic.
+     * Send encrypted rather than decrypted packets, on any server. Decrypted packets
+     * suit external systems consuming meshtastic traffic.
      */
     MQTT_ENCRYPTION = 0x02 [(meshtastic.enum_value_metadata) = {
       label: "Encryption Enabled"
@@ -72,9 +71,8 @@ message MQTTConfig {
   }];
 
   /*
-   * MQTT username to use (most useful for a custom MQTT server).
-   * If using a custom server, this will be honoured even if empty.
-   * If using the default server, this will only be honoured if set, otherwise the device will use the default username
+   * MQTT username to use. With an address set, the node uses this username, even an empty one;
+   * with no address it connects to the default server with that server's default username.
    */
   string username = 3 [(meshtastic.field_metadata) = {
     label: "Username"
@@ -82,9 +80,8 @@ message MQTTConfig {
   }];
 
   /*
-   * MQTT password to use (most useful for a custom MQTT server).
-   * If using a custom server, this will be honoured even if empty.
-   * If using the default server, this will only be honoured if set, otherwise the device will use the default password
+   * MQTT password to use. With an address set, the node uses this password, even an empty one;
+   * with no address it connects to the default server with that server's default password.
    */
   string password = 4 [(meshtastic.field_metadata) = {
     label: "Password"
@@ -120,7 +117,8 @@ message MapReportSettings {
   }];
 
   /*
-   * Bits of precision for the location sent (default of 32 is full precision).
+   * Bits of precision for the location in a map report, 12 to 15. 0, or a value outside that
+   * range, means the default of 14.
    */
   uint32 position_precision = 2;
 
@@ -427,7 +425,7 @@ message TrafficManagementConfig {
   /*
    * Minimum interval in seconds between position updates from the same node.
    * A non-zero value implicitly enables the suppression window; 0 disables it.
-   * Firmware default: 21600 (6 hours), installed when this config is first created.
+   * Firmware default: 18000 (5 hours), installed when this config is first created.
    */
   uint32 position_min_interval_secs = 1 [(meshtastic.field_metadata) = {
     label: "Minimum Position Interval"
@@ -455,9 +453,9 @@ message TrafficManagementConfig {
   }];
 
   /*
-   * Maximum unknown/undecryptable packets per rate window before the source
-   * is dropped. A non-zero value implicitly enables unknown-packet filtering;
-   * 0 disables it.
+   * Maximum unknown/undecryptable packets per five-minute window before the
+   * source is dropped. A non-zero value implicitly enables unknown-packet
+   * filtering; 0 disables it.
    */
   uint32 unknown_packet_threshold = 4 [(meshtastic.field_metadata) = {
     label: "Unknown Packet Threshold"
@@ -689,7 +687,7 @@ message ExternalNotificationConfig {
 
   /*
    * Optional: GPIO an active (on/off) buzzer is connected to, driven when
-   * ALERT_USE_PWM is clear. 0 is GPIO0, not "unset": the ALERT_*_BUZZER flags say
+   * ALERT_USE_PWM is clear. 0 means no buzzer pin is set. The ALERT_*_BUZZER flags say
    * whether it sounds. In standalone devices it matches the UI.
    */
   uint32 output_buzzer = 6 [(meshtastic.field_metadata) = {
@@ -755,7 +753,7 @@ message StoreForwardConfig {
   uint32 flags = 1;
 
   /*
-   * Bytes of backing store to use. 0 takes everything the platform offers.
+   * Bytes of backing store to use. 0 for the platform default: 1 MiB on ESP32, 4 MiB on Linux.
    */
   uint32 storage_bytes = 2;
 
@@ -777,7 +775,8 @@ message StoreForwardConfig {
   /*
    * Node discovery records to hold, when DeviceConfig sets DISCOVERY_SERVE. A record is about
    * 135 bytes encoded and 150 with the index, so 1000 records is 150 kB of the same backing
-   * store the frame log uses. 0 takes what the platform offers.
+   * store the frame log uses. 0 for the default of 1000; an ESP32 holds no more than a quarter
+   * of its free PSRAM fits.
    */
   uint32 discovery_max_records = 6;
 
@@ -1088,7 +1087,7 @@ message MeshBeaconConfig {
   }
 
   /*
-   * Bitwise OR of Flags values (listen, broadcast and text-split toggles).
+   * Bitwise OR of Flags values (listen and broadcast toggles).
    */
   uint32 flags = 1;
 

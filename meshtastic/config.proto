@@ -29,13 +29,11 @@ message DeviceConfig {
     }];
 
     /*
-     * Same behaviour as ALL, but skips packet decoding and simply rebroadcasts: a node
-     * that repeats everything it hears without looking inside. Available on a ROUTER; on
-     * any other role it behaves as ALL.
+     * Rebroadcast everything without decoding it first. The firmware treats it as ALL on every role.
      */
     ALL_SKIP_DECODING = 1 [(meshtastic.enum_value_metadata) = {
       label: "All Skip Decoding"
-      description: "Same as behavior as ALL but skips packet decoding and simply rebroadcasts them. Only available in Repeater role. Setting this on any other roles will result in ALL behavior."
+      description: "Treated as ALL."
     }];
 
     /*
@@ -142,12 +140,11 @@ message DeviceConfig {
   RebroadcastMode rebroadcast_mode = 4 [(meshtastic.field_metadata) = {label: "Rebroadcast Mode"}];
 
   /*
-   * Send our nodeinfo this often
-   * Defaults to 900 Seconds (15 minutes)
+   * Send our nodeinfo this often. 0 for the default of 10800 seconds (3 hours); never more often than every 3600.
    */
   uint32 node_info_broadcast_secs = 5 [(meshtastic.field_metadata) = {
     label: "Node Info Broadcast Interval"
-    description: "How often node information is sent. Defaults to 900 seconds."
+    description: "How often node information is sent. Defaults to 10800 seconds, at least 3600."
     unit: "s"
   }];
 
@@ -378,8 +375,8 @@ message PositionConfig {
   }
 
   /*
-   * We should send our position this often (but only if it has changed significantly)
-   * Defaults to 15 minutes
+   * We should send our position this often (but only if it has changed significantly).
+   * 0 for the default of 3600 seconds, or 43200 on infrastructure.
    */
   uint32 position_broadcast_secs = 1 [(meshtastic.field_metadata) = {
     label: "Broadcast Interval"
@@ -404,7 +401,7 @@ message PositionConfig {
 
   /*
    * How often should we try to get GPS position (in seconds)
-   * or zero for the default of once every 30 seconds
+   * or zero for the default of once every 120 seconds (once a day on infrastructure)
    * or a very large value (maxint) to update only once at boot.
    */
   uint32 gps_update_interval_secs = 4 [(meshtastic.field_metadata) = {
@@ -514,14 +511,14 @@ message PowerConfig {
   /*
    * Super Deep Sleep Seconds
    * While in Light Sleep if mesh_sds_timeout_secs is exceeded we will lower into super deep sleep
-   * for this value (default 1 year) or a button press
-   * 0 for default of one year
+   * for this value or until a button press. 0 for the default: until a button press (one day on
+   * infrastructure). One sleep lasts at most about 24.8 days.
    */
   uint32 sds_secs = 5;
 
   /*
    * Description: In light sleep the CPU is suspended, LoRa radio is on, BLE is off an GPS is on
-   * Technical Details: ESP32 Only 0 for default of 300
+   * Technical Details: ESP32 Only 0 for default of 300 (one day on infrastructure)
    */
   uint32 ls_secs = 6;
 
@@ -714,7 +711,7 @@ message DisplayConfig {
 
   /*
    * Number of seconds the screen stays on after pressing the user button or receiving a message
-   * 0 for default of one minute MAXUINT for always on
+   * 0 for the default of 600 seconds, MAXUINT for always on
    */
   uint32 screen_on_secs = 1 [(meshtastic.field_metadata) = {
     label: "Screen on for"
@@ -1027,7 +1024,7 @@ message LoRaConfig {
     description: "How many times a message may be repeated before it stops being forwarded."
     keywords: "hops|ttl|range|rebroadcast"
     min_value: 0
-    max_value: 7
+    max_value: 15
   }];
 
   /*

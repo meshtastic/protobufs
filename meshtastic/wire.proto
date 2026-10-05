@@ -360,8 +360,8 @@ message Routing {
    * Optional proof that this ack or nak was produced by the node that actually received the
    * packet named by Data.request_id, rather than by anyone holding the channel key.
    *
-   * An explicit ack usually travels on the channel, and a channel frame is encrypted but not
-   * authenticated, so any listener holding the PSK can forge one. When the acknowledged
+   * An explicit ack on a channel is authenticated only to the channel: its AEAD tag proves a
+   * member sent it, so any member holding the PSK can forge one. When the acknowledged
    * packet was PKI encrypted the two endpoints already share a Curve25519 secret, so the
    * receiver proves receipt with a MAC rather than a signature:
    *

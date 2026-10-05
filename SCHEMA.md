@@ -1016,7 +1016,7 @@ without decrypting anything: flagged frames are retained unconditionally, unflag
 only as evictable filler and only when `STOREFORWARD_KEEP_FILLER` is set.
 
 **Replay does not fit one frame for a full-size original.** `StoredFrame` costs about 20
-bytes over the ciphertext it carries, so a frame near the 256-byte limit cannot be replayed
+bytes over the ciphertext it carries, so a frame near the 255-byte limit cannot be replayed
 in one packet. Until `STORE_FORWARD_APP` opts into `HeaderOptions.fragment`, a server does
 not replay a frame it cannot send whole, and reports that stream in `gap_hashes`. This is
 the first consumer of per-portnum fragmentation.
@@ -1171,7 +1171,7 @@ is not the default AEAD, but it is worth having where the ratchet is wanted too.
 
 ### Payload room
 
-A LoRa frame is at most 256 bytes, and the room left for the encoded `Data` comes out
+A LoRa frame is at most 255 bytes, and the room left for the encoded `Data` comes out
 of that from both ends. The front gives up the core, 5, 12 or 16 bytes by profile, and
 the options block; the back gives up the AEAD tag and the path tail, one byte per hop
 recorded. Inside `Data`, an XEdDSA signature takes its share. The room therefore varies
@@ -1180,7 +1180,7 @@ firmware computes it for each packet: a payload that does not fit is fragmented
 (`HeaderOptions.fragment`) or refused.
 
 **No schema bound states a payload budget.** A buffer that holds one frame's worth of
-payload is capped at the frame, 256 bytes, and the enforcement lives in code.
+payload is capped at 256 bytes, which covers a 255-byte frame, and the enforcement lives in code.
 
 ---
 
