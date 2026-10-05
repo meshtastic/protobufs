@@ -1207,8 +1207,6 @@ message SecurityConfig {
       label: "Debug Logs"
       description: "Output live debug logging over serial, view and export position-redacted device logs over Bluetooth."
     }];
-    /* Allow incoming device control over the insecure admin channel */
-    SECURITY_ADMIN_CHANNEL_ENABLED = 0x08;
   }
 
   /*

@@ -1060,13 +1060,6 @@ message MeshBeaconConfig {
      * Enable periodically broadcasting MESH_BEACON_APP packets from this node.
      */
     FLAG_BROADCAST_ENABLED = 2;
-
-    /*
-     * When both text and offer content are present, split the beacon into a separate
-     * MESH_BEACON_APP (offer only) and TEXT_MESSAGE_APP (text only) packet, so a receiver
-     * that only decodes TEXT_MESSAGE_APP still gets the human-readable text.
-     */
-    FLAG_TEXT_SPLIT = 4;
   }
 
   /*
