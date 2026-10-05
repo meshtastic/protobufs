@@ -1026,9 +1026,9 @@ message Config {
       JP = 5 [(meshtastic.enum_value_metadata) = {label: "Japan"}];
 
       /*
-       * Australia / New Zealand
+       * Australia / Brazil / New Zealand (915-928MHz)
        */
-      ANZ = 6 [(meshtastic.enum_value_metadata) = {label: "Australia / New Zealand"}];
+      ANZ = 6 [(meshtastic.enum_value_metadata) = {label: "Australia / Brazil / New Zealand"}];
 
       /*
        * Korea
