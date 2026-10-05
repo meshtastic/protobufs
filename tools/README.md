@@ -179,9 +179,9 @@ and vendor `0x00` appears only in `00-legacy.yaml`. An allocation is permanent: 
 `--base`, an id may not disappear or change its slug, while its name may. A client displays the vendor name and the device name together; vendor `0x00` is not a brand, so its device names are complete.
 Each hardware registry's `revision` is its entry count.
 
-**Roles** has one `roles` entry per `Role` value and the presets users pick. A preset's
-`device_flags` lists role switches only, each valid on one role (`SWITCH_ROLE`), and every
-2.x role name is a preset. Enum values are named, and the generator reads them from the
+**Roles** has one `roles` entry per `Role` value and one row per named configuration. A
+row's `device_flags` lists role switches only, each valid on one role (`SWITCH_ROLE`); no
+two rows share a role, switches and TAK flags, and every role has a row without switches. Enum values are named, and the generator reads them from the
 schema; flag lists become one word.
 
 **Regions and presets** name their `RegionCode` or `ModemPreset` without the prefix.

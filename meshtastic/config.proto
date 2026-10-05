@@ -57,7 +57,7 @@ message DeviceConfig {
     }];
 
     /*
-     * Relay nothing. Refused on a ROUTER. A CLIENT set to NONE is what the 2.x CLIENT_MUTE role was.
+     * Relay nothing. Refused on a ROUTER.
      */
     NONE = 4 [(meshtastic.enum_value_metadata) = {
       label: "None"

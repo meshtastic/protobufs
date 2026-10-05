@@ -11,9 +11,10 @@ option java_package = "org.meshtastic.proto";
 option swift_prefix = "";
 
 /*
- * What a device is on the mesh. Four base roles; everything the 2.x roles added on top is a
- * switch (DeviceConfig.Flags, TAKConfig.Flags) or a preset in registry/roles.yaml. A peer acts
- * on the advertised role and on NODE_FLAG_RELAYS_FAVORITES and NODE_FLAG_LOST_AND_FOUND.
+ * What a device is on the mesh. Four base roles; finer behaviour is a switch on a role
+ * (DeviceConfig.Flags, TAKConfig.Flags), and the defaults each configuration installs are rows in
+ * registry/roles.yaml. A peer acts on the advertised role and on NODE_FLAG_RELAYS_FAVORITES and
+ * NODE_FLAG_LOST_AND_FOUND.
  */
 enum Role {
   /*

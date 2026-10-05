@@ -15,9 +15,9 @@ option swift_prefix = "";
  * Role Registry
  *
  * NOT used on-wire; consumed by clients and the firmware build. Labels for the four Role
- * values, and the presets a user actually picks: a base role, the switches that go with it,
- * and the configuration a device installs when the preset is chosen. Every 2.x role is a
- * preset here, so a name a user knows still leads somewhere.
+ * values, and one row per configuration worth naming: a role, its switches, and the
+ * defaults a device installs when it takes that configuration. A device that is set to a
+ * role, or turns a switch on or off, installs the defaults of the row it now matches.
  *
  * Data lives in registry/roles.yaml. tools/gen_registry.py validates it and generates
  * registry/generated/roles.json, which `buf convert` serializes.
@@ -37,39 +37,41 @@ message RoleInfo {
 }
 
 /*
- * What a device sets when a preset is chosen, beyond the role and its switches. A field left
- * unset leaves the device's current value alone.
+ * What a device sets when it takes a configuration, beyond the role and its switches. A
+ * field left unset leaves the device's current value alone.
  */
 message RoleDefaults {
   /* Restore every broadcast, telemetry and power interval to its default before the values below */
   bool reset_intervals = 1;
 
-  optional uint32 node_info_broadcast_secs = 2;
-  optional uint32 position_broadcast_secs = 3;
-  optional bool position_broadcast_smart_enabled = 4;
-  optional uint32 broadcast_smart_minimum_distance = 5;
-  optional uint32 broadcast_smart_minimum_interval_secs = 6;
+  optional DeviceConfig.RebroadcastMode rebroadcast_mode = 2;
+  optional uint32 node_info_broadcast_secs = 3;
+  optional uint32 position_broadcast_secs = 4;
+  optional bool position_broadcast_smart_enabled = 5;
+  optional uint32 broadcast_smart_minimum_distance = 6;
+  optional uint32 broadcast_smart_minimum_interval_secs = 7;
 
   /* Bitwise OR of PositionConfig.PositionFlags values */
-  optional uint32 position_flags = 7;
+  optional uint32 position_flags = 8;
 
-  optional uint32 device_update_interval_secs = 8;
-  optional uint32 sensor_update_interval_secs = 9;
+  optional uint32 device_update_interval_secs = 9;
+  optional uint32 sensor_update_interval_secs = 10;
 
   /* TelemetryConfig environment measurement on or off */
-  optional bool environment_measurement = 10;
+  optional bool environment_measurement = 11;
 
-  optional uint32 neighbor_info_update_interval_secs = 11;
+  optional uint32 neighbor_info_update_interval_secs = 12;
 
   /* Advertise the node as not taking direct messages (NODE_FLAG_IS_UNMESSAGABLE) */
-  optional bool unmessagable = 12;
+  optional bool unmessagable = 13;
 }
 
 /*
- * A configuration a user picks: role, switches and defaults
+ * One configuration: a role, its switches and the defaults that go with them. No two rows
+ * share a role, switches and TAK flags, and every role has a row without switches.
  */
 message RolePreset {
-  /* Stable identifier, the 2.x role name where there was one, e.g. "CLIENT_BASE" */
+  /* Stable identifier: the role and its switches, e.g. "ROUTER_RELAY_LATE" */
   string name = 1;
 
   /* Display name */
@@ -86,10 +88,7 @@ message RolePreset {
   /* Bitwise OR of TAKConfig.Flags values */
   uint32 tak_flags = 6;
 
-  /* Unset leaves the device's rebroadcast mode alone */
-  optional DeviceConfig.RebroadcastMode rebroadcast_mode = 7;
-
-  RoleDefaults defaults = 8;
+  RoleDefaults defaults = 7;
 }
 
 /*

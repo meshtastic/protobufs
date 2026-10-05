@@ -31,9 +31,9 @@ mille; a band edge with no exact value rounds inward. UNSET is a copy of US. Eve
 preset a region permits, and every bandwidth code that is not NO_PLAN_CELLS, gets a
 slot plan (SCHEMA.md section 6) that stays inside its block.
 
-Roles: every Role value has exactly one roles entry, preset names are unique, a
-preset's switches apply to its role, every 2.x role name is a preset, and any change
-raises `revision`.
+Roles: every Role value has exactly one roles entry, row names are unique, a row's
+switches apply to its role, no two rows share a role, switches and TAK flags, every
+role has a row without switches, and any change raises `revision`.
 """
 from __future__ import annotations
 
@@ -98,17 +98,14 @@ SWITCH_ROLE = {
     'DEVICE_QUIET': 'CLIENT',
     'DEVICE_LOST_AND_FOUND': 'TRACKER',
 }
-# The 2.x roles, each of which has to stay reachable as a preset.
-LEGACY_ROLES = ('CLIENT', 'CLIENT_MUTE', 'ROUTER', 'TRACKER', 'SENSOR', 'TAK', 'CLIENT_HIDDEN', 'LOST_AND_FOUND',
-                'TAK_TRACKER', 'ROUTER_LATE', 'CLIENT_BASE')
 ROLE_KEYS = ('role', 'label', 'description')
 PRESET_REQUIRED = ('name', 'label', 'description', 'role')
-PRESET_OPTIONAL = ('device_flags', 'tak_flags', 'rebroadcast_mode', 'defaults')
+PRESET_OPTIONAL = ('device_flags', 'tak_flags', 'defaults')
 DEFAULT_INTS = ('node_info_broadcast_secs', 'position_broadcast_secs', 'broadcast_smart_minimum_distance',
                 'broadcast_smart_minimum_interval_secs', 'device_update_interval_secs', 'sensor_update_interval_secs',
                 'neighbor_info_update_interval_secs')
 DEFAULT_BOOLS = ('reset_intervals', 'position_broadcast_smart_enabled', 'environment_measurement', 'unmessagable')
-DEFAULT_KEYS = DEFAULT_INTS + DEFAULT_BOOLS + ('position_flags',)
+DEFAULT_KEYS = DEFAULT_INTS + DEFAULT_BOOLS + ('position_flags', 'rebroadcast_mode')
 
 
 class Errors(list):
@@ -685,7 +682,7 @@ def build_roles(doc, enums, errors):
         if role not in roles:
             errors.add(where, 'Role %s has no roles entry' % role)
 
-    presets, seen = [], set()
+    presets, seen, configurations = [], set(), {}
     for index, entry in enumerate(doc['presets']):
         pwhere = '%s presets[%d]' % (where, index)
         if not exact_keys(errors, pwhere, entry, PRESET_REQUIRED, PRESET_OPTIONAL):
@@ -710,28 +707,31 @@ def build_roles(doc, enums, errors):
             if SWITCH_ROLE.get(switch, role) != role:
                 errors.add(pwhere, '%s applies to %s, not %s' % (switch, SWITCH_ROLE[switch], role))
         out['tak_flags'] = flag_word(errors, pwhere, entry.get('tak_flags', []), enums.tak_flags, 'TAKConfig flag')
-        if 'rebroadcast_mode' in entry:
-            mode = entry['rebroadcast_mode']
-            if mode not in enums.rebroadcast_modes:
-                errors.add(pwhere, '%s is not a RebroadcastMode' % mode)
-            elif mode == 'NONE' and role == 'ROUTER':
-                errors.add(pwhere, 'a router cannot have rebroadcast_mode NONE')
-            out['rebroadcast_mode'] = mode
+        configuration = (role, out['device_flags'], out['tak_flags'])
+        if configuration in configurations:
+            errors.add(pwhere, 'the same role, switches and TAK flags as %s' % configurations[configuration])
+        configurations[configuration] = name
         defaults = entry.get('defaults', {})
         dwhere = pwhere + ' defaults'
         if not isinstance(defaults, dict) or not exact_keys(errors, dwhere, defaults, (), DEFAULT_KEYS):
             continue
         check_ints(errors, dwhere, defaults, [k for k in DEFAULT_INTS if k in defaults])
         check_bools(errors, dwhere, defaults, [k for k in DEFAULT_BOOLS if k in defaults])
+        if 'rebroadcast_mode' in defaults:
+            mode = defaults['rebroadcast_mode']
+            if mode not in enums.rebroadcast_modes:
+                errors.add(dwhere, '%s is not a RebroadcastMode' % mode)
+            elif mode == 'NONE' and role == 'ROUTER':
+                errors.add(dwhere, 'a router cannot have rebroadcast_mode NONE')
         out_defaults = {k: defaults[k] for k in DEFAULT_KEYS if k in defaults and k != 'position_flags'}
         if 'position_flags' in defaults:
             out_defaults['position_flags'] = flag_word(errors, dwhere, defaults['position_flags'],
                                                        enums.position_flags, 'PositionFlags value')
         out['defaults'] = out_defaults
         presets.append(out)
-    for legacy in LEGACY_ROLES:
-        if legacy not in seen:
-            errors.add(where, 'the 2.x role %s has no preset' % legacy)
+    for role in enums.roles:
+        if (role, 0, 0) not in configurations:
+            errors.add(where, 'Role %s has no row without switches' % role)
 
     return {'revision': revision, 'roles': sorted(roles.values(), key=lambda r: enums.roles[r['role']]),
             'presets': presets}
@@ -980,15 +980,19 @@ def selftest(enums):
     expect('the shipped roles', False, roles())
     expect('a Role without a roles entry', True, roles(roles=roles_doc['roles'][:-1]))
     expect('a role defined twice', True, roles(roles=roles_doc['roles'] + roles_doc['roles'][:1]))
-    expect('a switch on the wrong role', True, roles(presets=preset('CLIENT_BASE', role='ROUTER')))
+    expect('a switch on the wrong role', True, roles(presets=preset('CLIENT_RELAY_FAVORITES', role='ROUTER')))
     expect('a device flag that is not a role switch', True,
            roles(presets=preset('CLIENT', device_flags=['DEVICE_LED_HEARTBEAT_DISABLED'])))
-    expect('a router that never rebroadcasts', True, roles(presets=preset('ROUTER', rebroadcast_mode='NONE')))
-    expect('a 2.x role without a preset', True,
-           roles(presets=[p for p in roles_doc['presets'] if p['name'] != 'ROUTER_LATE']))
+    expect('a router that never rebroadcasts', True,
+           roles(presets=preset('ROUTER', defaults={'rebroadcast_mode': 'NONE'})))
+    expect('a role without a row without switches', True,
+           roles(presets=[p for p in roles_doc['presets'] if p['name'] != 'SENSOR']))
+    expect('two rows for one configuration', True,
+           roles(presets=roles_doc['presets'] + [dict(roles_doc['presets'][0], name='CLIENT_AGAIN')]))
     expect('a preset defined twice', True, roles(presets=roles_doc['presets'] + roles_doc['presets'][:1]))
     expect('an unknown default', True, roles(presets=preset('SENSOR', defaults={'colour': 1})))
-    expect('an unknown position flag', True, roles(presets=preset('TAK', defaults={'position_flags': ['NOPE']})))
+    expect('an unknown position flag', True,
+           roles(presets=preset('CLIENT_TAK', defaults={'position_flags': ['NOPE']})))
 
     for failure in failures:
         print('FAIL: ' + failure, file=sys.stderr)

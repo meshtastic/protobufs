@@ -1,9 +1,9 @@
-# Device roles and the presets users pick (role_registry.proto). Roles are the Role
-# enum values; a preset is a role plus switches plus the configuration a device installs
-# when it is chosen, and every 2.x role is one. Switches are DeviceConfig.Flags role
-# switches, each valid on one role only; tak_flags are TAKConfig.Flags. Defaults left out
-# leave the device's value alone. Any change to this file raises revision;
-# tools/gen_registry.py --check enforces it.
+# Device roles and the configurations worth naming (role_registry.proto). Roles are the
+# Role enum values. A row is a role, its switches (DeviceConfig.Flags role switches, each
+# valid on one role; tak_flags are TAKConfig.Flags) and the defaults a device installs when
+# it takes that configuration; defaults left out leave the device's value alone. No two rows
+# share a role, switches and TAK flags, and every role has a row without switches. Any
+# change to this file raises revision; tools/gen_registry.py --check enforces it.
 revision: 1
 roles:
   - role: "CLIENT"
@@ -23,31 +23,26 @@ presets:
     label: "Client"
     description: "App connected or stand alone messaging device."
     role: "CLIENT"
-  - name: "CLIENT_MUTE"
-    label: "Client (mute)"
-    description: "A client that never relays other nodes' packets."
-    role: "CLIENT"
-    rebroadcast_mode: "NONE"
-  - name: "CLIENT_HIDDEN"
-    label: "Client (hidden)"
+  - name: "CLIENT_QUIET"
+    label: "Client (quiet)"
     description: "Only speaks when spoken to: no routine broadcasts, relays known meshes only."
     role: "CLIENT"
     device_flags: ["DEVICE_QUIET"]
-    rebroadcast_mode: "LOCAL_ONLY"
     defaults:
+      rebroadcast_mode: "LOCAL_ONLY"
       node_info_broadcast_secs: 2147483647
       position_broadcast_secs: 2147483647
       position_broadcast_smart_enabled: false
       neighbor_info_update_interval_secs: 2147483647
       device_update_interval_secs: 2147483647
       sensor_update_interval_secs: 2147483647
-  - name: "CLIENT_BASE"
-    label: "Client base"
+  - name: "CLIENT_RELAY_FAVORITES"
+    label: "Client (relays favorites)"
     description: "Roof or attic node: relays traffic from and to its favorite nodes like a router."
     role: "CLIENT"
     device_flags: ["DEVICE_RELAY_FAVORITES"]
-  - name: "TAK"
-    label: "TAK"
+  - name: "CLIENT_TAK"
+    label: "Client with TAK"
     description: "Connected to an ATAK device: CoT traffic, few routine broadcasts."
     role: "CLIENT"
     tak_flags: ["TAK_ENABLED"]
@@ -61,13 +56,13 @@ presets:
     label: "Router"
     description: "Infrastructure node on a tower or mountain top. Needs exceptional coverage."
     role: "ROUTER"
-    rebroadcast_mode: "CORE_PORTNUMS_ONLY"
     defaults:
       reset_intervals: true
+      rebroadcast_mode: "CORE_PORTNUMS_ONLY"
       device_update_interval_secs: 43200
       unmessagable: true
-  - name: "ROUTER_LATE"
-    label: "Router (late)"
+  - name: "ROUTER_RELAY_LATE"
+    label: "Router (relays late)"
     description: "Infrastructure node that relays only after all others, to fill coverage gaps."
     role: "ROUTER"
     device_flags: ["DEVICE_RELAY_LATE"]
@@ -81,8 +76,8 @@ presets:
     defaults:
       device_update_interval_secs: 3600
       unmessagable: true
-  - name: "TAK_TRACKER"
-    label: "TAK tracker"
+  - name: "TRACKER_TAK"
+    label: "Tracker with TAK"
     description: "Tracker that sends its position as TAK PLI."
     role: "TRACKER"
     tak_flags: ["TAK_ENABLED"]
@@ -95,8 +90,8 @@ presets:
       position_flags: ["ALTITUDE", "SPEED", "HEADING", "DOP"]
       device_update_interval_secs: 86400
       unmessagable: true
-  - name: "LOST_AND_FOUND"
-    label: "Lost and found"
+  - name: "TRACKER_LOST_AND_FOUND"
+    label: "Tracker (lost and found)"
     description: "Broadcasts its position as a message every five minutes, to help recover the device."
     role: "TRACKER"
     device_flags: ["DEVICE_LOST_AND_FOUND"]

@@ -442,17 +442,18 @@ every vendor from `0x40` up at three bytes on every `User` broadcast.
 
 `Role` has four values, and each is something a peer acts on: `CLIENT` relays normally and
 auto-mutes, `ROUTER` is infrastructure, `TRACKER` and `SENSOR` report and may sleep.
-Everything else a 2.x role meant is a switch on that base role: `DEVICE_RELAY_LATE` on a
-router, `DEVICE_RELAY_FAVORITES` and `DEVICE_QUIET` on a client, `DEVICE_LOST_AND_FOUND`
-on a tracker, `TAK_ENABLED` on any. A switch on the wrong role is ignored by the device and
+Finer behaviour is a switch on a base role: `DEVICE_RELAY_LATE` on a router,
+`DEVICE_RELAY_FAVORITES` and `DEVICE_QUIET` on a client, `DEVICE_LOST_AND_FOUND` on a
+tracker, `TAK_ENABLED` on any. A switch on the wrong role is ignored by the device and
 cleared when the configuration is set. Two switches change what peers do, so they travel:
 `NODE_FLAG_RELAYS_FAVORITES` and `NODE_FLAG_LOST_AND_FOUND`, in `User.flags` and
-`NodeRecord.flags`, which carry the descriptive `NodeFlags` instead of separate booleans.
+`NodeRecord.flags`, which carry the descriptive `NodeFlags`.
 
-What a user picks is a preset from `RoleRegistry` (`registry/roles.yaml`): a role, its
-switches and the defaults the device installs. Every 2.x role name is a preset, so
-`CLIENT_MUTE` is a client with `rebroadcast_mode` `NONE` and `TAK_TRACKER` a tracker with
-TAK enabled. Labels are registry data: renaming a preset touches no schema.
+The defaults that go with a configuration are rows in `RoleRegistry` (`registry/roles.yaml`):
+a role, its switches and what the device installs when it takes them, such as the router's
+interval reset or a quiet client's maximum intervals. A device set to a role, or turning a
+switch on or off, installs the row it now matches. Labels are registry data: renaming a row
+touches no schema.
 
 ### Region slot plan
 
