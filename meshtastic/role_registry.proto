@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package meshtastic;
+
+import "meshtastic/common.proto";
+import "meshtastic/config.proto";
+
+option csharp_namespace = "Meshtastic.Protobufs";
+option go_package = "github.com/meshtastic/go/generated";
+option java_outer_classname = "RoleRegistryProtos";
+option java_package = "org.meshtastic.proto";
+option swift_prefix = "";
+
+/*
+ * Role Registry
+ *
+ * NOT used on-wire; consumed by clients and the firmware build. Labels for the four Role
+ * values, and the presets a user actually picks: a base role, the switches that go with it,
+ * and the configuration a device installs when the preset is chosen. Every 2.x role is a
+ * preset here, so a name a user knows still leads somewhere.
+ *
+ * Data lives in registry/roles.yaml. tools/gen_registry.py validates it and generates
+ * registry/generated/roles.json, which `buf convert` serializes.
+ */
+
+/*
+ * A base role as clients show it
+ */
+message RoleInfo {
+  Role role = 1;
+
+  /* Display name */
+  string label = 2;
+
+  /* One-line explanation */
+  string description = 3;
+}
+
+/*
+ * What a device sets when a preset is chosen, beyond the role and its switches. A field left
+ * unset leaves the device's current value alone.
+ */
+message RoleDefaults {
+  /* Restore every broadcast, telemetry and power interval to its default before the values below */
+  bool reset_intervals = 1;
+
+  optional uint32 node_info_broadcast_secs = 2;
+  optional uint32 position_broadcast_secs = 3;
+  optional bool position_broadcast_smart_enabled = 4;
+  optional uint32 broadcast_smart_minimum_distance = 5;
+  optional uint32 broadcast_smart_minimum_interval_secs = 6;
+
+  /* Bitwise OR of PositionConfig.PositionFlags values */
+  optional uint32 position_flags = 7;
+
+  optional uint32 device_update_interval_secs = 8;
+  optional uint32 sensor_update_interval_secs = 9;
+
+  /* TelemetryConfig environment measurement on or off */
+  optional bool environment_measurement = 10;
+
+  optional uint32 neighbor_info_update_interval_secs = 11;
+
+  /* Advertise the node as not taking direct messages (NODE_FLAG_IS_UNMESSAGABLE) */
+  optional bool unmessagable = 12;
+}
+
+/*
+ * A configuration a user picks: role, switches and defaults
+ */
+message RolePreset {
+  /* Stable identifier, the 2.x role name where there was one, e.g. "CLIENT_BASE" */
+  string name = 1;
+
+  /* Display name */
+  string label = 2;
+
+  /* One-line explanation */
+  string description = 3;
+
+  Role role = 4;
+
+  /* Bitwise OR of DeviceConfig.Flags role switches; each applies to this role */
+  uint32 device_flags = 5;
+
+  /* Bitwise OR of TAKConfig.Flags values */
+  uint32 tak_flags = 6;
+
+  /* Unset leaves the device's rebroadcast mode alone */
+  optional DeviceConfig.RebroadcastMode rebroadcast_mode = 7;
+
+  RoleDefaults defaults = 8;
+}
+
+/*
+ * Root container for the role registry
+ */
+message RoleRegistry {
+  /* Raised on every change to the data */
+  uint32 revision = 1;
+
+  /* One entry per Role value */
+  repeated RoleInfo roles = 2;
+
+  repeated RolePreset presets = 3;
+}

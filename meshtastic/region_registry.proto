@@ -76,7 +76,7 @@ message RegionInfo {
    */
   uint32 duty_cycle_permille = 6;
 
-  /* Maximum TX power in dBm. A licensed operator (User.is_licensed) may exceed it. */
+  /* Maximum TX power in dBm. A licensed operator (NODE_FLAG_IS_LICENSED) may exceed it. */
   uint32 power_limit_dbm = 7;
 
   /* Whether frequency hopping/switching is allowed */
@@ -157,7 +157,7 @@ message RegionProfile {
   bool audio_permitted = 8;
 
   /*
-   * Only a licensed operator (User.is_licensed) may select a region using this
+   * Only a licensed operator (NODE_FLAG_IS_LICENSED) may select a region using this
    * profile; firmware rejects the region otherwise.
    */
   bool licensed_only = 9;

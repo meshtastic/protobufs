@@ -10,6 +10,8 @@
 # X25519 public key, as SecurityConfig.public_key.
 *User.ratchet_key max_size:32
 *User.short_name max_size:5
+# A NodeFlags word, sized as NodeInfo.flags, NodeInfoLite.bitfield and NodeRecord.flags are.
+*User.flags int_size:32
 
 # One frame's worth: no LoRa frame is longer than 256 bytes. The room a frame
 # actually leaves for Data depends on the header, the tag and the path, and firmware

@@ -1163,6 +1163,20 @@ message TAKConfig {
     label: "Role"
     description: "TAK member role"
   }];
+
+  enum Flags {
+    TAK_NONE = 0x00;
+    /* Run the ATAK plugin module; a TRACKER sends its position as ATAK PLI */
+    TAK_ENABLED = 0x01 [(meshtastic.enum_value_metadata) = {
+      label: "TAK Enabled"
+      description: "Exchange CoT with the Meshtastic ATAK plugin. A tracker sends its position as TAK PLI."
+    }];
+  }
+
+  /*
+   * Bitwise OR of Flags values.
+   */
+  uint32 flags = 3;
 }
 
 /*

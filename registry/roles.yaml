@@ -1,0 +1,114 @@
+# Device roles and the presets users pick (role_registry.proto). Roles are the Role
+# enum values; a preset is a role plus switches plus the configuration a device installs
+# when it is chosen, and every 2.x role is one. Switches are DeviceConfig.Flags role
+# switches, each valid on one role only; tak_flags are TAKConfig.Flags. Defaults left out
+# leave the device's value alone. Any change to this file raises revision;
+# tools/gen_registry.py --check enforces it.
+revision: 1
+roles:
+  - role: "CLIENT"
+    label: "Client"
+    description: "App connected or stand alone messaging device."
+  - role: "ROUTER"
+    label: "Router"
+    description: "Infrastructure node on a tower or mountain top. Needs exceptional coverage."
+  - role: "TRACKER"
+    label: "Tracker"
+    description: "Broadcasts GPS position packets as priority."
+  - role: "SENSOR"
+    label: "Sensor"
+    description: "Broadcasts telemetry packets as priority."
+presets:
+  - name: "CLIENT"
+    label: "Client"
+    description: "App connected or stand alone messaging device."
+    role: "CLIENT"
+  - name: "CLIENT_MUTE"
+    label: "Client (mute)"
+    description: "A client that never relays other nodes' packets."
+    role: "CLIENT"
+    rebroadcast_mode: "NONE"
+  - name: "CLIENT_HIDDEN"
+    label: "Client (hidden)"
+    description: "Only speaks when spoken to: no routine broadcasts, relays known meshes only."
+    role: "CLIENT"
+    device_flags: ["DEVICE_QUIET"]
+    rebroadcast_mode: "LOCAL_ONLY"
+    defaults:
+      node_info_broadcast_secs: 2147483647
+      position_broadcast_secs: 2147483647
+      position_broadcast_smart_enabled: false
+      neighbor_info_update_interval_secs: 2147483647
+      device_update_interval_secs: 2147483647
+      sensor_update_interval_secs: 2147483647
+  - name: "CLIENT_BASE"
+    label: "Client base"
+    description: "Roof or attic node: relays traffic from and to its favorite nodes like a router."
+    role: "CLIENT"
+    device_flags: ["DEVICE_RELAY_FAVORITES"]
+  - name: "TAK"
+    label: "TAK"
+    description: "Connected to an ATAK device: CoT traffic, few routine broadcasts."
+    role: "CLIENT"
+    tak_flags: ["TAK_ENABLED"]
+    defaults:
+      node_info_broadcast_secs: 86400
+      position_broadcast_secs: 86400
+      position_broadcast_smart_enabled: false
+      position_flags: ["ALTITUDE", "SPEED", "HEADING", "DOP"]
+      device_update_interval_secs: 86400
+  - name: "ROUTER"
+    label: "Router"
+    description: "Infrastructure node on a tower or mountain top. Needs exceptional coverage."
+    role: "ROUTER"
+    rebroadcast_mode: "CORE_PORTNUMS_ONLY"
+    defaults:
+      reset_intervals: true
+      device_update_interval_secs: 43200
+      unmessagable: true
+  - name: "ROUTER_LATE"
+    label: "Router (late)"
+    description: "Infrastructure node that relays only after all others, to fill coverage gaps."
+    role: "ROUTER"
+    device_flags: ["DEVICE_RELAY_LATE"]
+    defaults:
+      device_update_interval_secs: 86400
+      unmessagable: true
+  - name: "TRACKER"
+    label: "Tracker"
+    description: "Broadcasts GPS position packets as priority."
+    role: "TRACKER"
+    defaults:
+      device_update_interval_secs: 3600
+      unmessagable: true
+  - name: "TAK_TRACKER"
+    label: "TAK tracker"
+    description: "Tracker that sends its position as TAK PLI."
+    role: "TRACKER"
+    tak_flags: ["TAK_ENABLED"]
+    defaults:
+      node_info_broadcast_secs: 86400
+      position_broadcast_secs: 180
+      position_broadcast_smart_enabled: true
+      broadcast_smart_minimum_distance: 20
+      broadcast_smart_minimum_interval_secs: 15
+      position_flags: ["ALTITUDE", "SPEED", "HEADING", "DOP"]
+      device_update_interval_secs: 86400
+      unmessagable: true
+  - name: "LOST_AND_FOUND"
+    label: "Lost and found"
+    description: "Broadcasts its position as a message every five minutes, to help recover the device."
+    role: "TRACKER"
+    device_flags: ["DEVICE_LOST_AND_FOUND"]
+    defaults:
+      position_broadcast_secs: 300
+      position_broadcast_smart_enabled: false
+  - name: "SENSOR"
+    label: "Sensor"
+    description: "Broadcasts telemetry packets as priority."
+    role: "SENSOR"
+    defaults:
+      device_update_interval_secs: 3600
+      sensor_update_interval_secs: 300
+      environment_measurement: true
+      unmessagable: true

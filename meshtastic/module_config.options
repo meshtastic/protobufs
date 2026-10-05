@@ -33,6 +33,7 @@
 *MeshBeaconConfig.broadcast_message max_size:101
 *MeshBeaconConfig.broadcast_targets max_count:4
 *MeshBeaconConfig.flags int_size:8
+*TAKConfig.flags int_size:8
 *MeshBeaconConfig.broadcast_offer_region int_size:8
 *MeshBeaconConfig.broadcast_offer_preset int_size:8
 *MeshBeaconConfig.BroadcastTarget.region int_size:8

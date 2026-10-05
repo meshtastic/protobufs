@@ -30,6 +30,10 @@ entry is rejected. Frequencies and bandwidths are exact hertz and duty cycles pe
 mille; a band edge with no exact value rounds inward. UNSET is a copy of US. Every
 preset a region permits, and every bandwidth code that is not NO_PLAN_CELLS, gets a
 slot plan (SCHEMA.md section 6) that stays inside its block.
+
+Roles: every Role value has exactly one roles entry, preset names are unique, a
+preset's switches apply to its role, every 2.x role name is a preset, and any change
+raises `revision`.
 """
 from __future__ import annotations
 
@@ -51,6 +55,7 @@ HARDWARE = os.path.join(REGISTRY, 'hardware')
 GENERATED = os.path.join(REGISTRY, 'generated')
 COMMON_PROTO = os.path.join(ROOT, 'meshtastic', 'common.proto')
 CONFIG_PROTO = os.path.join(ROOT, 'meshtastic', 'config.proto')
+MODULE_CONFIG_PROTO = os.path.join(ROOT, 'meshtastic', 'module_config.proto')
 
 LEGACY_FILE = '00-legacy.yaml'
 VENDOR_MAX = 0x3F
@@ -84,7 +89,26 @@ NO_PLAN_CELLS = frozenset(
 # The slot plan keeps at least this many gaps when it drops a slot for edge clearance.
 CLEARANCE_MIN_GAPS = 4
 
-OUTPUTS = ('hw_vendors.json', 'hw_devices.json', 'regions.json', 'modem_presets.json')
+OUTPUTS = ('hw_vendors.json', 'hw_devices.json', 'regions.json', 'modem_presets.json', 'roles.json')
+
+# Each role switch applies to one role; firmware ignores it elsewhere and clears it on set_config.
+SWITCH_ROLE = {
+    'DEVICE_RELAY_LATE': 'ROUTER',
+    'DEVICE_RELAY_FAVORITES': 'CLIENT',
+    'DEVICE_QUIET': 'CLIENT',
+    'DEVICE_LOST_AND_FOUND': 'TRACKER',
+}
+# The 2.x roles, each of which has to stay reachable as a preset.
+LEGACY_ROLES = ('CLIENT', 'CLIENT_MUTE', 'ROUTER', 'TRACKER', 'SENSOR', 'TAK', 'CLIENT_HIDDEN', 'LOST_AND_FOUND',
+                'TAK_TRACKER', 'ROUTER_LATE', 'CLIENT_BASE')
+ROLE_KEYS = ('role', 'label', 'description')
+PRESET_REQUIRED = ('name', 'label', 'description', 'role')
+PRESET_OPTIONAL = ('device_flags', 'tak_flags', 'rebroadcast_mode', 'defaults')
+DEFAULT_INTS = ('node_info_broadcast_secs', 'position_broadcast_secs', 'broadcast_smart_minimum_distance',
+                'broadcast_smart_minimum_interval_secs', 'device_update_interval_secs', 'sensor_update_interval_secs',
+                'neighbor_info_update_interval_secs')
+DEFAULT_BOOLS = ('reset_intervals', 'position_broadcast_smart_enabled', 'environment_measurement', 'unmessagable')
+DEFAULT_KEYS = DEFAULT_INTS + DEFAULT_BOOLS + ('position_flags',)
 
 
 class Errors(list):
@@ -145,11 +169,27 @@ def check_bools(errors, where, obj, keys):
 
 
 class Enums:
-    """RegionCode and ModemPreset, read from common.proto so the data follows the schema."""
+    """The enums the registries name, read from the schema so the data follows it."""
 
-    def __init__(self, proto_text):
+    def __init__(self, proto_text, config_text='', module_config_text=''):
         self.regions = self._enum(proto_text, 'RegionCode')
         self.presets = self._enum(proto_text, 'ModemPreset')
+        self.roles = self._enum(proto_text, 'Role')
+        if config_text:
+            self.device_flags = self._nested(config_text, 'DeviceConfig', 'Flags')
+            self.rebroadcast_modes = self._nested(config_text, 'DeviceConfig', 'RebroadcastMode')
+            self.position_flags = self._nested(config_text, 'PositionConfig', 'PositionFlags')
+        if module_config_text:
+            self.tak_flags = self._nested(module_config_text, 'TAKConfig', 'Flags')
+
+    @staticmethod
+    def _nested(proto_text, message, name):
+        start = re.search(r'^message %s \{' % message, proto_text, re.M)
+        m = start and re.compile(r'^(\s+)enum %s \{(.*?)^\1\}' % name, re.S | re.M).search(proto_text, start.end())
+        if not m:
+            raise SystemExit('error: enum %s.%s not found' % (message, name))
+        return {k: int(v, 0) for k, v in
+                re.findall(r'^\s+([A-Z][A-Z0-9_]*) = (0x[0-9A-Fa-f]+|\d+)\s*(?:;|\[)', m.group(2), re.M)}
 
     @staticmethod
     def _enum(proto_text, name):
@@ -601,6 +641,102 @@ def build_regions(doc, enums, preset_registry, errors):
     }
 
 
+# --- roles ------------------------------------------------------------------
+
+def flag_word(errors, where, value, table, label, allowed=None):
+    """A list of enum value names, OR-ed into one word."""
+    if not isinstance(value, list):
+        errors.add(where, '%s must be a list of names' % label)
+        return 0
+    word = 0
+    for name in value:
+        if name not in table or (allowed is not None and name not in allowed):
+            errors.add(where, '%s is not a %s' % (name, label))
+            continue
+        if word & table[name]:
+            errors.add(where, '%s is listed twice' % name)
+        word |= table[name]
+    return word
+
+
+def build_roles(doc, enums, errors):
+    where = 'roles.yaml'
+    if not exact_keys(errors, where, doc, ('revision', 'roles', 'presets')):
+        return None
+    revision = build_revision(errors, where, doc)
+    if not isinstance(doc['roles'], list) or not isinstance(doc['presets'], list):
+        errors.add(where, 'roles and presets must be lists')
+        return None
+
+    roles = {}
+    for index, entry in enumerate(doc['roles']):
+        rwhere = '%s roles[%d]' % (where, index)
+        if not exact_keys(errors, rwhere, entry, ROLE_KEYS):
+            continue
+        role = entry['role']
+        if role not in enums.roles:
+            errors.add(rwhere, '%s is not a Role' % role)
+        elif role in roles:
+            errors.add(rwhere, '%s defined twice' % role)
+        else:
+            roles[role] = {'role': role, 'label': text(errors, rwhere, entry['label'], 'label'),
+                           'description': text(errors, rwhere, entry['description'], 'description')}
+    for role in enums.roles:
+        if role not in roles:
+            errors.add(where, 'Role %s has no roles entry' % role)
+
+    presets, seen = [], set()
+    for index, entry in enumerate(doc['presets']):
+        pwhere = '%s presets[%d]' % (where, index)
+        if not exact_keys(errors, pwhere, entry, PRESET_REQUIRED, PRESET_OPTIONAL):
+            continue
+        name = entry['name']
+        if not isinstance(name, str) or not UPPER_WORDS.match(name):
+            errors.add(pwhere, 'name must be UPPER_CASE words')
+            continue
+        pwhere = '%s preset %s' % (where, name)
+        if name in seen:
+            errors.add(pwhere, 'defined twice')
+        seen.add(name)
+        role = entry['role']
+        if role not in enums.roles:
+            errors.add(pwhere, '%s is not a Role' % role)
+            continue
+        out = {'name': name, 'label': text(errors, pwhere, entry['label'], 'label'),
+               'description': text(errors, pwhere, entry['description'], 'description'), 'role': role}
+        switches = entry.get('device_flags', [])
+        out['device_flags'] = flag_word(errors, pwhere, switches, enums.device_flags, 'role switch', SWITCH_ROLE)
+        for switch in switches if isinstance(switches, list) else []:
+            if SWITCH_ROLE.get(switch, role) != role:
+                errors.add(pwhere, '%s applies to %s, not %s' % (switch, SWITCH_ROLE[switch], role))
+        out['tak_flags'] = flag_word(errors, pwhere, entry.get('tak_flags', []), enums.tak_flags, 'TAKConfig flag')
+        if 'rebroadcast_mode' in entry:
+            mode = entry['rebroadcast_mode']
+            if mode not in enums.rebroadcast_modes:
+                errors.add(pwhere, '%s is not a RebroadcastMode' % mode)
+            elif mode == 'NONE' and role == 'ROUTER':
+                errors.add(pwhere, 'a router cannot have rebroadcast_mode NONE')
+            out['rebroadcast_mode'] = mode
+        defaults = entry.get('defaults', {})
+        dwhere = pwhere + ' defaults'
+        if not isinstance(defaults, dict) or not exact_keys(errors, dwhere, defaults, (), DEFAULT_KEYS):
+            continue
+        check_ints(errors, dwhere, defaults, [k for k in DEFAULT_INTS if k in defaults])
+        check_bools(errors, dwhere, defaults, [k for k in DEFAULT_BOOLS if k in defaults])
+        out_defaults = {k: defaults[k] for k in DEFAULT_KEYS if k in defaults and k != 'position_flags'}
+        if 'position_flags' in defaults:
+            out_defaults['position_flags'] = flag_word(errors, dwhere, defaults['position_flags'],
+                                                       enums.position_flags, 'PositionFlags value')
+        out['defaults'] = out_defaults
+        presets.append(out)
+    for legacy in LEGACY_ROLES:
+        if legacy not in seen:
+            errors.add(where, 'the 2.x role %s has no preset' % legacy)
+
+    return {'revision': revision, 'roles': sorted(roles.values(), key=lambda r: enums.roles[r['role']]),
+            'presets': presets}
+
+
 def compare_revision(label, base, new, errors):
     """Data edited in place carries its own revision, which any change must raise."""
     if not base or not new:
@@ -636,7 +772,8 @@ def generate(enums, errors):
         documented = documented_bandwidth_codes(fh.read())
     presets = build_presets(load_yaml(os.path.join(REGISTRY, 'modem_presets.yaml'), errors), enums, errors, documented)
     regions = build_regions(load_yaml(os.path.join(REGISTRY, 'regions.yaml'), errors), enums, presets, errors)
-    return dict(zip(OUTPUTS, (vendors, devices, regions, presets)))
+    roles = build_roles(load_yaml(os.path.join(REGISTRY, 'roles.yaml'), errors), enums, errors)
+    return dict(zip(OUTPUTS, (vendors, devices, regions, presets, roles)))
 
 
 def render(obj):
@@ -830,6 +967,29 @@ def selftest(enums):
            lambda e: compare_revision('regions', before, dict(changed, revision=4), e))
     expect('no change at the same revision', False, lambda e: compare_revision('regions', before, dict(before), e))
 
+    with open(os.path.join(REGISTRY, 'roles.yaml'), encoding='utf-8') as fh:
+        roles_doc = yaml.safe_load(fh)
+
+    def roles(**changes):
+        doc = dict(roles_doc, **changes)
+        return lambda errors: build_roles(doc, enums, errors)
+
+    def preset(name, **fields):
+        return [dict(p, **fields) if p['name'] == name else p for p in roles_doc['presets']]
+
+    expect('the shipped roles', False, roles())
+    expect('a Role without a roles entry', True, roles(roles=roles_doc['roles'][:-1]))
+    expect('a role defined twice', True, roles(roles=roles_doc['roles'] + roles_doc['roles'][:1]))
+    expect('a switch on the wrong role', True, roles(presets=preset('CLIENT_BASE', role='ROUTER')))
+    expect('a device flag that is not a role switch', True,
+           roles(presets=preset('CLIENT', device_flags=['DEVICE_LED_HEARTBEAT_DISABLED'])))
+    expect('a router that never rebroadcasts', True, roles(presets=preset('ROUTER', rebroadcast_mode='NONE')))
+    expect('a 2.x role without a preset', True,
+           roles(presets=[p for p in roles_doc['presets'] if p['name'] != 'ROUTER_LATE']))
+    expect('a preset defined twice', True, roles(presets=roles_doc['presets'] + roles_doc['presets'][:1]))
+    expect('an unknown default', True, roles(presets=preset('SENSOR', defaults={'colour': 1})))
+    expect('an unknown position flag', True, roles(presets=preset('TAK', defaults={'position_flags': ['NOPE']})))
+
     for failure in failures:
         print('FAIL: ' + failure, file=sys.stderr)
     if not failures:
@@ -848,8 +1008,9 @@ def main():
     ap.add_argument('--selftest', action='store_true', help='prove the rules reject bad data')
     args = ap.parse_args()
 
-    with open(COMMON_PROTO, encoding='utf-8') as fh:
-        enums = Enums(fh.read())
+    with open(COMMON_PROTO, encoding='utf-8') as fh, open(CONFIG_PROTO, encoding='utf-8') as cfg, \
+            open(MODULE_CONFIG_PROTO, encoding='utf-8') as mod:
+        enums = Enums(fh.read(), cfg.read(), mod.read())
     if args.selftest:
         return selftest(enums)
 
@@ -864,7 +1025,7 @@ def main():
         else:
             compare_hardware(base_json(args.base, 'hw_vendors.json'), base_json(args.base, 'hw_devices.json'),
                              generated['hw_vendors.json'], generated['hw_devices.json'], errors)
-            for name in ('regions.json', 'modem_presets.json'):
+            for name in ('regions.json', 'modem_presets.json', 'roles.json'):
                 compare_revision(name, base_json(args.base, name), generated[name], errors)
 
     if not errors:
@@ -890,12 +1051,14 @@ def main():
 
     regions = generated['regions.json']
     print('%s: %d vendors, %d devices; %d regions, %d profiles, %d preset lists, %d swap groups (revision %d); '
-          '%d presets (revision %d)' % (
+          '%d presets (revision %d); %d roles, %d role presets (revision %d)' % (
               'ok' if args.check else 'wrote registry/generated',
               len(generated['hw_vendors.json']['vendors']), len(generated['hw_devices.json']['devices']),
               len(regions['regions']), len(regions['profiles']), len(regions['preset_lists']),
               len(regions['swap_groups']), regions['revision'],
-              len(generated['modem_presets.json']['presets']), generated['modem_presets.json']['revision']))
+              len(generated['modem_presets.json']['presets']), generated['modem_presets.json']['revision'],
+              len(generated['roles.json']['roles']), len(generated['roles.json']['presets']),
+              generated['roles.json']['revision']))
     return 0
 
 

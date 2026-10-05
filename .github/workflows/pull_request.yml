@@ -94,6 +94,6 @@ jobs:
 
       - name: Decode generated JSON against the schema
         run: |
-          for pair in HwVendorRegistry:hw_vendors HwDeviceRegistry:hw_devices RegionRegistry:regions ModemPresetRegistry:modem_presets; do
+          for pair in HwVendorRegistry:hw_vendors HwDeviceRegistry:hw_devices RegionRegistry:regions ModemPresetRegistry:modem_presets RoleRegistry:roles; do
             buf convert . --type "meshtastic.${pair%%:*}" --from "registry/generated/${pair#*:}.json#format=json" --to "-#format=binpb" > /dev/null
           done

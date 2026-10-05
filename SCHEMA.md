@@ -48,7 +48,7 @@ graph TD
         mqtt[mqtt.proto]
         apponly[apponly.proto]
         clientonly[clientonly.proto]
-        regreg[region_registry<br/>modem_preset_registry]
+        regreg[region_registry<br/>modem_preset_registry<br/>role_registry]
     end
 
     wire --> common
@@ -437,6 +437,22 @@ allocated id is permanent: CI rejects a change that removes one or changes its s
 its continuation flag, so two bytes carry 14 value bits and top out at `0x3FFF`. Six
 vendor bits and eight device bits are exactly those 14. A seventh vendor bit would put
 every vendor from `0x40` up at three bytes on every `User` broadcast.
+
+### Roles
+
+`Role` has four values, and each is something a peer acts on: `CLIENT` relays normally and
+auto-mutes, `ROUTER` is infrastructure, `TRACKER` and `SENSOR` report and may sleep.
+Everything else a 2.x role meant is a switch on that base role: `DEVICE_RELAY_LATE` on a
+router, `DEVICE_RELAY_FAVORITES` and `DEVICE_QUIET` on a client, `DEVICE_LOST_AND_FOUND`
+on a tracker, `TAK_ENABLED` on any. A switch on the wrong role is ignored by the device and
+cleared when the configuration is set. Two switches change what peers do, so they travel:
+`NODE_FLAG_RELAYS_FAVORITES` and `NODE_FLAG_LOST_AND_FOUND`, in `User.flags` and
+`NodeRecord.flags`, which carry the descriptive `NodeFlags` instead of separate booleans.
+
+What a user picks is a preset from `RoleRegistry` (`registry/roles.yaml`): a role, its
+switches and the defaults the device installs. Every 2.x role name is a preset, so
+`CLIENT_MUTE` is a client with `rebroadcast_mode` `NONE` and `TAK_TRACKER` a tracker with
+TAK enabled. Labels are registry data: renaming a preset touches no schema.
 
 ### Region slot plan
 
@@ -943,7 +959,7 @@ which is why reach is also enforced from the other side.
 **`RelayConfig` is what a relay enforces, and also free.** A relay sees the one-byte
 `chan` and nothing else of a channel, which is enough for a policy table: per hash,
 forward, forward under a hop cap, or drop, with an action for hashes no rule names. It is
-evaluated on the relaying roles, ROUTER and ROUTER_LATE, only, and its default forwards
+evaluated on a ROUTER only, and its default forwards
 everything, so an existing mesh behaves as it did. Because hops taken is a hint rather
 than an authenticated value, a hop cap is congestion control and never a security
 boundary; and

@@ -30,8 +30,8 @@ message DeviceConfig {
 
     /*
      * Same behaviour as ALL, but skips packet decoding and simply rebroadcasts: a node
-     * that repeats everything it hears without looking inside. Available on the relaying
-     * roles, ROUTER and ROUTER_LATE; on any other role it behaves as ALL.
+     * that repeats everything it hears without looking inside. Available on a ROUTER; on
+     * any other role it behaves as ALL.
      */
     ALL_SKIP_DECODING = 1 [(meshtastic.enum_value_metadata) = {
       label: "All Skip Decoding"
@@ -57,11 +57,11 @@ message DeviceConfig {
     }];
 
     /*
-     * Only permitted for SENSOR, TRACKER and TAK_TRACKER roles, this will inhibit all rebroadcasts, not unlike CLIENT_MUTE role.
+     * Relay nothing. Refused on a ROUTER. A CLIENT set to NONE is what the 2.x CLIENT_MUTE role was.
      */
     NONE = 4 [(meshtastic.enum_value_metadata) = {
       label: "None"
-      description: "Only permitted for SENSOR, TRACKER and TAK_TRACKER roles, this will inhibit all rebroadcasts, not unlike CLIENT_MUTE role."
+      description: "Never rebroadcast. Not available on a router."
     }];
 
     /*
@@ -177,6 +177,36 @@ message DeviceConfig {
       label: "Disable Client Auto-mute"
       description: "Keep relaying broadcasts as a client even when routers already cover the area. For sensor and event deployments."
     }];
+    /* ROUTER only: relay in the late rebroadcast window instead of early. Ignored on other roles. */
+    DEVICE_RELAY_LATE = 0x10 [(meshtastic.enum_value_metadata) = {
+      label: "Relay Late"
+      description: "Router: rebroadcast only after other nodes, to fill gaps without taking hops from better-placed routers."
+    }];
+    /*
+     * CLIENT only: relay favourites' traffic like a router (never cancel, late window), count
+     * as infrastructure for zero-cost hops, keep favourites on a node-DB reset, never
+     * auto-favourite, no auto-mute. Advertised as NODE_FLAG_RELAYS_FAVORITES. Ignored on other roles.
+     */
+    DEVICE_RELAY_FAVORITES = 0x20 [(meshtastic.enum_value_metadata) = {
+      label: "Relay Favorites"
+      description: "Client: relay traffic from and to favorite nodes like a router. For a roof or attic node serving your other nodes."
+    }];
+    /*
+     * CLIENT only: no routine broadcasts - node info, position, device telemetry, neighbour
+     * info, mesh beacon. Ignored on other roles.
+     */
+    DEVICE_QUIET = 0x40 [(meshtastic.enum_value_metadata) = {
+      label: "Quiet"
+      description: "Client: send nothing on a schedule, only answer and send what you ask for."
+    }];
+    /*
+     * TRACKER only: position every 5 minutes with a lost-and-found text, position replies not
+     * throttled. Advertised as NODE_FLAG_LOST_AND_FOUND. Ignored on other roles.
+     */
+    DEVICE_LOST_AND_FOUND = 0x80 [(meshtastic.enum_value_metadata) = {
+      label: "Lost and Found"
+      description: "Tracker: broadcast your position as a message regularly, to help recover the device."
+    }];
   }
 
   /*
@@ -244,7 +274,7 @@ message DeviceConfig {
 
   /*
    * Client auto-mute, CLIENT role only. A client that hears at least auto_mute_router_count
-   * ROUTER or ROUTER_LATE neighbours directly, at auto_mute_min_snr or better, within
+   * ROUTER neighbours directly, at auto_mute_min_snr or better, within
    * auto_mute_window_secs stops relaying broadcasts: those routers already reach everyone it
    * would. Unicast it is asked to carry is relayed as before. It resumes once the condition has
    * not held for a whole window. DEVICE_AUTO_MUTE_DISABLED turns it off.
@@ -1280,8 +1310,8 @@ message GroupConfig {
 /*
  * Relay Policy
  *
- * How this node relays broadcast traffic, per channel hash. Evaluated on the relaying
- * roles, ROUTER and ROUTER_LATE, only; every other role ignores it. Keyed by the
+ * How this node relays broadcast traffic, per channel hash. Evaluated on a ROUTER only;
+ * every other role ignores it. Keyed by the
  * header's one-byte `chan`, so a rule covers every channel that hashes to that byte,
  * held or not - which is what lets an operator cap a channel whose key the node does
  * not have.

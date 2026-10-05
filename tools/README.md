@@ -156,6 +156,7 @@ It needs PyYAML.
 | `registry/hardware/*.yaml` | `HwVendorRegistry`, `HwDeviceRegistry` | `hw_vendors.json`, `hw_devices.json` |
 | `registry/regions.yaml` | `RegionRegistry` | `regions.json` |
 | `registry/modem_presets.yaml` | `ModemPresetRegistry` | `modem_presets.json` |
+| `registry/roles.yaml` | `RoleRegistry` | `roles.json` |
 
 **Hardware** is one file per vendor, named after the vendor slug. `00-legacy.yaml` is
 vendor `0x00`, the common pool for devices with no registered vendor, named from the board
@@ -177,6 +178,11 @@ reserved under every vendor (SCHEMA.md §6). Ids and slugs are unique across all
 and vendor `0x00` appears only in `00-legacy.yaml`. An allocation is permanent: against
 `--base`, an id may not disappear or change its slug, while its name may. A client displays the vendor name and the device name together; vendor `0x00` is not a brand, so its device names are complete.
 Each hardware registry's `revision` is its entry count.
+
+**Roles** has one `roles` entry per `Role` value and the presets users pick. A preset's
+`device_flags` lists role switches only, each valid on one role (`SWITCH_ROLE`), and every
+2.x role name is a preset. Enum values are named, and the generator reads them from the
+schema; flag lists become one word.
 
 **Regions and presets** name their `RegionCode` or `ModemPreset` without the prefix.
 The generator reads both enums from `common.proto`, so a name the schema lacks is

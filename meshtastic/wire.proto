@@ -209,11 +209,12 @@ message User {
   uint32 hw_model = 3;
 
   /*
-   * In some regions Ham radio operators have different bandwidth limitations than others.
-   * If this user is a licensed operator, set this flag.
-   * Also, "long_name" should be their licence number.
+   * Bitwise OR of NodeFlags values, limited to the bits that describe the node to others:
+   * NODE_FLAG_IS_LICENSED (a licensed amateur operator, whose long_name should be their call
+   * sign), NODE_FLAG_IS_UNMESSAGABLE with NODE_FLAG_HAS_IS_UNMESSAGABLE, NODE_FLAG_RELAYS_FAVORITES
+   * and NODE_FLAG_LOST_AND_FOUND. A receiver ignores any other bit.
    */
-  bool is_licensed = 4;
+  uint32 flags = 4;
 
   /*
    * Indicates that the user's role in the mesh.
@@ -229,11 +230,6 @@ message User {
   bytes public_key = 6;
 
   /*
-   * Whether or not the node can be messaged
-   */
-  optional bool is_unmessagable = 7;
-
-  /*
    * Current X25519 ratchet public key, present only while this node has forward secrecy
    * for direct messages enabled (SecurityConfig.ratchet_flags). Rotated every
    * ratchet_interval_secs. A receiver keeps the newest key it has seen for this node and
@@ -241,7 +237,7 @@ message User {
    * back to the static derivation. Authenticated by the XEdDSA signature on the NodeInfo
    * that carries it: an unsigned NodeInfo's ratchet key is ignored.
    */
-  bytes ratchet_key = 8;
+  bytes ratchet_key = 7;
 }
 
 /*
