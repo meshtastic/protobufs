@@ -919,10 +919,42 @@ keep the header's bit positions, the header's `chan` is `channel_hash` rather th
 local `channel` index, and the tail is `path`. `MINI` and `EXT` frames have no
 `MeshPacket` form.
 
-**Fragmentation** is `HeaderOptions.fragment`, packed `msg_id(8) | index(3) | total(3)`.
+**Fragmentation** is `HeaderOptions.fragment`, packed `msg_id << 6 | index << 3 | total`
+with `total` the fragment count minus one; `total == 0` or `index > total` is invalid.
 Endpoint-only; relays treat fragments as independent packets. `total` travels on every
 fragment so a receiver that gets fragment 3 first can size its buffer. There is no new
-ARQ - each fragment is an ordinary packet, so `want_ack` already covers it.
+ARQ - each fragment is an ordinary packet, so `want_ack` already covers it. Each fragment
+is encrypted and, where its shape signs, signed on its own; the AAD binds its position.
+
+Every fragment carries the message's `portnum` and a slice of the payload; fragment 0 also
+carries `request_id`, `reply_id`, `emoji` and `want_response`. A receiver keys a message on
+`(from, portnum, msg_id)` - a node and its client share a `from`, and each port has one
+owner - and joins the slices in index order. A message to be kept by store and forward
+sets `HOP_STORE` on every fragment.
+
+**The owner of a port splits and joins it.** A reassembled message fits neither a
+`MeshPacket` (`Data.payload` is 256 bytes) nor one `FromRadio` over BLE, so a node never
+reassembles for its client: it passes a client-owned port's fragments up as they arrive.
+
+| port | owner | fragments |
+|---|---|--:|
+| `STORE_FORWARD_APP` | node | 2 |
+| `ATAK_FORWARDER` | client | 4 |
+| `LORAWAN_BRIDGE` | client | 2 |
+
+Every other port is off: a node refuses a client fragment on it, and a payload module never
+sees a fragment as a whole message. Text stays off - on-device UIs would need node-side
+reassembly and a message model larger than one frame.
+
+What one fragment carries, from a 255-byte frame with a 4-byte options block and 7 bytes of
+`Data` framing, no path tail:
+
+| shape | slice |
+|---|--:|
+| BCAST, channel AEAD, unsigned | 228 |
+| BCAST, channel AEAD, signed | 162 |
+| UCAST, PKI | 216 |
+| UCAST, HAM (plaintext, signed) | 162 |
 
 **Eight fragments is the ceiling**, about 1.8 kB, with `total` holding the count minus
 one. The field is three bits per counter and not four because the fourth is not free
@@ -1015,11 +1047,11 @@ missing more than three announces knows frames were stored meanwhile and syncs a
 without decrypting anything: flagged frames are retained unconditionally, unflagged ones
 only as evictable filler and only when `STOREFORWARD_KEEP_FILLER` is set.
 
-**Replay does not fit one frame for a full-size original.** `StoredFrame` costs about 20
+**Replay of a full-size original takes two fragments.** `StoredFrame` costs about 20
 bytes over the ciphertext it carries, so a frame near the 255-byte limit cannot be replayed
-in one packet. Until `STORE_FORWARD_APP` opts into `HeaderOptions.fragment`, a server does
-not replay a frame it cannot send whole, and reports that stream in `gap_hashes`. This is
-the first consumer of per-portnum fragmentation.
+in one packet. The server splits such a `FRAME` into two `STORE_FORWARD_APP` fragments and
+moves the client's cursor only when both are acked; the client joins them and injects the
+original frame. This is the first consumer of per-portnum fragmentation.
 
 ### Node discovery
 
@@ -1270,8 +1302,6 @@ Open work, and decisions deliberately not yet made.
 
 **Stated but not built:**
 
-- **Fragmentation off by default, opt-in per portnum.** §8 states the policy; nothing
-  implements the gate.
 
 **What the schema assumes of firmware.** These are requirements an implementation has to
 meet for the rules above to hold:
