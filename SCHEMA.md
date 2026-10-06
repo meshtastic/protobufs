@@ -379,18 +379,13 @@ a list of measurements or edges.
 
 | columns | saving against one submessage per element |
 |---|---|
-| `NeighborInfo.neighbor_ids` / `.neighbor_snr` | 32% at 4 edges, 40% at 10, 44% at 20 |
 | `DrawnShape.vertex_lat_deltas` / `.vertex_lon_deltas` | ~58 B on a 32-vertex telestration |
-
-Columns also constrain what a message can carry: a value that is local to one node has
-nowhere to sit in a pair of parallel arrays, so it stays in that node's own table.
 
 **`fixed32` for node numbers.** A NodeNum is a CRC over the node's public key, so it is
 uniformly distributed over 32 bits: 15 in 16 land above 2²⁸ and cost the full five varint
 bytes, against a flat four for `fixed32`. There is no low-magnitude population to make a
 varint pay, and never will be. Every NodeNum on the air is a `fixed32` -
-`NeighborInfo.node_id`, `last_sent_by_id` and
-`neighbor_ids`, `SharedContact.node_num`, `NodeRemoteHardwarePin.node_num`, and the
+`SharedContact.node_num`, `NodeRemoteHardwarePin.node_num`, and the
 five `num` fields in the node database. The last of those is per stored node,
 so it is flash rather than airtime.
 

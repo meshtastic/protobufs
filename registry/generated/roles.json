@@ -1,5 +1,5 @@
 {
-  "revision": 1,
+  "revision": 2,
   "roles": [
     {
       "role": "CLIENT",
@@ -44,7 +44,6 @@
         "position_broadcast_secs": 2147483647,
         "device_update_interval_secs": 2147483647,
         "sensor_update_interval_secs": 2147483647,
-        "neighbor_info_update_interval_secs": 2147483647,
         "position_broadcast_smart_enabled": false,
         "rebroadcast_mode": "LOCAL_ONLY"
       }

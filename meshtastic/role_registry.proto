@@ -60,10 +60,8 @@ message RoleDefaults {
   /* TelemetryConfig environment measurement on or off */
   optional bool environment_measurement = 11;
 
-  optional uint32 neighbor_info_update_interval_secs = 12;
-
   /* Advertise the node as not taking direct messages (NODE_FLAG_IS_UNMESSAGABLE) */
-  optional bool unmessagable = 13;
+  optional bool unmessagable = 12;
 }
 
 /*

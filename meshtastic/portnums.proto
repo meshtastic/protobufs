@@ -203,8 +203,8 @@ enum PortNum {
   SIMULATOR_APP = 68;
 
   /*
-   * Aggregates edge info for the network by sending out a list of each node's neighbors
-   * ENCODING: Protobuf
+   * A node's directly heard neighbors, between a node and its own client only; never sent over LoRa or MQTT
+   * ENCODING: Protobuf NeighborInfo
    */
   NEIGHBORINFO_APP = 69;
 

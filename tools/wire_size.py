@@ -67,11 +67,6 @@ def unpacked(tag, sizes):
     return sum(key(tag) + s for s in sizes)
 
 
-def submsg(tag, body):
-    """A length-delimited submessage: a key and a length on every element."""
-    return key(tag) + varint(body) + body
-
-
 # --- scenarios -------------------------------------------------------------
 # Each returns (naive bytes, schema bytes, note). Field numbers follow the schema
 # each side actually had, since a tag above 15 costs two bytes for its key.
@@ -126,26 +121,6 @@ def environment_batch(n=16):
     return old, new, "the same three quantities, %d samples in one packet" % n
 
 
-NEIGHBOURS = [
-    (0x9E2A4C71, -12), (0x1B77D033, -4), (0xC4019AEF, -20), (0x55A3F218, -7),
-    (0xE80B6D95, -15), (0x2F94A1C0, -3), (0xA71E5B4D, -18), (0x63CD07A2, -9),
-    (0xD52840F6, -6), (0x0EB9C384, -11),
-]
-
-
-def neighbor_info():
-    # Naive: uint32 self ids, then one Neighbor submessage per edge.
-    old = field(1, varint(NEIGHBOURS[0][0])) + field(2, varint(NEIGHBOURS[0][0]))
-    old += field(3, varint(900))
-    for nid, snr in NEIGHBOURS:
-        old += submsg(4, field(1, varint(nid)) + field(2, zigzag(snr)))
-    # Schema: fixed32 self ids, then two parallel columns.
-    new = field(1, f32()) + field(2, f32()) + field(3, varint(900))
-    new += packed(4, [4] * len(NEIGHBOURS))
-    new += packed(5, [zigzag(snr) for _, snr in NEIGHBOURS])
-    return old, new, "%d edges" % len(NEIGHBOURS)
-
-
 VERTICES = 32
 
 
@@ -165,7 +140,6 @@ SCENARIOS = [
     ("DeviceMetrics", device_metrics),
     ("Environment, live", environment_one),
     ("Environment, batched", environment_batch),
-    ("NeighborInfo", neighbor_info),
     ("DrawnShape", drawn_shape),
 ]
 

@@ -241,7 +241,6 @@ a table like this cannot tell you, and the only honest source for it is a captur
 | `DeviceMetrics` | battery, voltage, two utilisations, uptime | 21 | **15** | 29% |
 | `Environment, live` | temperature, humidity, pressure, one sample | 15 | **14** | 7% |
 | `Environment, batched` | the same three quantities, 16 samples in one packet | 240 | **77** | 68% |
-| `NeighborInfo` | 10 edges | 114 | **67** | 41% |
 | `DrawnShape` | 32 vertices, packed vs a nanopb callback | 192 | **132** | 31% |
 
 Four things the table shows that are easy to miss:
@@ -249,8 +248,7 @@ Four things the table shows that are easy to miss:
 - **The single largest correction is `int32` to `sint32`.** A negative `int32`
   sign-extends to 64 bits and costs ten bytes whatever its magnitude, which is the whole
   difference between the two `Position` rows: the same altitude costs 2 bytes above sea level
-  and 11 below it without it. `NeighborInfo` wins for a different reason - its naive form
-  already zigzags the SNRs, so what the columns remove there is per-element framing.
+  and 11 below it without it.
 - **A live single reading barely moves.** The 15-to-14 row is the honest version of the
   telemetry design: the win is in batching and in never sending a `float`, not in the
   layout, and a node that reports one sample at a time collects almost none of it.

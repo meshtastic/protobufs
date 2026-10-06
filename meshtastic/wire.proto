@@ -856,49 +856,43 @@ message InjectedFrame {
 }
 
 /*
- * Full info on edges for a single node
+ * A node's directly heard neighbors, built from its node database. A node reports it to
+ * its own client only, periodically and in reply to a request from that client; it never
+ * goes over LoRa or MQTT.
  */
 message NeighborInfo {
   /*
-   * The node ID of the node sending info on its neighbors
+   * The reporting node
    */
   fixed32 node_id = 1;
 
   /*
-   * Field to pass neighbor info for the next sending cycle
+   * Seconds between the node's periodic reports
    */
-  fixed32 last_sent_by_id = 2;
+  uint32 node_broadcast_interval_secs = 2;
 
   /*
-   * Broadcast interval of the represented node (in seconds)
+   * The direct neighbors heard within twice the report interval
    */
-  uint32 node_broadcast_interval_secs = 3;
+  repeated Neighbor neighbors = 3;
+}
+
+/*
+ * One directly heard neighbor
+ */
+message Neighbor {
+  /*
+   * Node number of the neighbor
+   */
+  fixed32 node_id = 1;
 
   /*
-   * The out edges from this node, as two parallel columns: edge N is
-   * (neighbor_ids[N], neighbor_snr[N]), and the two columns MUST stay the same
-   * length.
-   *
-   * Columns rather than one submessage per edge: a submessage costs a tag and a
-   * length byte per neighbour plus a tag on each field inside it, where the
-   * columns pay the field framing once and nothing per edge. That is around a
-   * third of the message at ten neighbours, and roughly twice as many edges in
-   * one frame.
-   *
-   * A node's view of when it last heard a neighbour, and that neighbour's own
-   * broadcast interval, belong to that node's table rather than to a message
-   * about the edge, so neither is a column here.
+   * SNR of the last message heard from the neighbor, in dB scaled by 2
    */
-  repeated fixed32 neighbor_ids = 4;
+  sint32 snr = 2;
 
   /*
-   * SNR of the last message heard from each neighbour, in dB scaled by 2.
-   *
-   * Half-dB steps because this is the one SNR field that goes on the air, once per
-   * neighbour: the whole practical range of -32 to +31.5 dB is a single zigzag byte,
-   * where the radio's own quarter-dB quantum needs two below -16 dB - exactly the
-   * weak links a neighbour table is about. Rounding a quarter-dB reading to halves
-   * loses nothing a link decision uses.
+   * When the neighbor was last heard, in seconds since 1970
    */
-  repeated sint32 neighbor_snr = 5;
+  fixed32 last_rx_time = 3;
 }

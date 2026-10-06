@@ -4,7 +4,7 @@
 # it takes that configuration; defaults left out leave the device's value alone. No two rows
 # share a role, switches and TAK flags, and every role has a row without switches. Any
 # change to this file raises revision; tools/gen_registry.py --check enforces it.
-revision: 1
+revision: 2
 roles:
   - role: "CLIENT"
     label: "Client"
@@ -33,7 +33,6 @@ presets:
       node_info_broadcast_secs: 2147483647
       position_broadcast_secs: 2147483647
       position_broadcast_smart_enabled: false
-      neighbor_info_update_interval_secs: 2147483647
       device_update_interval_secs: 2147483647
       sensor_update_interval_secs: 2147483647
   - name: "CLIENT_RELAY_FAVORITES"

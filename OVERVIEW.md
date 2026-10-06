@@ -129,8 +129,8 @@ environment sensor and an air-quality sensor sends one packet rather than two.
 
 **The technique is not specific to telemetry.** Any list of small records has the same
 shape, and paying the framing once per column instead of once per element is worth as much
-there. `NeighborInfo` carries two parallel columns rather than a submessage per edge, which
-fits roughly twice as many edges in a packet. Node numbers are `fixed32` for a related
+there. `DrawnShape` carries its vertices as two parallel columns rather than a submessage per
+vertex. Node numbers are `fixed32` for a related
 reason: a NodeNum is uniformly random over 32 bits, so a varint costs five bytes fifteen
 times in sixteen.
 
