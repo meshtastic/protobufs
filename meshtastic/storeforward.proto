@@ -197,6 +197,11 @@ message StoreAndForward {
      * Bitwise OR of Flags values.
      */
     uint32 flags = 7;
+
+    /*
+     * Seconds between this server's announces, so a client can tell how many it missed.
+     */
+    uint32 announce_secs = 8;
   }
 
   /*

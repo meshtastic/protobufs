@@ -1008,7 +1008,8 @@ message that is not an addressed packet: it rides the `MINI` profile, five heade
 no addressing, because a beacon nobody replies to should not pay for a `from`, an `id` and a
 channel hash. `Announce.server` names the node to sync with, since the frame itself does
 not. That makes the S&F announce the first defined consumer of `MINI`, whose payload was
-until now undefined.
+until now undefined. It carries `announce_secs`, so a client that hears its server again after
+missing more than three announces knows frames were stored meanwhile and syncs again.
 
 **`HOP_STORE` decides what is worth keeping.** The originator sets it inside the AAD
 (§8, the options block), so a keyless server can tell user-facing traffic from telemetry
