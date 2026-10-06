@@ -855,11 +855,13 @@ Tags 16 and above cost two bytes and are end-to-end, so a relay has no business 
 at them at all. `fragment` sits in the cheap range even though a relay never reads
 it, because a hop-by-hop field added later will need the space.
 
-`hop_flags` is the one hop-by-hop field a relay is expected to read. `HOP_NO_LEARN`
+`hop_flags` is the hop-by-hop field a relay is expected to read. `HOP_NO_LEARN`
 switches off route learning for the frame, `HOP_STORE` marks it for retention by a
 store-and-forward server, and `HOP_ANYCAST` says `to` is a group identity, which is what
-a relay keys its tables on. Both are originator statements inside the AAD, which is what
-lets a relay or a server trust them without decrypting anything.
+a relay keys its next-hop table on. `anycast_reply` marks a reply to an anycast request,
+from which a relay that carried the request learns its route to the group. All are
+originator statements inside the AAD, which is what lets a relay or a server trust them
+without decrypting anything.
 
 What it costs, including the length byte:
 
@@ -869,6 +871,7 @@ What it costs, including the length byte:
     fragment   = key 0x08 + two varint bytes (msg_id|index|total reaches 14 bits) = 3
     scope_code = key + three varint bytes (16 random bits exceed 16383 three
                  times in four; two bytes below that)                        = 4
+    anycast_reply = key 0x25 + four fixed bytes                              = 5
     uint16     = key + up to three varint bytes                              = 4
   Plus one opt_len byte for a non-empty block.
 -->
@@ -880,6 +883,7 @@ What it costs, including the length byte:
 | fragmentation state | 4 |
 | fragment plus `hop_flags` | 6 |
 | `scope_code` only | 5 |
+| `anycast_reply` only | 6 |
 | one future `uint16` field | 5 |
 | fragment plus one future field | 8 |
 | fragment plus `hop_flags` plus `scope_code` | 10 |
@@ -1097,31 +1101,45 @@ Routed traffic often has more than one valid sink: two uplinks, three egress nod
 which will do. The choices were a direct message to one named node, which has no failover,
 or a broadcast, which reaches everyone. Anycast is the third class.
 
-**A group is a key pair, not a role.** X25519 for encryption and Ed25519 for signing, with
-`group_id = crc32(group_pub)` living in the NodeNum space. A sender needs only the public
-half, which `GroupConfig` holds; a member also holds the private half in
-`SecurityConfig.group_private_key`, where the node's own private key lives and where admin
-masks it the same way. There is no channel-URL or QR path for group keys: an operator sets
-them through admin. A member keeps its own NodeNum and its own identity - holding a group
-key changes neither.
+**A group is a key pair, not a role.** An X25519 key pair, with
+`group_id = crc32(group_pub)` living in the NodeNum space; ids 0-3 and `0xFFFFFFFF` are
+refused. A sender needs only the public half, which `GroupConfig` holds; a member also
+holds the private half in `SecurityConfig.group_private_key`, where the node's own private
+key lives and where admin masks it the same way. There is no channel-URL or QR path for
+group keys: an operator sets them through admin. A member keeps its own NodeNum and its own
+identity - holding a group key changes neither, and nothing ever signs as the group.
 
 **The frame is an ordinary UCAST frame.** `to` is the group id, the payload is PKI
 encrypted against the group public key, and the XEdDSA signature is the real sender's, so
-any member decrypts it and every member knows who sent it. `HOP_ANYCAST` in the options
-block is what tells a relay that `to` names a group: it costs 3 bytes on anycast frames
-and nothing on the rest, and `UCAST` stays 16 bytes.
+any member decrypts it and every member knows who sent it. The signature is mandatory:
+every member holds the group key and could otherwise forge a frame from the sender.
+`HOP_ANYCAST` in the options block is what tells a relay that `to` names a group: it costs
+3 bytes on anycast frames and nothing on the rest, and `UCAST` stays 16 bytes.
+
+**A member delivers what is addressed to it.** It delivers a frame whose `next_hop` is 0,
+a flood, or names it, ignores one steered to another relay, and never relays a frame to
+its own group. It refuses admin, key verification and remote hardware on an anycast
+frame: those address a node, not whichever member is nearest.
+
+**Replies are sealed with the group key.** A member acks, naks and answers from its own
+NodeNum, under `SHA256(X25519(group_private, sender_public))`, the key the request was
+sealed with, so the sender needs no member's key. Every reply carries
+`HeaderOptions.anycast_reply`, the request's id: the sender uses it to pick the key, and a
+relay that carried the request sets `next_hop` for `(anycast, group_id)` from the `relay`
+byte of the first reply that carries it. `ack_proof` uses the same key and binds the
+member's NodeNum. Every member that delivers a request that set `BITFIELD_WANT_RESPONSE`
+answers it; a steered frame reaches one.
 
 **Delivery is first flood, then steer.** The first frame to a group floods within the
-sender's channel scope with `flags.path` set, like a first direct message. Every member
-that decrypts it acks from its own NodeNum, so the sender learns which member answered and
-every relay on the reverse path sets `next_hop` for `(anycast, group_id)` from the first
-ack it sees. Later frames follow that path and no other member hears them. When the
-nearest member disappears, `ReliableRouter` retransmits, falls back to a flood, another
-member acks, and the tables relearn - the same path as a direct message to a node that
-moved. Only the delivering member answers a request that set `BITFIELD_WANT_RESPONSE`.
+sender's channel scope with `flags.path` set, like a first direct message. Each member on
+the flood delivers, acks and ends its branch; relays on the reverse path learn from the
+first reply, and later frames follow that path. Overhearing the first relay does not end an
+anycast send: the sender waits once end to end for the reply, then floods once, so another
+member answers when the nearest has gone. A flood that goes unanswered too clears the route.
 
-**Tables key on `(anycast bit, id)`**, so a group id and a NodeNum that collide in 32 bits
-never share a next-hop or dedup entry.
+**A relay keys its next-hop table on `(anycast bit, id)`**, so a group id and a NodeNum
+that collide in 32 bits never share an entry. Dedup is keyed by sender, and a group never
+sends.
 
 Multicast, meaning delivery to every member, is not this: members that need every packet
 share it over the backhaul they already have.
@@ -1252,10 +1270,6 @@ Open work, and decisions deliberately not yet made.
 
 **Stated but not built:**
 
-- **The "never re-encode `HeaderOptions` in transit" test.** §8 requires it as a test
-  rather than a comment, because nanopb drops unknown fields on decode and a re-encode
-  silently strips exactly the forward compatibility the block exists to provide. Round
-  trip an unknown high tag through the relay path and assert the bytes are identical.
 - **Fragmentation off by default, opt-in per portnum.** §8 states the policy; nothing
   implements the gate.
 
@@ -1337,6 +1351,12 @@ meet for the rules above to hold:
 - **No multicast.** Delivery is to one member, the nearest that acks.
 - **Member selection is nearest-ack, not load-aware.** A busy member that happens to be
   closest keeps taking the traffic, and nothing measures or balances that.
+- **Duplicate delivery.** A flood, or a retry after a lost ack, can reach two members; a
+  backhaul dedups on `(from, id)`.
+- **One key for every member.** Group traffic has no forward secrecy, and any holder of the
+  group key reads all of it and can answer as any member. It cannot send as a sender, whose
+  signature it lacks. Rotating a key means a new group on every member and sender.
+- **No store and forward** for group traffic.
 
 **Direct-message forward secrecy:**
 
