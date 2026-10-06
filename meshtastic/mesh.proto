@@ -1815,6 +1815,11 @@ message MeshPacket {
      * Arrived via a BLE GATT mesh-peer connection (a phone connected to this node as a mesh peer)
      */
     TRANSPORT_BLE_GATT = 10;
+
+    /*
+     * Arrived as sound, over a speaker and the microphones in earshot of it
+     */
+    TRANSPORT_AUDIO = 11;
   }
 
   /*
