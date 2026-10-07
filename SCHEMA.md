@@ -1204,6 +1204,13 @@ frame budget is an announced ratchet: each node publishes a rotating X25519 key 
                        info = min(from, to) || max(from, to))
 ```
 
+The salt is the 21 ASCII bytes without a terminator, `info` is two little-endian 32-bit
+node numbers, and the output is the 32-byte AES-256-CCM key. Nonce, AAD, tag and overhead
+are those of the static derivation, `SHA256(dh_ss)`, which stays as it is. With private
+keys `01 02 .. 20`, `21 22 .. 40` (static, sender `0x12345678` and receiver `0x9ABCDEF0`)
+and `41 42 .. 60`, `61 62 .. 80` (ratchet), each clamped before use, the key is
+`be5a5f93b081b05ecdb643106bcbc3fdfb8e6193ffcb82350851c6fbfd3d0584`.
+
 The static half keeps the agreement authenticated to the sender's identity even if a
 ratchet key was published by someone else; erasing ratchet private keys is what buys the
 forward secrecy. A node holds `K = 3` generations, the current one and the two before it,
@@ -1211,12 +1218,29 @@ and erases the oldest on rotation, so **granularity is one rotation interval, no
 message**. Nothing depends on a previous message, which is why loss, reordering and
 duplicates cannot desynchronise anything.
 
-**Nothing on the air says which derivation was used.** A receiver tries its own current
-ratchet against the peer's newest, then its remaining generations, then the static-only
-key: at most `K * K + 1` tag checks, in practice two or three, and only on unicast
-addressed to itself. The 8-byte unicast tag is what rejects a wrong key. That keeps the
-cost at zero wire bytes; an explicit generation byte in the end-to-end options range is
-the fallback if measurement on nRF52 says trial decryption is too slow.
+**Nothing on the air says which derivation was used.** A receiver keeps a peer's three
+newest keys and tries the static key, then its own current ratchet against the peer's
+newest, then its older generations, then every own generation against the peer's older
+keys: at most `K * K + 1` tag checks, only on unicast addressed to itself from a sender
+whose static key it holds. Static goes first because it costs no X25519 and carries every
+ack. The 8-byte unicast tag is what rejects a wrong key. That keeps the cost at zero wire
+bytes; an explicit generation byte in the end-to-end options range is the fallback if
+measurement on nRF52 says trial decryption is too slow.
+
+**A key is learned only from an authenticated NodeInfo**: one whose XEdDSA signature
+verified, or one that decrypted under the sender's static key. One of either kind without
+`ratchet_key` means the node stopped publishing one. A NodeRecord neither carries nor
+clears it. A node publishes its new key at once after a rotation, and only after the
+private half is stored.
+
+**A sender ratchets toward a peer whose key it learned within the last `K - 1` days**,
+using the peer's newest key and the newest own generation the peer has used toward it,
+else its current one, so a reply works across a rotation on either side. Routing,
+NodeInfo and key verification stay static: they carry no user content, and they are what
+repairs a key. So does an admin message until the peer has used a ratchet pair toward the
+sender, since a node that does not know the sender reads admin only through its admin
+keys. A ratchet message that fails to decrypt gets a `NO_CHANNEL` nak from the addressed
+node; the sender retries it static and the two exchange NodeInfo.
 
 **Fallback is the static derivation**, used whenever either side has no fresh ratchet key
 for the other, so a mesh with the feature half deployed still delivers. What it does not
@@ -1408,6 +1432,10 @@ meet for the rules above to hold:
   state, skipped-key storage and a counter per packet, none of which fit this budget.
 - **Trial decryption is unmeasured.** The order is specified and costs no wire bytes, but
   nobody has timed `K * K + 1` tag checks on an nRF52840.
+- **Erasure on flash is best effort.** The file is rewritten without the oldest key, and
+  the flash block keeps the old bytes until it is reused.
+- **History expires.** A message stored and replayed after the receiver erased the key it
+  was sent to does not decrypt.
 
 **Store and forward:**
 

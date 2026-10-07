@@ -1223,12 +1223,20 @@ message SecurityConfig {
     /* Nothing enabled: direct messages derive their key from the static keys alone */
     RATCHET_NONE = 0x00;
     /* Generate, publish and use ratchet keys for PKI direct messages */
-    RATCHET_ENABLED = 0x01;
+    RATCHET_ENABLED = 0x01 [(meshtastic.enum_value_metadata) = {
+      label: "Forward Secrecy"
+      description: "Rotate a ratchet key and use it for direct messages to nodes that publish one."
+    }];
     /*
-     * Refuse to send a direct message with the static derivation when the peer has
-     * published a ratchet key. Off by default: a stale key would cost delivery.
+     * Refuse to send a direct message with the static derivation to a node known to have
+     * published a ratchet key (NODE_FLAG_HAS_RATCHET). Acks, NodeInfo and key verification
+     * stay static. Acts only with RATCHET_ENABLED. Off by default: a stale key would cost
+     * delivery.
      */
-    RATCHET_REQUIRE_WHEN_KNOWN = 0x02;
+    REQUIRE_RATCHET_WHEN_KNOWN = 0x02 [(meshtastic.enum_value_metadata) = {
+      label: "Require Forward Secrecy"
+      description: "Refuse to send a direct message without forward secrecy to a node that has published a ratchet key."
+    }];
   }
 
   /*
@@ -1241,7 +1249,11 @@ message SecurityConfig {
    * 3600. Forward secrecy is per interval, so this is the width of the window a
    * compromise of both static keys still opens.
    */
-  uint32 ratchet_interval_secs = 7;
+  uint32 ratchet_interval_secs = 7 [(meshtastic.field_metadata) = {
+    label: "Ratchet Interval"
+    description: "How often the ratchet key rotates. Defaults to 86400 seconds, at least 3600."
+    unit: "s"
+  }];
 
   /*
    * X25519 private keys of the anycast groups this node is a member of, one per group.

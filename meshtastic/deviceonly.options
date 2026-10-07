@@ -12,6 +12,9 @@
 *DeviceState.node_remote_hardware_pins max_count:16
 *DeviceState.sf_cursors max_count:17
 
+*RatchetState.private_keys max_count:3 max_size:32
+*RatchetPeer.keys max_count:3 max_size:32
+
 *NodeInfoLite.channel int_size:8
 *NodeInfoLite.hops_away int_size:8
 *NodeInfoLite.next_hop int_size:8

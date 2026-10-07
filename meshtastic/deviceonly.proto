@@ -209,6 +209,61 @@ message DeviceState {
   fixed32 record_crc = 7;
 }
 
+/*
+ * One peer's published ratchet keys, as RatchetState stores them.
+ */
+message RatchetPeer {
+  /*
+   * The peer's node number.
+   */
+  fixed32 num = 1;
+
+  /*
+   * Its ratchet public keys, newest first, at most three.
+   */
+  repeated bytes keys = 2;
+
+  /*
+   * How long keys[0] had been held when this was written. Time the node was off is not
+   * counted.
+   */
+  uint32 age_secs = 3;
+
+  /*
+   * The newest RatchetState.generation of this node's keys the peer has used toward it,
+   * 0 for none. A direct message to the peer uses that key.
+   */
+  uint32 own_generation = 4;
+}
+
+/*
+ * Direct-message forward secrecy state, in its own file. Never sent, never in a backup and
+ * never returned by get_config: erasing the oldest private key is what the feature buys.
+ */
+message RatchetState {
+  /*
+   * X25519 ratchet private keys, newest first, at most three. Public halves are derived.
+   */
+  repeated bytes private_keys = 1;
+
+  /*
+   * Unix seconds of the last rotation, or 0 when the clock was not trusted then.
+   */
+  fixed32 rotated_at = 2;
+
+  /*
+   * Generation of private_keys[0]: counts rotations, so RatchetPeer.own_generation can
+   * name one of this node's keys across a rotation.
+   */
+  uint32 generation = 3;
+
+  /*
+   * Peers whose ratchet keys this node holds. Kept so a node that was off can still
+   * decrypt the direct messages a store-and-forward server replays to it.
+   */
+  repeated RatchetPeer peers = 4 [(nanopb).callback_datatype = "std::vector<meshtastic_RatchetPeer>"];
+}
+
 // Satellite per-node entries; stored alongside the slim NodeInfoLite so nodes
 // that never report don't pay the embedded cost.
 

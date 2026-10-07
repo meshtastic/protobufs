@@ -381,6 +381,13 @@ enum NodeFlags {
    * positions through more often. Set by the node itself.
    */
   NODE_FLAG_LOST_AND_FOUND = 0x04000000;
+  /*
+   * The node has published a ratchet key (User.ratchet_key) in an authenticated NodeInfo.
+   * Local only: set by the first one that carries a key and cleared by one that carries none,
+   * so it survives a reboot and is what REQUIRE_RATCHET_WHEN_KNOWN acts on. Never in
+   * User.flags or NodeRecord.flags.
+   */
+  NODE_FLAG_HAS_RATCHET = 0x08000000;
 }
 
 /*
@@ -493,6 +500,8 @@ message DeviceMetadata {
     CAPABILITY_HAS_PKC = 0x0020;
     /* Build includes XEdDSA packet signature verification; clear when not compiled in */
     CAPABILITY_HAS_XEDDSA = 0x0040;
+    /* Build includes direct-message forward secrecy (SecurityConfig.ratchet_flags) */
+    CAPABILITY_HAS_RATCHET = 0x0080;
   }
 
   /*
