@@ -47,6 +47,7 @@
 # Region names, as in HeaderOptions.scope_code.
 *RelayConfig.regions max_count:4
 *RelayConfig.regions max_size:16
+*RelayConfig.home_region max_size:16
 
 # A node serving more than a handful of groups is a different design.
 *GroupConfig.groups max_count:4

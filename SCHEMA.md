@@ -998,13 +998,26 @@ boundary; and
 because a `RELAY_DROP` on the primary hash partitions a mesh, the rules are admin-only and
 every drop is logged with the hash that caused it.
 
-**`HeaderOptions.scope_code` is the opt-in layer, and costs 5 bytes.** A 16-bit truncated
+**`HeaderOptions.scope_code` is the opt-in layer, and costs 3 to 5 bytes.** A 16-bit truncated
 HMAC over `chan || from || id`, keyed by `SHA256("%" + region_name)[0:16]`, so a relay that
 does not hold the channel can still read which region a frame claims, without touching the
 ciphertext, and a code lifted off one frame does not match another. The message is 9 bytes,
 `chan` then `from` and `id` little-endian as in the AAD; the code is the first two bytes of
 the HMAC-SHA256 digest read big-endian, and a code that comes out 0 is sent as 1. Region
 `eu-west`, `chan` 0x5A, `from` 0x12345678, `id` 0xCAFEBABE gives 0xEB96.
+
+**The originator claims a region; a router accepts a set of them.** A node with
+`RelayConfig.home_region` set adds the code to the broadcasts it originates on a REGIONAL
+or unset-scope channel with a `hop_start` above 0 - never on LOCAL, GLOBAL, unicast or a
+frame it relays, and never a second code on a client's block that has one. The field is
+appended to whatever block is there, `HOP_STORE` or a client's own fields, without decoding
+and re-encoding it, before signing, so the signature and the AAD cover it. When room is
+short the signature wins, then `HOP_STORE`, then the code; a frame too large to sign either
+way keeps its code. The worked example's options on the air are `04 18 96 d7 03`. A router
+accepts `home_region` plus `regions`; a code matching neither takes `scope_miss_action`, and
+a frame without a code is relayed under the rules as before. A region name is 1 to 15 bytes
+of `a-z0-9-`, folded to lowercase, because the key hashes its exact bytes: `EU-West` would
+give 0x9377 for the same frame.
 
 **It is declarative and proves nothing.** The key comes from a region name people share, so
 the code is a statement of belonging, not evidence of it: nothing may authorise,
@@ -1408,7 +1421,8 @@ meet for the rules above to hold:
 - **No client UI for `RelayConfig`.** The message is admin-reachable and stored, but
   nothing presents it, so a relay policy is set by an operator with a CLI. The failure mode
   it guards against - a `RELAY_DROP` on the primary hash partitioning a mesh - is exactly
-  the one a UI should make hard to reach.
+  the one a UI should make hard to reach. `home_region` is set on every role, so a UI that
+  shows relay settings only on routers would hide it.
 
 **Documentation:**
 
