@@ -1124,21 +1124,35 @@ with no server at all.
 
 **A missing key is pulled, never waited for.** A send that fails for want of a key, or a
 signature that cannot be checked, starts a lookup: a `DiscoveryQuery` by NodeNum to a server,
-then, if the server has nothing, the same query broadcast on the channel, which only the named
-node answers, with its publish at full budget. A node answers that broadcast at most once per ten
-minutes and asks about any one node at most once an hour.
+then, if the server has nothing, the same query broadcast on the channel, which the named node
+answers with its publish at full budget. A server that holds the record publishes it for a node that stays silent for 30 seconds, so a
+client that knows no server still finds a node that is out of its range; whoever hears that publish learns
+the record second-hand, and no server files a record another node carried. A node or server answers that
+broadcast at most once per ten minutes for any one node, and a node asks about any one node at most once
+an hour.
 
 **A reply carries one record.** About 135 bytes leaves no room for a second in a PKI frame, so a
 server answers every query and `SyncRequest` with the record filed earliest at or after
 `since_time` and sets `next_since_time` past it; filing times are strictly increasing, so paging
 on it repeats and skips nothing. A server passes on everything it holds, first-hand or not, and
-admits at most a fixed number of new records per peer per day.
+admits at most a fixed number of new records per peer per day. Each reply over RF is airtime the
+asker chose, 2.8 seconds at LONG_FAST, so a server answers one asker four times and then once per
+five minutes, all askers 30 times an hour, and its peers' sync 32 records an hour: under 5 % of the
+channel.
+
+**A record past `record_ttl_secs` is expired, not gone.** A server holds it for one more TTL,
+evicts it before any current record, leaves it out of digests and sync, and serves it as
+`TIER_EXPIRED` only when nothing fresher matches. A client shows it as stale and pins no key
+from it.
 
 **Servers reconcile with a digest, not a dump.** `SyncDigest` carries a count and an XOR of
 record hashes for each of sixteen buckets, about 150 bytes, and `SyncRequest` asks for the
 buckets that differ. They sync over the mesh or a wired backhaul, never over MQTT: a broker
 holding every record of every mesh is a directory, which is a different thing from a mesh that
-will answer a question about one node.
+will answer a question about one node. The backhaul is UDP multicast on the LAN: a server with it
+enabled broadcasts its digest there at `hop_limit` 0 every hour, which also tells co-located
+servers it exists, and a server that hears one syncs with that peer over the backhaul only, with no
+reply budget and no airtime.
 
 ### Anycast
 
@@ -1396,13 +1410,14 @@ meet for the rules above to hold:
 
 **Node discovery:**
 
-- **The quorum, the settle time and the per-peer quota have no fields.** Two servers, one
-  hour and 200 new records a day are firmware constants until measurement says what they
-  should be.
+- **The quorum, the settle time, the per-peer quota and the reply budget have no fields.** Two
+  servers, one hour, 200 new records a day and the reply limits are firmware constants until
+  measurement says what they should be.
 - **The hourly admission limit slows a new server down.** At 60 records an hour a server that
   comes up beside 300 nodes needs at least five hours to file them all; nodes it turned away
   publish again at their next announce.
-- **There is no wired backhaul between servers.** Reconciliation runs over the mesh only.
+- **The wired backhaul is UDP multicast only.** Co-located servers need it enabled and the same
+  primary channel; a serial or other link between them is not a backhaul.
 - **A collision is reported, not resolved.** `NodeNumCollision` names the NodeNum; a node that is
   not a server keeps the pinned record and drops the newcomer, so a client cannot show both
   until it asks a server, which holds both.

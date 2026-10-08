@@ -765,9 +765,11 @@ message StoreForwardConfig {
   uint32 discovery_max_records = 6;
 
   /*
-   * Seconds a discovery record survives without a refresh, after which it is evicted. This is
-   * also how an identity retires: there is no tombstone to replay, so a node that stops
-   * announcing simply ages out. 0 takes the default of 30 days.
+   * Seconds a discovery record stays current without a refresh. After that it is expired: held
+   * for one more such period, evicted before any current record, left out of digests and sync,
+   * and served as TIER_EXPIRED only when nothing fresher matches. This is also how an identity
+   * retires: there is no tombstone to replay, so a node that stops announcing simply ages out.
+   * 0 takes the default of 30 days.
    */
   uint32 record_ttl_secs = 7;
 
