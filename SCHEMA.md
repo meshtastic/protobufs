@@ -1421,9 +1421,10 @@ meet for the rules above to hold:
 - **A collision is reported, not resolved.** `NodeNumCollision` names the NodeNum; a node that is
   not a server keeps the pinned record and drops the newcomer, so a client cannot show both
   until it asks a server, which holds both.
-- **The ladder's thresholds are guesses.** 40 nodes, two servers and a factor of four are
-  placeholders until a simulation measures airtime per node per hour and time-to-first-contact
-  for a node joining a serving mesh.
+- **Two of the ladder's thresholds are guesses.** Simulation supports tapering at about 40 nodes
+  and a factor of four (announce airtime per node per hour), and puts time-to-first-contact for a
+  node joining a serving mesh at the server's pip interval. The quorum of two servers and the
+  hour of settling have no measurement behind them.
 - **A server that holds no record is indistinguishable from one that hides it.** Asking a second
   server, and falling back to the node itself, is the only answer; a signed "I do not have it"
   would prove nothing about whether it ever did.
