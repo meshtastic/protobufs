@@ -294,14 +294,15 @@ coarsest unit the quantity needs and says so in its name: `DeviceMetrics.uptime_
 
 ## 5. Telemetry - `SensorReadings`
 
-One message replaces the typed environment, air quality, power and health metrics.
-`DeviceMetrics` stays typed: its fields are small, always populated and never repeat.
+One message replaces the typed environment, air quality, power and health metrics, and
+one module on the node reads every sensor and sends them all. `DeviceMetrics` stays typed:
+its fields are small, always populated and never repeat.
 
 ```proto
 repeated uint32 keys        = 1;  // per quantity  - the set, once
 repeated sint32 values      = 2;  // per reading   - column major, delta coded
 repeated sint32 time_deltas = 3;  // per sample    - twice differenced
-repeated uint32 present     = 4;  // per sample    - bitmap, omitted when dense
+repeated uint32 present     = 4;  // per sample    - bitmap words, omitted when dense
 repeated uint32 sensors     = 5;  // per quantity  - optional provenance
 ```
 
@@ -343,6 +344,8 @@ last sample 40 s late   -> [3600, 0, 40]
 Reconstruct with two running sums: `interval += entry`, `time += interval`.
 
 **`present`** - one bitmap per sample, bit *k* set when that sample carries `keys[k]`.
+A bitmap is `ceil(keys / 32)` words, word *w* holding keys 32*w* to 32*w* + 31, so up to
+32 keys it is one word per sample.
 It also defines **where a column's deltas step**: a column skips absent samples rather
 than holding a gap, so "the previous entry" means the previous sample that carried
 that quantity. Omitted entirely when every sample is dense, which is the common case.
@@ -360,11 +363,22 @@ reading the quantities it does understand.
 **A single sample** - the ordinary live broadcast - has one entry per column, no
 deltas, no times, no bitmap. It reads as plain values.
 
-**Sizing.** `keys` caps at 16 and `values` at 64, and a batch at 24 samples: `present`
-holds 24 bitmaps and `time_deltas` 23 entries, since the first sample's time is
-`Telemetry.time`. Those are independent to nanopb but not to the encoder: `values` is the product, so 16 columns
-caps the batch at 4 samples and 24 samples caps it at 2 columns. An encoder that fills
-both axes loses readings off the end of `values` without an error. Check the product.
+**Filling.** A sender adds readings, or samples of a batch, to a message until the
+frame has no room left, then starts another message for the rest. The array bounds -
+64 keys, 128 values, 64 samples - only have to hold what one frame carries: a reading
+costs at least two bytes and usually three to five, so the room runs out first. An
+encoder stops at whichever comes first.
+
+**Reading and sending are separate.** A node reads its sensors every
+`sensor_read_interval_secs` and sends every `sensor_update_interval_secs`. The samples
+read in between are kept on the node and go out as one batch at the next send, oldest
+first, filling as many messages as they need. With the read interval at 0 or at the send
+interval, each send is a single live sample.
+
+**A request names quantities.** A `Telemetry` carrying `sensor_readings` with keys and no
+values asks for the node's current reading of each listed quantity it has; an empty list
+asks for all of them. The node answers with single-sample messages, as many as the
+readings need.
 
 ### The same techniques outside telemetry
 

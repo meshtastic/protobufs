@@ -103,7 +103,7 @@ PRESET_REQUIRED = ('name', 'label', 'description', 'role')
 PRESET_OPTIONAL = ('device_flags', 'tak_flags', 'defaults')
 DEFAULT_INTS = ('node_info_broadcast_secs', 'position_broadcast_secs', 'broadcast_smart_minimum_distance',
                 'broadcast_smart_minimum_interval_secs', 'device_update_interval_secs', 'sensor_update_interval_secs')
-DEFAULT_BOOLS = ('reset_intervals', 'position_broadcast_smart_enabled', 'environment_measurement', 'unmessagable')
+DEFAULT_BOOLS = ('reset_intervals', 'position_broadcast_smart_enabled', 'sensor_telemetry', 'unmessagable')
 DEFAULT_KEYS = DEFAULT_INTS + DEFAULT_BOOLS + ('position_flags', 'rebroadcast_mode')
 
 

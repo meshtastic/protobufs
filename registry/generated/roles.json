@@ -1,5 +1,5 @@
 {
-  "revision": 2,
+  "revision": 3,
   "roles": [
     {
       "role": "CLIENT",
@@ -150,7 +150,7 @@
       "defaults": {
         "device_update_interval_secs": 3600,
         "sensor_update_interval_secs": 300,
-        "environment_measurement": true,
+        "sensor_telemetry": true,
         "unmessagable": true
       }
     }

@@ -272,7 +272,12 @@ message HostMetrics {
  * about 71 bytes here against 200 as one message per reading.
  *
  * A single sample is the live broadcast: one entry per column, no deltas, no times.
- * Send as many samples as the payload allows, then start another message.
+ * A sender fills a message with readings, or with samples of a batch, until the frame has
+ * no room left, then starts another message for the rest.
+ *
+ * A Telemetry carrying sensor_readings with keys and no values is a request: the node
+ * answers with its current reading of each listed quantity it has, or of every quantity
+ * when the list is empty. The answer may take several messages.
  *
  * On size: a reading costs one key byte plus one to three value bytes, against a
  * typed field's one to two tag bytes plus the same value. That is slightly larger for
@@ -335,12 +340,12 @@ message SensorReadings {
     WIND_GUST_CMS = 6;
     /* Wind lull, centimetres per second */
     WIND_LULL_CMS = 7;
-    /* Rainfall in the last hour, millimetres */
-    RAINFALL_1H_MM = 8;
-    /* Rainfall in the last 24 hours, millimetres */
-    RAINFALL_24H_MM = 9;
-    /* Ionising radiation, microroentgen per hour */
-    RADIATION_URH = 10;
+    /* Rainfall in the last hour, deci-millimetres (28 = 2.8 mm): a rain gauge tips at 0.2 to 0.3 mm */
+    RAINFALL_1H_MM_DECI = 8;
+    /* Rainfall in the last 24 hours, deci-millimetres */
+    RAINFALL_24H_MM_DECI = 9;
+    /* Ionising radiation, deci-microroentgen per hour (123 = 12.3 uR/h): background is 10 to 20 */
+    RADIATION_URH_DECI = 10;
     /* Lightning strikes detected in the last hour */
     LIGHTNING_STRIKES_1H = 11;
     /* Distance to the leading edge of the storm, kilometres */
@@ -574,7 +579,9 @@ message SensorReadings {
   repeated sint32 time_deltas = 3;
 
   /*
-   * One bitmap per sample, oldest first: bit k set when that sample carries keys[k].
+   * One bitmap per sample, oldest first: bit k set when that sample carries keys[k]. A
+   * bitmap is ceil(keys / 32) words, word w holding keys 32w to 32w + 31, so a message
+   * with up to 32 keys has one word per sample.
    *
    * It is what tells a reader how long each column in `values` is, and which samples
    * a column's deltas step between - a column skips absent samples rather than

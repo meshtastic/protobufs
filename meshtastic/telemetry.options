@@ -20,33 +20,29 @@
 # room a frame leaves is computed per packet (SCHEMA.md §8, Payload room).
 *HostMetrics.user_string max_size:161
 
-# Sensor readings. The arrays sit on three different axes now: keys and sensors are
-# per quantity, time_deltas and present are per sample, values is per reading. Bounds
-# are sized against one frame; the encoder checks the room the frame actually leaves.
-#
-# The three caps are independent to nanopb but not to the encoder: values holds one
-# entry per (non-constant column, sample) pair plus one per constant column, so the
-# real constraint is the product, columns x samples <= 64. keys at 16 and a batch of
-# 24 samples are each reachable only when the other axis is short - 16 columns caps
-# the batch at 4 samples, and 24 samples caps it at 2 columns. An encoder that fills both
-# axes silently loses readings off the end of values, so it must check the product
-# rather than the two counts.
+# Sensor readings. The arrays sit on three different axes: keys and sensors are per
+# quantity, time_deltas and present are per sample, values is per reading. The encoder
+# fills a message until the frame has no room left and sends the rest in the next one,
+# so these bounds only need to hold what one frame can carry: a reading costs at least
+# two bytes (key and value) and a typical one three to five, so 64 columns, 128 values
+# and 64 samples are past what the room allows in practice. The encoder stops at a
+# bound too, whichever comes first, and a decoder accepts anything an encoder sends.
 #
 # max_count is also what makes these packed. Without it nanopb emits a callback field,
 # and a callback writes a tag per element - which is exactly the per-reading framing
 # the columnar layout exists to remove.
 #
 # values must stay 32-bit: barometric pressure in pascals already exceeds 16 bits.
-*SensorReadings.keys max_count:16
+*SensorReadings.keys max_count:64
 *SensorReadings.keys int_size:16
-*SensorReadings.values max_count:64
-# A batch holds at most 24 samples: present carries one bitmap per sample, and
-# time_deltas one entry per sample after the first, whose time is Telemetry.time.
-*SensorReadings.time_deltas max_count:23
+*SensorReadings.values max_count:128
+# time_deltas has one entry per sample after the first, whose time is Telemetry.time;
+# present has ceil(keys / 32) words per sample.
+*SensorReadings.time_deltas max_count:64
 *SensorReadings.time_deltas int_size:32
-*SensorReadings.present max_count:24
+*SensorReadings.present max_count:64
 *SensorReadings.present int_size:32
-*SensorReadings.sensors max_count:16
+*SensorReadings.sensors max_count:64
 *SensorReadings.sensors int_size:8
 
 # A 24-bit ADC tare, signed: needs the full width.

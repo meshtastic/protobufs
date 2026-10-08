@@ -275,7 +275,10 @@ def encode(doc, schema, report=None):
     if not dense:
         names = list(columns)
         for index in range(len(samples)):
-            present.append(sum(1 << k for k, n in enumerate(names) if index in columns[n]['samples']))
+            bits = sum(1 << k for k, n in enumerate(names) if index in columns[n]['samples'])
+            # ceil(keys / 32) words per sample, word w holding keys 32w to 32w + 31
+            for word in range((len(names) + 31) // 32):
+                present.append(bits >> (32 * word) & 0xFFFFFFFF)
 
     sensor_map = doc.get('sensors', {})
     sensors = [schema.sensor(sensor_map[n]) if n in sensor_map else 0 for n in columns] \
@@ -342,8 +345,9 @@ def decode(payload, schema, report=None):
         t += interval
         times.append(t)
 
-    if present and len(present) != n:
-        raise ValueError('present has %d bitmaps for %d samples' % (len(present), n))
+    words = (len(keys) + 31) // 32
+    if present and len(present) != n * words:
+        raise ValueError('present has %d words for %d samples of %d words' % (len(present), n, words))
     if sensors and len(sensors) != len(keys):
         raise ValueError('sensors has %d entries for %d keys' % (len(sensors), len(keys)))
 
@@ -357,7 +361,7 @@ def decode(payload, schema, report=None):
             unknown.append(base)
         name = base if ordinal == 0 else '%s#%d' % (base, ordinal)
 
-        carriers = [i for i in range(n) if not present or present[i] >> k & 1]
+        carriers = [i for i in range(n) if not present or present[i * words + k // 32] >> (k % 32) & 1]
         if not carriers:
             raise ValueError('%s is carried by no sample' % name)
         length = 1 if constant else len(carriers)
@@ -565,9 +569,9 @@ def check(schema):
     roundtrip(doc, 'jittered cadence')
 
     # Constant column: collapses from three samples, not at two.
-    flat = lambda n: {'samples': [{'time': t0 + 60 * i, 'RAINFALL_1H_MM': 0, temp: 20 + i} for i in range(n)]}
+    flat = lambda n: {'samples': [{'time': t0 + 60 * i, 'RAINFALL_1H_MM_DECI': 0, temp: 20 + i} for i in range(n)]}
     _, r, _ = roundtrip(flat(3), 'constant x3')
-    expect('RAINFALL_1H_MM' in r['constants'], 'constant x3: column was not collapsed')
+    expect('RAINFALL_1H_MM_DECI' in r['constants'], 'constant x3: column was not collapsed')
     _, r, _ = roundtrip(flat(2), 'constant x2')
     expect(not r['constants'], 'constant x2: collapsed where it saves nothing')
 
@@ -584,6 +588,14 @@ def check(schema):
     _, r, back = roundtrip(doc, 'ragged')
     expect(r['ragged'], 'ragged: no present bitmap')
     expect(back == doc, 'ragged: values changed')
+
+    # Past 32 keys a bitmap takes a second word per sample.
+    wide = ['VOLTAGE_MV#%d' % i if i else 'VOLTAGE_MV' for i in range(40)]
+    doc = {'samples': [{'time': t0, **{k: 3.3 * 1000 for k in wide}},
+                       {'time': t0 + 60, **{k: 3.3 * 1000 for k in wide[:35]}}]}
+    _, r, back = roundtrip(doc, 'ragged wide')
+    expect(r['counts']['present'] == 4, 'ragged wide: not two words per sample')
+    expect(back == doc, 'ragged wide: values changed')
 
     # Negative values, sensors, an unknown quantity number all survive.
     doc = {'sensors': {'QUANTITY_120': 'BME280'},

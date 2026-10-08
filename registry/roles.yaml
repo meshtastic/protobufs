@@ -4,7 +4,7 @@
 # it takes that configuration; defaults left out leave the device's value alone. No two rows
 # share a role, switches and TAK flags, and every role has a row without switches. Any
 # change to this file raises revision; tools/gen_registry.py --check enforces it.
-revision: 2
+revision: 3
 roles:
   - role: "CLIENT"
     label: "Client"
@@ -104,5 +104,5 @@ presets:
     defaults:
       device_update_interval_secs: 3600
       sensor_update_interval_secs: 300
-      environment_measurement: true
+      sensor_telemetry: true
       unmessagable: true

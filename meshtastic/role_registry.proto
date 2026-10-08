@@ -57,8 +57,8 @@ message RoleDefaults {
   optional uint32 device_update_interval_secs = 9;
   optional uint32 sensor_update_interval_secs = 10;
 
-  /* TelemetryConfig environment measurement on or off */
-  optional bool environment_measurement = 11;
+  /* TelemetryConfig TELEMETRY_SENSORS on or off */
+  optional bool sensor_telemetry = 11;
 
   /* Advertise the node as not taking direct messages (NODE_FLAG_IS_UNMESSAGABLE) */
   optional bool unmessagable = 12;
