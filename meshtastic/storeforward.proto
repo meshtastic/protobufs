@@ -95,7 +95,8 @@ message StoreAndForward {
     ANNOUNCE = 1;
 
     /*
-     * Client to server: where each of the client's streams stands.
+     * Client to server: where each of the client's streams stands. From a client app to its
+     * own node, with nothing else set: sync now.
      */
     SYNC = 2;
 

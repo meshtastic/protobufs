@@ -875,7 +875,9 @@ store-and-forward server, and `HOP_ANYCAST` says `to` is a group identity, which
 a relay keys its next-hop table on. `anycast_reply` marks a reply to an anycast request,
 from which a relay that carried the request learns its route to the group. All are
 originator statements inside the AAD, which is what lets a relay or a server trust them
-without decrypting anything.
+without decrypting anything. A `TRACKER` sets `HOP_NO_LEARN` on every unicast frame it
+originates: it moves, so a route learned toward it goes stale while it travels, and a
+broadcast teaches no route, so it carries no flag.
 
 What it costs, including the length byte:
 
@@ -998,9 +1000,12 @@ the launch `hop_start` at 1, `SCOPE_REGIONAL` at `RegionProfile.default_hop_star
 registry, `SCOPE_GLOBAL` at the full 15, and only on `SCOPE_GLOBAL` may a node set
 `CHANNEL_UPLINK`. A direct message launches with the primary channel's scope unless its
 client sets `hop_start` itself.
-Congestion control may raise the cap on REGIONAL up to that registry value and on GLOBAL,
-never on LOCAL. A relay cannot read any of this - the channel is not something it holds -
-which is why reach is also enforced from the other side.
+On a busy channel a broadcast launches shorter. From 25 % channel utilization, the
+threshold at which polite senders hold back, a `SCOPE_REGIONAL` broadcast launches one hop
+short of the region default and a `SCOPE_GLOBAL` one at the region default; from 40 %,
+where every sender holds back, both launch at 2. Never below 2, and never on `SCOPE_LOCAL`,
+which is already at 1. A relay cannot read any of this - the channel is not something it
+holds - which is why reach is also enforced from the other side.
 
 **`RelayConfig` is what a relay enforces, and also free.** A relay sees the one-byte
 `chan` and nothing else of a channel, which is enough for a policy table: per hash,
@@ -1068,6 +1073,13 @@ channel hash. `Announce.server` names the node to sync with, since the frame its
 not. That makes the S&F announce the first defined consumer of `MINI`, whose payload was
 until now undefined. It carries `announce_secs`, so a client that hears its server again after
 missing more than three announces knows frames were stored meanwhile and syncs again.
+
+**A client syncs when it has reason to.** When it first hears a server, or one that reaches
+further back; after missing more than three of its server's announces; at once after a
+round the cap cut short; when its app connects, unless a round ended in the last ten
+minutes; and whenever its app sends it a `SYNC` addressed to the node itself, which carries
+nothing else and starts a round at once. A node that is no client, or has heard no server,
+answers that request with a `ClientNotification` saying so.
 
 **`HOP_STORE` decides what is worth keeping.** The originator sets it inside the AAD
 (§8, the options block), so a keyless server can tell user-facing traffic from telemetry
