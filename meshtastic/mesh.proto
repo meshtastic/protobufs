@@ -1309,6 +1309,10 @@ message Data {
 
   /*
    * Bitfield for extra flags. First use is to indicate that user approves the packet being uploaded to MQTT.
+   * Bit 0 (LSB): ok_to_mqtt.
+   * Bit 1: mirrors want_response.
+   * Bit 2: is_automation, the packet was sent by automation (a bot or scripted tool) rather than typed
+   * by a person. Set per packet by the client; self-reported, so treat it as advisory.
    */
   optional uint32 bitfield = 9;
 
