@@ -29,6 +29,7 @@ enum FileOperation {
   POST = 1;
   PUT = 2;
   DELETE = 3;
+  MKDIR = 4; // Create a directory, parents included; OK when it already exists
 }
 
 // Outcome of a file or directory operation. The requester must be able to
