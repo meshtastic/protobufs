@@ -290,6 +290,44 @@ message ModuleConfig {
       label: "Uses pullup resistor"
       description: "Whether or not use INPUT_PULLUP mode for GPIO pin. Only applicable if the board uses pull-up resistors on the pin"
     }];
+
+    /*
+     * Require the monitor pin to remain active for this many seconds before a
+     * detection is accepted. 0 = immediate (legacy behavior).
+     */
+    uint32 minimum_detect_secs = 9 [(meshtastic.field_metadata) = {
+      label: "Minimum Detection Time"
+      unit: "s"
+      description: "Minimum active time before a detection is accepted."
+    }];
+
+    /*
+     * Inactive time required before a motion burst ends. 0 = end on the first
+     * inactive sample (legacy behavior).
+     */
+    uint32 burst_gap_secs = 10 [(meshtastic.field_metadata) = {
+      label: "Burst Gap"
+      unit: "s"
+      description: "Inactive time before a motion burst ends."
+    }];
+
+    /*
+     * Persistent active time required before broadcasting an alert. 0 = alert
+     * when the burst first confirms (legacy behavior).
+     */
+    uint32 minimum_alert_secs = 11 [(meshtastic.field_metadata) = {
+      label: "Minimum Alert Time"
+      unit: "s"
+      description: "Persistent active time before an alert is broadcast."
+    }];
+
+    /*
+     * Send a cleared timing message after a burst that generated an alert.
+     */
+    bool send_clear = 12 [(meshtastic.field_metadata) = {
+      label: "Send Clear"
+      description: "Send a cleared message after an alerted burst ends."
+    }];
   }
 
   /*
