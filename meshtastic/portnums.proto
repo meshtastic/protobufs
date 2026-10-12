@@ -282,6 +282,13 @@ enum PortNum {
   LORA_OTA_APP = 79;
 
   /*
+   * FloriaX integration
+   * Use for transporting FloriaX-related messages between Meshtastic nodes
+   * and companion application/services.
+   */
+   FLORIAX_APP = 110;
+
+  /*
    * GroupAlarm integration
    * Used for transporting GroupAlarm-related messages between Meshtastic nodes
    * and companion applications/services.
