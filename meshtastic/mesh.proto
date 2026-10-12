@@ -1820,6 +1820,16 @@ message MeshPacket {
      * Arrived as sound, over a speaker and the microphones in earshot of it
      */
     TRANSPORT_AUDIO = 11;
+
+    /*
+     * Arrived over meshtastic-node-kmp's video bearer, as QR frames on a screen read by a camera
+     */
+    TRANSPORT_VIDEO = 12;
+
+    /*
+     * Arrived over meshtastic-node-kmp's Wi-Fi Aware bearer, a NAN data path to a nearby device
+     */
+    TRANSPORT_WIFI_AWARE = 13;
   }
 
   /*
