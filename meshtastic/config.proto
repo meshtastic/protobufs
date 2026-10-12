@@ -596,7 +596,11 @@ message Config {
      * for this value (default 1 year) or a button press
      * 0 for default of one year
      */
-    uint32 sds_secs = 6;
+    uint32 sds_secs = 6 [(meshtastic.field_metadata) = {
+      label: "Super Deep Sleep Duration"
+      description: "How long the radio stays in super deep sleep before waking, unless the button is pressed. Zero leaves the firmware default of one year."
+      unit: "s"
+    }];
 
     /*
      * Description: In light sleep the CPU is suspended, LoRa radio is on, BLE is off an GPS is on
@@ -608,12 +612,19 @@ message Config {
      * Description: While in light sleep when we receive packets on the LoRa radio we will wake and handle them and stay awake in no BLE mode for this value
      * Technical Details: ESP32 Only 0 for default of 10 seconds
      */
-    uint32 min_wake_secs = 8;
+    uint32 min_wake_secs = 8 [(meshtastic.field_metadata) = {
+      label: "Minimum Wake Time"
+      description: "How long the radio stays awake after handling a packet received during light sleep. Zero leaves the firmware default of ten seconds."
+      unit: "s"
+    }];
 
     /*
      * I2C address of INA_2XX to use for reading device battery voltage
      */
-    uint32 device_battery_ina_address = 9;
+    uint32 device_battery_ina_address = 9 [(meshtastic.field_metadata) = {
+      label: "Battery INA_2XX I2C Address"
+      description: "I2C address of the INA_2XX sensor used to read battery voltage."
+    }];
 
     /*
      * If non-zero, we want powermon log outputs.  With the particular (bitfield) sources enabled.
@@ -982,12 +993,20 @@ message Config {
      * If false (default), the device will use short names for various display screens.
      * If true, node names will show in long format
      */
-    bool use_long_node_name = 13 [(meshtastic.field_metadata) = {since_firmware: "2.7.13"}];
+    bool use_long_node_name = 13 [(meshtastic.field_metadata) = {
+      label: "Long Node Names"
+      description: "Show full node names on the device screen instead of short names."
+      since_firmware: "2.7.13"
+    }];
 
     /*
      * If true, the device will display message bubbles on screen.
      */
-    bool enable_message_bubbles = 14 [(meshtastic.field_metadata) = {since_firmware: "2.7.19"}];
+    bool enable_message_bubbles = 14 [(meshtastic.field_metadata) = {
+      label: "Message Bubbles"
+      description: "Draw messages on the device screen as bubbles."
+      since_firmware: "2.7.19"
+    }];
   }
 
   /*
