@@ -83,7 +83,7 @@ message ModuleConfig {
      */
     bool tls_enabled = 7 [(meshtastic.field_metadata) = {
       label: "TLS Enabled"
-      description: "TLS is required for the public Meshtastic MQTT server."
+      description: "Connect to the MQTT server over TLS."
     }];
 
     /*
@@ -126,8 +126,9 @@ message ModuleConfig {
      */
     uint32 publish_interval_secs = 1 [(meshtastic.field_metadata) = {
       label: "Map Publish Interval"
-      description: "How often a map report is published."
+      description: "How often a map report is published. Minimum 1 hour."
       unit: "s"
+      min_value: 3600
     }];
 
     /*
@@ -139,8 +140,8 @@ message ModuleConfig {
      * Whether we have opted-in to report our location to the map
      */
     bool should_report_location = 3 [(meshtastic.field_metadata) = {
-      label: "Report Location"
-      description: "I have read and understand the above. I voluntarily consent to the unencrypted transmission of my node data via MQTT."
+      label: "Share on Map"
+      description: "Consent to publish this node's details and approximate location unencrypted to the MQTT map. No map report is sent without it."
       since_firmware: "2.6.8"
     }];
   }
@@ -184,7 +185,8 @@ message ModuleConfig {
     uint32 update_interval = 2 [(meshtastic.field_metadata) = {
       label: "Update Interval"
       unit: "s"
-      description: "How often to broadcast neighbor info."
+      min_value: 14400
+      description: "How often to broadcast neighbor info. Minimum 4 hours."
     }];
 
     /*
@@ -193,7 +195,7 @@ message ModuleConfig {
      */
     bool transmit_over_lora = 3 [(meshtastic.field_metadata) = {
       label: "Transmit over LoRa"
-      description: "Whether to transmit neighbor info over LoRa in addition to MQTT and PhoneAPI. Not available on channels with default key and name."
+      description: "Whether to transmit neighbor info over LoRa in addition to MQTT and the connected app. Not available on channels with default key and name."
     }];
   }
 
@@ -244,7 +246,7 @@ message ModuleConfig {
     uint32 state_broadcast_secs = 3 [(meshtastic.field_metadata) = {
       label: "State Broadcast Interval"
       unit: "s"
-      description: "How often to send the detection sensor state to the mesh, whether or not anything was detected."
+      description: "How often to send the detection sensor state to the mesh, whether or not anything was detected. 0 sends only on detection."
     }];
 
     /*
@@ -271,14 +273,14 @@ message ModuleConfig {
      */
     uint32 monitor_pin = 6 [(meshtastic.field_metadata) = {
       label: "GPIO Pin to monitor"
-      description: "GPIO pin watched for state changes."
+      description: "GPIO pin watched for state changes. 0 disables the module."
     }];
 
     /*
      * The type of trigger event to be used
      */
     TriggerType detection_trigger_type = 7 [(meshtastic.field_metadata) = {
-      label: "TriggerType"
+      label: "Trigger Type"
       description: "Type of trigger event"
     }];
 
@@ -287,8 +289,8 @@ message ModuleConfig {
      * Only applicable if the board uses pull-up resistors on the pin
      */
     bool use_pullup = 8 [(meshtastic.field_metadata) = {
-      label: "Uses pullup resistor"
-      description: "Whether or not use INPUT_PULLUP mode for GPIO pin. Only applicable if the board uses pull-up resistors on the pin"
+      label: "Use Internal Pull-up"
+      description: "Enable the internal pull-up resistor on the monitor pin."
     }];
   }
 
@@ -318,7 +320,7 @@ message ModuleConfig {
       /*
        * Replaces CODEC2_700. Default for new configurations.
        */
-      CODEC2_700C = 9 [(meshtastic.enum_value_metadata) = {label: "700C bps"}];
+      CODEC2_700C = 9 [(meshtastic.enum_value_metadata) = {label: "700 bps (700C)"}];
 
       /*
        * Lowest rate, and the only one usable on slower modem presets.
@@ -339,7 +341,7 @@ message ModuleConfig {
      */
     uint32 ptt_pin = 2 [(meshtastic.field_metadata) = {
       label: "PTT Pin"
-      description: "Push-to-talk GPIO pin number."
+      description: "Push-to-talk GPIO pin number. 0 uses GPIO 39."
     }];
 
     /*
@@ -353,22 +355,22 @@ message ModuleConfig {
     /*
      * I2S Word Select
      */
-    uint32 i2s_ws = 4 [(meshtastic.field_metadata) = {label: "I2S WS"}];
+    uint32 i2s_ws = 4 [(meshtastic.field_metadata) = {label: "I2S Word Select Pin"}];
 
     /*
      * I2S Data IN
      */
-    uint32 i2s_sd = 5 [(meshtastic.field_metadata) = {label: "I2S SD"}];
+    uint32 i2s_sd = 5 [(meshtastic.field_metadata) = {label: "I2S Data In Pin"}];
 
     /*
      * I2S Data OUT
      */
-    uint32 i2s_din = 6 [(meshtastic.field_metadata) = {label: "I2S DIN"}];
+    uint32 i2s_din = 6 [(meshtastic.field_metadata) = {label: "I2S Data Out Pin"}];
 
     /*
      * I2S Clock
      */
-    uint32 i2s_sck = 7 [(meshtastic.field_metadata) = {label: "I2S SCK"}];
+    uint32 i2s_sck = 7 [(meshtastic.field_metadata) = {label: "I2S Clock Pin"}];
   }
 
   /*
@@ -380,7 +382,7 @@ message ModuleConfig {
      */
     bool enabled = 1 [(meshtastic.field_metadata) = {
       label: "PAX Counter Enabled"
-      description: "When enabled the PAX Counter module counts the number of people passing by using WiFi and Bluetooth. Both WiFI and Bluetooth must be disabled for PAX counter to work."
+      description: "When enabled, the PAX Counter module counts nearby WiFi and Bluetooth devices. Both WiFi and Bluetooth must be disabled for PAX counter to work."
     }];
 
     /*
@@ -391,7 +393,7 @@ message ModuleConfig {
     uint32 paxcounter_update_interval = 2 [(meshtastic.field_metadata) = {
       label: "Update Interval"
       unit: "s"
-      description: "How often we can send a message to the mesh when people are detected."
+      description: "How often to send the device counts to the mesh."
     }];
 
     /*
@@ -432,7 +434,7 @@ message ModuleConfig {
     /*
      * Minimum interval in seconds between position updates from the same node.
      * A non-zero value implicitly enables the suppression window; 0 disables it.
-     * Firmware default: 21600 (6 hours), installed when this config is first created.
+     * Firmware default: 18000 (5 hours), installed when this config is first created.
      */
     uint32 position_min_interval_secs = 4 [(meshtastic.field_metadata) = {
       label: "Minimum Position Interval"
@@ -447,7 +449,8 @@ message ModuleConfig {
      */
     uint32 nodeinfo_direct_response_max_hops = 6 [(meshtastic.field_metadata) = {
       label: "Direct NodeInfo Max Hops"
-      description: "Only answer requestors within this many hops."
+      description: "Answer NodeInfo requests from cache for requestors within this many hops. Capped at 3 on routers; other roles answer direct neighbors only."
+      max_value: 3
     }];
 
     /*
@@ -467,16 +470,18 @@ message ModuleConfig {
     uint32 rate_limit_max_packets = 9 [(meshtastic.field_metadata) = {
       label: "Rate Limit Max Packets"
       description: "The most packets one node may send per window."
+      max_value: 60
     }];
 
     /*
-     * Maximum unknown/undecryptable packets per rate window before the source
+     * Maximum unknown/undecryptable packets per 5 minutes before the source
      * is dropped. A non-zero value implicitly enables unknown-packet filtering;
      * 0 disables it.
      */
     uint32 unknown_packet_threshold = 11 [(meshtastic.field_metadata) = {
       label: "Unknown Packet Threshold"
-      description: "How many per window before the sender is dropped."
+      description: "Undecryptable packets one node may send in 5 minutes before it is dropped."
+      max_value: 60
     }];
   }
 
@@ -516,7 +521,7 @@ message ModuleConfig {
       TEXTMSG = 3 [(meshtastic.enum_value_metadata) = {label: "Text Message"}];
       NMEA = 4 [(meshtastic.enum_value_metadata) = {label: "NMEA Positions"}];
       // NMEA messages specifically tailored for CalTopo
-      CALTOPO = 5 [(meshtastic.enum_value_metadata) = {label: "CALTOPO"}];
+      CALTOPO = 5 [(meshtastic.enum_value_metadata) = {label: "CalTopo"}];
       // Ecowitt WS85 weather station
       WS85 = 6;
       // VE.Direct is a serial protocol used by Victron Energy products
@@ -545,7 +550,7 @@ message ModuleConfig {
      */
     bool echo = 2 [(meshtastic.field_metadata) = {
       label: "Echo"
-      description: "If set, any packets you send will be echoed back to your device."
+      description: "If set, any packets you send will be echoed back over the serial port."
     }];
 
     /*
@@ -577,7 +582,8 @@ message ModuleConfig {
      */
     uint32 timeout = 6 [(meshtastic.field_metadata) = {
       label: "Timeout"
-      description: "The amount of time to wait before we consider your packet as done."
+      description: "How long to wait before treating received serial data as a complete packet. 0 uses 250 ms."
+      unit: "ms"
     }];
 
     /*
@@ -757,17 +763,26 @@ message ModuleConfig {
     /*
      * TODO: REPLACE
      */
-    uint32 records = 3 [(meshtastic.field_metadata) = {label: "Number of records"}];
+    uint32 records = 3 [(meshtastic.field_metadata) = {
+      label: "Number of records"
+      description: "Maximum number of messages to store. 0 uses three quarters of free PSRAM."
+    }];
 
     /*
      * TODO: REPLACE
      */
-    uint32 history_return_max = 4 [(meshtastic.field_metadata) = {label: "History Return Max"}];
+    uint32 history_return_max = 4 [(meshtastic.field_metadata) = {
+      label: "History Return Max"
+      description: "Maximum number of stored messages returned per request. 0 uses 25."
+    }];
 
     /*
      * TODO: REPLACE
      */
-    uint32 history_return_window = 5 [(meshtastic.field_metadata) = {label: "History Return Window"}];
+    uint32 history_return_window = 5 [(meshtastic.field_metadata) = {
+      label: "History Return Window"
+      description: "How far back, in minutes, stored messages are returned. 0 uses 240."
+    }];
 
     /*
      * Set to true to let this node act as a server that stores received messages and resends them upon request.
@@ -795,7 +810,7 @@ message ModuleConfig {
      */
     uint32 sender = 2 [(meshtastic.field_metadata) = {
       label: "Sender Interval"
-      description: "This device will send out range test messages on the selected interval."
+      description: "This device will send out range test messages on the selected interval. 0 disables sending."
       unit: "s"
     }];
 
@@ -996,7 +1011,7 @@ message ModuleConfig {
      * Enable the rotary encoder #1. This is a 'dumb' encoder sending pulses on both A and B pins while rotating.
      */
     bool rotary1_enabled = 1 [(meshtastic.field_metadata) = {
-      label: "Rotary 1"
+      label: "Rotary Encoder"
       description: "Enable rotary encoder"
     }];
 
@@ -1021,7 +1036,7 @@ message ModuleConfig {
      */
     uint32 inputbroker_pin_press = 4 [(meshtastic.field_metadata) = {
       label: "Press Pin"
-      description: "GPIO pin for rotary encoder Press port."
+      description: "GPIO pin for the encoder press button."
     }];
 
     /*
@@ -1036,7 +1051,7 @@ message ModuleConfig {
      * Generate input event on CCW of this kind.
      */
     InputEventChar inputbroker_event_ccw = 6 [(meshtastic.field_metadata) = {
-      label: "Counter Clockwise Rotary Event"
+      label: "Counterclockwise Rotary Event"
       description: "Input event for counter-clockwise rotation"
     }];
 
@@ -1052,7 +1067,7 @@ message ModuleConfig {
      * Enable the Up/Down/Select input device. Can be RAK rotary encoder or 3 buttons. Uses the a/b/press definitions from inputbroker.
      */
     bool updown1_enabled = 8 [(meshtastic.field_metadata) = {
-      label: "Up Down 1"
+      label: "Up/Down/Select Input"
       description: "Enable up/down/select input"
     }];
 
@@ -1214,7 +1229,7 @@ message ModuleConfig {
      */
     string broadcast_message = 4 [(meshtastic.field_metadata) = {
       label: "Message"
-      description: "Message for beacon broadcasts"
+      description: "Message for beacon broadcasts, up to 60 bytes."
     }];
 
     /*
@@ -1246,8 +1261,9 @@ message ModuleConfig {
      */
     uint32 broadcast_interval_secs = 11 [(meshtastic.field_metadata) = {
       label: "Interval"
-      description: "How often a beacon is broadcast."
+      description: "How often a beacon is broadcast. Minimum 1 hour."
       unit: "s"
+      min_value: 3600
     }];
 
     /*
