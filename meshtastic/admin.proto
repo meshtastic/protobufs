@@ -7,6 +7,7 @@ import "meshtastic/channel.proto";
 import "meshtastic/config.proto";
 import "meshtastic/connection_status.proto";
 import "meshtastic/device_ui.proto";
+import "meshtastic/field_metadata.proto";
 import "meshtastic/mesh.proto";
 import "meshtastic/module_config.proto";
 
@@ -562,7 +563,7 @@ message LockdownAuth {
    * Passphrase bytes (1-32). Empty when lock_now is true.
    * Capped to 32 to match the proto cap on related security fields.
    */
-  bytes passphrase = 1;
+  bytes passphrase = 1 [(meshtastic.field_metadata) = {sensitive: true}];
 
   /*
    * Optional override of the boot-count token TTL granted on success.
