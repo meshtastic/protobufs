@@ -5,6 +5,7 @@ package meshtastic;
 import "meshtastic/channel.proto";
 import "meshtastic/config.proto";
 import "meshtastic/device_ui.proto";
+import "meshtastic/field_metadata.proto";
 import "meshtastic/module_config.proto";
 import "meshtastic/portnums.proto";
 import "meshtastic/telemetry.proto";
@@ -241,7 +242,7 @@ enum HardwareModel {
   /*
    * TODO: REPLACE
    */
-  TBEAM = 4;
+  TBEAM = 4 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * The original heltec WiFi_Lora_32_V2, which had battery voltage sensing hooked to GPIO 13
@@ -257,7 +258,7 @@ enum HardwareModel {
   /*
    * TODO: REPLACE
    */
-  T_ECHO = 7;
+  T_ECHO = 7 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * TODO: REPLACE
@@ -283,7 +284,7 @@ enum HardwareModel {
   /*
    * New T-BEAM with ESP32-S3 CPU
    */
-  LILYGO_TBEAM_S3_CORE = 12;
+  LILYGO_TBEAM_S3_CORE = 12 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * RAK WisBlock ESP32 core: https://docs.rakwireless.com/Product-Categories/WisBlock/RAK11200/Overview/
@@ -328,7 +329,7 @@ enum HardwareModel {
   /*
    * WIO Tracker WM1110 family from Seeed Studio. Includes wio-1110-tracker and wio-1110-sdk
    */
-  WIO_WM1110 = 21;
+  WIO_WM1110 = 21 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * RAK2560 Solar base station based on RAK4630
@@ -368,7 +369,7 @@ enum HardwareModel {
   /*
    * Canary Radio Company - CanaryOne: https://canaryradio.io/products/canaryone
    */
-  CANARYONE = 29;
+  CANARYONE = 29 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * Waveshare RP2040 LoRa - https://www.waveshare.com/rp2040-lora.htm
@@ -390,7 +391,7 @@ enum HardwareModel {
   /*
    * T-Echo Plus device from LilyGo
    */
-  T_ECHO_PLUS = 33;
+  T_ECHO_PLUS = 33 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * TODO: REPLACE
@@ -466,7 +467,7 @@ enum HardwareModel {
    * Heltec Wireless Tracker with ESP32-S3 CPU, built-in GPS, and TFT
    * Newer V1.1, version is written on the PCB near the display.
    */
-  HELTEC_WIRELESS_TRACKER = 48;
+  HELTEC_WIRELESS_TRACKER = 48 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * Heltec Wireless Paper with ESP32-S3 CPU and E-Ink display
@@ -593,7 +594,7 @@ enum HardwareModel {
   /*
    * Seeed studio T1000-E tracker card. NRF52840 w/ LR1110 radio, GPS, button, buzzer, and sensors.
    */
-  TRACKER_T1000_E = 71;
+  TRACKER_T1000_E = 71 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * RAK3172 STM32WLE5 Module (https://store.rakwireless.com/products/wisduo-lpwan-module-rak3172)
@@ -686,7 +687,7 @@ enum HardwareModel {
    * https://www.elecrow.com/wiki/ThinkNode-M1_Transceiver_Device(Meshtastic)_Power_By_nRF52840.html
    * https://www.elecrow.com/wiki/ThinkNode-M2_Transceiver_Device(Meshtastic)_Power_By_NRF52840.html (this actually uses ESP32-S3)
    */
-  THINKNODE_M1 = 89;
+  THINKNODE_M1 = 89 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
   THINKNODE_M2 = 90;
 
   /*
@@ -732,12 +733,12 @@ enum HardwareModel {
   /*
    * Seeed Tracker L1
    */
-  SEEED_WIO_TRACKER_L1 = 99;
+  SEEED_WIO_TRACKER_L1 = 99 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * Seeed Tracker L1 EINK driver
    */
-  SEEED_WIO_TRACKER_L1_EINK = 100;
+  SEEED_WIO_TRACKER_L1_EINK = 100 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * Muzi Works R1 Neo
@@ -747,12 +748,12 @@ enum HardwareModel {
   /*
    * Lilygo T-Deck Pro
    */
-  T_DECK_PRO = 102;
+  T_DECK_PRO = 102 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * Lilygo TLora Pager
    */
-  T_LORA_PAGER = 103;
+  T_LORA_PAGER = 103 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * M5Stack Reserved
@@ -762,7 +763,7 @@ enum HardwareModel {
   /*
    * RAKwireless WisMesh Tag
    */
-  WISMESH_TAG = 105;
+  WISMESH_TAG = 105 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * RAKwireless WisBlock Core RAK3312 https://docs.rakwireless.com/product-categories/wisduo/rak3112-module/overview/
@@ -803,7 +804,7 @@ enum HardwareModel {
   /*
    * ESP32S3 main controller with GPS and TFT screen.
    */
-  HELTEC_WIRELESS_TRACKER_V2 = 113;
+  HELTEC_WIRELESS_TRACKER_V2 = 113 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * LilyGo T-Watch Ultra
@@ -848,7 +849,7 @@ enum HardwareModel {
   /*
    * LilyGo T-Beam 1W
    */
-  TBEAM_1_WATT = 122;
+  TBEAM_1_WATT = 122 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * LilyGo T5 S3 ePaper Pro (V1 and V2)
@@ -858,7 +859,7 @@ enum HardwareModel {
   /*
    * LilyGo T-Beam BPF (144-148Mhz)
    */
-  TBEAM_BPF = 124;
+  TBEAM_BPF = 124 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * LilyGo T-Mini E-paper S3 Kit
@@ -879,7 +880,7 @@ enum HardwareModel {
    * Seeed studio Mesh Tracker X1card. NRF52840 w/ LR2021 radio,
    * GPS, button, buzzer, and sensors.
    */
-  MESH_TRACKER_X1 = 128;
+  MESH_TRACKER_X1 = 128 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * Elecrow ThinkNode M7, M8 and M9

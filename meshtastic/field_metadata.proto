@@ -81,8 +81,8 @@ option swift_prefix = "";
  */
 message FieldMetadata {
   /*
-   * Field is only relevant to DIY hardware builds. Apps may hide it when
-   * connected to a pre-assembled / commercial board.
+   * Field is only relevant to DIY hardware builds. Apps hide a GPS field
+   * tagged this way when the board's `HardwareModel` sets `oem_fixed_gps`.
    */
   optional bool diy_only = 1;
 
@@ -192,6 +192,13 @@ message FieldMetadata {
    * `since_firmware`.
    */
   optional string deprecated_since = 11;
+
+  /*
+   * Set on a `HardwareModel` value: the maker wired the board's GPS, so the
+   * `diy_only` GPS pin fields do not apply. Apps hide those fields on these
+   * boards and keep them on any other or unknown board.
+   */
+  optional bool oem_fixed_gps = 12;
 }
 
 extend google.protobuf.FieldOptions {
