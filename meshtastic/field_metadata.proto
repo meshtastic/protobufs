@@ -68,7 +68,7 @@ option swift_prefix = "";
  * translator will never see and therefore a place display text can hide.
  *
  * To tag a field, set the option on it, e.g.
- *   uint32 rx_gpio = 8 [(meshtastic.field_metadata) = { diy_only: true }];
+ *   uint32 interval_secs = 1 [(meshtastic.field_metadata) = { unit: "s" }];
  *
  * One attribute, `deprecated`, is special: it MIRRORS the field's standard
  * `[deprecated = true]` option rather than being set inside this annotation.
@@ -82,7 +82,8 @@ option swift_prefix = "";
 message FieldMetadata {
   /*
    * Field is only relevant to DIY hardware builds. Apps may hide it when
-   * connected to a pre-assembled / commercial board.
+   * connected to a pre-assembled / commercial board, so never set it on a
+   * field a commercial board needs to wire in an add-on part.
    */
   optional bool diy_only = 1;
 
@@ -197,7 +198,7 @@ message FieldMetadata {
 extend google.protobuf.FieldOptions {
   /*
    * Attach FieldMetadata to a field, e.g.
-   *   uint32 rx_gpio = 8 [(meshtastic.field_metadata) = { diy_only: true }];
+   *   uint32 interval_secs = 1 [(meshtastic.field_metadata) = { unit: "s" }];
    *
    * Private-use extension number range is 50000-99999.
    */

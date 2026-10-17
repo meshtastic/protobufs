@@ -78,7 +78,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
 /// translator will never see and therefore a place display text can hide.
 ///
 /// To tag a field, set the option on it, e.g.
-///   uint32 rx_gpio = 8 [(meshtastic.field_metadata) = { diy_only: true }];
+///   uint32 interval_secs = 1 [(meshtastic.field_metadata) = { unit: "s" }];
 ///
 /// One attribute, `deprecated`, is special: it MIRRORS the field's standard
 /// `[deprecated = true]` option rather than being set inside this annotation.
@@ -95,7 +95,8 @@ public nonisolated struct FieldMetadata: Sendable {
 
   ///
   /// Field is only relevant to DIY hardware builds. Apps may hide it when
-  /// connected to a pre-assembled / commercial board.
+  /// connected to a pre-assembled / commercial board, so never set it on a
+  /// field a commercial board needs to wire in an add-on part.
   public var diyOnly: Bool {
     get {_diyOnly ?? false}
     set {_diyOnly = newValue}
@@ -336,7 +337,7 @@ nonisolated extension SwiftProtobuf.Google_Protobuf_FieldOptions {
 
   ///
   /// Attach FieldMetadata to a field, e.g.
-  ///   uint32 rx_gpio = 8 [(meshtastic.field_metadata) = { diy_only: true }];
+  ///   uint32 interval_secs = 1 [(meshtastic.field_metadata) = { unit: "s" }];
   ///
   /// Private-use extension number range is 50000-99999.
   public var fieldMetadata: FieldMetadata {
@@ -373,7 +374,7 @@ public nonisolated let FieldMetadata_Extensions: SwiftProtobuf.SimpleExtensionMa
 
 ///
 /// Attach FieldMetadata to a field, e.g.
-///   uint32 rx_gpio = 8 [(meshtastic.field_metadata) = { diy_only: true }];
+///   uint32 interval_secs = 1 [(meshtastic.field_metadata) = { unit: "s" }];
 ///
 /// Private-use extension number range is 50000-99999.
 public nonisolated let Extensions_field_metadata = SwiftProtobuf.MessageExtension<SwiftProtobuf.OptionalMessageExtensionField<FieldMetadata>, SwiftProtobuf.Google_Protobuf_FieldOptions>(

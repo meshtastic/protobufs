@@ -15,11 +15,11 @@ This package publishes Kotlin Multiplatform models generated from the protobuf s
 ## Field metadata
 
 Fields in the schema can carry app/UI-relevant metadata via the `(meshtastic.field_metadata)`
-field option (see `meshtastic/field_metadata.proto`). For example, GPIO pins that only matter on
-DIY hardware are annotated:
+field option (see `meshtastic/field_metadata.proto`). For example, a setting carries its display
+label and unit:
 
 ```proto
-uint32 rx_gpio = 8 [(meshtastic.field_metadata) = { diy_only: true }];
+uint32 broadcast_smart_minimum_interval_secs = 11 [(meshtastic.field_metadata) = { label: "Minimum Interval" unit: "s" }];
 ```
 
 At build time a custom Wire `SchemaHandler` (in `buildSrc`) generates a reflection-free
@@ -31,12 +31,11 @@ object - they hang directly off the real message type, so they're autocomplete-f
 magic strings or field tags (the IDE auto-imports the extension on use):
 
 ```kotlin
-import org.meshtastic.proto.rx_gpio // companion extension on Config.PositionConfig
+import org.meshtastic.proto.broadcast_smart_minimum_interval_secs // companion extension on Config.PositionConfig
 
-// e.g. hide a DIY-only setting unless the connected device is a DIY build
-if (!Config.PositionConfig.rx_gpio.diy_only || deviceIsDiy) {
-    /* show the GPIO setting */
-}
+// e.g. label a setting and its unit from the schema
+val meta = Config.PositionConfig.broadcast_smart_minimum_interval_secs
+val title = "${meta.label} (${meta.unit})"
 ```
 
 Each typed accessor is a per-field extension on the message companion, so it carries its own
@@ -49,7 +48,7 @@ name: `forType` returns every annotated field (keyed by tag) and `get` looks up 
 for ((tag, meta) in FieldMetadataRegistry.forType("meshtastic.Config.PositionConfig")) { /* … */ }
 
 // a single field
-val isDiyOnly = FieldMetadataRegistry.get("meshtastic.Config.PositionConfig", tag = 8)?.diy_only == true
+val unit = FieldMetadataRegistry.get("meshtastic.Config.PositionConfig", tag = 11)?.unit
 ```
 
 ### Enum values

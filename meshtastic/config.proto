@@ -507,7 +507,6 @@ message Config {
     uint32 rx_gpio = 8 [(meshtastic.field_metadata) = {
       label: "GPS Receive GPIO"
       description: "GPIO pin for GPS RX"
-      diy_only: true
     }];
 
     /*
@@ -516,7 +515,6 @@ message Config {
     uint32 tx_gpio = 9 [(meshtastic.field_metadata) = {
       label: "GPS Transmit GPIO"
       description: "GPIO pin for GPS TX"
-      diy_only: true
     }];
 
     /*
@@ -543,7 +541,6 @@ message Config {
     uint32 gps_en_gpio = 12 [(meshtastic.field_metadata) = {
       label: "GPS EN GPIO"
       description: "GPIO pin for GPS enable"
-      diy_only: true
     }];
 
     /*
