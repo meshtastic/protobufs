@@ -1582,6 +1582,9 @@ message Config {
       /*
        * Packets are not signed. Unsigned packets are accepted, including from nodes that have signed before,
        * and an unsigned NodeInfo may update such a node's name and role.
+       * Signatures are still checked: a signed packet whose signature is malformed or fails verification is
+       * dropped. A signature from a node whose key is not yet known cannot be checked, and the packet is
+       * accepted as unsigned.
        * This is the default: firmware before 2.8 strips signatures when relaying.
        */
       PACKET_SIGNATURE_POLICY_COMPATIBLE = 0 [(meshtastic.enum_value_metadata) = {
