@@ -1594,8 +1594,8 @@ message Config {
       }];
 
       /*
-       * Broadcasts are signed, and NodeInfo and position even when unicast; in licensed (ham) mode, all unicasts
-       * are signed too.
+       * Broadcasts are signed, and NodeInfo and position even when unicast. Licensed (ham) mode has no PKI, so it
+       * also signs the unicasts PKI would cover; its acks carry an ack proof instead of a signature.
        * Unsigned packets are accepted, including from nodes that have signed before, but an unsigned NodeInfo
        * does not change the name or role of a node that has signed before.
        */
@@ -1605,8 +1605,8 @@ message Config {
       }];
 
       /*
-       * Broadcasts are signed, and NodeInfo and position even when unicast; in licensed (ham) mode, all unicasts
-       * are signed too.
+       * Broadcasts are signed, and NodeInfo and position even when unicast. Licensed (ham) mode has no PKI, so it
+       * also signs the unicasts PKI would cover; its acks carry an ack proof instead of a signature.
        * Only packets with a verified signature, or PKI-encrypted packets, are accepted.
        * Unsigned packets are dropped, except acks and other routing packets, which carry their own proof,
        * traceroutes, and key verification messages, which the users' security number authenticates.
