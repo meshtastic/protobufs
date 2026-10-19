@@ -2924,11 +2924,19 @@ message ClientNotification {
     }];
 
     /*
-     * A channel name looks like a mistyped modem preset name.
+     * A channel name looks like a mistyped modem preset name; the user should type it exactly.
      */
     CHANNEL_NAME_PRESET_MISTYPE = 24 [(meshtastic.enum_value_metadata) = {
       label: "Channel Name Looks Mistyped"
-      description: "A channel name looks like a mistyped modem preset name."
+      description: "A channel name looks like a mistyped modem preset name. Type the preset name exactly."
+    }];
+
+    /*
+     * A channel name looks like a mistyped modem preset name; clearing it lets the preset name apply automatically.
+     */
+    CHANNEL_NAME_PRESET_MISTYPE_CLEAR_NAME = 42 [(meshtastic.enum_value_metadata) = {
+      label: "Clear Mistyped Channel Name"
+      description: "A channel name looks like a mistyped modem preset name. Clear the name to use the preset name automatically."
     }];
 
     /*
@@ -3065,6 +3073,54 @@ message ClientNotification {
     MQTT_DEFAULT_SERVER_PORT_INVALID = 41 [(meshtastic.enum_value_metadata) = {
       label: "Invalid MQTT Server Port"
       description: "The default MQTT server address must not have a port specified."
+    }];
+
+    /*
+     * OTA refused: the provided ota_hash is invalid.
+     */
+    OTA_INVALID_HASH = 43 [(meshtastic.enum_value_metadata) = {
+      label: "Invalid OTA Hash"
+      description: "Can't start the OTA update because the provided firmware hash is invalid."
+    }];
+
+    /*
+     * OTA refused: no OTA loader partition was found.
+     */
+    OTA_LOADER_PARTITION_MISSING = 44 [(meshtastic.enum_value_metadata) = {
+      label: "OTA Loader Partition Missing"
+      description: "Can't start the OTA update because no OTA loader partition was found."
+    }];
+
+    /*
+     * OTA refused: the OTA loader partition does not hold a valid loader.
+     */
+    OTA_LOADER_INVALID = 45 [(meshtastic.enum_value_metadata) = {
+      label: "Invalid OTA Loader"
+      description: "Can't start the OTA update because the device does not have a valid OTA loader."
+    }];
+
+    /*
+     * OTA refused: the OTA loader does not support the requested mode (BLE or WiFi).
+     */
+    OTA_MODE_UNSUPPORTED = 46 [(meshtastic.enum_value_metadata) = {
+      label: "OTA Mode Unsupported"
+      description: "The OTA loader does not support the requested update method."
+    }];
+
+    /*
+     * OTA accepted: rebooting into the OTA loader for the requested mode.
+     */
+    OTA_REBOOTING = 47 [(meshtastic.enum_value_metadata) = {
+      label: "Rebooting to OTA"
+      description: "Rebooting into the OTA loader to receive the update."
+    }];
+
+    /*
+     * OTA refused: switching to the OTA partition failed.
+     */
+    OTA_PARTITION_SWITCH_FAILED = 48 [(meshtastic.enum_value_metadata) = {
+      label: "OTA Partition Switch Failed"
+      description: "Unable to switch to the OTA partition."
     }];
   }
 
