@@ -1598,10 +1598,13 @@ message Config {
        * also signs the unicasts PKI would cover; its acks carry an ack proof instead of a signature.
        * Unsigned packets are accepted, including from nodes that have signed before, but an unsigned NodeInfo
        * does not change the name or role of a node that has signed before.
+       * Recommended only on a mesh with no relays running firmware older than 2.8: those strip signatures, so a
+       * signer's NodeInfo relayed through them arrives unsigned and its name and role changes are not applied.
+       * The same holds for a node that has signed before and no longer signs.
        */
       PACKET_SIGNATURE_POLICY_BALANCED = 1 [(meshtastic.enum_value_metadata) = {
         label: "Balanced - Sign, Accept Unsigned"
-        description: "Sign broadcasts, and accept unsigned packets. Apps show which packets were signed."
+        description: "Sign broadcasts, and accept unsigned packets. Apps show which packets were signed. Recommended only where no relays run firmware older than 2.8."
       }];
 
       /*
