@@ -1572,8 +1572,9 @@ message Config {
   message SecurityConfig {
     /*
      * Controls whether the device signs the packets it sends with XEdDSA, and which received packets it accepts.
-     * In every mode a packet whose signature is malformed or fails verification is dropped, and so is a signed
-     * NodeInfo whose public key is not the key that signed it or does not hash to the sender's node number.
+     * In every mode a packet whose signature is malformed or fails verification is dropped, except a traceroute,
+     * and so is a signed NodeInfo whose public key is not the key that signed it or does not hash to the sender's
+     * node number.
      * A traceroute is never signed, and a signature on one is ignored: every hop rewrites it.
      * A channel with use_aead set overrides this policy: its packets are never signed, and are not dropped
      * for lacking a signature, because the AES-CCM tag authenticates them.
@@ -1607,12 +1608,14 @@ message Config {
        * Broadcasts are signed, and NodeInfo and position even when unicast; in licensed (ham) mode, all unicasts
        * are signed too.
        * Only packets with a verified signature, or PKI-encrypted packets, are accepted.
-       * Unsigned or unverifiable packets are dropped, except acks and other routing packets, which carry
-       * their own proof, traceroutes, and key verification messages, which the users' security number authenticates.
+       * Unsigned packets are dropped, except acks and other routing packets, which carry their own proof,
+       * traceroutes, and key verification messages, which the users' security number authenticates.
+       * A signature from a node whose key is not yet known cannot be checked, and the packet is dropped,
+       * except a traceroute.
        */
       PACKET_SIGNATURE_POLICY_STRICT = 2 [(meshtastic.enum_value_metadata) = {
         label: "Strict - Require Signatures"
-        description: "Sign broadcasts, and drop any packet without a valid signature. Packets from nodes that don't sign are dropped."
+        description: "Sign broadcasts, and drop unsigned packets. PKI direct messages, AES-CCM channels, acks, traceroutes and key verification are exempt."
       }];
     }
 
