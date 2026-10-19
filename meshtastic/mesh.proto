@@ -2730,7 +2730,7 @@ message ClientNotification {
    * Identifies which firmware message a notification carries, so clients can
    * localize or act on it without parsing the message text.
    */
-  enum Type {
+  enum NotificationType {
     /*
      * Not set. Older firmware, or a message without its own type.
      */
@@ -3146,7 +3146,7 @@ message ClientNotification {
   /*
    * Which firmware message this notification carries. UNSET when not known.
    */
-  Type type = 5;
+  NotificationType type = 5;
 
   oneof payload_variant {
     KeyVerificationNumberInform key_verification_number_inform = 11;
