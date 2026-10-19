@@ -2727,6 +2727,222 @@ message LockdownStatus {
  */
 message ClientNotification {
   /*
+   * Identifies which firmware message a notification carries, so clients can
+   * localize or act on it without parsing the message text.
+   */
+  enum Type {
+    /*
+     * Not set. Older firmware, or a message without its own type.
+     */
+    UNSET = 0;
+
+    /*
+     * Position packet rejected: location sharing is disabled on this channel.
+     */
+    POSITION_SHARING_DISABLED = 1;
+
+    /*
+     * Traceroute rejected: only one may be sent every 30 seconds.
+     */
+    TRACEROUTE_RATE_LIMITED = 2;
+
+    /*
+     * Traceroute rejected: multi-hop traceroute to the broadcast address is not allowed.
+     */
+    TRACEROUTE_BROADCAST_REJECTED = 3;
+
+    /*
+     * Send aborted: the duty cycle limit is exceeded. The message gives the minutes until sending resumes.
+     */
+    DUTY_CYCLE_LIMIT_EXCEEDED = 4;
+
+    /*
+     * Power-saving tracker sent its position and is about to sleep for the broadcast interval.
+     */
+    POSITION_SENT_SLEEPING = 5;
+
+    /*
+     * Power-saving sensor sent its telemetry and is about to sleep for the update interval.
+     */
+    TELEMETRY_SENT_SLEEPING = 6;
+
+    /*
+     * Incoming key verification: display the security number. Carries key_verification_number_inform.
+     */
+    KEY_VERIFICATION_NUMBER_INFORM = 7;
+
+    /*
+     * Outgoing key verification: enter the security number shown on the remote node. Carries key_verification_number_request.
+     */
+    KEY_VERIFICATION_NUMBER_REQUEST = 8;
+
+    /*
+     * Final confirmation of an incoming key verification. Carries key_verification_final.
+     */
+    KEY_VERIFICATION_FINAL_INCOMING = 9;
+
+    /*
+     * Final confirmation of an outgoing key verification. Carries key_verification_final.
+     */
+    KEY_VERIFICATION_FINAL_OUTGOING = 10;
+
+    /*
+     * Key verification is unavailable in licensed (ham) mode.
+     */
+    KEY_VERIFICATION_LICENSED_UNAVAILABLE = 11;
+
+    /*
+     * A remote node advertised this node's public key; the key may be compromised.
+     */
+    DUPLICATED_PUBLIC_KEY = 12;
+
+    /*
+     * Compromised (low-entropy) keys were detected at boot and regenerated.
+     */
+    LOW_ENTROPY_KEY_REGENERATED = 13;
+
+    /*
+     * A restored key is a known low-entropy key; a new key was generated and the node number changed.
+     */
+    LOW_ENTROPY_KEY_RESTORE_REJECTED = 14;
+
+    /*
+     * Licensed mode activated: the admin channel and encryption were removed from all channels.
+     */
+    LICENSED_MODE_ACTIVATED = 15;
+
+    /*
+     * Licensed signing needs an identity key; the node identity will change after key generation.
+     */
+    LICENSED_IDENTITY_WILL_CHANGE = 16;
+
+    /*
+     * Licensed signing generated a new identity key; the node identity changed.
+     */
+    LICENSED_IDENTITY_CHANGED = 17;
+
+    /*
+     * Favorite or ignore refused: the protected-node limit is reached.
+     */
+    PROTECTED_NODE_LIMIT_REACHED = 18;
+
+    /*
+     * Rebroadcast mode NONE is not allowed for a router role; it was set to ALL.
+     */
+    ROUTER_REBROADCAST_NONE_REJECTED = 19;
+
+    /*
+     * The packet signature policy is unavailable on this firmware build; it was set to COMPATIBLE.
+     */
+    PACKET_SIGNATURE_POLICY_UNAVAILABLE = 20;
+
+    /*
+     * Managed mode needs at least one admin public key; it was left disabled.
+     */
+    MANAGED_MODE_REQUIRES_ADMIN_KEY = 21;
+
+    /*
+     * Precise position is not allowed on a public channel; precision was reduced.
+     */
+    PUBLIC_CHANNEL_POSITION_PRECISION_REDUCED = 22;
+
+    /*
+     * A channel has a blank PSK (no encryption) instead of the default key.
+     */
+    CHANNEL_BLANK_PSK = 23;
+
+    /*
+     * A channel name looks like a mistyped modem preset name.
+     */
+    CHANNEL_NAME_PRESET_MISTYPE = 24;
+
+    /*
+     * A channel resolves to or matches a modem preset but uses a non-default key.
+     */
+    CHANNEL_PRESET_NON_DEFAULT_KEY = 25;
+
+    /*
+     * After a modem preset change, a channel name still matches the old preset.
+     */
+    CHANNEL_NAME_MATCHES_OLD_PRESET = 26;
+
+    /*
+     * After a modem preset change, a channel name matches the new preset but won't auto-resolve.
+     */
+    CHANNEL_NAME_WONT_AUTO_RESOLVE = 27;
+
+    /*
+     * Name issues on one or more channels (several warnings combined).
+     */
+    CHANNEL_NAME_ISSUES = 28;
+
+    /*
+     * PSK issues on one or more channels (several warnings combined).
+     */
+    CHANNEL_PSK_ISSUES = 29;
+
+    /*
+     * Name and PSK issues on one or more channels (several warnings combined).
+     */
+    CHANNEL_NAME_AND_PSK_ISSUES = 30;
+
+    /*
+     * LoRa region code is not recognized.
+     */
+    LORA_REGION_UNRECOGNIZED = 31;
+
+    /*
+     * LoRa region requires licensed mode.
+     */
+    LORA_REGION_REQUIRES_LICENSE = 32;
+
+    /*
+     * LoRa region needs a band (2.4 GHz or sub-GHz) this radio does not support.
+     */
+    LORA_REGION_UNSUPPORTED_BY_RADIO = 33;
+
+    /*
+     * The selected modem preset moved the node to a sibling region.
+     */
+    LORA_PRESET_REGION_SWAP = 34;
+
+    /*
+     * Modem preset is invalid for the region; the region default may have been applied.
+     */
+    LORA_PRESET_INVALID_FOR_REGION = 35;
+
+    /*
+     * Requested bandwidth is wider than the region's span; the region default may have been applied.
+     */
+    LORA_BANDWIDTH_EXCEEDS_REGION = 36;
+
+    /*
+     * Channel number is out of range for the region; a valid slot may have been applied.
+     */
+    LORA_CHANNEL_NUM_INVALID = 37;
+
+    /*
+     * Serial config rejected: overriding the console serial port needs an output-only mode (NMEA, CalTopo or MS Config).
+     */
+    SERIAL_CONSOLE_OVERRIDE_INVALID = 38;
+
+    /*
+     * MQTT server could not be reached; the settings were saved anyway.
+     */
+    MQTT_SERVER_UNREACHABLE = 39;
+
+    /*
+     * MQTT config rejected: proxy_to_client_enabled is required on a node without a network.
+     */
+    MQTT_PROXY_TO_CLIENT_REQUIRED = 40;
+
+    /*
+     * MQTT config rejected: the default server address must not have a port specified.
+     */
+    MQTT_DEFAULT_SERVER_PORT_INVALID = 41;
+  }
+
+  /*
    * The id of the packet we're notifying in response to
    */
   optional uint32 reply_id = 1;
@@ -2744,6 +2960,11 @@ message ClientNotification {
    * The message body of the notification
    */
   string message = 4;
+
+  /*
+   * Which firmware message this notification carries. UNSET when not known.
+   */
+  Type type = 5;
 
   oneof payload_variant {
     KeyVerificationNumberInform key_verification_number_inform = 11;
