@@ -2825,7 +2825,8 @@ message DisplayPalette {
 
   /*
    * Identity of this palette; DisplayFrame.palette_signature references it.
-   * Changes whenever the region table or theme changes.
+   * Changes whenever the region table or theme changes. Never 0, which
+   * DisplayFrame.palette_signature reserves for monochrome.
    */
   uint32 signature = 1;
 
