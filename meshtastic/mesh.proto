@@ -990,6 +990,11 @@ enum HardwareModel {
   NODARA = 151;
 
   /*
+   * Heltec Magnetic Power Bank V2
+   */
+  HELTEC_MESH_POCKET_V2 = 152;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
