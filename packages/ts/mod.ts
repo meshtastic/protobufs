@@ -8,6 +8,7 @@ export * as Config from "./lib/config_pb.ts";
 export * as ConnectionStatus from "./lib/connection_status_pb.ts";
 export * as LocalOnly from "./lib/localonly_pb.ts";
 export * as Mesh from "./lib/mesh_pb.ts";
+export * as MeshBeacon from "./lib/mesh_beacon_pb.ts";
 export * as ModuleConfig from "./lib/module_config_pb.ts";
 export * as Mqtt from "./lib/mqtt_pb.ts";
 export * as PaxCount from "./lib/paxcount_pb.ts";
