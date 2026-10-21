@@ -2737,6 +2737,404 @@ message LockdownStatus {
  */
 message ClientNotification {
   /*
+   * Identifies which firmware message a notification carries, so clients can
+   * localize or act on it without parsing the message text.
+   */
+  enum NotificationType {
+    /*
+     * Not set. Older firmware, or a message without its own type.
+     */
+    UNSET = 0 [(meshtastic.enum_value_metadata) = {
+      label: "Notification"
+      description: "A notification from the device."
+    }];
+
+    /*
+     * Position packet rejected: location sharing is disabled on this channel.
+     */
+    POSITION_SHARING_DISABLED = 1 [(meshtastic.enum_value_metadata) = {
+      label: "Location Sharing Disabled"
+      description: "Location sharing is disabled on this channel."
+    }];
+
+    /*
+     * Traceroute rejected: only one may be sent every 30 seconds.
+     */
+    TRACEROUTE_RATE_LIMITED = 2 [(meshtastic.enum_value_metadata) = {
+      label: "Traceroute Rate Limited"
+      description: "Only one traceroute can be sent every 30 seconds."
+    }];
+
+    /*
+     * Traceroute rejected: multi-hop traceroute to the broadcast address is not allowed.
+     */
+    TRACEROUTE_BROADCAST_REJECTED = 3 [(meshtastic.enum_value_metadata) = {
+      label: "Broadcast Traceroute Rejected"
+      description: "Multi-hop traceroute to the broadcast address is not allowed."
+    }];
+
+    /*
+     * Send aborted: the duty cycle limit is exceeded. The message gives the minutes until sending resumes.
+     */
+    DUTY_CYCLE_LIMIT_EXCEEDED = 4 [(meshtastic.enum_value_metadata) = {
+      label: "Duty Cycle Limit Exceeded"
+      description: "The duty cycle limit is exceeded. Sending resumes once airtime is available."
+    }];
+
+    /*
+     * Power-saving tracker sent its position and is about to sleep for the broadcast interval.
+     */
+    POSITION_SENT_SLEEPING = 5 [(meshtastic.enum_value_metadata) = {
+      label: "Position Sent, Sleeping"
+      description: "Position sent. The device will sleep until the next position broadcast."
+    }];
+
+    /*
+     * Power-saving sensor sent its telemetry and is about to sleep for the update interval.
+     */
+    TELEMETRY_SENT_SLEEPING = 6 [(meshtastic.enum_value_metadata) = {
+      label: "Telemetry Sent, Sleeping"
+      description: "Telemetry sent. The device will sleep until the next telemetry update."
+    }];
+
+    /*
+     * Incoming key verification: display the security number. Carries key_verification_number_inform.
+     */
+    KEY_VERIFICATION_NUMBER_INFORM = 7 [(meshtastic.enum_value_metadata) = {
+      label: "Key Verification Security Number"
+      description: "Give this security number to the user verifying your key."
+    }];
+
+    /*
+     * Outgoing key verification: enter the security number shown on the remote node. Carries key_verification_number_request.
+     */
+    KEY_VERIFICATION_NUMBER_REQUEST = 8 [(meshtastic.enum_value_metadata) = {
+      label: "Enter Key Verification Number"
+      description: "Enter the security number shown on the remote node."
+    }];
+
+    /*
+     * Final confirmation of an incoming key verification. Carries key_verification_final.
+     */
+    KEY_VERIFICATION_FINAL_INCOMING = 9 [(meshtastic.enum_value_metadata) = {
+      label: "Confirm Incoming Key Verification"
+      description: "Confirm that the verification code matches the remote node to finish the incoming key verification."
+    }];
+
+    /*
+     * Final confirmation of an outgoing key verification. Carries key_verification_final.
+     */
+    KEY_VERIFICATION_FINAL_OUTGOING = 10 [(meshtastic.enum_value_metadata) = {
+      label: "Confirm Outgoing Key Verification"
+      description: "Confirm that the verification code matches the remote node to finish the outgoing key verification."
+    }];
+
+    /*
+     * Key verification is unavailable in licensed (ham) mode.
+     */
+    KEY_VERIFICATION_LICENSED_UNAVAILABLE = 11 [(meshtastic.enum_value_metadata) = {
+      label: "Key Verification Unavailable"
+      description: "Key verification is unavailable in licensed (ham) mode."
+    }];
+
+    /*
+     * A remote node advertised this node's public key; the key may be compromised.
+     */
+    DUPLICATED_PUBLIC_KEY = 12 [(meshtastic.enum_value_metadata) = {
+      label: "Public Key Duplicated"
+      description: "A remote device has advertised your public key. Your key may be compromised; consider regenerating it."
+    }];
+
+    /*
+     * Compromised (low-entropy) keys were detected at boot and regenerated.
+     */
+    LOW_ENTROPY_KEY_REGENERATED = 13 [(meshtastic.enum_value_metadata) = {
+      label: "Compromised Keys Regenerated"
+      description: "Compromised keys were detected and regenerated."
+    }];
+
+    /*
+     * A restored key is a known low-entropy key; a new key was generated and the node number changed.
+     */
+    LOW_ENTROPY_KEY_RESTORE_REJECTED = 14 [(meshtastic.enum_value_metadata) = {
+      label: "Low-Entropy Key Rejected"
+      description: "That key is a known low-entropy key and can't be restored. A new secure key was generated and the node number changed."
+    }];
+
+    /*
+     * Licensed mode activated: the admin channel and encryption were removed from all channels.
+     */
+    LICENSED_MODE_ACTIVATED = 15 [(meshtastic.enum_value_metadata) = {
+      label: "Licensed Mode Activated"
+      description: "Licensed mode removed the admin channel and encryption from all channels."
+    }];
+
+    /*
+     * Licensed signing needs an identity key; the node identity will change after key generation.
+     */
+    LICENSED_IDENTITY_WILL_CHANGE = 16 [(meshtastic.enum_value_metadata) = {
+      label: "Node Identity Will Change"
+      description: "Licensed signing requires an identity key. This node's identity will change after key generation."
+    }];
+
+    /*
+     * Licensed signing generated a new identity key; the node identity changed.
+     */
+    LICENSED_IDENTITY_CHANGED = 17 [(meshtastic.enum_value_metadata) = {
+      label: "Node Identity Changed"
+      description: "Licensed signing generated a new identity key. This node's identity changed."
+    }];
+
+    /*
+     * Favorite or ignore refused: the protected-node limit is reached.
+     */
+    PROTECTED_NODE_LIMIT_REACHED = 18 [(meshtastic.enum_value_metadata) = {
+      label: "Protected Node Limit Reached"
+      description: "The node can't be favorited or ignored because the protected-node limit is reached."
+    }];
+
+    /*
+     * Rebroadcast mode NONE is not allowed for a router role; it was set to ALL.
+     */
+    ROUTER_REBROADCAST_NONE_REJECTED = 19 [(meshtastic.enum_value_metadata) = {
+      label: "Rebroadcast Mode Changed"
+      description: "Rebroadcast mode can't be NONE for a router role, so it was set to ALL."
+    }];
+
+    /*
+     * The packet signature policy is unavailable on this firmware build; it was set to COMPATIBLE.
+     */
+    PACKET_SIGNATURE_POLICY_UNAVAILABLE = 20 [(meshtastic.enum_value_metadata) = {
+      label: "Signature Policy Unavailable"
+      description: "The packet signature policy is unavailable on this firmware build, so it was set to Compatible."
+    }];
+
+    /*
+     * Managed mode needs at least one admin public key; it was left disabled.
+     */
+    MANAGED_MODE_REQUIRES_ADMIN_KEY = 21 [(meshtastic.enum_value_metadata) = {
+      label: "Admin Key Required"
+      description: "Managed mode needs at least one admin public key, so it was left disabled."
+    }];
+
+    /*
+     * Precise position is not allowed on a public channel; precision was reduced.
+     */
+    PUBLIC_CHANNEL_POSITION_PRECISION_REDUCED = 22 [(meshtastic.enum_value_metadata) = {
+      label: "Position Precision Reduced"
+      description: "Precise position is not allowed on a public channel, so precision was reduced."
+    }];
+
+    /*
+     * A channel has a blank PSK (no encryption) instead of the default key.
+     */
+    CHANNEL_BLANK_PSK = 23 [(meshtastic.enum_value_metadata) = {
+      label: "Channel Has No Encryption"
+      description: "A channel has a blank PSK (no encryption) instead of the default key."
+    }];
+
+    /*
+     * A channel name looks like a mistyped modem preset name; the user should type it exactly.
+     */
+    CHANNEL_NAME_PRESET_MISTYPE = 24 [(meshtastic.enum_value_metadata) = {
+      label: "Channel Name Looks Mistyped"
+      description: "A channel name looks like a mistyped modem preset name. Type the preset name exactly."
+    }];
+
+    /*
+     * A channel name looks like a mistyped modem preset name; clearing it lets the preset name apply automatically.
+     */
+    CHANNEL_NAME_PRESET_MISTYPE_CLEAR_NAME = 42 [(meshtastic.enum_value_metadata) = {
+      label: "Clear Mistyped Channel Name"
+      description: "A channel name looks like a mistyped modem preset name. Clear the name to use the preset name automatically."
+    }];
+
+    /*
+     * A channel resolves to or matches a modem preset but uses a non-default key.
+     */
+    CHANNEL_PRESET_NON_DEFAULT_KEY = 25 [(meshtastic.enum_value_metadata) = {
+      label: "Preset Channel Uses Non-Default Key"
+      description: "A channel matches a modem preset but uses a non-default key, so nodes using the default key can't decode it."
+    }];
+
+    /*
+     * After a modem preset change, a channel name still matches the old preset.
+     */
+    CHANNEL_NAME_MATCHES_OLD_PRESET = 26 [(meshtastic.enum_value_metadata) = {
+      label: "Channel Name Matches Old Preset"
+      description: "A channel name matches the previous modem preset. Rename it if it should follow the new preset."
+    }];
+
+    /*
+     * After a modem preset change, a channel name matches the new preset but won't auto-resolve.
+     */
+    CHANNEL_NAME_WONT_AUTO_RESOLVE = 27 [(meshtastic.enum_value_metadata) = {
+      label: "Channel Name Won't Auto-Resolve"
+      description: "A channel name matches the new modem preset but won't update automatically. Clear the name to fix it."
+    }];
+
+    /*
+     * Name issues on one or more channels (several warnings combined).
+     */
+    CHANNEL_NAME_ISSUES = 28 [(meshtastic.enum_value_metadata) = {
+      label: "Channel Name Issues"
+      description: "There may be name issues on one or more channels."
+    }];
+
+    /*
+     * PSK issues on one or more channels (several warnings combined).
+     */
+    CHANNEL_PSK_ISSUES = 29 [(meshtastic.enum_value_metadata) = {
+      label: "Channel PSK Issues"
+      description: "There may be PSK issues on one or more channels."
+    }];
+
+    /*
+     * Name and PSK issues on one or more channels (several warnings combined).
+     */
+    CHANNEL_NAME_AND_PSK_ISSUES = 30 [(meshtastic.enum_value_metadata) = {
+      label: "Channel Name and PSK Issues"
+      description: "There may be name and PSK issues on one or more channels."
+    }];
+
+    /*
+     * LoRa region code is not recognized.
+     */
+    LORA_REGION_UNRECOGNIZED = 31 [(meshtastic.enum_value_metadata) = {
+      label: "Region Not Recognized"
+      description: "The LoRa region code is not recognized."
+    }];
+
+    /*
+     * LoRa region requires licensed mode.
+     */
+    LORA_REGION_REQUIRES_LICENSE = 32 [(meshtastic.enum_value_metadata) = {
+      label: "Region Requires Licensed Mode"
+      description: "This LoRa region requires licensed mode."
+    }];
+
+    /*
+     * LoRa region needs a band (2.4 GHz or sub-GHz) this radio does not support.
+     */
+    LORA_REGION_UNSUPPORTED_BY_RADIO = 33 [(meshtastic.enum_value_metadata) = {
+      label: "Region Not Supported by Radio"
+      description: "This LoRa region needs a frequency band this radio does not support."
+    }];
+
+    /*
+     * The selected modem preset moved the node to a sibling region.
+     */
+    LORA_PRESET_REGION_SWAP = 34 [(meshtastic.enum_value_metadata) = {
+      label: "Region Changed for Preset"
+      description: "The selected modem preset moved the node to a compatible sibling region."
+    }];
+
+    /*
+     * Modem preset is invalid for the region; the region default may have been applied.
+     */
+    LORA_PRESET_INVALID_FOR_REGION = 35 [(meshtastic.enum_value_metadata) = {
+      label: "Preset Invalid for Region"
+      description: "The modem preset is not valid for this region."
+    }];
+
+    /*
+     * Requested bandwidth is wider than the region's span; the region default may have been applied.
+     */
+    LORA_BANDWIDTH_EXCEEDS_REGION = 36 [(meshtastic.enum_value_metadata) = {
+      label: "Bandwidth Too Wide for Region"
+      description: "The requested bandwidth is wider than this region allows."
+    }];
+
+    /*
+     * Channel number is out of range for the region; a valid slot may have been applied.
+     */
+    LORA_CHANNEL_NUM_INVALID = 37 [(meshtastic.enum_value_metadata) = {
+      label: "Frequency Slot Invalid"
+      description: "The frequency slot is out of range for this region."
+    }];
+
+    /*
+     * Serial config rejected: overriding the console serial port needs an output-only mode (NMEA, CalTopo or MS Config).
+     */
+    SERIAL_CONSOLE_OVERRIDE_INVALID = 38 [(meshtastic.enum_value_metadata) = {
+      label: "Invalid Serial Config"
+      description: "Overriding the console serial port is only supported in NMEA, CalTopo, or MS Config output modes."
+    }];
+
+    /*
+     * MQTT server could not be reached; the settings were saved anyway.
+     */
+    MQTT_SERVER_UNREACHABLE = 39 [(meshtastic.enum_value_metadata) = {
+      label: "MQTT Server Unreachable"
+      description: "The MQTT server could not be reached. Settings were saved; check the server address and credentials."
+    }];
+
+    /*
+     * MQTT config rejected: proxy_to_client_enabled is required on a node without a network.
+     */
+    MQTT_PROXY_TO_CLIENT_REQUIRED = 40 [(meshtastic.enum_value_metadata) = {
+      label: "MQTT Proxy Required"
+      description: "Nodes without a network connection must enable MQTT proxy to client."
+    }];
+
+    /*
+     * MQTT config rejected: the default server address must not have a port specified.
+     */
+    MQTT_DEFAULT_SERVER_PORT_INVALID = 41 [(meshtastic.enum_value_metadata) = {
+      label: "Invalid MQTT Server Port"
+      description: "The default MQTT server address must not have a port specified."
+    }];
+
+    /*
+     * OTA refused: the provided ota_hash is invalid.
+     */
+    OTA_INVALID_HASH = 43 [(meshtastic.enum_value_metadata) = {
+      label: "Invalid OTA Hash"
+      description: "Can't start the OTA update because the provided firmware hash is invalid."
+    }];
+
+    /*
+     * OTA refused: no OTA loader partition was found.
+     */
+    OTA_LOADER_PARTITION_MISSING = 44 [(meshtastic.enum_value_metadata) = {
+      label: "OTA Loader Partition Missing"
+      description: "Can't start the OTA update because no OTA loader partition was found."
+    }];
+
+    /*
+     * OTA refused: the OTA loader partition does not hold a valid loader.
+     */
+    OTA_LOADER_INVALID = 45 [(meshtastic.enum_value_metadata) = {
+      label: "Invalid OTA Loader"
+      description: "Can't start the OTA update because the device does not have a valid OTA loader."
+    }];
+
+    /*
+     * OTA refused: the OTA loader does not support the requested mode (BLE or WiFi).
+     */
+    OTA_MODE_UNSUPPORTED = 46 [(meshtastic.enum_value_metadata) = {
+      label: "OTA Mode Unsupported"
+      description: "The OTA loader does not support the requested update method."
+    }];
+
+    /*
+     * OTA accepted: rebooting into the OTA loader for the requested mode.
+     */
+    OTA_REBOOTING = 47 [(meshtastic.enum_value_metadata) = {
+      label: "Rebooting to OTA"
+      description: "Rebooting into the OTA loader to receive the update."
+    }];
+
+    /*
+     * OTA refused: switching to the OTA partition failed.
+     */
+    OTA_PARTITION_SWITCH_FAILED = 48 [(meshtastic.enum_value_metadata) = {
+      label: "OTA Partition Switch Failed"
+      description: "Unable to switch to the OTA partition."
+    }];
+  }
+
+  /*
    * The id of the packet we're notifying in response to
    */
   optional uint32 reply_id = 1;
@@ -2754,6 +3152,11 @@ message ClientNotification {
    * The message body of the notification
    */
   string message = 4;
+
+  /*
+   * Which firmware message this notification carries. UNSET when not known.
+   */
+  NotificationType type = 5;
 
   oneof payload_variant {
     KeyVerificationNumberInform key_verification_number_inform = 11;
