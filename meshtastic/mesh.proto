@@ -1816,6 +1816,31 @@ message MeshPacket {
      * Arrived via Unicast UDP
      */
     TRANSPORT_UNICAST_UDP = 8;
+
+    /*
+     * Arrived via a connectionless BLE 5 extended advertisement
+     */
+    TRANSPORT_BLE_ADV = 9;
+
+    /*
+     * Arrived via a BLE GATT mesh-peer connection (a phone connected to this node as a mesh peer)
+     */
+    TRANSPORT_BLE_GATT = 10;
+
+    /*
+     * Arrived as sound, over a speaker and the microphones in earshot of it
+     */
+    TRANSPORT_AUDIO = 11;
+
+    /*
+     * Arrived over meshtastic-node-kmp's video bearer, as QR frames on a screen read by a camera
+     */
+    TRANSPORT_VIDEO = 12;
+
+    /*
+     * Arrived over meshtastic-node-kmp's Wi-Fi Aware bearer, a NAN data path to a nearby device
+     */
+    TRANSPORT_WIFI_AWARE = 13;
   }
 
   /*
