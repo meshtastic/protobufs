@@ -30,8 +30,15 @@ message SerialHalCommand {
     // One radio SPI command: wait for BUSY (value) to read low, drive CS (pin)
     // low, transfer data, drive CS high, then wait for BUSY low again. The
     // response carries the received bytes in data and the BUSY level after the
-    // second wait in value (0 = low). A value of 0xFFFFFFFF means no BUSY line:
-    // both waits are skipped.
+    // second wait in value (0 = low, 1 = still high).
+    //
+    // Each wait is bounded by the device (the firmware uses 10 ms). A timeout
+    // is not an error: after the first wait the transfer still runs, and after
+    // the second the response is OK with value = 1, so the host polls BUSY
+    // itself with DIGITAL_READ.
+    //
+    // A value of 0xFFFFFFFF means no BUSY line: both waits are skipped, and the
+    // response value is 0 and carries no meaning.
     SPI_TRANSACTION = 8;
   }
 
