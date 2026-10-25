@@ -27,6 +27,12 @@ message SerialHalCommand {
     DETACH_INTERRUPT = 5;
     SPI_TRANSFER = 6;
     NOOP = 7;
+    // One radio SPI command: wait for BUSY (value) to read low, drive CS (pin)
+    // low, transfer data, drive CS high, then wait for BUSY low again. The
+    // response carries the received bytes in data and the BUSY level after the
+    // second wait in value (0 = low). A value of 0xFFFFFFFF means no BUSY line:
+    // both waits are skipped.
+    SPI_TRANSACTION = 8;
   }
 
   // Host-assigned request id. Replies echo this id back in
