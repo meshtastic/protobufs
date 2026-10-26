@@ -286,7 +286,7 @@ enum PortNum {
    * Use for transporting FloriaX-related messages between Meshtastic nodes
    * and companion application/services.
    */
-   FLORIAX_APP = 110;
+  FLORIAX_APP = 110;
 
   /*
    * GroupAlarm integration
