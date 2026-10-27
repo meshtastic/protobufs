@@ -2155,19 +2155,19 @@ message TAKPacketV2 {
    * the builder has nothing to rebuild it from and sets `time = start = now` at
    * decode. A CoT that spent 40 s crossing the mesh therefore arrives stamped as
    * the freshest thing on the map, and no receiver can tell a 2-second-old
-   * position from a 40-second-old one — which makes correct ordering of two
+   * position from a 40-second-old one, which makes correct ordering of two
    * reports for one UID impossible.
    *
    * 14 bits rather than a full timestamp: any tag at 16 or above costs a 2-byte
    * key, and a value below 16384 fits a 2-byte varint where epoch seconds needs
-   * five — 4 bytes on the wire instead of 7. The 16384 s (4.55 h) window is far
+   * five, so the field costs 4 bytes on the wire instead of 7. The 16384 s (4.55 h) window is far
    * wider than any plausible mesh transit, so a receiver rebuilds the full value
    * from its own clock:
    *
    *   start = (now_epoch_seconds & ~0x3FFF) | start_epoch_lo14
    *
-   * That has exactly one failure mode — a packet in flight across a window
-   * boundary — and it always yields a value too far AHEAD, never stale. So a
+   * That has exactly one failure mode, a packet in flight across a window
+   * boundary, and it always yields a value too far AHEAD, never stale. So a
    * receiver should reject an implausibly future `start` and fall back to its
    * decode time. Keep the tolerance asymmetric: tight on the future (seconds),
    * loose on the past (hours), because a sender whose clock runs slow still
