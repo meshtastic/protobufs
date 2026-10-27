@@ -2147,6 +2147,50 @@ message TAKPacketV2 {
    */
   optional SensorFov sensor_fov = 26;
 
+  /*
+   * Low 14 bits of the event's `start` time, as epoch seconds.
+   *
+   * Restores a value the format otherwise drops entirely. The parser reads `time`
+   * and `stale` only to derive `stale_seconds`, and never reads `start` at all, so
+   * the builder has nothing to rebuild it from and sets `time = start = now` at
+   * decode. A CoT that spent 40 s crossing the mesh therefore arrives stamped as
+   * the freshest thing on the map, and no receiver can tell a 2-second-old
+   * position from a 40-second-old one — which makes correct ordering of two
+   * reports for one UID impossible.
+   *
+   * 14 bits rather than a full timestamp: any tag at 16 or above costs a 2-byte
+   * key, and a value below 16384 fits a 2-byte varint where epoch seconds needs
+   * five — 4 bytes on the wire instead of 7. The 16384 s (4.55 h) window is far
+   * wider than any plausible mesh transit, so a receiver rebuilds the full value
+   * from its own clock:
+   *
+   *   start = (now_epoch_seconds & ~0x3FFF) | start_epoch_lo14
+   *
+   * That has exactly one failure mode — a packet in flight across a window
+   * boundary — and it always yields a value too far AHEAD, never stale. So a
+   * receiver should reject an implausibly future `start` and fall back to its
+   * decode time. Keep the tolerance asymmetric: tight on the future (seconds),
+   * loose on the past (hours), because a sender whose clock runs slow still
+   * orders its own packets correctly, while a tight past-side bound would discard
+   * all of that sender's traffic.
+   *
+   * Only compare values between packets from the same sender, where a constant
+   * clock offset cancels out.
+   *
+   * `optional` is deliberate, despite the v0.4.0 `altitude` experiment above
+   * finding `optional` net-negative: that regressed because a genuine 0 m
+   * altitude is common, whereas `start` mod 16384 is 0 for one second in 16384.
+   * Here explicit presence costs essentially nothing and distinguishes "sender
+   * did not populate this" from a legitimate zero.
+   *
+   * Tag 43 rather than the 27 held above for "future top-level annotations",
+   * which is what this is: un-reserving 27 trips buf's RESERVED_MESSAGE_NO_DELETE
+   * under the FILE breaking category this module enables, and every tag at 16 or
+   * above costs the same 2-byte key, so the fresh tag is free. Move it to 27 if
+   * you would rather except the rule.
+   */
+  optional uint32 start_epoch_lo14 = 43;
+
   reserved 27, 28, 30;
   // Tags 27, 28 reserved for future top-level annotations. Tag 29 is consumed
   // by `marti` below. Tag 30 was the former `bool pli` oneof arm - dropped
