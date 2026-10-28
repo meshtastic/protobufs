@@ -22,7 +22,7 @@ env:
 
 jobs:
   publish-snapshot:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
