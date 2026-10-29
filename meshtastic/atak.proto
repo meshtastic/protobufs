@@ -2162,11 +2162,11 @@ message TAKPacketV2 {
    * key, and a value below 16384 fits a 2-byte varint where epoch seconds needs
    * five, so the field costs 4 bytes on the wire instead of 7.
    *
-   * SENDERS: populate this only when `start` is within 8192 s of transmission,
+   * SENDERS: populate this only when `start` is within an hour of transmission,
    * and omit it otherwise. The encoding cannot express an older start and a
    * receiver cannot detect one: an out-of-range value reconstructs silently as a
-   * plausible recent time in the wrong window. Transit and clock skew spend part
-   * of that budget, so treat roughly two hours as the practical limit.
+   * plausible recent time in the wrong window. This gate is what keeps a receiver
+   * out of that band.
    *
    * RECEIVERS: rebuild the full value by selecting the candidate NEAREST your own
    * clock. Do not splice the low bits onto your current window.
@@ -2186,10 +2186,13 @@ message TAKPacketV2 {
    *
    * Treat the result as trustworthy for ORDERING packets from a single sender,
    * where a constant clock offset cancels out. Before using it as an absolute
-   * age, bound it: reject a start more than a few seconds in the future, or more
-   * than about an hour in the past, and fall back to decode time. Keep both
-   * bounds well inside the 8192 s half-window, because past that the
-   * reconstruction is wrong rather than merely implausible.
+   * age, bound it: reject a start more than an hour out in either direction, and
+   * fall back to decode time. An hour each way because the budget is spent by
+   * both clocks, not just the sender's. Those bounds cannot detect a wrong
+   * window: a true age in [16384 - future, 16384 + past] reconstructs as
+   * near-future and passes both. The sender gate above is what keeps that band
+   * unreachable, since reaching it needs 16384 - 2 x bound of transit, 2.55 h at
+   * an hour each way, so widening either bound costs that margin twice over.
    *
    * Ordering assumes the producer advances `start` on each emission, which ATAK
    * does because it sets `start = time`. A producer that holds `start` fixed
