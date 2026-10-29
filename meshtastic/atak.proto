@@ -2189,10 +2189,22 @@ message TAKPacketV2 {
    * age, bound it: reject a start more than an hour out in either direction, and
    * fall back to decode time. An hour each way because the budget is spent by
    * both clocks, not just the sender's. Those bounds cannot detect a wrong
-   * window: a true age in [16384 - future, 16384 + past] reconstructs as
-   * near-future and passes both. The sender gate above is what keeps that band
-   * unreachable, since reaching it needs 16384 - 2 x bound of transit, 2.55 h at
-   * an hour each way, so widening either bound costs that margin twice over.
+   * window: an offset in [16384 - future, 16384 + past], 3.55 to 5.55 h at an
+   * hour each way, reconstructs as a near-future time and passes both. That is
+   * an ACCEPTED RISK rather than something the bounds or the sender gate close.
+   * Reaching it takes about 2.55 h of sender-to-receiver clock DISAGREEMENT:
+   * mesh transit contributes seconds, and the sender gate above supplies at
+   * most an hour of the gap, so the gate buys margin rather than closure.
+   * Widening either bound spends that margin twice over.
+   *
+   * It is acceptable because drift cannot get there. Breaking reconstruction at
+   * all takes 2.28 h of disagreement, and a device reporting a live GNSS
+   * position necessarily has GNSS time, since the fix solves for time. What
+   * DOES get there is a whole-hour offset from stamping local time as UTC:
+   * for a fresh `start`, 4 h and 5 h land inside the band while 3 h and 6 h are
+   * merely rejected. GNSS accuracy is no protection against that, so a producer
+   * MUST stamp `start` in UTC, and a consumer should not read a surviving
+   * in-band value as evidence that the sender's clock is sane.
    *
    * Ordering assumes the producer advances `start` on each emission, which ATAK
    * does because it sets `start = time`. A producer that holds `start` fixed
