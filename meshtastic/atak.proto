@@ -2148,7 +2148,19 @@ message TAKPacketV2 {
   optional SensorFov sensor_fov = 26;
 
   /*
-   * Low 14 bits of the event's `start` time, as epoch seconds.
+   * Low 14 bits of the event's `start` time, as epoch seconds UTC.
+   *
+   * UTC is not optional and not a convention this field invents. Stated plainly
+   * because bare seconds are the one place a zone error is invisible: a `start`
+   * built in the wrong zone arrives as a well-formed value that is simply wrong
+   * by whole hours, and no receiver check below can tell that from clock skew.
+   * ATAK formats CoT instants with TimeZone UTC and a literal `Z`, fixed in a
+   * static initializer rather than taken from device settings, and its parser
+   * reads fixed character positions as GMT and never interprets a zone offset.
+   * So a producer stamping local time is already broken against every ATAK
+   * client. Senders MUST derive this from a UTC instant; a binding that formats
+   * via a local-zone calendar is wrong even though every value it produces is
+   * in range.
    *
    * Restores a value the format otherwise drops entirely. The parser reads `time`
    * and `stale` only to derive `stale_seconds`, and never reads `start` at all, so
@@ -2165,8 +2177,9 @@ message TAKPacketV2 {
    * SENDERS: populate this only when `start` is within an hour of transmission,
    * and omit it otherwise. The encoding cannot express an older start and a
    * receiver cannot detect one: an out-of-range value reconstructs silently as a
-   * plausible recent time in the wrong window. This gate is what keeps a receiver
-   * out of that band.
+   * plausible recent time in the wrong window. This gate is most of what keeps
+   * a receiver out of that band; see the accepted-risk note below for the part
+   * it does not cover.
    *
    * RECEIVERS: rebuild the full value by selecting the candidate NEAREST your own
    * clock. Do not splice the low bits onto your current window.
