@@ -3206,6 +3206,17 @@ message DeviceMetadata {
    * tap-to-touch when has_touch is set.
    */
   DisplayInfo display = 16;
+
+  /*
+   * The address this node's BLE radio advertises and accepts connections on, as
+   * colon-separated uppercase hex, most significant byte first ("AA:BB:CC:DD:EE:FF").
+   * Read from the BLE stack, so it is the address phones and other centrals see.
+   * It can differ from User.macaddr: on ESP32, Bluetooth uses its own MAC derived
+   * from the base MAC. Reported while Bluetooth is disabled in config whenever the
+   * hardware address is known. Empty when the device has no BLE radio or the
+   * address cannot be determined.
+   */
+  string ble_address = 17;
 }
 
 /*
