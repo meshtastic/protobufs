@@ -2148,105 +2148,11 @@ message TAKPacketV2 {
   optional SensorFov sensor_fov = 26;
 
   /*
-   * Low 14 bits of the event's `start` time, as epoch seconds UTC.
-   *
-   * UTC is not optional and not a convention this field invents. Stated plainly
-   * because bare seconds are the one place a zone error is invisible: a `start`
-   * built in the wrong zone arrives as a well-formed value that is simply wrong
-   * by whole hours, and no receiver check below can tell that from clock skew.
-   * ATAK formats CoT instants with TimeZone UTC and a literal `Z`, fixed in a
-   * static initializer rather than taken from device settings, and its parser
-   * reads fixed character positions as GMT and never interprets a zone offset.
-   * So a producer stamping local time is already broken against every ATAK
-   * client. Senders MUST derive this from a UTC instant; a binding that formats
-   * via a local-zone calendar is wrong even though every value it produces is
-   * in range.
-   *
-   * Restores a value the format otherwise drops entirely. The parser reads `time`
-   * and `stale` only to derive `stale_seconds`, and never reads `start` at all, so
-   * the builder has nothing to rebuild it from and sets `time = start = now` at
-   * decode. A CoT that spent 40 s crossing the mesh therefore arrives stamped as
-   * the freshest thing on the map, and no receiver can tell a 2-second-old
-   * position from a 40-second-old one, which makes correct ordering of two
-   * reports for one UID impossible.
-   *
-   * 14 bits rather than a full timestamp: any tag at 16 or above costs a 2-byte
-   * key, and a value below 16384 fits a 2-byte varint where epoch seconds needs
-   * five, so the field costs 4 bytes on the wire instead of 7.
-   *
-   * SENDERS: populate this only when `start` is within an hour of transmission,
-   * and omit it otherwise. The encoding cannot express an older start and a
-   * receiver cannot detect one: an out-of-range value reconstructs silently as a
-   * plausible recent time in the wrong window. This gate is most of what keeps
-   * a receiver out of that band; see the accepted-risk note below for the part
-   * it does not cover.
-   *
-   * RECEIVERS: rebuild the full value by selecting the candidate NEAREST your own
-   * clock. Do not splice the low bits onto your current window.
-   *
-   *   delta = ((carried - now) % 16384 + 24576) % 16384 - 8192   // [-8192, 8191]
-   *   start = now + delta
-   *
-   * (The + 24576 keeps the second remainder non-negative under both C and Python
-   * remainder semantics.)
-   *
-   * The naive `(now & ~0x3FFF) | carried` is wrong at a window boundary in BOTH
-   * directions, not just one. For a boundary B, a sender `start` of B read by a
-   * receiver whose clock is at B - 1 yields B - 16384: a fresh event that appears
-   * 4.55 hours old, which no future-side sanity check will catch. Nearest-
-   * candidate is exact whenever the true start is within 8192 s of the receiver's
-   * clock, which subsumes any realistic transit plus skew.
-   *
-   * Treat the result as trustworthy for ORDERING packets from a single sender,
-   * where a constant clock offset cancels out. Before using it as an absolute
-   * age, bound it: reject a start more than an hour out in either direction, and
-   * fall back to decode time. An hour each way because the budget is spent by
-   * both clocks, not just the sender's. Those bounds cannot detect a wrong
-   * window: an offset in [16384 - future, 16384 + past], 3.55 to 5.55 h at an
-   * hour each way, reconstructs as a near-future time and passes both. That is
-   * an ACCEPTED RISK rather than something the bounds or the sender gate close.
-   * Reaching it takes about 2.55 h of sender-to-receiver clock DISAGREEMENT:
-   * mesh transit contributes seconds, and the sender gate above supplies at
-   * most an hour of the gap, so the gate buys margin rather than closure.
-   * That 2.55 h is 16384 - future - gate, so the future bound and the sender
-   * gate each spend it one second per second, and moving both to two hours
-   * leaves 33 min. The past bound does not enter it: widening that moves only
-   * the band's far edge, admitting more wrong offsets without making any of
-   * them easier to reach.
-   *
-   * It is acceptable because crystal DRIFT cannot get there, not because the
-   * clock is known good. Breaking reconstruction takes 2.28 h of receiver-ahead
-   * error against a fresh `start`, but only 1.28 h once the start is at the
-   * sender gate's one-hour limit, because a start age and a receiver-ahead
-   * error add. A receiver-behind error subtracts instead, so the two directions
-   * are not symmetric here.
-   *
-   * A GNSS fix does not establish the clock is good. It solves for time, but
-   * nothing guarantees the clock that STAMPS `start` is the one GNSS set, so a
-   * device reporting an accurate position can still stamp from a system clock
-   * that is hours off. What reaches the band is an offset of that size rather
-   * than drift, a whole hour of it being the obvious case: against a fresh
-   * `start`, 4 h and 5 h land inside the band while 3 h and 6 h are merely
-   * rejected, and against an hour-old start that pair shifts down to 3 h and
-   * 4 h. Stamping local time as UTC produces exactly such an offset, so a
-   * producer MUST stamp `start` in UTC, and a consumer should not read a
-   * surviving in-band value as evidence that the sender's clock is sane.
-   *
-   * Ordering assumes the producer advances `start` on each emission, which ATAK
-   * does because it sets `start = time`. A producer that holds `start` fixed
-   * across updates cannot be ordered by this field.
-   *
-   * `optional` is deliberate, despite the v0.4.0 `altitude` experiment above
-   * finding `optional` net-negative: that regressed because a genuine 0 m
-   * altitude is common, whereas `start` mod 16384 is 0 for one second in 16384.
-   * Here explicit presence costs essentially nothing and distinguishes "sender
-   * did not populate this" from a legitimate zero.
-   *
-   * Tag 43 rather than the 27 held above for "future top-level annotations",
-   * which is what this is: un-reserving 27 trips buf's RESERVED_MESSAGE_NO_DELETE
-   * under the FILE breaking category this module enables, and every tag at 16 or
-   * above costs the same 2-byte key, so the fresh tag is free. Move it to 27 if
-   * you would rather except the rule.
+   * Low 14 bits of the event's `start` time, as epoch seconds UTC. 14 bits rather
+   * than a full timestamp, so the field costs 4 bytes on the wire instead of 7.
+   * Order and deduplicates packets from a single sender. Valid only when within an
+   * hour of current wall time. `optional` is deliberate. It costs essentially
+   * nothing and distinguishes "sender did not populate this" from a legitimate zero.
    */
   optional uint32 start_epoch_lo14 = 43;
 
