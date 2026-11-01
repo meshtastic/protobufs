@@ -2208,7 +2208,11 @@ message TAKPacketV2 {
    * Reaching it takes about 2.55 h of sender-to-receiver clock DISAGREEMENT:
    * mesh transit contributes seconds, and the sender gate above supplies at
    * most an hour of the gap, so the gate buys margin rather than closure.
-   * Widening either bound spends that margin twice over.
+   * That 2.55 h is 16384 - future - gate, so the future bound and the sender
+   * gate each spend it one second per second, and moving both to two hours
+   * leaves 33 min. The past bound does not enter it: widening that moves only
+   * the band's far edge, admitting more wrong offsets without making any of
+   * them easier to reach.
    *
    * It is acceptable because drift cannot get there. Breaking reconstruction at
    * all takes 2.28 h of disagreement, and a device reporting a live GNSS
