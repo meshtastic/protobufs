@@ -8,7 +8,9 @@ name: ascii-dash
 # Runs from the base branch on every PR (including forks), so contributors
 # cannot disable it within their own PR. Needs no secrets or write access.
 
-on: pull_request
+on:
+  pull_request:
+  merge_group:
 
 permissions:
   contents: read
