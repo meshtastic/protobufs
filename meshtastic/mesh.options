@@ -96,6 +96,7 @@
 *NeighborInfo.neighbors max_count:10
 
 *DeviceMetadata.firmware_version max_size:18
+*DeviceMetadata.ble_address max_size:18 # "AA:BB:CC:DD:EE:FF" plus NUL
 
 # Region->preset compatibility map (FromRadio.region_presets). Bounds chosen
 # above the current table (6 groups / 9 presets in the largest group / 32 regions)
