@@ -3347,6 +3347,15 @@ message ClientNotification {
       label: "OTA Partition Switch Failed"
       description: "Unable to switch to the OTA partition."
     }];
+
+    /*
+     * A NodeInfo update without a valid signature tried to change a known node's name or role,
+     * and packet_signature_policy (Balanced or Strict) refused it. The stored identity is kept.
+     */
+    UNSIGNED_IDENTITY_UPDATE_IGNORED = 49 [(meshtastic.enum_value_metadata) = {
+      label: "Unsigned Update Ignored"
+      description: "An unsigned update tried to change a known node's name or role and was ignored because of your security setting. Remove the node to accept its unsigned updates."
+    }];
   }
 
   /*
