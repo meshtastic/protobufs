@@ -3656,9 +3656,12 @@ message DeviceMetadata {
   string ble_address = 17;
 
   /*
-   * Every transport this node can carry mesh packets over, whether or not it is
-   * enabled in Config.TransportConfig. A client offers a switch for each one listed
-   * here and for nothing else. Empty on firmware older than 2.8.3.
+   * Every transport this node can run that Config.TransportConfig.enabled switches,
+   * whether or not it is enabled there. A client offers a switch for each one listed
+   * here, backed by that field, and for nothing else. Values enabled is not the
+   * switch for are never listed: TRANSPORT_MQTT (switched by MQTTConfig.enabled),
+   * TRANSPORT_UNICAST_UDP (part of TRANSPORT_MULTICAST_UDP), TRANSPORT_INTERNAL and
+   * TRANSPORT_API. Empty on firmware older than 2.8.3.
    */
   repeated Config.TransportConfig.Transport supported_transports = 18 [(meshtastic.field_metadata) = {since_firmware: "2.8.3"}];
 }
