@@ -1823,7 +1823,7 @@ message MeshPacket {
     TRANSPORT_BLE_ADV = 9;
 
     /*
-     * Arrived via a BLE GATT mesh-peer connection (a phone connected to this node as a mesh peer)
+     * Arrived via a BLE GATT mesh-peer connection, in either GATT role
      */
     TRANSPORT_BLE_GATT = 10;
 
@@ -3654,6 +3654,13 @@ message DeviceMetadata {
    * address cannot be determined.
    */
   string ble_address = 17;
+
+  /*
+   * Every transport this node can carry mesh packets over, whether or not it is
+   * enabled in Config.TransportConfig. A client offers a switch for each one listed
+   * here and for nothing else. Empty on firmware older than 2.8.3.
+   */
+  repeated Config.TransportConfig.Transport supported_transports = 18 [(meshtastic.field_metadata) = {since_firmware: "2.8.3"}];
 }
 
 /*
