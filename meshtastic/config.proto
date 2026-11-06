@@ -1811,8 +1811,8 @@ message Config {
      * The transports this node runs. A transport absent here is off, one the node
      * cannot run (not in DeviceMetadata.supported_transports) is ignored.
      * On first boot of firmware 2.8.3 this is derived from the fields it replaces:
-     * TRANSPORT_LORA when lora.region is set, TRANSPORT_MULTICAST_UDP when
-     * network.enabled_protocols has UDP_BROADCAST.
+     * TRANSPORT_LORA always, since an UNSET lora.region alone keeps the radio off the air,
+     * and TRANSPORT_MULTICAST_UDP when network.enabled_protocols has UDP_BROADCAST.
      */
     repeated Transport enabled = 1 [(meshtastic.field_metadata) = {
       label: "Enabled Transports"
