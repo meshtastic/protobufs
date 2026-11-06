@@ -1816,6 +1816,31 @@ message MeshPacket {
      * Arrived via Unicast UDP
      */
     TRANSPORT_UNICAST_UDP = 8;
+
+    /*
+     * Arrived via a connectionless BLE 5 extended advertisement
+     */
+    TRANSPORT_BLE_ADV = 9;
+
+    /*
+     * Arrived via a BLE GATT mesh-peer connection, in either GATT role
+     */
+    TRANSPORT_BLE_GATT = 10;
+
+    /*
+     * Arrived as sound, over a speaker and the microphones in earshot of it
+     */
+    TRANSPORT_AUDIO = 11;
+
+    /*
+     * Arrived over meshtastic-node-kmp's video bearer, as QR frames on a screen read by a camera
+     */
+    TRANSPORT_VIDEO = 12;
+
+    /*
+     * Arrived over meshtastic-node-kmp's Wi-Fi Aware bearer, a NAN data path to a nearby device
+     */
+    TRANSPORT_WIFI_AWARE = 13;
   }
 
   /*
@@ -3629,6 +3654,16 @@ message DeviceMetadata {
    * address cannot be determined.
    */
   string ble_address = 17;
+
+  /*
+   * Every transport this node can run that Config.TransportConfig.enabled switches,
+   * whether or not it is enabled there. A client offers a switch for each one listed
+   * here, backed by that field, and for nothing else. Values enabled is not the
+   * switch for are never listed: TRANSPORT_MQTT (switched by MQTTConfig.enabled),
+   * TRANSPORT_UNICAST_UDP (part of TRANSPORT_MULTICAST_UDP), TRANSPORT_INTERNAL and
+   * TRANSPORT_API. Empty on firmware older than 2.8.3.
+   */
+  repeated Config.TransportConfig.Transport supported_transports = 18 [(meshtastic.field_metadata) = {since_firmware: "2.8.3"}];
 }
 
 /*
