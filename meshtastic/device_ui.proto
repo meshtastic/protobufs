@@ -95,6 +95,12 @@ message DeviceUIConfig {
   GpsCoordinateFormat gps_format = 19;
 
   /*
+   * Screen rotation of the color UI (MUI), relative to the device's built-in
+   * display orientation. Applied at boot; changing it requires a restart.
+   */
+  ScreenRotation screen_rotation = 20;
+
+  /*
    * How the GPS coordinates are displayed on the OLED screen.
    */
   enum GpsCoordinateFormat {
@@ -140,6 +146,33 @@ message DeviceUIConfig {
      * Described here: https://en.wikipedia.org/wiki/Maidenhead_Locator_System
      */
     MLS = 6;
+  }
+
+  /*
+   * Quarter-turn rotation of the color UI relative to the device's built-in
+   * display orientation.
+   */
+  enum ScreenRotation {
+    /*
+     * The device's built-in display orientation, unrotated.
+     */
+    ROTATION_0 = 0;
+
+    /*
+     * A quarter turn from the built-in orientation, swapping width and height.
+     */
+    ROTATION_90 = 1;
+
+    /*
+     * Upside down relative to the built-in orientation.
+     */
+    ROTATION_180 = 2;
+
+    /*
+     * Three quarter turns from the built-in orientation, swapping width and
+     * height.
+     */
+    ROTATION_270 = 3;
   }
 }
 
