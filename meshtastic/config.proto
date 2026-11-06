@@ -721,12 +721,16 @@ message Config {
     string rsyslog_server = 9 [(meshtastic.field_metadata) = {label: "Rsyslog Server"}];
 
     /*
-     * Flags for enabling/disabling network protocols
+     * Flags for enabling/disabling network protocols.
+     * Superseded by Config.TransportConfig.enabled, which names every transport by one key.
+     * Firmware 2.8.3 carries UDP_BROADCAST into TRANSPORT_MULTICAST_UDP on first boot and
+     * reads only the new field from then on.
      */
     uint32 enabled_protocols = 10 [(meshtastic.field_metadata) = {
       label: "Enabled Protocols"
-      description: "Enable broadcasting packets via UDP over the local network."
+      description: "Enable broadcasting packets via UDP over the local network. Superseded by the transport config."
       since_firmware: "2.6.0"
+      deprecated_since: "2.8.3"
     }];
 
     /*
@@ -1706,6 +1710,118 @@ message Config {
   message SessionkeyConfig {}
 
   /*
+   * Which transports this node carries mesh packets over.
+   *
+   * Every transport is named by one key, Transport, whether it is a radio on
+   * firmware or a bearer an app node runs. Each transport's own settings stay in
+   * its own section (LoRaConfig, NetworkConfig, MQTTConfig); this section only
+   * says which run. A node lists what it can run in DeviceMetadata.supported_transports.
+   */
+  message TransportConfig {
+    /*
+     * A transport, numbered the same as MeshPacket.TransportMechanism, which stamps
+     * the transport a packet arrived over. The two are one enum split in two files
+     * because config.proto cannot import mesh.proto. Values that only ever stamp a
+     * packet (TRANSPORT_INTERNAL, TRANSPORT_API, TRANSPORT_UNICAST_UDP) are listed so
+     * the numbers stay aligned; they are not enabled.
+     */
+    enum Transport {
+      /*
+       * The node itself. Never enabled; a packet it generates is stamped with it.
+       */
+      TRANSPORT_INTERNAL = 0 [(meshtastic.enum_value_metadata) = {label: "Internal"}];
+
+      /*
+       * The primary LoRa radio. lora.region is still required for it to transmit,
+       * and lora.tx_enabled still gates transmit on its own.
+       */
+      TRANSPORT_LORA = 1 [(meshtastic.enum_value_metadata) = {label: "LoRa"}];
+
+      /*
+       * A secondary LoRa radio
+       */
+      TRANSPORT_LORA_ALT1 = 2 [(meshtastic.enum_value_metadata) = {label: "LoRa 2"}];
+
+      /*
+       * A tertiary LoRa radio
+       */
+      TRANSPORT_LORA_ALT2 = 3 [(meshtastic.enum_value_metadata) = {label: "LoRa 3"}];
+
+      /*
+       * A quaternary LoRa radio
+       */
+      TRANSPORT_LORA_ALT3 = 4 [(meshtastic.enum_value_metadata) = {label: "LoRa 4"}];
+
+      /*
+       * An MQTT connection. Still switched by MQTTConfig.enabled; listed so the
+       * numbers stay aligned.
+       */
+      TRANSPORT_MQTT = 5 [(meshtastic.enum_value_metadata) = {label: "MQTT"}];
+
+      /*
+       * UDP over the local network, multicast and unicast both. The one UDP entry a
+       * node enables; TRANSPORT_UNICAST_UDP only stamps a packet.
+       */
+      TRANSPORT_MULTICAST_UDP = 6 [(meshtastic.enum_value_metadata) = {label: "UDP"}];
+
+      /*
+       * The phone API. Never enabled; a packet from a connected client is stamped with it.
+       */
+      TRANSPORT_API = 7 [(meshtastic.enum_value_metadata) = {label: "API"}];
+
+      /*
+       * Unicast UDP, stamped on a packet that arrived that way. Enabled through
+       * TRANSPORT_MULTICAST_UDP.
+       */
+      TRANSPORT_UNICAST_UDP = 8 [(meshtastic.enum_value_metadata) = {label: "Unicast UDP"}];
+
+      /*
+       * Connectionless BLE 5 extended advertisements
+       */
+      TRANSPORT_BLE_ADV = 9 [(meshtastic.enum_value_metadata) = {label: "BLE Broadcast"}];
+
+      /*
+       * The BLE GATT mesh-peer service, in either GATT role: a node serves it to peers
+       * that connect, and a node that can act as a central connects outward to peers
+       * serving it. Separate from bluetooth.enabled, which gates the phone-API service
+       * on the same controller: that one is a client configuring one node, this is mesh
+       * traffic between nodes. On firmware it runs only while the node's Bluetooth is
+       * up, so it is inert when bluetooth.enabled is false, and on an ESP32 while Wi-Fi
+       * is in use.
+       */
+      TRANSPORT_BLE_GATT = 10 [(meshtastic.enum_value_metadata) = {label: "BLE GATT Peer"}];
+
+      /*
+       * Sound, over a speaker and the microphones in earshot of it
+       */
+      TRANSPORT_AUDIO = 11 [(meshtastic.enum_value_metadata) = {label: "Sound"}];
+
+      /*
+       * QR frames on a screen, read by a camera
+       */
+      TRANSPORT_VIDEO = 12 [(meshtastic.enum_value_metadata) = {label: "Video"}];
+
+      /*
+       * Wi-Fi Aware, a NAN data path to a nearby device
+       */
+      TRANSPORT_WIFI_AWARE = 13 [(meshtastic.enum_value_metadata) = {label: "Wi-Fi Aware"}];
+    }
+
+    /*
+     * The transports this node runs. A transport absent here is off, one the node
+     * cannot run (not in DeviceMetadata.supported_transports) is ignored.
+     * On first boot of firmware 2.8.3 this is derived from the fields it replaces:
+     * TRANSPORT_LORA when lora.region is set, TRANSPORT_MULTICAST_UDP when
+     * network.enabled_protocols has UDP_BROADCAST.
+     */
+    repeated Transport enabled = 1 [(meshtastic.field_metadata) = {
+      label: "Enabled Transports"
+      description: "Which transports this node carries mesh packets over."
+      since_firmware: "2.8.3"
+    }];
+  }
+
+  /*
    * Payload Variant
    */
   oneof payload_variant {
@@ -1719,5 +1835,6 @@ message Config {
     SecurityConfig security = 8;
     SessionkeyConfig sessionkey = 9;
     DeviceUIConfig device_ui = 10;
+    TransportConfig transport = 11;
   }
 }
