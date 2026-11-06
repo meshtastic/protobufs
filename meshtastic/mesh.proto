@@ -995,6 +995,11 @@ enum HardwareModel {
   HELTEC_MESH_POCKET_V2 = 152;
 
   /*
+   * A virtual node: a phone or desktop app acting as a mesh node of its own, with no radio hardware of its own
+   */
+  VIRTUAL_NODE = 254;
+
+  /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
    * Reserved ID For developing private Ports. These will show up in live traffic sparsely, so we can use a high number. Keep it within 8 bits.
    * ------------------------------------------------------------------------------------------------------------------------------------------
