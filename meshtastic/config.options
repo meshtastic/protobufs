@@ -22,3 +22,6 @@
 *SecurityConfig.private_key max_size:32
 *SecurityConfig.admin_key max_size:32
 *SecurityConfig.admin_key max_count:3
+
+# A node enables a few transports; it can list every one it can run.
+*TransportConfig.enabled max_count:8
