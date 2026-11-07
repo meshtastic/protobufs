@@ -117,6 +117,16 @@ message ModuleConfig {
      * Settings for reporting information about our node to a map via MQTT
      */
     MapReportSettings map_report_settings = 11;
+
+    /*
+     * If true, a downlinked packet is only transmitted when ServiceEnvelope.target_gateways lists this node.
+     * Untargeted downlink is ignored. Lets operators enable downlink for replies without airing all broker traffic.
+     */
+    bool downlink_targeted_only = 12 [(meshtastic.field_metadata) = {
+      label: "Targeted Downlink Only"
+      description: "Only transmit downlinked packets that are addressed to this gateway."
+      since_firmware: "2.8.3"
+    }];
   }
 
   /*
