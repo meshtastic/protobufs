@@ -965,17 +965,20 @@ message ModuleConfig {
     bool air_quality_screen_enabled = 15 [(meshtastic.field_metadata) = {since_firmware: "2.7.18"}];
 
     /*
-     * Power telemetry read interval
+     * Interval in seconds between power sensor reads, independent of power_update_interval.
+     * 0 = read at power_update_interval.
      */
     uint32 power_telemetry_read_interval = 16;
 
     /*
-     * Environment telemetry read interval
+     * Interval in seconds between environment sensor reads, independent of environment_update_interval.
+     * 0 = read at environment_update_interval.
      */
     uint32 environment_telemetry_read_interval = 17;
 
     /*
-     * Air quality telemetry read interval
+     * Interval in seconds between air quality sensor reads, independent of air_quality_interval.
+     * 0 = read at air_quality_interval.
      */
     uint32 air_quality_telemetry_read_interval = 18;
 
