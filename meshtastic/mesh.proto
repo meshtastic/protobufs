@@ -3629,6 +3629,14 @@ message DeviceMetadata {
    * address cannot be determined.
    */
   string ble_address = 17;
+
+  /*
+   * nRF52 bootloader version, packed as major << 16 | minor << 8 | patch, as the
+   * bootloader hands it to the application at boot. Meshtastic nRF52 Bootloader
+   * releases before 2.6.0 report 0.9.2. 0 means not reported: a non-nRF52 device,
+   * or firmware that predates this field.
+   */
+  uint32 bootloader_version = 19;
 }
 
 /*
