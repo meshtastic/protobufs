@@ -978,6 +978,16 @@ message ModuleConfig {
      * Air quality telemetry read interval
      */
     uint32 air_quality_telemetry_read_interval = 18;
+
+    /*
+     * Interval in seconds to send environment telemetry to the connected phone / client (default 60)
+     */
+    uint32 environment_phone_interval = 19;
+
+    /*
+     * Interval in seconds to send air quality telemetry to the connected phone / client (default 60)
+     */
+    uint32 air_quality_phone_interval = 20;
   }
 
   /*
