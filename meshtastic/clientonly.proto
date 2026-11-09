@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "meshtastic/field_metadata.proto";
 import "meshtastic/localonly.proto";
 import "meshtastic/mesh.proto";
 
@@ -27,9 +28,10 @@ message DeviceProfile {
   optional string short_name = 2;
 
   /*
-   * The url of the channels from our node
+   * The url of the channels from our node.
+   * Carries every channel's PSK, so it is as secret as they are.
    */
-  optional string channel_url = 3;
+  optional string channel_url = 3 [(meshtastic.field_metadata) = {sensitive: true}];
 
   /*
    * The Config of the node
