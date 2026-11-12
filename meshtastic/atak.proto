@@ -1945,6 +1945,12 @@ message TakTalkMessage {
    * icon. Proto3 only encodes when true so empty payload cost is 0 bytes.
    */
   bool from_voice = 4;
+
+  /*
+   * Voice profile to speak this message with on the receiver, matching
+   * VoiceProfile.voice_profile_id. Empty = the receiver's default voice.
+   */
+  string voice_profile_id = 5;
 }
 
 /*
@@ -1985,6 +1991,57 @@ message TakTalkRoomData {
    * which parsers split / builders join on ','.
    */
   repeated string participants = 4;
+}
+
+/*
+ * A synthetic speech profile, so receivers can render a sender's TAKTALK
+ * messages in that sender's own voice.
+ *
+ * Opaque model data, not audio: sent once per peer on request and cached,
+ * after which only text crosses the mesh. profile_data is compact binary
+ * that gains nothing from the TAK dictionary, so send it uncompressed.
+ */
+message VoiceProfile {
+  /*
+   * Stable identifier for this profile, matching
+   * TakTalkMessage.voice_profile_id and GeoChat.voice_profile_id.
+   */
+  string voice_profile_id = 1;
+
+  /*
+   * Friendly display name for the voice (e.g. "Alpha Lead").
+   */
+  string voice_profile_name = 2;
+
+  /*
+   * The profile itself, opaque to this schema.
+   */
+  bytes profile_data = 3;
+}
+
+/*
+ * Request for a peer's voice profile (CoT type y-).
+ *
+ * Addressed with Marti; the reply is a VoiceProfile.
+ */
+message VoiceProfileRequest {
+  /*
+   * Profile wanted, matching VoiceProfile.voice_profile_id. Empty = whichever
+   * profile the peer is currently using.
+   */
+  string voice_profile_id = 1;
+}
+
+/*
+ * Request for a room's name and roster (CoT type y-).
+ *
+ * Addressed with Marti; the reply is a TakTalkRoomData.
+ */
+message TakTalkRoomRequest {
+  /*
+   * Room UUID wanted, matching TakTalkRoomData.room_id.
+   */
+  string room_id = 1;
 }
 
 /*
@@ -2240,5 +2297,19 @@ message TAKPacketV2 {
      * GeoChat.room_id) to display name + roster on receivers.
      */
     TakTalkRoomData taktalk_room = 42;
+    /*
+     * Sender's synthetic speech profile. See VoiceProfile.
+     */
+    VoiceProfile voice_profile = 44;
+    /*
+     * Request for a peer's voice profile (CoT type y-).
+     * See VoiceProfileRequest.
+     */
+    VoiceProfileRequest voice_profile_request = 45;
+    /*
+     * Request for a room's name and roster (CoT type y-).
+     * See TakTalkRoomRequest.
+     */
+    TakTalkRoomRequest taktalk_room_request = 46;
   }
 }
