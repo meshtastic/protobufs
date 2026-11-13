@@ -22,3 +22,6 @@
 *SecurityConfig.private_key max_size:32
 *SecurityConfig.admin_key max_size:32
 *SecurityConfig.admin_key max_count:3
+
+# Ten Transport values can be enabled today; the same ceiling as supported_transports.
+*TransportConfig.enabled max_count:16
