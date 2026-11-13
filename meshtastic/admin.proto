@@ -560,6 +560,13 @@ message AdminMessage {
      * to carry passphrase bytes; that hack is retired.
      */
     LockdownAuth lockdown_auth = 104;
+
+    /*
+     * Play the ringtone currently configured for ExternalNotification
+     * once, so a client can preview a newly set ringtone or let the user
+     * locate the node. Ignored on builds without RTTTL support.
+     */
+    bool play_ringtone_request = 105;
   }
 }
 
