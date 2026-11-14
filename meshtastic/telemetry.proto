@@ -1101,6 +1101,11 @@ enum TelemetrySensorType {
    * AS3935 Franklin lightning sensor
    */
   AS3935 = 57;
+
+  /*
+   * TI INA228 20-bit current, voltage and power monitor
+   */
+  INA228 = 58;
 }
 
 /*
