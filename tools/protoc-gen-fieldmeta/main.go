@@ -18,6 +18,9 @@
 //   - local: protoc-gen-fieldmeta
 //     out: <dir>
 //     opt: target=c            # one of: c, python, typescript, rust, swift
+//
+// Optional `attributes=a+b` emits only the named FieldMetadata attributes and
+// drops entries that set none of them (e.g. `target=c,attributes=sensitive`).
 package main
 
 import (
@@ -210,6 +213,11 @@ func generate(req *pluginpb.CodeGeneratorRequest) (*pluginpb.CodeGeneratorRespon
 	if err != nil {
 		return nil, err
 	}
+	if sel, ok := params["attributes"]; ok {
+		if schema, entries, err = selectAttributes(schema, entries, sel); err != nil {
+			return nil, err
+		}
+	}
 	filename, content := emit(schema, entries)
 
 	return &pluginpb.CodeGeneratorResponse{
@@ -219,6 +227,59 @@ func generate(req *pluginpb.CodeGeneratorRequest) (*pluginpb.CodeGeneratorRespon
 			Content: proto.String(content),
 		}},
 	}, nil
+}
+
+// selectAttributes narrows the schema and entries to the "+"-separated attribute
+// names in sel, keeping schema order. An entry left with no attribute set is
+// dropped, so a size-constrained target carries only the rows it can use.
+func selectAttributes(schema []schemaField, entries []entry, sel string) ([]schemaField, []entry, error) {
+	want := map[string]bool{}
+	for _, name := range strings.Split(sel, "+") {
+		if name = strings.TrimSpace(name); name != "" {
+			want[name] = true
+		}
+	}
+	if len(want) == 0 {
+		return nil, nil, fmt.Errorf("parameter 'attributes' names no attribute")
+	}
+
+	var keptSchema []schemaField
+	known := make([]string, 0, len(schema))
+	for _, sf := range schema {
+		known = append(known, sf.Name)
+		if want[sf.Name] {
+			keptSchema = append(keptSchema, sf)
+			delete(want, sf.Name)
+		}
+	}
+	if len(want) > 0 {
+		unknown := make([]string, 0, len(want))
+		for name := range want {
+			unknown = append(unknown, name)
+		}
+		sort.Strings(unknown)
+		return nil, nil, fmt.Errorf("parameter 'attributes': unknown attribute(s) %s (known: %s)",
+			strings.Join(unknown, ", "), strings.Join(known, ", "))
+	}
+
+	keep := make(map[string]bool, len(keptSchema))
+	for _, sf := range keptSchema {
+		keep[sf.Name] = true
+	}
+	var keptEntries []entry
+	for _, e := range entries {
+		var fields []metaField
+		for _, f := range e.Fields {
+			if keep[f.Name] {
+				fields = append(fields, f)
+			}
+		}
+		if len(fields) > 0 {
+			e.Fields = fields
+			keptEntries = append(keptEntries, e)
+		}
+	}
+	return keptSchema, keptEntries, nil
 }
 
 // findExtension resolves the field_metadata extension descriptor from the
