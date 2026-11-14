@@ -251,6 +251,22 @@ message EnvironmentMetrics {
 
   reserved 42 to 56;
   reserved "soil_ph", "ph", "electrical_conductivity", "salinity", "nitrogen", "phosphorus", "potassium", "dissolved_oxygen", "orp", "chemical_oxygen_demand", "turbidity", "nitrate", "ammonium", "biochemical_oxygen_demand", "solar_irradiance";
+
+  /*
+   * GM tube count rate, in tenths of a count per minute.
+   * Value 108 represents 10.8 CPM.
+   * Normalized by the sensor over its own observation window.
+   * Not a 60-second pulse total, and not an integral since the previous telemetry packet.
+   */
+  optional uint32 radiation_cpm_x10 = 57;
+
+  /*
+   * Estimated gamma dose rate, in nanosieverts per hour.
+   * Value 100 represents 0.100 µSv/h.
+   * Calibration-dependent estimate from the sensor, not a certified dose.
+   * Independent of field 18 (radiation, µR/h).
+   */
+  optional uint32 radiation_dose_rate_nsvh = 58;
 }
 
 /*
@@ -1101,6 +1117,12 @@ enum TelemetrySensorType {
    * AS3935 Franklin lightning sensor
    */
   AS3935 = 57;
+
+  /*
+   * GeigerNode: native I2C GM-tube radiation sensor.
+   * Reports count rate and estimated SI dose rate.
+   */
+  GEIGERNODE = 58;
 }
 
 /*
