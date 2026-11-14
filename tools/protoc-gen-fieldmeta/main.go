@@ -235,12 +235,10 @@ func generate(req *pluginpb.CodeGeneratorRequest) (*pluginpb.CodeGeneratorRespon
 func selectAttributes(schema []schemaField, entries []entry, sel string) ([]schemaField, []entry, error) {
 	want := map[string]bool{}
 	for _, name := range strings.Split(sel, "+") {
-		if name = strings.TrimSpace(name); name != "" {
-			want[name] = true
+		if name = strings.TrimSpace(name); name == "" {
+			return nil, nil, fmt.Errorf("parameter 'attributes' has an empty attribute name in %q", sel)
 		}
-	}
-	if len(want) == 0 {
-		return nil, nil, fmt.Errorf("parameter 'attributes' names no attribute")
+		want[name] = true
 	}
 
 	var keptSchema []schemaField

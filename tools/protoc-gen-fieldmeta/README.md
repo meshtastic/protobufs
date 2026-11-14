@@ -163,7 +163,7 @@ the `Config` message module.
 | Parameter | Required | Effect |
 | --- | --- | --- |
 | `target` | yes | Output language: `c`, `python`, `typescript`, `rust`, `swift`. |
-| `attributes` | no | `+`-separated attribute names (e.g. `sensitive` or `sensitive+diy_only`). Only these attributes are emitted; an entry that sets none of them is dropped. An unknown name is an error. Default: all attributes. |
+| `attributes` | no | `+`-separated attribute names (e.g. `sensitive` or `sensitive+diy_only`). Only these attributes are emitted; an entry that sets none of them is dropped. An empty or unknown name is an error. Default: all attributes. |
 
 `attributes` is implemented by this plugin only, not by `protoc-gen-fieldmeta-swift`.
 

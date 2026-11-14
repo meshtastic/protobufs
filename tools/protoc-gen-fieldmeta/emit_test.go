@@ -139,6 +139,9 @@ func TestEmptyEntriesAreValid(t *testing.T) {
 	if strings.Contains(r, "FIELD_METADATA: &[(&str, i32, FieldMetadata)] = &[\n];") == false {
 		t.Errorf("rust empty slice not rendered as expected:\n%s", r)
 	}
+	// Swift's empty dictionary literal is `[:]`; `[]` would not compile.
+	_, s := emitSwift(testSchema, nil)
+	mustContain(t, "swift-empty", s, "static let registry: [String: FieldMetadata] = [:]\n")
 }
 
 // TestEmitScalarValueRendering covers int values and an INTEGRAL float (2.0):

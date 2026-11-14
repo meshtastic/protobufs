@@ -489,7 +489,22 @@ message M {
 		"#define MESHTASTIC_FIELD_METADATA_COUNT 2",
 	)
 
-	for _, param := range []string{"target=c,attributes=nope", "target=c,attributes="} {
+	// A selected attribute that no field sets leaves an empty but valid registry.
+	resp, err = run("target=swift,attributes=max_value")
+	if err != nil || resp.GetError() != "" {
+		t.Fatalf("generate unset attribute: err=%v resp=%s", err, resp.GetError())
+	}
+	mustContain(t, "select-swift-empty", resp.GetFile()[0].GetContent(),
+		"static let registry: [String: FieldMetadata] = [:]\n")
+
+	for _, param := range []string{
+		"target=c,attributes=nope",
+		"target=c,attributes=",
+		"target=c,attributes=admin_only++deprecated",
+		"target=c,attributes=+admin_only",
+		"target=c,attributes=admin_only+",
+		"target=c,attributes=admin_only+nope",
+	} {
 		if _, err := run(param); err == nil {
 			t.Errorf("expected error for %q, got nil", param)
 		}
