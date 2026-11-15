@@ -77,11 +77,12 @@ jobs:
           if [ "$REF_NAME" = master ]; then
             echo "VERSION_NAME=${TAG}.${COUNT}-${SHA}-SNAPSHOT" >> "$GITHUB_ENV"
           else
-            # A branch snapshot carries its slug in a hyphen-nested token and so sorts BELOW every
-            # master snapshot (a dot-numeric segment outranks it): consumers resolving the newest
-            # snapshot never pick one up, and one pins it by its exact version.
+            # A branch snapshot carries its slug in a hyphen-nested token behind a fixed `b-`, which
+            # sorts below every master snapshot in Gradle and Maven (checked with both comparators,
+            # including digit-leading slugs and a master built exactly at a tag). Newest-snapshot
+            # resolution never picks one up; a consumer pins it by its exact version.
             SLUG=$(printf '%s' "$REF_NAME" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9\n' '-' | sed -E 's/-+/-/g; s/^-|-$//g' | cut -c1-32)
-            echo "VERSION_NAME=${TAG}-${SLUG}.${COUNT}-${SHA}-SNAPSHOT" >> "$GITHUB_ENV"
+            echo "VERSION_NAME=${TAG}-b-${SLUG}.${COUNT}-${SHA}-SNAPSHOT" >> "$GITHUB_ENV"
           fi
 
       - name: Build KMP package
