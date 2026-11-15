@@ -78,9 +78,10 @@ jobs:
             echo "VERSION_NAME=${TAG}.${COUNT}-${SHA}-SNAPSHOT" >> "$GITHUB_ENV"
           else
             # A branch snapshot carries its slug in a hyphen-nested token behind a fixed `b-`, which
-            # sorts below every master snapshot in Gradle and Maven (checked with both comparators,
-            # including digit-leading slugs and a master built exactly at a tag). Newest-snapshot
-            # resolution never picks one up; a consumer pins it by its exact version.
+            # sorts below every master snapshot of the same tag in Gradle and Maven (checked with both
+            # comparators, including digit-leading slugs and a master built exactly at a tag). A branch
+            # cut after a newer tag sorts above older-tag master snapshots until master publishes at
+            # that tag, so a consumer pins a branch snapshot by its exact version, never a range.
             SLUG=$(printf '%s' "$REF_NAME" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9\n' '-' | sed -E 's/-+/-/g; s/^-|-$//g' | cut -c1-32)
             echo "VERSION_NAME=${TAG}-b-${SLUG}.${COUNT}-${SHA}-SNAPSHOT" >> "$GITHUB_ENV"
           fi
