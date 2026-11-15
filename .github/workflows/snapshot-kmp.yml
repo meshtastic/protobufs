@@ -52,6 +52,8 @@ jobs:
             konan-${{ runner.os }}-
 
       - name: Set version name
+        env:
+          REF_NAME: ${{ github.ref_name }}
         run: |
           # Name the snapshot after the latest tag (v-stripped), the commit count
           # since that tag, and the short SHA, e.g. 2.7.26.88-gd77b460-SNAPSHOT.
@@ -72,7 +74,15 @@ jobs:
           # like v1.2.3-rc1 would still split correctly.
           DESCRIBE=$(git describe --tags --long); DESCRIBE=${DESCRIBE#v}
           SHA=${DESCRIBE##*-}; REST=${DESCRIBE%-*}; COUNT=${REST##*-}; TAG=${REST%-*}
-          echo "VERSION_NAME=${TAG}.${COUNT}-${SHA}-SNAPSHOT" >> "$GITHUB_ENV"
+          if [ "$REF_NAME" = master ]; then
+            echo "VERSION_NAME=${TAG}.${COUNT}-${SHA}-SNAPSHOT" >> "$GITHUB_ENV"
+          else
+            # A branch snapshot carries its slug in a hyphen-nested token and so sorts BELOW every
+            # master snapshot (a dot-numeric segment outranks it): consumers resolving the newest
+            # snapshot never pick one up, and one pins it by its exact version.
+            SLUG=$(printf '%s' "$REF_NAME" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9\n' '-' | sed -E 's/-+/-/g; s/^-|-$//g' | cut -c1-32)
+            echo "VERSION_NAME=${TAG}-${SLUG}.${COUNT}-${SHA}-SNAPSHOT" >> "$GITHUB_ENV"
+          fi
 
       - name: Build KMP package
         run: packages/kmp/gradlew --no-daemon -p packages/kmp build -PVERSION_NAME=${{ env.VERSION_NAME }}
