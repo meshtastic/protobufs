@@ -8,6 +8,11 @@ on:
     branches:
       - master
 
+# buf push resolves HEAD to a remote branch, so a commit master has moved past cannot be pushed.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   push_to_registry:
     name: Push to schema registry
