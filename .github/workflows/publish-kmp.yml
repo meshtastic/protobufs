@@ -33,14 +33,9 @@ on:
 permissions:
   contents: read
 
-env:
-  GRADLE_CACHE_URL: ${{ secrets.GRADLE_CACHE_URL }}
-  GRADLE_CACHE_USERNAME: ${{ secrets.GRADLE_CACHE_USERNAME }}
-  GRADLE_CACHE_PASSWORD: ${{ secrets.GRADLE_CACHE_PASSWORD }}
-
 jobs:
   build-kmp:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.VERSION }}
       tag: ${{ steps.version.outputs.TAG }}
@@ -82,6 +77,8 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
+        with:
+          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
 
       - name: Cache Konan (Kotlin/Native toolchain)
         uses: actions/cache@v6
@@ -98,7 +95,7 @@ jobs:
         run: packages/kmp/gradlew --no-daemon -p packages/kmp publishToMavenLocal -PVERSION_NAME=${{ steps.version.outputs.VERSION }}
 
   publish-kmp:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     needs: build-kmp
     if: ${{ !inputs.dry_run }}
     steps:
@@ -123,6 +120,8 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
+        with:
+          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
 
       - name: Cache Konan (Kotlin/Native toolchain)
         uses: actions/cache@v6

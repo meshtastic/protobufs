@@ -5,6 +5,7 @@ package meshtastic;
 import "meshtastic/channel.proto";
 import "meshtastic/config.proto";
 import "meshtastic/device_ui.proto";
+import "meshtastic/field_metadata.proto";
 import "meshtastic/module_config.proto";
 import "meshtastic/portnums.proto";
 import "meshtastic/telemetry.proto";
@@ -241,7 +242,7 @@ enum HardwareModel {
   /*
    * TODO: REPLACE
    */
-  TBEAM = 4;
+  TBEAM = 4 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * The original heltec WiFi_Lora_32_V2, which had battery voltage sensing hooked to GPIO 13
@@ -257,7 +258,7 @@ enum HardwareModel {
   /*
    * TODO: REPLACE
    */
-  T_ECHO = 7;
+  T_ECHO = 7 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * TODO: REPLACE
@@ -283,7 +284,7 @@ enum HardwareModel {
   /*
    * New T-BEAM with ESP32-S3 CPU
    */
-  LILYGO_TBEAM_S3_CORE = 12;
+  LILYGO_TBEAM_S3_CORE = 12 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * RAK WisBlock ESP32 core: https://docs.rakwireless.com/Product-Categories/WisBlock/RAK11200/Overview/
@@ -328,7 +329,7 @@ enum HardwareModel {
   /*
    * WIO Tracker WM1110 family from Seeed Studio. Includes wio-1110-tracker and wio-1110-sdk
    */
-  WIO_WM1110 = 21;
+  WIO_WM1110 = 21 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * RAK2560 Solar base station based on RAK4630
@@ -368,7 +369,7 @@ enum HardwareModel {
   /*
    * Canary Radio Company - CanaryOne: https://canaryradio.io/products/canaryone
    */
-  CANARYONE = 29;
+  CANARYONE = 29 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * Waveshare RP2040 LoRa - https://www.waveshare.com/rp2040-lora.htm
@@ -390,7 +391,7 @@ enum HardwareModel {
   /*
    * T-Echo Plus device from LilyGo
    */
-  T_ECHO_PLUS = 33;
+  T_ECHO_PLUS = 33 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * TODO: REPLACE
@@ -466,7 +467,7 @@ enum HardwareModel {
    * Heltec Wireless Tracker with ESP32-S3 CPU, built-in GPS, and TFT
    * Newer V1.1, version is written on the PCB near the display.
    */
-  HELTEC_WIRELESS_TRACKER = 48;
+  HELTEC_WIRELESS_TRACKER = 48 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * Heltec Wireless Paper with ESP32-S3 CPU and E-Ink display
@@ -593,7 +594,7 @@ enum HardwareModel {
   /*
    * Seeed studio T1000-E tracker card. NRF52840 w/ LR1110 radio, GPS, button, buzzer, and sensors.
    */
-  TRACKER_T1000_E = 71;
+  TRACKER_T1000_E = 71 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * RAK3172 STM32WLE5 Module (https://store.rakwireless.com/products/wisduo-lpwan-module-rak3172)
@@ -686,7 +687,7 @@ enum HardwareModel {
    * https://www.elecrow.com/wiki/ThinkNode-M1_Transceiver_Device(Meshtastic)_Power_By_nRF52840.html
    * https://www.elecrow.com/wiki/ThinkNode-M2_Transceiver_Device(Meshtastic)_Power_By_NRF52840.html (this actually uses ESP32-S3)
    */
-  THINKNODE_M1 = 89;
+  THINKNODE_M1 = 89 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
   THINKNODE_M2 = 90;
 
   /*
@@ -732,12 +733,12 @@ enum HardwareModel {
   /*
    * Seeed Tracker L1
    */
-  SEEED_WIO_TRACKER_L1 = 99;
+  SEEED_WIO_TRACKER_L1 = 99 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * Seeed Tracker L1 EINK driver
    */
-  SEEED_WIO_TRACKER_L1_EINK = 100;
+  SEEED_WIO_TRACKER_L1_EINK = 100 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * Muzi Works R1 Neo
@@ -747,12 +748,12 @@ enum HardwareModel {
   /*
    * Lilygo T-Deck Pro
    */
-  T_DECK_PRO = 102;
+  T_DECK_PRO = 102 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * Lilygo TLora Pager
    */
-  T_LORA_PAGER = 103;
+  T_LORA_PAGER = 103 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * M5Stack Reserved
@@ -762,7 +763,7 @@ enum HardwareModel {
   /*
    * RAKwireless WisMesh Tag
    */
-  WISMESH_TAG = 105;
+  WISMESH_TAG = 105 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * RAKwireless WisBlock Core RAK3312 https://docs.rakwireless.com/product-categories/wisduo/rak3112-module/overview/
@@ -803,7 +804,7 @@ enum HardwareModel {
   /*
    * ESP32S3 main controller with GPS and TFT screen.
    */
-  HELTEC_WIRELESS_TRACKER_V2 = 113;
+  HELTEC_WIRELESS_TRACKER_V2 = 113 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * LilyGo T-Watch Ultra
@@ -848,7 +849,7 @@ enum HardwareModel {
   /*
    * LilyGo T-Beam 1W
    */
-  TBEAM_1_WATT = 122;
+  TBEAM_1_WATT = 122 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * LilyGo T5 S3 ePaper Pro (V1 and V2)
@@ -858,7 +859,7 @@ enum HardwareModel {
   /*
    * LilyGo T-Beam BPF (144-148Mhz)
    */
-  TBEAM_BPF = 124;
+  TBEAM_BPF = 124 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * LilyGo T-Mini E-paper S3 Kit
@@ -879,7 +880,7 @@ enum HardwareModel {
    * Seeed studio Mesh Tracker X1card. NRF52840 w/ LR2021 radio,
    * GPS, button, buzzer, and sensors.
    */
-  MESH_TRACKER_X1 = 128;
+  MESH_TRACKER_X1 = 128 [(meshtastic.enum_value_metadata) = {oem_fixed_gps: true}];
 
   /*
    * Elecrow ThinkNode M7, M8 and M9
@@ -982,6 +983,16 @@ enum HardwareModel {
    * Elecrow ThinkNode MX
    */
   THINKNODE_MX = 150;
+
+  /*
+   * Radioddity Nodara
+   */
+  NODARA = 151;
+
+  /*
+   * Heltec Magnetic Power Bank V2
+   */
+  HELTEC_MESH_POCKET_V2 = 152;
 
   /*
    * ------------------------------------------------------------------------------------------------------------------------------------------
@@ -1309,6 +1320,10 @@ message Data {
 
   /*
    * Bitfield for extra flags. First use is to indicate that user approves the packet being uploaded to MQTT.
+   * Bit 0 (LSB): ok_to_mqtt.
+   * Bit 1: mirrors want_response.
+   * Bit 2: is_automation, the packet was sent by automation (a bot or scripted tool) rather than typed
+   * by a person. Set per packet by the client; self-reported, so treat it as advisory.
    */
   optional uint32 bitfield = 9;
 
@@ -2628,7 +2643,222 @@ message FromRadio {
      * any group carries no constraint info and should not be restricted.
      */
     LoRaRegionPresetMap region_presets = 19;
+
+    /*
+     * One chunk of the device's display framebuffer, sent while display
+     * mirroring is active (see AdminMessage.set_display_mirror and
+     * AdminMessage.get_display_frame_request).
+     */
+    DisplayFrame display_frame = 21;
+
+    /*
+     * One chunk of the color palette referenced by display_frame's
+     * palette_signature (see DisplayPalette).
+     */
+    DisplayPalette display_palette = 22;
   }
+}
+
+/*
+ * A chunk of the device's display framebuffer, streamed to the local client
+ * over BLE/serial/TCP. Frames larger than one chunk are split by byte offset;
+ * a chunk with offset + data length == total_size completes the frame.
+ * This is application-level chunking of a framebuffer into several complete
+ * FromRadio messages, and is unrelated to ClientApiChunkedPayload, which
+ * splits ONE serialized FromRadio across a small BLE MTU. A frame cannot ride
+ * that wrapper: FromRadio is statically capped at MAX_TO_FROM_RADIO_SIZE, far
+ * below a full framebuffer. The two compose - a chunked-transport client
+ * receives these frames through it.
+ *
+ * Chunks of one frame arrive contiguously (no other display_frame between
+ * them; display_palette messages may interleave) and in offset order, so a
+ * client never has to reorder. It does have to check for loss: the queue to
+ * the client drops its oldest entry when full, and a frame in flight can be
+ * truncated when mirroring is disabled. A client MUST verify that offset
+ * equals the number of bytes it has already accumulated for this frame_id,
+ * and discard the partial frame on any gap or frame_id change. An incomplete
+ * frame must never be rendered.
+ */
+message DisplayFrame {
+  /*
+   * Pixel encodings of the framebuffer bytes.
+   */
+  enum Format {
+    /*
+     * Default; should not be sent.
+     */
+    FORMAT_UNSPECIFIED = 0;
+
+    /*
+     * 1 bit per pixel, vertical LSB-first pages (SSD1306/OLEDDisplay layout):
+     * byte index = x + (y / 8) * width, bit index = y % 8.
+     */
+    MONO_VLSB = 1;
+
+    /*
+     * 16 bits per pixel, RGB565 in little-endian byte order, rows tightly
+     * packed. Used with the partial-update rect fields: data covers only
+     * the rectangle. Streamed by LVGL-based color UIs.
+     */
+    RGB565 = 2;
+  }
+
+  /*
+   * Display width in pixels.
+   */
+  uint32 width = 1;
+
+  /*
+   * Display height in pixels.
+   */
+  uint32 height = 2;
+
+  /*
+   * Pixel encoding of data.
+   */
+  Format format = 3;
+
+  /*
+   * Frame counter, constant across the chunks of one frame, so a change
+   * marks the start of a new frame. It cannot reveal loss WITHIN a frame,
+   * since every chunk of that frame carries the same value; only offset
+   * contiguity can. Increments per captured frame, wraps at uint32 range,
+   * and restarts from 1 on device reboot, so treat any change as "a new
+   * frame" rather than as an ordering guarantee.
+   */
+  uint32 frame_id = 4;
+
+  /*
+   * Byte offset of this chunk within the full frame buffer.
+   */
+  uint32 offset = 5;
+
+  /*
+   * Total size in bytes of the full frame buffer.
+   */
+  uint32 total_size = 6;
+
+  /*
+   * The framebuffer bytes for this chunk.
+   */
+  bytes data = 7;
+
+  /*
+   * Optional partial-update rectangle (dirty-rect streaming from LVGL-based
+   * color UIs, format RGB565). A zero rect_width or rect_height means the
+   * full panel in that axis, so data carries the pixels of the resulting
+   * rectangle and offset/total_size describe that rectangle's own buffer;
+   * width/height above always remain the full display dimensions, and each
+   * rectangle is an independently completed unit under its own frame_id.
+   * MONO_VLSB frames never set these fields.
+   */
+  uint32 rect_x = 8;
+
+  /*
+   * See rect_x.
+   */
+  uint32 rect_y = 9;
+
+  /*
+   * See rect_x.
+   */
+  uint32 rect_width = 10;
+
+  /*
+   * See rect_x.
+   */
+  uint32 rect_height = 11;
+
+  /*
+   * Identity of the DisplayPalette that colorizes this frame, matching
+   * DisplayPalette.signature. 0 when the device renders monochrome (no
+   * color panel); clients without the referenced palette yet should render
+   * monochrome until its chunks arrive.
+   */
+  uint32 palette_signature = 12;
+}
+
+/*
+ * Colorization palette for DisplayFrame streams from devices that paint the
+ * 1bpp base UI onto a color panel. The panel applies per-region on/off
+ * colors at flush time; streaming the same region table lets a client
+ * render the mirror in the panel's true colors at 1bpp bandwidth.
+ * Sent as FromRadio.display_palette, split by region index when the table
+ * exceeds one message; re-sent only when the region layout or theme changes
+ * (the signature changes with it). Regions are ordered by table index; a
+ * region with a higher table index overrides lower-indexed ones where they
+ * overlap, regardless of chunk boundaries. A client holding partial chunks
+ * of a signature that no longer matches incoming chunks should discard
+ * them. All colors are RGB565 in logical bit layout (RRRRRGGGGGGBBBBB).
+ */
+message DisplayPalette {
+  /*
+   * One colorized rectangle of the display.
+   */
+  message ColorRegion {
+    /*
+     * Region origin and size in pixels.
+     */
+    uint32 x = 1;
+
+    /*
+     * See x.
+     */
+    uint32 y = 2;
+
+    /*
+     * See x.
+     */
+    uint32 width = 3;
+
+    /*
+     * See x.
+     */
+    uint32 height = 4;
+
+    /*
+     * RGB565 drawn for set (1) pixels inside this region.
+     */
+    uint32 on_color = 5;
+
+    /*
+     * RGB565 drawn for clear (0) pixels inside this region.
+     */
+    uint32 off_color = 6;
+  }
+
+  /*
+   * Identity of this palette; DisplayFrame.palette_signature references it.
+   * Changes whenever the region table or theme changes. Never 0, which
+   * DisplayFrame.palette_signature reserves for monochrome.
+   */
+  uint32 signature = 1;
+
+  /*
+   * RGB565 for set pixels outside all regions. The region_offset 0 chunk is authoritative.
+   */
+  uint32 default_on_color = 2;
+
+  /*
+   * RGB565 for clear pixels outside all regions. The region_offset 0 chunk is authoritative.
+   */
+  uint32 default_off_color = 3;
+
+  /*
+   * Table index of the first region in this chunk.
+   */
+  uint32 region_offset = 4;
+
+  /*
+   * Total regions in the complete palette; region_offset + regions length
+   * == region_total completes it.
+   */
+  uint32 region_total = 5;
+
+  /*
+   * The regions of this chunk, in table order.
+   */
+  repeated ColorRegion regions = 6;
 }
 
 /*
@@ -2726,6 +2956,413 @@ message LockdownStatus {
  */
 message ClientNotification {
   /*
+   * Identifies which firmware message a notification carries, so clients can
+   * localize or act on it without parsing the message text.
+   */
+  enum NotificationType {
+    /*
+     * Not set. Older firmware, or a message without its own type.
+     */
+    UNSET = 0 [(meshtastic.enum_value_metadata) = {
+      label: "Notification"
+      description: "A notification from the device."
+    }];
+
+    /*
+     * Position packet rejected: location sharing is disabled on this channel.
+     */
+    POSITION_SHARING_DISABLED = 1 [(meshtastic.enum_value_metadata) = {
+      label: "Location Sharing Disabled"
+      description: "Location sharing is disabled on this channel."
+    }];
+
+    /*
+     * Traceroute rejected: only one may be sent every 30 seconds.
+     */
+    TRACEROUTE_RATE_LIMITED = 2 [(meshtastic.enum_value_metadata) = {
+      label: "Traceroute Rate Limited"
+      description: "Only one traceroute can be sent every 30 seconds."
+    }];
+
+    /*
+     * Traceroute rejected: multi-hop traceroute to the broadcast address is not allowed.
+     */
+    TRACEROUTE_BROADCAST_REJECTED = 3 [(meshtastic.enum_value_metadata) = {
+      label: "Broadcast Traceroute Rejected"
+      description: "Multi-hop traceroute to the broadcast address is not allowed."
+    }];
+
+    /*
+     * Send aborted: the duty cycle limit is exceeded. The message gives the minutes until sending resumes.
+     */
+    DUTY_CYCLE_LIMIT_EXCEEDED = 4 [(meshtastic.enum_value_metadata) = {
+      label: "Duty Cycle Limit Exceeded"
+      description: "The duty cycle limit is exceeded. Sending resumes once airtime is available."
+    }];
+
+    /*
+     * Power-saving tracker sent its position and is about to sleep for the broadcast interval.
+     */
+    POSITION_SENT_SLEEPING = 5 [(meshtastic.enum_value_metadata) = {
+      label: "Position Sent, Sleeping"
+      description: "Position sent. The device will sleep until the next position broadcast."
+    }];
+
+    /*
+     * Power-saving sensor sent its telemetry and is about to sleep for the update interval.
+     */
+    TELEMETRY_SENT_SLEEPING = 6 [(meshtastic.enum_value_metadata) = {
+      label: "Telemetry Sent, Sleeping"
+      description: "Telemetry sent. The device will sleep until the next telemetry update."
+    }];
+
+    /*
+     * Incoming key verification: display the security number. Carries key_verification_number_inform.
+     */
+    KEY_VERIFICATION_NUMBER_INFORM = 7 [(meshtastic.enum_value_metadata) = {
+      label: "Key Verification Security Number"
+      description: "Give this security number to the user verifying your key."
+    }];
+
+    /*
+     * Outgoing key verification: enter the security number shown on the remote node. Carries key_verification_number_request.
+     */
+    KEY_VERIFICATION_NUMBER_REQUEST = 8 [(meshtastic.enum_value_metadata) = {
+      label: "Enter Key Verification Number"
+      description: "Enter the security number shown on the remote node."
+    }];
+
+    /*
+     * Final confirmation of an incoming key verification. Carries key_verification_final.
+     */
+    KEY_VERIFICATION_FINAL_INCOMING = 9 [(meshtastic.enum_value_metadata) = {
+      label: "Confirm Incoming Key Verification"
+      description: "Confirm that the verification code matches the remote node to finish the incoming key verification."
+    }];
+
+    /*
+     * Final confirmation of an outgoing key verification. Carries key_verification_final.
+     */
+    KEY_VERIFICATION_FINAL_OUTGOING = 10 [(meshtastic.enum_value_metadata) = {
+      label: "Confirm Outgoing Key Verification"
+      description: "Confirm that the verification code matches the remote node to finish the outgoing key verification."
+    }];
+
+    /*
+     * Key verification is unavailable in licensed (ham) mode.
+     */
+    KEY_VERIFICATION_LICENSED_UNAVAILABLE = 11 [(meshtastic.enum_value_metadata) = {
+      label: "Key Verification Unavailable"
+      description: "Key verification is unavailable in licensed (ham) mode."
+    }];
+
+    /*
+     * A remote node advertised this node's public key; the key may be compromised.
+     */
+    DUPLICATED_PUBLIC_KEY = 12 [(meshtastic.enum_value_metadata) = {
+      label: "Public Key Duplicated"
+      description: "A remote device has advertised your public key. Your key may be compromised; consider regenerating it."
+    }];
+
+    /*
+     * Compromised (low-entropy) keys were detected at boot and regenerated.
+     */
+    LOW_ENTROPY_KEY_REGENERATED = 13 [(meshtastic.enum_value_metadata) = {
+      label: "Compromised Keys Regenerated"
+      description: "Compromised keys were detected and regenerated."
+    }];
+
+    /*
+     * A restored key is a known low-entropy key; a new key was generated and the node number changed.
+     */
+    LOW_ENTROPY_KEY_RESTORE_REJECTED = 14 [(meshtastic.enum_value_metadata) = {
+      label: "Low-Entropy Key Rejected"
+      description: "That key is a known low-entropy key and can't be restored. A new secure key was generated and the node number changed."
+    }];
+
+    /*
+     * Licensed mode activated: the admin channel and encryption were removed from all channels.
+     */
+    LICENSED_MODE_ACTIVATED = 15 [(meshtastic.enum_value_metadata) = {
+      label: "Licensed Mode Activated"
+      description: "Licensed mode removed the admin channel and encryption from all channels."
+    }];
+
+    /*
+     * Licensed signing needs an identity key; the node identity will change after key generation.
+     */
+    LICENSED_IDENTITY_WILL_CHANGE = 16 [(meshtastic.enum_value_metadata) = {
+      label: "Node Identity Will Change"
+      description: "Licensed signing requires an identity key. This node's identity will change after key generation."
+    }];
+
+    /*
+     * Licensed signing generated a new identity key; the node identity changed.
+     */
+    LICENSED_IDENTITY_CHANGED = 17 [(meshtastic.enum_value_metadata) = {
+      label: "Node Identity Changed"
+      description: "Licensed signing generated a new identity key. This node's identity changed."
+    }];
+
+    /*
+     * Favorite or ignore refused: the protected-node limit is reached.
+     */
+    PROTECTED_NODE_LIMIT_REACHED = 18 [(meshtastic.enum_value_metadata) = {
+      label: "Protected Node Limit Reached"
+      description: "The node can't be favorited or ignored because the protected-node limit is reached."
+    }];
+
+    /*
+     * Rebroadcast mode NONE is not allowed for a router role; it was set to ALL.
+     */
+    ROUTER_REBROADCAST_NONE_REJECTED = 19 [(meshtastic.enum_value_metadata) = {
+      label: "Rebroadcast Mode Changed"
+      description: "Rebroadcast mode can't be NONE for a router role, so it was set to ALL."
+    }];
+
+    /*
+     * The packet signature policy is unavailable on this firmware build; it was set to COMPATIBLE.
+     */
+    PACKET_SIGNATURE_POLICY_UNAVAILABLE = 20 [(meshtastic.enum_value_metadata) = {
+      label: "Signature Policy Unavailable"
+      description: "The packet signature policy is unavailable on this firmware build, so it was set to Compatible."
+    }];
+
+    /*
+     * Managed mode needs at least one admin public key; it was left disabled.
+     */
+    MANAGED_MODE_REQUIRES_ADMIN_KEY = 21 [(meshtastic.enum_value_metadata) = {
+      label: "Admin Key Required"
+      description: "Managed mode needs at least one admin public key, so it was left disabled."
+    }];
+
+    /*
+     * Precise position is not allowed on a public channel; precision was reduced.
+     */
+    PUBLIC_CHANNEL_POSITION_PRECISION_REDUCED = 22 [(meshtastic.enum_value_metadata) = {
+      label: "Position Precision Reduced"
+      description: "Precise position is not allowed on a public channel, so precision was reduced."
+    }];
+
+    /*
+     * A channel has a blank PSK (no encryption) instead of the default key.
+     */
+    CHANNEL_BLANK_PSK = 23 [(meshtastic.enum_value_metadata) = {
+      label: "Channel Has No Encryption"
+      description: "A channel has a blank PSK (no encryption) instead of the default key."
+    }];
+
+    /*
+     * A channel name looks like a mistyped modem preset name; the user should type it exactly.
+     */
+    CHANNEL_NAME_PRESET_MISTYPE = 24 [(meshtastic.enum_value_metadata) = {
+      label: "Channel Name Looks Mistyped"
+      description: "A channel name looks like a mistyped modem preset name. Type the preset name exactly."
+    }];
+
+    /*
+     * A channel name looks like a mistyped modem preset name; clearing it lets the preset name apply automatically.
+     */
+    CHANNEL_NAME_PRESET_MISTYPE_CLEAR_NAME = 42 [(meshtastic.enum_value_metadata) = {
+      label: "Clear Mistyped Channel Name"
+      description: "A channel name looks like a mistyped modem preset name. Clear the name to use the preset name automatically."
+    }];
+
+    /*
+     * A channel resolves to or matches a modem preset but uses a non-default key.
+     */
+    CHANNEL_PRESET_NON_DEFAULT_KEY = 25 [(meshtastic.enum_value_metadata) = {
+      label: "Preset Channel Uses Non-Default Key"
+      description: "A channel matches a modem preset but uses a non-default key, so nodes using the default key can't decode it."
+    }];
+
+    /*
+     * After a modem preset change, a channel name still matches the old preset.
+     */
+    CHANNEL_NAME_MATCHES_OLD_PRESET = 26 [(meshtastic.enum_value_metadata) = {
+      label: "Channel Name Matches Old Preset"
+      description: "A channel name matches the previous modem preset. Rename it if it should follow the new preset."
+    }];
+
+    /*
+     * After a modem preset change, a channel name matches the new preset but won't auto-resolve.
+     */
+    CHANNEL_NAME_WONT_AUTO_RESOLVE = 27 [(meshtastic.enum_value_metadata) = {
+      label: "Channel Name Won't Auto-Resolve"
+      description: "A channel name matches the new modem preset but won't update automatically. Clear the name to fix it."
+    }];
+
+    /*
+     * Name issues on one or more channels (several warnings combined).
+     */
+    CHANNEL_NAME_ISSUES = 28 [(meshtastic.enum_value_metadata) = {
+      label: "Channel Name Issues"
+      description: "There may be name issues on one or more channels."
+    }];
+
+    /*
+     * PSK issues on one or more channels (several warnings combined).
+     */
+    CHANNEL_PSK_ISSUES = 29 [(meshtastic.enum_value_metadata) = {
+      label: "Channel PSK Issues"
+      description: "There may be PSK issues on one or more channels."
+    }];
+
+    /*
+     * Name and PSK issues on one or more channels (several warnings combined).
+     */
+    CHANNEL_NAME_AND_PSK_ISSUES = 30 [(meshtastic.enum_value_metadata) = {
+      label: "Channel Name and PSK Issues"
+      description: "There may be name and PSK issues on one or more channels."
+    }];
+
+    /*
+     * LoRa region code is not recognized.
+     */
+    LORA_REGION_UNRECOGNIZED = 31 [(meshtastic.enum_value_metadata) = {
+      label: "Region Not Recognized"
+      description: "The LoRa region code is not recognized."
+    }];
+
+    /*
+     * LoRa region requires licensed mode.
+     */
+    LORA_REGION_REQUIRES_LICENSE = 32 [(meshtastic.enum_value_metadata) = {
+      label: "Region Requires Licensed Mode"
+      description: "This LoRa region requires licensed mode."
+    }];
+
+    /*
+     * LoRa region needs a band (2.4 GHz or sub-GHz) this radio does not support.
+     */
+    LORA_REGION_UNSUPPORTED_BY_RADIO = 33 [(meshtastic.enum_value_metadata) = {
+      label: "Region Not Supported by Radio"
+      description: "This LoRa region needs a frequency band this radio does not support."
+    }];
+
+    /*
+     * The selected modem preset moved the node to a sibling region.
+     */
+    LORA_PRESET_REGION_SWAP = 34 [(meshtastic.enum_value_metadata) = {
+      label: "Region Changed for Preset"
+      description: "The selected modem preset moved the node to a compatible sibling region."
+    }];
+
+    /*
+     * Modem preset is invalid for the region; the region default may have been applied.
+     */
+    LORA_PRESET_INVALID_FOR_REGION = 35 [(meshtastic.enum_value_metadata) = {
+      label: "Preset Invalid for Region"
+      description: "The modem preset is not valid for this region."
+    }];
+
+    /*
+     * Requested bandwidth is wider than the region's span; the region default may have been applied.
+     */
+    LORA_BANDWIDTH_EXCEEDS_REGION = 36 [(meshtastic.enum_value_metadata) = {
+      label: "Bandwidth Too Wide for Region"
+      description: "The requested bandwidth is wider than this region allows."
+    }];
+
+    /*
+     * Channel number is out of range for the region; a valid slot may have been applied.
+     */
+    LORA_CHANNEL_NUM_INVALID = 37 [(meshtastic.enum_value_metadata) = {
+      label: "Frequency Slot Invalid"
+      description: "The frequency slot is out of range for this region."
+    }];
+
+    /*
+     * Serial config rejected: overriding the console serial port needs an output-only mode (NMEA, CalTopo or MS Config).
+     */
+    SERIAL_CONSOLE_OVERRIDE_INVALID = 38 [(meshtastic.enum_value_metadata) = {
+      label: "Invalid Serial Config"
+      description: "Overriding the console serial port is only supported in NMEA, CalTopo, or MS Config output modes."
+    }];
+
+    /*
+     * MQTT server could not be reached; the settings were saved anyway.
+     */
+    MQTT_SERVER_UNREACHABLE = 39 [(meshtastic.enum_value_metadata) = {
+      label: "MQTT Server Unreachable"
+      description: "The MQTT server could not be reached. Settings were saved; check the server address and credentials."
+    }];
+
+    /*
+     * MQTT config rejected: proxy_to_client_enabled is required on a node without a network.
+     */
+    MQTT_PROXY_TO_CLIENT_REQUIRED = 40 [(meshtastic.enum_value_metadata) = {
+      label: "MQTT Proxy Required"
+      description: "Nodes without a network connection must enable MQTT proxy to client."
+    }];
+
+    /*
+     * MQTT config rejected: the default server address must not have a port specified.
+     */
+    MQTT_DEFAULT_SERVER_PORT_INVALID = 41 [(meshtastic.enum_value_metadata) = {
+      label: "Invalid MQTT Server Port"
+      description: "The default MQTT server address must not have a port specified."
+    }];
+
+    /*
+     * OTA refused: the provided ota_hash is invalid.
+     */
+    OTA_INVALID_HASH = 43 [(meshtastic.enum_value_metadata) = {
+      label: "Invalid OTA Hash"
+      description: "Can't start the OTA update because the provided firmware hash is invalid."
+    }];
+
+    /*
+     * OTA refused: no OTA loader partition was found.
+     */
+    OTA_LOADER_PARTITION_MISSING = 44 [(meshtastic.enum_value_metadata) = {
+      label: "OTA Loader Partition Missing"
+      description: "Can't start the OTA update because no OTA loader partition was found."
+    }];
+
+    /*
+     * OTA refused: the OTA loader partition does not hold a valid loader.
+     */
+    OTA_LOADER_INVALID = 45 [(meshtastic.enum_value_metadata) = {
+      label: "Invalid OTA Loader"
+      description: "Can't start the OTA update because the device does not have a valid OTA loader."
+    }];
+
+    /*
+     * OTA refused: the OTA loader does not support the requested mode (BLE or WiFi).
+     */
+    OTA_MODE_UNSUPPORTED = 46 [(meshtastic.enum_value_metadata) = {
+      label: "OTA Mode Unsupported"
+      description: "The OTA loader does not support the requested update method."
+    }];
+
+    /*
+     * OTA accepted: rebooting into the OTA loader for the requested mode.
+     */
+    OTA_REBOOTING = 47 [(meshtastic.enum_value_metadata) = {
+      label: "Rebooting to OTA"
+      description: "Rebooting into the OTA loader to receive the update."
+    }];
+
+    /*
+     * OTA refused: switching to the OTA partition failed.
+     */
+    OTA_PARTITION_SWITCH_FAILED = 48 [(meshtastic.enum_value_metadata) = {
+      label: "OTA Partition Switch Failed"
+      description: "Unable to switch to the OTA partition."
+    }];
+
+    /*
+     * A NodeInfo update without a valid signature tried to change a known node's name or role,
+     * and packet_signature_policy (Balanced or Strict) refused it. The stored identity is kept.
+     */
+    UNSIGNED_IDENTITY_UPDATE_IGNORED = 49 [(meshtastic.enum_value_metadata) = {
+      label: "Unsigned Update Ignored"
+      description: "An unsigned update tried to change a known node's name or role and was ignored because of your security setting. Remove the node to accept its unsigned updates."
+    }];
+  }
+
+  /*
    * The id of the packet we're notifying in response to
    */
   optional uint32 reply_id = 1;
@@ -2743,6 +3380,11 @@ message ClientNotification {
    * The message body of the notification
    */
   string message = 4;
+
+  /*
+   * Which firmware message this notification carries. UNSET when not known.
+   */
+  NotificationType type = 5;
 
   oneof payload_variant {
     KeyVerificationNumberInform key_verification_number_inform = 11;
@@ -2972,6 +3614,102 @@ message DeviceMetadata {
    * This is a read-only capability and must be false when XEdDSA is not compiled in.
    */
   bool has_xeddsa = 14;
+
+  /*
+   * Describes the device's screen when one is present; absent on display-less
+   * builds. Lets clients gate display-mirroring UI (see DisplayFrame) and
+   * adapt to the panel, e.g. expect slow refresh from EINK, or offer
+   * tap-to-touch when has_touch is set.
+   */
+  DisplayInfo display = 16;
+
+  /*
+   * The address this node's BLE radio advertises and accepts connections on, as
+   * colon-separated uppercase hex, most significant byte first ("AA:BB:CC:DD:EE:FF").
+   * Read from the BLE stack, so it is the address phones and other centrals see.
+   * It can differ from User.macaddr: on ESP32, Bluetooth uses its own MAC derived
+   * from the base MAC. Reported while Bluetooth is disabled in config whenever the
+   * hardware address is known. Empty when the device has no BLE radio or the
+   * address cannot be determined.
+   */
+  string ble_address = 17;
+
+  /*
+   * nRF52 bootloader version, packed as major << 16 | minor << 8 | patch, as the
+   * bootloader hands it to the application at boot. Meshtastic nRF52 Bootloader
+   * releases before 2.6.0 report 0.9.2, the same as stock Adafruit 0.9.2. 0 means
+   * not reported: a non-nRF52 device, or firmware that predates this field.
+   */
+  uint32 bootloader_version = 19;
+}
+
+/*
+ * Static description of a device's display, sent inside DeviceMetadata
+ * during the connection handshake.
+ */
+message DisplayInfo {
+  /*
+   * Physical panel technology, as a hint for client rendering and refresh
+   * expectations.
+   */
+  enum PanelClass {
+    /*
+     * Unknown, or selected at runtime (e.g. a native build's configured panel).
+     */
+    PANEL_CLASS_UNSPECIFIED = 0;
+
+    /*
+     * Monochrome OLED (SSD1306/SH1106 family).
+     */
+    OLED = 1;
+
+    /*
+     * Monochrome LCD (ST7567 family).
+     */
+    LCD = 2;
+
+    /*
+     * Color TFT.
+     */
+    TFT = 3;
+
+    /*
+     * E-ink panel: refresh is slow and full-screen; clients should prefer
+     * one-shot frame requests over continuous mirroring.
+     */
+    EINK = 4;
+
+    /*
+     * LED matrix (HUB75).
+     */
+    HUB75 = 5;
+  }
+
+  /*
+   * Display width in pixels.
+   */
+  uint32 width = 1;
+
+  /*
+   * Display height in pixels.
+   */
+  uint32 height = 2;
+
+  /*
+   * Pixel encoding that DisplayFrame streams from this device will use.
+   */
+  DisplayFrame.Format format = 3;
+
+  /*
+   * Physical panel technology.
+   */
+  PanelClass panel_class = 4;
+
+  /*
+   * True when the panel accepts touch input; clients may map taps on a
+   * mirrored frame to AdminMessage.send_input_event touch coordinates.
+   */
+  bool has_touch = 5;
 }
 
 /*

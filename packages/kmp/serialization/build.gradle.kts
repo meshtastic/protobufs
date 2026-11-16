@@ -18,6 +18,11 @@ kotlin {
         namespace = "org.meshtastic.proto.serialization"
         compileSdk = 37
         minSdk = 24
+        // Same as the protobufs module: keep the AAR's minCompileSdk at minSdk
+        // rather than letting it default to compileSdk (37).
+        aarMetadata {
+            minCompileSdk = 24
+        }
     }
     jvm()
     js {
@@ -44,7 +49,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(project(":"))
-                api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.11.0")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.13.0")
             }
         }
     }
