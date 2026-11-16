@@ -2,25 +2,39 @@ name: kmp-pull-request
 
 on:
   pull_request:
-    paths:
-      - "meshtastic/**/*.proto"
-      - "nanopb.proto"
-      - "packages/kmp/**"
-      # Watch this file too, so a change to the build itself is exercised by it.
-      # Without this a workflow edit merges having run none of its own jobs.
-      - ".github/workflows/kmp-pull-request.yml"
 
 permissions:
   contents: read
-
-env:
-  GRADLE_CACHE_URL: ${{ secrets.GRADLE_CACHE_URL }}
-  GRADLE_CACHE_USERNAME: ${{ secrets.GRADLE_CACHE_USERNAME }}
-  GRADLE_CACHE_PASSWORD: ${{ secrets.GRADLE_CACHE_PASSWORD }}
+  pull-requests: read
 
 jobs:
+  # build-kmp is a required check, so it has to report on every pull request. A
+  # `paths` filter on the trigger would leave it unreported, and so blocking, on
+  # a pull request that touches none of these paths; a skipped job reports success.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      kmp: ${{ steps.filter.outputs.kmp }}
+    steps:
+      - name: Detect changes that affect the KMP build
+        id: filter
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          files=$(gh api --paginate "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" --jq '.[].filename')
+          # This file is on the list so a change to the build itself is exercised by it.
+          if grep -qE '^(meshtastic/.*\.proto|nanopb\.proto|packages/kmp/.*|\.github/workflows/kmp-pull-request\.yml)$' <<<"$files"; then
+            echo "kmp=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "kmp=false" >> "$GITHUB_OUTPUT"
+          fi
+
   build-kmp:
-    runs-on: macos-latest
+    needs: changes
+    # Build unless the filter positively said no, so a failed filter never passes as a skip.
+    if: ${{ always() && needs.changes.outputs.kmp != 'false' }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -41,6 +55,8 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
+        with:
+          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
 
       - name: Cache Konan (Kotlin/Native toolchain)
         uses: actions/cache@v6
