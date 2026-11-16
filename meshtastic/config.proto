@@ -21,12 +21,12 @@ message Config {
      */
     enum Role {
       /*
-       * Description: App connected or stand alone messaging device.
+       * Description: App connected or standalone messaging device.
        * Technical Details: Default Role
        */
       CLIENT = 0 [(meshtastic.enum_value_metadata) = {
         label: "Client"
-        description: "App connected or stand alone messaging device."
+        description: "App connected or standalone messaging device."
       }];
       /*
        *  Description: Device that does not forward packets from other devices.
@@ -44,7 +44,7 @@ message Config {
        */
       ROUTER = 2 [(meshtastic.enum_value_metadata) = {
         label: "Router"
-        description: "Infrastructure node on a tower or mountain top only.  Not to be used for roofs or mobile nodes.  Needs exceptional coverage. Visible in Nodes list."
+        description: "Infrastructure node on a tower or mountain top only. Not to be used for roofs or mobile nodes. Needs exceptional coverage. Visible in Nodes list."
       }];
 
       /*
@@ -54,7 +54,10 @@ message Config {
 
       ROUTER_CLIENT = 3 [
         deprecated = true,
-        (meshtastic.enum_value_metadata) = {label: "Router Client"}
+        (meshtastic.enum_value_metadata) = {
+          label: "Router Client"
+          deprecated_since: "2.3.15"
+        }
       ];
 
       /*
@@ -68,6 +71,7 @@ message Config {
         (meshtastic.enum_value_metadata) = {
           label: "Repeater"
           description: "Deprecated infrastructure role that creates gaps in the mesh rebroadcast chain. Switch this node to a Router-based role (Router or Router Late)."
+          deprecated_since: "2.7.11"
         }
       ];
 
@@ -117,14 +121,14 @@ message Config {
       }];
 
       /*
-       * Description: Broadcasts location as message to default channel regularly for to assist with device recovery.
+       * Description: Broadcasts location as message to default channel regularly to assist with device recovery.
        * Technical Details: Used to automatically send a text message to the mesh
        *    with the current position of the device on a frequent interval:
        *    "I'm lost! Position: lat / long"
        */
       LOST_AND_FOUND = 9 [(meshtastic.enum_value_metadata) = {
         label: "Lost and Found"
-        description: "Broadcasts location as message to default channel regularly for to assist with device recovery."
+        description: "Broadcasts location as message to default channel regularly to assist with device recovery."
       }];
 
       /*
@@ -158,7 +162,7 @@ message Config {
        */
       CLIENT_BASE = 12 [(meshtastic.enum_value_metadata) = {
         label: "Client Base"
-        description: "Used for rooftop nodes to distribute messages more widely from multiple nearby client mute nodes."
+        description: "Rooftop or attic node that rebroadcasts like Router Late for packets from or to favorited nodes, and like Client for all others."
       }];
     }
 
@@ -172,7 +176,7 @@ message Config {
        */
       ALL = 0 [(meshtastic.enum_value_metadata) = {
         label: "All"
-        description: "Rebroadcast any observed message, if it was on our private channel or from another channel with the same lora params."
+        description: "Rebroadcast any observed message, if it was on our private channel or from another channel with the same LoRa settings."
       }];
 
       /*
@@ -181,25 +185,25 @@ message Config {
        */
       ALL_SKIP_DECODING = 1 [(meshtastic.enum_value_metadata) = {
         label: "All Skip Decoding"
-        description: "Same as behavior as ALL but skips packet decoding and simply rebroadcasts them. Only available in Repeater role. Setting this on any other roles will result in ALL behavior."
+        description: "Behaves as All. Skipping packet decoding applied only to the Repeater role, which is no longer supported."
       }];
 
       /*
        * Ignores observed messages from foreign meshes that are open or those which it cannot decrypt.
-       * Only rebroadcasts message on the nodes local primary / secondary channels.
+       * Only rebroadcasts messages on the node's local primary / secondary channels.
        */
       LOCAL_ONLY = 2 [(meshtastic.enum_value_metadata) = {
         label: "Local Only"
-        description: "Ignores observed messages from foreign meshes that are open or those which it cannot decrypt. Only rebroadcasts message on the nodes local primary / secondary channels."
+        description: "Ignores observed messages from foreign meshes that are open or those which it cannot decrypt. Only rebroadcasts messages on the node's local primary / secondary channels."
       }];
 
       /*
        * Ignores observed messages from foreign meshes like LOCAL_ONLY,
-       * but takes it step further by also ignoring messages from nodenums not in the node's known list (NodeDB)
+       * but takes it a step further by also ignoring messages from nodenums not in the node's known list (NodeDB)
        */
       KNOWN_ONLY = 3 [(meshtastic.enum_value_metadata) = {
         label: "Known Only"
-        description: "Ignores observed messages from foreign meshes like Local Only, but takes it step further by also ignoring messages from nodes not already in the node's known list."
+        description: "Ignores observed messages from foreign meshes like Local Only, but takes it a step further by also ignoring messages from nodes not already in the node's known list."
       }];
 
       /*
@@ -207,7 +211,7 @@ message Config {
        */
       NONE = 4 [(meshtastic.enum_value_metadata) = {
         label: "None"
-        description: "Only permitted for SENSOR, TRACKER and TAK_TRACKER roles, this will inhibit all rebroadcasts, not unlike CLIENT_MUTE role."
+        description: "Inhibits all rebroadcasts, like the Client Mute role. Not allowed on the Router and Router Late roles."
       }];
 
       /*
@@ -216,7 +220,7 @@ message Config {
        */
       CORE_PORTNUMS_ONLY = 5 [(meshtastic.enum_value_metadata) = {
         label: "Core Portnums Only"
-        description: "Only rebroadcasts packets from the core portnums: NodeInfo, Text, Position, Telemetry, and Routing."
+        description: "Ignores packets on non-core portnums such as Range Test, PAX Counter and ATAK, and does not rebroadcast them. Core portnums include Text, Position, NodeInfo, Telemetry, Routing, Admin, Waypoint, Traceroute and Store and Forward."
       }];
     }
 
@@ -266,7 +270,10 @@ message Config {
      * Disabling this will disable the SerialConsole by not initilizing the StreamAPI
      * Moved to SecurityConfig
      */
-    bool serial_enabled = 2 [deprecated = true];
+    bool serial_enabled = 2 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.5.0"}
+    ];
 
     /*
      * For boards without a hard wired button, this is the pin number that will be used
@@ -293,12 +300,13 @@ message Config {
 
     /*
      * Send our nodeinfo this often
-     * Defaults to 900 Seconds (15 minutes)
+     * Defaults to 10800 seconds (3 hours), minimum 3600 (1 hour)
      */
     uint32 node_info_broadcast_secs = 7 [(meshtastic.field_metadata) = {
       label: "Node Info Broadcast Interval"
-      description: "How often node information is sent. Defaults to 900 seconds."
+      description: "How often node information is sent. Defaults to 3 hours, minimum 1 hour."
       unit: "s"
+      min_value: 3600
     }];
 
     /*
@@ -314,7 +322,10 @@ message Config {
      * Clients should then limit available configuration and administrative options inside the user interface
      * Moved to SecurityConfig
      */
-    bool is_managed = 9 [deprecated = true];
+    bool is_managed = 9 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.5.0"}
+    ];
 
     /*
      * Disables the triple-press of user button to enable or disable GPS
@@ -336,8 +347,8 @@ message Config {
      * If true, disable the default blinking LED (LED_PIN) behavior on the device
      */
     bool led_heartbeat_disabled = 12 [(meshtastic.field_metadata) = {
-      label: "LED Heartbeat"
-      description: "Controls the blinking LED on the device.  For most devices this will control one of the up to 4 LEDS, the charger and GPS LEDs are not controllable."
+      label: "Disable LED Heartbeat"
+      description: "Turns off the blinking LED on the device. On most devices this is one of up to 4 LEDs; the charger and GPS LEDs are not controllable."
     }];
 
     /*
@@ -448,7 +459,7 @@ message Config {
 
     /*
      * We should send our position this often (but only if it has changed significantly)
-     * Defaults to 15 minutes
+     * Defaults to 1 hour (12 hours on routers)
      */
     uint32 position_broadcast_secs = 1 [(meshtastic.field_metadata) = {
       label: "Broadcast Interval"
@@ -474,11 +485,14 @@ message Config {
     /*
      * Is GPS enabled for this node?
      */
-    bool gps_enabled = 4 [deprecated = true];
+    bool gps_enabled = 4 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.2.21"}
+    ];
 
     /*
      * How often should we try to get GPS position (in seconds)
-     * or zero for the default of once every 30 seconds
+     * or zero for the default of once every 2 minutes (24 hours on routers)
      * or a very large value (maxint) to update only once at boot.
      */
     uint32 gps_update_interval = 5 [(meshtastic.field_metadata) = {
@@ -490,7 +504,10 @@ message Config {
     /*
      * Deprecated in favor of using smart / regular broadcast intervals as implicit attempt time
      */
-    uint32 gps_attempt_time = 6 [deprecated = true];
+    uint32 gps_attempt_time = 6 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.2.18"}
+    ];
 
     /*
      * Bit field of boolean configuration options for POSITION messages
@@ -541,7 +558,7 @@ message Config {
      * (Re)define PIN_GPS_EN for your board.
      */
     uint32 gps_en_gpio = 12 [(meshtastic.field_metadata) = {
-      label: "GPS EN GPIO"
+      label: "GPS Enable GPIO"
       description: "GPIO pin for GPS enable"
       diy_only: true
     }];
@@ -558,13 +575,13 @@ message Config {
    */
   message PowerConfig {
     /*
-     * Description: Will sleep everything as much as possible, for the tracker and sensor role this will also include the lora radio.
+     * Description: Will sleep everything as much as possible, for the Tracker and Sensor roles this also includes the LoRa radio.
      * Don't use this setting if you want to use your device with the phone apps or are using a device without a user button.
      * Technical Details: Works for ESP32 devices and NRF52 devices in the Sensor or Tracker roles
      */
     bool is_power_saving = 1 [(meshtastic.field_metadata) = {
       label: "Power Saving"
-      description: "Will sleep everything as much as possible, for the tracker and sensor role this will also include the lora radio. Don't use this setting if you want to use your device with the phone apps or are using a device without a user button."
+      description: "Will sleep everything as much as possible, for the Tracker and Sensor roles this also includes the LoRa radio. Don't use this setting if you want to use your device with the phone apps or are using a device without a user button."
     }];
 
     /*
@@ -572,7 +589,7 @@ message Config {
      */
     uint32 on_battery_shutdown_after_secs = 2 [(meshtastic.field_metadata) = {
       label: "Shutdown on Power Loss"
-      description: "How long after external power is removed before the device powers off. Zero to disable."
+      description: "How long after external power is removed before the device powers off. Zero to disable; values under 30 seconds are raised to 30."
       unit: "s"
     }];
 
@@ -588,7 +605,10 @@ message Config {
      *  Description: The number of seconds for to wait before turning off BLE in No Bluetooth states
      *  Technical Details: ESP32 Only 0 for default of 1 minute
      */
-    uint32 wait_bluetooth_secs = 4 [(meshtastic.field_metadata) = {label: "Wait for Bluetooth Duration"}];
+    uint32 wait_bluetooth_secs = 4 [(meshtastic.field_metadata) = {
+      label: "Wait for Bluetooth Duration"
+      unit: "s"
+    }];
 
     /*
      * Super Deep Sleep Seconds
@@ -596,7 +616,11 @@ message Config {
      * for this value (default 1 year) or a button press
      * 0 for default of one year
      */
-    uint32 sds_secs = 6;
+    uint32 sds_secs = 6 [(meshtastic.field_metadata) = {
+      label: "Super Deep Sleep Duration"
+      description: "How long the radio stays in super deep sleep before waking, unless the button is pressed. Zero leaves the firmware default of one year."
+      unit: "s"
+    }];
 
     /*
      * Description: In light sleep the CPU is suspended, LoRa radio is on, BLE is off an GPS is on
@@ -608,12 +632,19 @@ message Config {
      * Description: While in light sleep when we receive packets on the LoRa radio we will wake and handle them and stay awake in no BLE mode for this value
      * Technical Details: ESP32 Only 0 for default of 10 seconds
      */
-    uint32 min_wake_secs = 8;
+    uint32 min_wake_secs = 8 [(meshtastic.field_metadata) = {
+      label: "Minimum Wake Time"
+      description: "How long the radio stays awake after handling a packet received during light sleep. Zero leaves the firmware default of ten seconds."
+      unit: "s"
+    }];
 
     /*
      * I2C address of INA_2XX to use for reading device battery voltage
      */
-    uint32 device_battery_ina_address = 9;
+    uint32 device_battery_ina_address = 9 [(meshtastic.field_metadata) = {
+      label: "Battery INA_2XX I2C Address"
+      description: "I2C address of the INA_2XX sensor used to read battery voltage."
+    }];
 
     /*
      * If non-zero, we want powermon log outputs.  With the particular (bitfield) sources enabled.
@@ -665,7 +696,7 @@ message Config {
      */
     bool wifi_enabled = 1 [(meshtastic.field_metadata) = {
       label: "WiFi Enabled"
-      description: "Enabling WiFi will disable the bluetooth connection to the app."
+      description: "Enabling WiFi will disable the Bluetooth connection to the app."
     }];
 
     /*
@@ -683,6 +714,7 @@ message Config {
     string wifi_psk = 4 [(meshtastic.field_metadata) = {
       label: "Password"
       description: "WiFi password for authentication"
+      sensitive: true
     }];
 
     /*
@@ -698,7 +730,7 @@ message Config {
      */
     bool eth_enabled = 6 [(meshtastic.field_metadata) = {
       label: "Ethernet Enabled"
-      description: "Enabling Ethernet will disable the bluetooth connection to the app."
+      description: "On ESP32 boards, enabling Ethernet will disable the Bluetooth connection to the app."
     }];
 
     /*
@@ -785,32 +817,32 @@ message Config {
       /*
        * Default / Autodetect
        */
-      OLED_SSD1306 = 1 [(meshtastic.enum_value_metadata) = {label: "SSD 1306"}];
+      OLED_SSD1306 = 1 [(meshtastic.enum_value_metadata) = {label: "SSD1306"}];
 
       /*
        * Default / Autodetect
        */
-      OLED_SH1106 = 2 [(meshtastic.enum_value_metadata) = {label: "SH 1106"}];
+      OLED_SH1106 = 2 [(meshtastic.enum_value_metadata) = {label: "SH1106"}];
 
       /*
        * Can not be auto detected but set by proto. Used for 128x64 screens
        */
-      OLED_SH1107 = 3 [(meshtastic.enum_value_metadata) = {label: "SH 1107"}];
+      OLED_SH1107 = 3 [(meshtastic.enum_value_metadata) = {label: "SH1107"}];
 
       /*
        * Can not be auto detected but set by proto. Used for 128x128 screens
        */
-      OLED_SH1107_128_128 = 4 [(meshtastic.enum_value_metadata) = {label: "SH 1107 128x128"}];
+      OLED_SH1107_128_128 = 4 [(meshtastic.enum_value_metadata) = {label: "SH1107 128x128"}];
 
       /*
        * Can not be auto detected but set by proto. Used for 64x128 rotated screens
        */
-      OLED_SH1107_ROTATED = 5 [(meshtastic.enum_value_metadata) = {label: "SH 1107 Rotated"}];
+      OLED_SH1107_ROTATED = 5 [(meshtastic.enum_value_metadata) = {label: "SH1107 Rotated"}];
     }
 
     /*
      * Number of seconds the screen stays on after pressing the user button or receiving a message
-     * 0 for default of one minute MAXUINT for always on
+     * 0 for default of ten minutes, MAXUINT for always on
      */
     uint32 screen_on_secs = 1 [(meshtastic.field_metadata) = {
       label: "Screen on for"
@@ -887,10 +919,10 @@ message Config {
       /*
        * Same as TwoColor, but with inverted top bar. Not so good for Epaper displays
        */
-      INVERTED = 2 [(meshtastic.enum_value_metadata) = {label: "Inverted top bar for 2 Color display"}];
+      INVERTED = 2 [(meshtastic.enum_value_metadata) = {label: "Inverted top bar for 2 color displays"}];
 
       /*
-       * TFT Full Color Displays (not implemented yet)
+       * TFT Full Color Displays, which select the MUI
        */
       COLOR = 3 [(meshtastic.enum_value_metadata) = {label: "TFT Full Color Displays"}];
     }
@@ -982,12 +1014,20 @@ message Config {
      * If false (default), the device will use short names for various display screens.
      * If true, node names will show in long format
      */
-    bool use_long_node_name = 13 [(meshtastic.field_metadata) = {since_firmware: "2.7.13"}];
+    bool use_long_node_name = 13 [(meshtastic.field_metadata) = {
+      label: "Long Node Names"
+      description: "Show full node names on the device screen instead of short names."
+      since_firmware: "2.7.13"
+    }];
 
     /*
      * If true, the device will display message bubbles on screen.
      */
-    bool enable_message_bubbles = 14 [(meshtastic.field_metadata) = {since_firmware: "2.7.19"}];
+    bool enable_message_bubbles = 14 [(meshtastic.field_metadata) = {
+      label: "Message Bubbles"
+      description: "Draw messages on the device screen as bubbles."
+      since_firmware: "2.7.19"
+    }];
   }
 
   /*
@@ -1026,9 +1066,9 @@ message Config {
       JP = 5 [(meshtastic.enum_value_metadata) = {label: "Japan"}];
 
       /*
-       * Australia / New Zealand
+       * Australia / Brazil / New Zealand (915-928MHz)
        */
-      ANZ = 6 [(meshtastic.enum_value_metadata) = {label: "Australia / New Zealand"}];
+      ANZ = 6 [(meshtastic.enum_value_metadata) = {label: "Australia / Brazil / New Zealand"}];
 
       /*
        * Korea
@@ -1063,7 +1103,7 @@ message Config {
       /*
        * WLAN Band
        */
-      LORA_24 = 13 [(meshtastic.enum_value_metadata) = {label: "2.4 Ghz"}];
+      LORA_24 = 13 [(meshtastic.enum_value_metadata) = {label: "2.4 GHz"}];
 
       /*
        * Ukraine 433mhz
@@ -1075,7 +1115,10 @@ message Config {
        */
       UA_868 = 15 [
         deprecated = true,
-        (meshtastic.enum_value_metadata) = {label: "Ukraine 868MHz"}
+        (meshtastic.enum_value_metadata) = {
+          label: "Ukraine 868MHz"
+          deprecated_since: "2.8.0"
+        }
       ];
 
       /*
@@ -1214,11 +1257,14 @@ message Config {
 
       /*
        * Very Long Range - Slow
-       * Deprecated in 2.5: Works only with txco and is unusably slow
+       * Deprecated: works only with a TCXO and is unusably slow.
        */
       VERY_LONG_SLOW = 2 [
         deprecated = true,
-        (meshtastic.enum_value_metadata) = {label: "Very Long Range - Slow"}
+        (meshtastic.enum_value_metadata) = {
+          label: "Very Long Range - Slow"
+          deprecated_since: "2.6.5"
+        }
       ];
 
       /*
@@ -1248,14 +1294,14 @@ message Config {
 
       /*
        * Short Range - Turbo
-       * This is the fastest preset and the only one with 500kHz bandwidth.
+       * This is the fastest preset, and one of three with 500kHz bandwidth.
        * It is not legal to use in all regions due to this wider bandwidth.
        */
       SHORT_TURBO = 8 [(meshtastic.enum_value_metadata) = {label: "Short Range - Turbo"}];
 
       /*
        * Long Range - Turbo
-       * This preset performs similarly to LongFast, but with 500Khz bandwidth.
+       * This preset performs similarly to LongFast, but with 500kHz bandwidth.
        */
       LONG_TURBO = 9 [(meshtastic.enum_value_metadata) = {label: "Long Range - Turbo"}];
 
@@ -1331,6 +1377,11 @@ message Config {
        * FEM_LNA is not present on the device
        */
       NOT_PRESENT = 2;
+
+      /*
+       * FEM_LNA is present; the firmware switches it in or bypasses it from the measured noise floor
+       */
+      AUTO = 3;
     }
 
     /*
@@ -1366,7 +1417,7 @@ message Config {
     }];
 
     /*
-     * A number from 5 to 12, which the firmware clamps to that range.
+     * A number from 5 to 12; firmware replaces a value outside that range with 11.
      * Indicates number of chirps per symbol as 1<<spread_factor.
      * RF95 radios additionally reject 5 and 6; that exclusion is per hardware
      * and so is not expressible as a bound here.
@@ -1382,7 +1433,7 @@ message Config {
      * The denominator of the coding rate.
      * ie for 4/5, the value is 5. 4/8 the value is 8.
      *
-     * With `use_preset` disabled this is the coding rate, clamped to 5 through 8.
+     * With `use_preset` disabled this is the coding rate, 4 through 8; firmware replaces a value outside that range with 5.
      *
      * With `use_preset` enabled, since 2.7.18 this raises the preset's coding rate
      * when it is 5 through 8 AND higher than the preset's. A lower value, a value
@@ -1418,7 +1469,7 @@ message Config {
     /*
      * Maximum number of hops. This can't be greater than 7.
      * Default of 3
-     * Attempting to set a value > 7 results in the default
+     * Values above 7 are treated as 7
      */
     uint32 hop_limit = 8 [(meshtastic.field_metadata) = {
       label: "Hop Limit"
@@ -1446,10 +1497,10 @@ message Config {
     int32 tx_power = 10 [(meshtastic.field_metadata) = {
       label: "Transmit Power"
       description: "Radio transmit power. Leave at zero to use the highest level legal for the region, which is what most radios should use."
-      keywords: "tx|power|dbm|output|gain"
+      keywords: "tx|power|dbm|output"
       unit: "dBm"
       min_value: 0
-      max_value: 30
+      max_value: 36
     }];
 
     /*
@@ -1463,7 +1514,7 @@ message Config {
      */
     uint32 channel_num = 11 [(meshtastic.field_metadata) = {
       label: "Frequency Slot"
-      description: "Your node’s operating frequency is calculated based on the region, modem preset, and this field. When 0, the slot is automatically calculated based on the primary channel name."
+      description: "Your node's operating frequency is calculated based on the region, modem preset, and this field. When 0, the region picks the slot, usually from the primary channel name."
     }];
 
     /*
@@ -1478,7 +1529,7 @@ message Config {
      */
     bool sx126x_rx_boosted_gain = 13 [(meshtastic.field_metadata) = {
       label: "RX Boosted Gain"
-      description: "Enable RX boosted gain mode on SX126X based radios"
+      description: "Enable RX boosted gain mode on SX126x-based radios."
     }];
 
     /*
@@ -1488,7 +1539,10 @@ message Config {
      * Please respect your local laws and regulations. If you are a HAM, make sure you
      * enable HAM mode and turn off encryption.
      */
-    float override_frequency = 14 [(meshtastic.field_metadata) = {label: "Frequency Override"}];
+    float override_frequency = 14 [(meshtastic.field_metadata) = {
+      label: "Frequency Override"
+      unit: "MHz"
+    }];
 
     /*
      * If true, disable the build-in PA FAN using pin define in RF95_FAN_EN.
@@ -1513,10 +1567,10 @@ message Config {
     /*
      * Sets the ok_to_mqtt bit on outgoing packets
      */
-    bool config_ok_to_mqtt = 105 [(meshtastic.field_metadata) = {label: "Ok to MQTT"}];
+    bool config_ok_to_mqtt = 105 [(meshtastic.field_metadata) = {label: "OK to MQTT"}];
 
     /*
-     * Set where LORA FEM is enabled, disabled, or not present
+     * Set whether the LoRa FEM LNA is enabled, disabled, automatic, or not present
      */
     FEM_LNA_Mode fem_lna_mode = 106 [(meshtastic.field_metadata) = {since_firmware: "2.7.20"}];
 
@@ -1524,6 +1578,13 @@ message Config {
      * Don't use radiolib to initialize the radio, instead listen for a serialHal connection
      */
     bool serial_hal_only = 107;
+
+    /*
+     * Act as a transparent LoRa modem: run RadioLib on-device but do no encryption, decryption, or mesh routing.
+     * The connected client sets the PHY settings via this LoRaConfig, supplies fully-formed (already-encrypted) frames to transmit verbatim,
+     * and receives every frame the radio hears delivered raw (never decrypted) back over the API.
+     */
+    bool transparent_mode = 108;
   }
 
   message BluetoothConfig {
@@ -1531,12 +1592,12 @@ message Config {
       /*
        * Device generates a random PIN that will be shown on the screen of the device for pairing
        */
-      RANDOM_PIN = 0 [(meshtastic.enum_value_metadata) = {label: "Random Pin"}];
+      RANDOM_PIN = 0 [(meshtastic.enum_value_metadata) = {label: "Random PIN"}];
 
       /*
        * Device requires a specified fixed PIN for pairing
        */
-      FIXED_PIN = 1 [(meshtastic.enum_value_metadata) = {label: "Fixed Pin"}];
+      FIXED_PIN = 1 [(meshtastic.enum_value_metadata) = {label: "Fixed PIN"}];
 
       /*
        * Device requires no PIN for pairing
@@ -1566,39 +1627,60 @@ message Config {
     uint32 fixed_pin = 3 [(meshtastic.field_metadata) = {
       label: "Fixed Pin"
       description: "Fixed PIN for Bluetooth pairing. Used when pairing mode is set to fixed PIN"
+      sensitive: true
     }];
   }
 
   message SecurityConfig {
     /*
-     * Controls how the device authenticates remotely received mesh packets.
+     * Controls whether the device signs the packets it sends with XEdDSA, and which received packets it accepts.
+     * In every mode a packet whose signature is malformed or fails verification is dropped, except a traceroute,
+     * and so is a signed NodeInfo whose public key is not the key that signed it or does not hash to the sender's
+     * node number.
+     * A traceroute is never signed, and a signature on one is ignored: every hop rewrites it.
+     * A channel with use_aead set overrides this policy: its packets are never signed, and are not dropped
+     * for lacking a signature, because the AES-CCM tag authenticates them.
      */
     enum PacketSignaturePolicy {
       /*
-       * Accept unsigned packets for maximum compatibility while still rejecting malformed or invalid signatures.
-       * This is the default to avoid legacy nodes dropping signed packets during rebroadcast.
+       * Packets are not signed. Unsigned packets are accepted, including from nodes that have signed before,
+       * and an unsigned NodeInfo may update such a node's name and role.
+       * Signatures are still checked: a signed packet whose signature is malformed or fails verification is
+       * dropped. A signature from a node whose key is not yet known cannot be checked, and the packet is
+       * accepted as unsigned.
+       * This is the default: firmware before 2.8 strips signatures when relaying.
        */
       PACKET_SIGNATURE_POLICY_COMPATIBLE = 0 [(meshtastic.enum_value_metadata) = {
-        label: "Compatible - Accept Unsigned"
-        description: "Accept unsigned traffic for maximum compatibility. A signature that can be checked and is wrong still drops the packet."
+        label: "Compatible - No Signing"
+        description: "Don't sign packets, and accept unsigned packets."
       }];
 
       /*
-       * Prefer authenticated packets while retaining compatibility with unsigned packets from nodes not known to sign.
-       * Rejects unsigned, signable broadcasts from nodes that have previously signed.
+       * Broadcasts are signed, and NodeInfo and position even when unicast. Licensed (ham) mode has no PKI, so it
+       * also signs the unicasts PKI would cover; its acks carry an ack proof instead of a signature.
+       * Unsigned packets are accepted, including from nodes that have signed before, but an unsigned NodeInfo
+       * does not change the name or role of a node that has signed before.
+       * Recommended only on a mesh with no relays running firmware older than 2.8: those strip signatures, so a
+       * signer's NodeInfo relayed through them arrives unsigned and its name and role changes are not applied.
+       * The same holds for a node that has signed before and no longer signs.
        */
       PACKET_SIGNATURE_POLICY_BALANCED = 1 [(meshtastic.enum_value_metadata) = {
-        label: "Balanced - Prefer Authenticated"
-        description: "Prefer authenticated packets, but still accept unsigned traffic from nodes not known to sign."
+        label: "Balanced - Sign, Accept Unsigned"
+        description: "Sign broadcasts, and accept unsigned packets. Apps show which packets were signed. Recommended only where no relays run firmware older than 2.8."
       }];
 
       /*
-       * Accept only packets authenticated by a verified XEdDSA signature or successful PKI decryption.
-       * Unsigned, malformed, invalid, or unverifiable packets are ignored.
+       * Broadcasts are signed, and NodeInfo and position even when unicast. Licensed (ham) mode has no PKI, so it
+       * also signs the unicasts PKI would cover; its acks carry an ack proof instead of a signature.
+       * Only packets with a verified signature, or PKI-encrypted packets, are accepted.
+       * Unsigned packets are dropped, except acks and other routing packets, which carry their own proof,
+       * traceroutes, and key verification messages, which the users' security number authenticates.
+       * A signature from a node whose key is not yet known cannot be checked, and the packet is dropped,
+       * except a traceroute.
        */
       PACKET_SIGNATURE_POLICY_STRICT = 2 [(meshtastic.enum_value_metadata) = {
-        label: "Strict - Require Authentication"
-        description: "Accept only packets with a verified signature or successful PKI decryption. Packets from older nodes may be ignored."
+        label: "Strict - Require Signatures"
+        description: "Sign broadcasts, and drop unsigned packets. PKI direct messages, AES-CCM channels, acks, traceroutes and key verification are exempt."
       }];
     }
 
@@ -1618,6 +1700,7 @@ message Config {
     bytes private_key = 2 [(meshtastic.field_metadata) = {
       label: "Private Key"
       description: "Used to create a shared key with a remote device"
+      sensitive: true
     }];
 
     /*
@@ -1625,7 +1708,7 @@ message Config {
      */
     repeated bytes admin_key = 3 [(meshtastic.field_metadata) = {
       label: "Admin Key"
-      description: "The public key authorized to send admin messages to this node"
+      description: "Public keys (up to three) authorized to send admin messages to this node."
     }];
 
     /*
@@ -1634,11 +1717,11 @@ message Config {
      */
     bool is_managed = 4 [(meshtastic.field_metadata) = {
       label: "Managed Device"
-      description: "Device is managed by a mesh administrator, the user is unable to access any of the device settings."
+      description: "Settings are changed by a mesh administrator using an admin key, not from the local app. Needs at least one admin key."
     }];
 
     /*
-     * Serial Console over the Stream API."
+     * Serial Console over the Stream API.
      */
     bool serial_enabled = 5 [(meshtastic.field_metadata) = {
       label: "Serial Console"
@@ -1660,7 +1743,8 @@ message Config {
     bool admin_channel_enabled = 8;
 
     /*
-     * Determines the packet signature policy applied to remotely received mesh packets.
+     * Determines whether this device signs the packets it sends, and which received packets it accepts.
+     * See PacketSignaturePolicy.
      */
     PacketSignaturePolicy packet_signature_policy = 9 [(meshtastic.field_metadata) = {since_firmware: "2.8.0"}];
   }

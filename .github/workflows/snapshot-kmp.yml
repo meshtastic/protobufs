@@ -15,14 +15,9 @@ on:
 permissions:
   contents: read
 
-env:
-  GRADLE_CACHE_URL: ${{ secrets.GRADLE_CACHE_URL }}
-  GRADLE_CACHE_USERNAME: ${{ secrets.GRADLE_CACHE_USERNAME }}
-  GRADLE_CACHE_PASSWORD: ${{ secrets.GRADLE_CACHE_PASSWORD }}
-
 jobs:
   publish-snapshot:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -45,6 +40,8 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
+        with:
+          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
 
       - name: Cache Konan (Kotlin/Native toolchain)
         uses: actions/cache@v6
@@ -55,6 +52,8 @@ jobs:
             konan-${{ runner.os }}-
 
       - name: Set version name
+        env:
+          REF_NAME: ${{ github.ref_name }}
         run: |
           # Name the snapshot after the latest tag (v-stripped), the commit count
           # since that tag, and the short SHA, e.g. 2.7.26.88-gd77b460-SNAPSHOT.
@@ -75,7 +74,17 @@ jobs:
           # like v1.2.3-rc1 would still split correctly.
           DESCRIBE=$(git describe --tags --long); DESCRIBE=${DESCRIBE#v}
           SHA=${DESCRIBE##*-}; REST=${DESCRIBE%-*}; COUNT=${REST##*-}; TAG=${REST%-*}
-          echo "VERSION_NAME=${TAG}.${COUNT}-${SHA}-SNAPSHOT" >> "$GITHUB_ENV"
+          if [ "$REF_NAME" = master ]; then
+            echo "VERSION_NAME=${TAG}.${COUNT}-${SHA}-SNAPSHOT" >> "$GITHUB_ENV"
+          else
+            # A branch snapshot carries its slug in a hyphen-nested token behind a fixed `b-`, which
+            # sorts below every master snapshot of the same tag in Gradle and Maven (checked with both
+            # comparators, including digit-leading slugs and a master built exactly at a tag). A branch
+            # cut after a newer tag sorts above older-tag master snapshots until master publishes at
+            # that tag, so a consumer pins a branch snapshot by its exact version, never a range.
+            SLUG=$(printf '%s' "$REF_NAME" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9\n' '-' | sed -E 's/-+/-/g; s/^-|-$//g' | cut -c1-32)
+            echo "VERSION_NAME=${TAG}-b-${SLUG}.${COUNT}-${SHA}-SNAPSHOT" >> "$GITHUB_ENV"
+          fi
 
       - name: Build KMP package
         run: packages/kmp/gradlew --no-daemon -p packages/kmp build -PVERSION_NAME=${{ env.VERSION_NAME }}

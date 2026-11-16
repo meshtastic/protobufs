@@ -1,7 +1,23 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "rebaseWhen": "conflicted",
   "extends": [
     "config:recommended"
+  ],
+  "platformAutomerge": false,
+  "minimumReleaseAge": "3 days",
+  "minimumReleaseAgeBehaviour": "timestamp-optional",
+  "packageRules": [
+    {
+      "description": "Automerge non-major updates once checks are green. Renovate merges them itself: the repo has auto-merge off, and the app is on master's pull request bypass list.",
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "automerge": true
+    },
+    {
+      "description": "Workflow changes keep a human review. Must stay after the baseline: the last matching rule wins.",
+      "matchFileNames": [".github/**"],
+      "automerge": false
+    }
   ],
   "customManagers": [
     {
