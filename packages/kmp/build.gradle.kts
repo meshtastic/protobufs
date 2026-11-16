@@ -1,7 +1,7 @@
 plugins {
-    kotlin("multiplatform") version "2.4.10"
-    id("com.android.kotlin.multiplatform.library") version "9.3.2"
-    id("com.squareup.wire") version "7.0.3"
+    kotlin("multiplatform") version "2.4.21"
+    id("com.android.kotlin.multiplatform.library") version "9.5.1"
+    id("com.squareup.wire") version "7.2.1"
     id("com.vanniktech.maven.publish") version "0.37.0"
 }
 
@@ -12,12 +12,21 @@ version = providers.gradleProperty("VERSION_NAME").orElse(
         // derive a snapshot version by patch-bumping the latest git tag. Any
         // failure - git missing, shallow/tagless clone, or an unexpected tag
         // format - degrades to 0.0.1-SNAPSHOT instead of breaking configuration.
+        //
+        // Uses providers.exec rather than ProcessBuilder: starting a process
+        // directly at configuration time is rejected outright under the
+        // configuration cache ("external process started 'git describe ...' ...
+        // is unsupported"), which made this build impossible to run with
+        // --configuration-cache. providers.exec records the invocation as a
+        // configuration-cache input instead.
         val tag = runCatching {
-            val process = ProcessBuilder("git", "describe", "--tags", "--abbrev=0")
-                .directory(rootDir)
-                .start()
-            val out = process.inputStream.bufferedReader().readText().trim()
-            if (process.waitFor() == 0) out else ""
+            providers.exec {
+                workingDir = rootDir
+                commandLine("git", "describe", "--tags", "--abbrev=0")
+                // A tagless or shallow clone exits non-zero; fall through to
+                // the 0.0.0 defaults below rather than failing the build.
+                isIgnoreExitValue = true
+            }.standardOutput.asText.get().trim()
         }.getOrDefault("")
 
         val parts = tag.removePrefix("v").split(".")
@@ -39,6 +48,14 @@ kotlin {
         namespace = "org.meshtastic.proto"
         compileSdk = 37
         minSdk = 24
+        // Without this the AAR's metadata sets minCompileSdk to compileSdk (37),
+        // which forces every Android app that depends on these protobufs, directly
+        // or through TAKPacket-SDK, to compile against SDK 37. The generated code
+        // is plain Wire/Kotlin with no Android API use, so the floor can match
+        // minSdk: an app that can consume this library already compiles at 24+.
+        aarMetadata {
+            minCompileSdk = 24
+        }
     }
     jvm()
     js {
@@ -64,7 +81,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api("com.squareup.wire:wire-runtime:7.0.0")
+                api("com.squareup.wire:wire-runtime:7.2.1")
             }
         }
     }
