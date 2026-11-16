@@ -29,6 +29,7 @@ enum FileOperation {
   POST = 1;
   PUT = 2;
   DELETE = 3;
+  MKDIR = 4; // Create a directory, parents included; OK when it already exists
 }
 
 // Outcome of a file or directory operation. The requester must be able to
@@ -47,12 +48,12 @@ enum FileStatus {
   // recognize its own chunk as already written after a lost response).
   FILE_OFFSET_CONFLICT = 5;
   FILE_IO_ERROR = 6;
-  FILE_NOT_A_FILE = 7; // path is a directory (GET) or not one (listing)
+  FILE_NOT_A_FILE = 7; // path is a directory (GET) or not one (listing, MKDIR)
 }
 
 // Message for file operations
 message FileTransfer {
-  FileOperation operation = 1; // File operation (GET, POST, PUT, DELETE)
+  FileOperation operation = 1; // File operation (GET, POST, PUT, DELETE, MKDIR)
   string filepath = 2; // Path of the file on the SD card
   bytes filedata = 3; // Chunk content (POST/PUT request, GET response)
   FileStatus status = 4; // Response: outcome of the operation
