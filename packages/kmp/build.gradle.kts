@@ -48,6 +48,14 @@ kotlin {
         namespace = "org.meshtastic.proto"
         compileSdk = 37
         minSdk = 24
+        // Without this the AAR's metadata sets minCompileSdk to compileSdk (37),
+        // which forces every Android app that depends on these protobufs, directly
+        // or through TAKPacket-SDK, to compile against SDK 37. The generated code
+        // is plain Wire/Kotlin with no Android API use, so the floor can match
+        // minSdk: an app that can consume this library already compiles at 24+.
+        aarMetadata {
+            minCompileSdk = 24
+        }
     }
     jvm()
     js {
