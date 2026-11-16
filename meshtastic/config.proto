@@ -54,7 +54,10 @@ message Config {
 
       ROUTER_CLIENT = 3 [
         deprecated = true,
-        (meshtastic.enum_value_metadata) = {label: "Router Client"}
+        (meshtastic.enum_value_metadata) = {
+          label: "Router Client"
+          deprecated_since: "2.3.15"
+        }
       ];
 
       /*
@@ -68,6 +71,7 @@ message Config {
         (meshtastic.enum_value_metadata) = {
           label: "Repeater"
           description: "Deprecated infrastructure role that creates gaps in the mesh rebroadcast chain. Switch this node to a Router-based role (Router or Router Late)."
+          deprecated_since: "2.7.11"
         }
       ];
 
@@ -266,7 +270,10 @@ message Config {
      * Disabling this will disable the SerialConsole by not initilizing the StreamAPI
      * Moved to SecurityConfig
      */
-    bool serial_enabled = 2 [deprecated = true];
+    bool serial_enabled = 2 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.5.0"}
+    ];
 
     /*
      * For boards without a hard wired button, this is the pin number that will be used
@@ -315,7 +322,10 @@ message Config {
      * Clients should then limit available configuration and administrative options inside the user interface
      * Moved to SecurityConfig
      */
-    bool is_managed = 9 [deprecated = true];
+    bool is_managed = 9 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.5.0"}
+    ];
 
     /*
      * Disables the triple-press of user button to enable or disable GPS
@@ -475,7 +485,10 @@ message Config {
     /*
      * Is GPS enabled for this node?
      */
-    bool gps_enabled = 4 [deprecated = true];
+    bool gps_enabled = 4 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.2.21"}
+    ];
 
     /*
      * How often should we try to get GPS position (in seconds)
@@ -491,7 +504,10 @@ message Config {
     /*
      * Deprecated in favor of using smart / regular broadcast intervals as implicit attempt time
      */
-    uint32 gps_attempt_time = 6 [deprecated = true];
+    uint32 gps_attempt_time = 6 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.2.18"}
+    ];
 
     /*
      * Bit field of boolean configuration options for POSITION messages
@@ -600,7 +616,11 @@ message Config {
      * for this value (default 1 year) or a button press
      * 0 for default of one year
      */
-    uint32 sds_secs = 6;
+    uint32 sds_secs = 6 [(meshtastic.field_metadata) = {
+      label: "Super Deep Sleep Duration"
+      description: "How long the radio stays in super deep sleep before waking, unless the button is pressed. Zero leaves the firmware default of one year."
+      unit: "s"
+    }];
 
     /*
      * Description: In light sleep the CPU is suspended, LoRa radio is on, BLE is off an GPS is on
@@ -612,12 +632,19 @@ message Config {
      * Description: While in light sleep when we receive packets on the LoRa radio we will wake and handle them and stay awake in no BLE mode for this value
      * Technical Details: ESP32 Only 0 for default of 10 seconds
      */
-    uint32 min_wake_secs = 8;
+    uint32 min_wake_secs = 8 [(meshtastic.field_metadata) = {
+      label: "Minimum Wake Time"
+      description: "How long the radio stays awake after handling a packet received during light sleep. Zero leaves the firmware default of ten seconds."
+      unit: "s"
+    }];
 
     /*
      * I2C address of INA_2XX to use for reading device battery voltage
      */
-    uint32 device_battery_ina_address = 9;
+    uint32 device_battery_ina_address = 9 [(meshtastic.field_metadata) = {
+      label: "Battery INA_2XX I2C Address"
+      description: "I2C address of the INA_2XX sensor used to read battery voltage."
+    }];
 
     /*
      * If non-zero, we want powermon log outputs.  With the particular (bitfield) sources enabled.
@@ -687,6 +714,7 @@ message Config {
     string wifi_psk = 4 [(meshtastic.field_metadata) = {
       label: "Password"
       description: "WiFi password for authentication"
+      sensitive: true
     }];
 
     /*
@@ -986,12 +1014,20 @@ message Config {
      * If false (default), the device will use short names for various display screens.
      * If true, node names will show in long format
      */
-    bool use_long_node_name = 13 [(meshtastic.field_metadata) = {since_firmware: "2.7.13"}];
+    bool use_long_node_name = 13 [(meshtastic.field_metadata) = {
+      label: "Long Node Names"
+      description: "Show full node names on the device screen instead of short names."
+      since_firmware: "2.7.13"
+    }];
 
     /*
      * If true, the device will display message bubbles on screen.
      */
-    bool enable_message_bubbles = 14 [(meshtastic.field_metadata) = {since_firmware: "2.7.19"}];
+    bool enable_message_bubbles = 14 [(meshtastic.field_metadata) = {
+      label: "Message Bubbles"
+      description: "Draw messages on the device screen as bubbles."
+      since_firmware: "2.7.19"
+    }];
   }
 
   /*
@@ -1030,9 +1066,9 @@ message Config {
       JP = 5 [(meshtastic.enum_value_metadata) = {label: "Japan"}];
 
       /*
-       * Australia / New Zealand
+       * Australia / Brazil / New Zealand (915-928MHz)
        */
-      ANZ = 6 [(meshtastic.enum_value_metadata) = {label: "Australia / New Zealand"}];
+      ANZ = 6 [(meshtastic.enum_value_metadata) = {label: "Australia / Brazil / New Zealand"}];
 
       /*
        * Korea
@@ -1079,7 +1115,10 @@ message Config {
        */
       UA_868 = 15 [
         deprecated = true,
-        (meshtastic.enum_value_metadata) = {label: "Ukraine 868MHz"}
+        (meshtastic.enum_value_metadata) = {
+          label: "Ukraine 868MHz"
+          deprecated_since: "2.8.0"
+        }
       ];
 
       /*
@@ -1218,11 +1257,14 @@ message Config {
 
       /*
        * Very Long Range - Slow
-       * Deprecated in 2.5: Works only with txco and is unusably slow
+       * Deprecated: works only with a TCXO and is unusably slow.
        */
       VERY_LONG_SLOW = 2 [
         deprecated = true,
-        (meshtastic.enum_value_metadata) = {label: "Very Long Range - Slow"}
+        (meshtastic.enum_value_metadata) = {
+          label: "Very Long Range - Slow"
+          deprecated_since: "2.6.5"
+        }
       ];
 
       /*
@@ -1335,6 +1377,11 @@ message Config {
        * FEM_LNA is not present on the device
        */
       NOT_PRESENT = 2;
+
+      /*
+       * FEM_LNA is present; the firmware switches it in or bypasses it from the measured noise floor
+       */
+      AUTO = 3;
     }
 
     /*
@@ -1523,7 +1570,7 @@ message Config {
     bool config_ok_to_mqtt = 105 [(meshtastic.field_metadata) = {label: "OK to MQTT"}];
 
     /*
-     * Set where LORA FEM is enabled, disabled, or not present
+     * Set whether the LoRa FEM LNA is enabled, disabled, automatic, or not present
      */
     FEM_LNA_Mode fem_lna_mode = 106 [(meshtastic.field_metadata) = {since_firmware: "2.7.20"}];
 
@@ -1531,6 +1578,13 @@ message Config {
      * Don't use radiolib to initialize the radio, instead listen for a serialHal connection
      */
     bool serial_hal_only = 107;
+
+    /*
+     * Act as a transparent LoRa modem: run RadioLib on-device but do no encryption, decryption, or mesh routing.
+     * The connected client sets the PHY settings via this LoRaConfig, supplies fully-formed (already-encrypted) frames to transmit verbatim,
+     * and receives every frame the radio hears delivered raw (never decrypted) back over the API.
+     */
+    bool transparent_mode = 108;
   }
 
   message BluetoothConfig {
@@ -1573,39 +1627,60 @@ message Config {
     uint32 fixed_pin = 3 [(meshtastic.field_metadata) = {
       label: "Fixed Pin"
       description: "Fixed PIN for Bluetooth pairing. Used when pairing mode is set to fixed PIN"
+      sensitive: true
     }];
   }
 
   message SecurityConfig {
     /*
-     * Controls how the device authenticates remotely received mesh packets.
+     * Controls whether the device signs the packets it sends with XEdDSA, and which received packets it accepts.
+     * In every mode a packet whose signature is malformed or fails verification is dropped, except a traceroute,
+     * and so is a signed NodeInfo whose public key is not the key that signed it or does not hash to the sender's
+     * node number.
+     * A traceroute is never signed, and a signature on one is ignored: every hop rewrites it.
+     * A channel with use_aead set overrides this policy: its packets are never signed, and are not dropped
+     * for lacking a signature, because the AES-CCM tag authenticates them.
      */
     enum PacketSignaturePolicy {
       /*
-       * Accept unsigned packets for maximum compatibility while still rejecting malformed or invalid signatures.
-       * This is the default to avoid legacy nodes dropping signed packets during rebroadcast.
+       * Packets are not signed. Unsigned packets are accepted, including from nodes that have signed before,
+       * and an unsigned NodeInfo may update such a node's name and role.
+       * Signatures are still checked: a signed packet whose signature is malformed or fails verification is
+       * dropped. A signature from a node whose key is not yet known cannot be checked, and the packet is
+       * accepted as unsigned.
+       * This is the default: firmware before 2.8 strips signatures when relaying.
        */
       PACKET_SIGNATURE_POLICY_COMPATIBLE = 0 [(meshtastic.enum_value_metadata) = {
-        label: "Compatible - Accept Unsigned"
-        description: "Accept unsigned traffic for maximum compatibility. A signature that can be checked and is wrong still drops the packet."
+        label: "Compatible - No Signing"
+        description: "Don't sign packets, and accept unsigned packets."
       }];
 
       /*
-       * Prefer authenticated packets while retaining compatibility with unsigned packets from nodes not known to sign.
-       * Rejects unsigned, signable broadcasts from nodes that have previously signed.
+       * Broadcasts are signed, and NodeInfo and position even when unicast. Licensed (ham) mode has no PKI, so it
+       * also signs the unicasts PKI would cover; its acks carry an ack proof instead of a signature.
+       * Unsigned packets are accepted, including from nodes that have signed before, but an unsigned NodeInfo
+       * does not change the name or role of a node that has signed before.
+       * Recommended only on a mesh with no relays running firmware older than 2.8: those strip signatures, so a
+       * signer's NodeInfo relayed through them arrives unsigned and its name and role changes are not applied.
+       * The same holds for a node that has signed before and no longer signs.
        */
       PACKET_SIGNATURE_POLICY_BALANCED = 1 [(meshtastic.enum_value_metadata) = {
-        label: "Balanced - Prefer Authenticated"
-        description: "Prefer authenticated packets, but still accept unsigned traffic from nodes not known to sign."
+        label: "Balanced - Sign, Accept Unsigned"
+        description: "Sign broadcasts, and accept unsigned packets. Apps show which packets were signed. Recommended only where no relays run firmware older than 2.8."
       }];
 
       /*
-       * Accept only packets authenticated by a verified XEdDSA signature or successful PKI decryption.
-       * Unsigned, malformed, invalid, or unverifiable packets are ignored.
+       * Broadcasts are signed, and NodeInfo and position even when unicast. Licensed (ham) mode has no PKI, so it
+       * also signs the unicasts PKI would cover; its acks carry an ack proof instead of a signature.
+       * Only packets with a verified signature, or PKI-encrypted packets, are accepted.
+       * Unsigned packets are dropped, except acks and other routing packets, which carry their own proof,
+       * traceroutes, and key verification messages, which the users' security number authenticates.
+       * A signature from a node whose key is not yet known cannot be checked, and the packet is dropped,
+       * except a traceroute.
        */
       PACKET_SIGNATURE_POLICY_STRICT = 2 [(meshtastic.enum_value_metadata) = {
-        label: "Strict - Require Authentication"
-        description: "Accept only packets with a verified signature or successful PKI decryption. Packets from older nodes may be ignored."
+        label: "Strict - Require Signatures"
+        description: "Sign broadcasts, and drop unsigned packets. PKI direct messages, AES-CCM channels, acks, traceroutes and key verification are exempt."
       }];
     }
 
@@ -1625,6 +1700,7 @@ message Config {
     bytes private_key = 2 [(meshtastic.field_metadata) = {
       label: "Private Key"
       description: "Used to create a shared key with a remote device"
+      sensitive: true
     }];
 
     /*
@@ -1667,7 +1743,8 @@ message Config {
     bool admin_channel_enabled = 8;
 
     /*
-     * Determines the packet signature policy applied to remotely received mesh packets.
+     * Determines whether this device signs the packets it sends, and which received packets it accepts.
+     * See PacketSignaturePolicy.
      */
     PacketSignaturePolicy packet_signature_policy = 9 [(meshtastic.field_metadata) = {since_firmware: "2.8.0"}];
   }
