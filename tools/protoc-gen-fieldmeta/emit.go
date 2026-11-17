@@ -636,11 +636,16 @@ func emitSwift(schema []schemaField, entries []entry) (string, string) {
 	// Low-level table + dynamic lookup (escape hatch for generic field walking).
 	b.WriteString("public enum FieldMetadataRegistry {\n")
 	b.WriteString("    // Keyed by \"\\(messageType)#\\(tag)\".\n")
-	b.WriteString("    static let registry: [String: FieldMetadata] = [\n")
-	for _, e := range entries {
-		fmt.Fprintf(&b, "        %s: %s,\n", quoteString(fmt.Sprintf("%s#%d", e.MessageType, e.Tag)), swiftLiteral(schema, e))
+	if len(entries) == 0 {
+		// `[]` is an array literal; an empty dictionary must be `[:]`.
+		b.WriteString("    static let registry: [String: FieldMetadata] = [:]\n\n")
+	} else {
+		b.WriteString("    static let registry: [String: FieldMetadata] = [\n")
+		for _, e := range entries {
+			fmt.Fprintf(&b, "        %s: %s,\n", quoteString(fmt.Sprintf("%s#%d", e.MessageType, e.Tag)), swiftLiteral(schema, e))
+		}
+		b.WriteString("    ]\n\n")
 	}
-	b.WriteString("    ]\n\n")
 	b.WriteString("    /// Metadata for the field with `tag` on `messageType`, or nil.\n")
 	b.WriteString("    public static func get(_ messageType: String, tag: Int) -> FieldMetadata? {\n")
 	b.WriteString("        return registry[\"\\(messageType)#\\(tag)\"]\n")

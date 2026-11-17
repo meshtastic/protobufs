@@ -436,3 +436,86 @@ enum Mode {
 		t.Errorf("alias-ok: expected exactly one registry row for the number:\n%s", out)
 	}
 }
+
+// TestGenerateSelectsAttributes verifies `attributes=`: only the named
+// attributes reach the emitted type and table, an entry that sets none of them
+// is dropped, and an unknown or empty selection is a hard error.
+func TestGenerateSelectsAttributes(t *testing.T) {
+	sources := map[string]string{
+		"meshtastic/field_metadata.proto": fieldMetadataProtoSrc,
+		"meshtastic/test.proto": `
+syntax = "proto3";
+package meshtastic;
+import "meshtastic/field_metadata.proto";
+message M {
+  uint32 pin   = 1 [(meshtastic.field_metadata) = { admin_only: true, unit: "V" }];
+  uint32 gpio  = 2 [(meshtastic.field_metadata) = { diy_only: true }];
+  uint32 old   = 3 [deprecated = true];
+}
+`,
+	}
+	run := func(param string) (*pluginpb.CodeGeneratorResponse, error) {
+		req := compileRequest(t, sources, "c", "meshtastic/field_metadata.proto", "meshtastic/test.proto")
+		req.Parameter = proto.String(param)
+		return generate(req)
+	}
+
+	resp, err := run("target=c,attributes=admin_only")
+	if err != nil {
+		t.Fatalf("generate: %v", err)
+	}
+	if resp.GetError() != "" {
+		t.Fatalf("plugin returned error: %s", resp.GetError())
+	}
+	out := resp.GetFile()[0].GetContent()
+	mustContain(t, "select-c", out,
+		"    bool admin_only;\n} meshtastic_field_metadata_t;",
+		`{ .message_type = "meshtastic.M", .field_tag = 1, .admin_only = true },`,
+		"#define MESHTASTIC_FIELD_METADATA_COUNT 1",
+	)
+	// Member and initializer forms, so header prose can't satisfy or trip these.
+	for _, absent := range []string{
+		"bool diy_only;", ".diy_only =",
+		" unit;", ".unit =",
+		"bool deprecated;", ".deprecated =",
+		".field_tag = 2", ".field_tag = 3",
+	} {
+		if strings.Contains(out, absent) {
+			t.Errorf("select-c: %q must not appear:\n%s", absent, out)
+		}
+	}
+
+	resp, err = run("target=c,attributes=admin_only+deprecated")
+	if err != nil || resp.GetError() != "" {
+		t.Fatalf("generate two attributes: err=%v resp=%s", err, resp.GetError())
+	}
+	mustContain(t, "select-two", resp.GetFile()[0].GetContent(),
+		"    bool admin_only;\n    bool deprecated;\n}",
+		`{ .message_type = "meshtastic.M", .field_tag = 3, .deprecated = true },`,
+		"#define MESHTASTIC_FIELD_METADATA_COUNT 2",
+	)
+
+	// A selected attribute that no field sets leaves an empty but valid registry.
+	resp, err = run("target=swift,attributes=max_value")
+	if err != nil || resp.GetError() != "" {
+		t.Fatalf("generate unset attribute: err=%v resp=%s", err, resp.GetError())
+	}
+	mustContain(t, "select-swift-empty", resp.GetFile()[0].GetContent(),
+		"static let registry: [String: FieldMetadata] = [:]\n")
+
+	for _, param := range []string{
+		"target=c,attributes=nope",
+		"target=c,attributes=",
+		"target=c,attributes=admin_only++deprecated",
+		"target=c,attributes=+admin_only",
+		"target=c,attributes=admin_only+",
+		"target=c,attribute=admin_only",
+		"target=c,attrs=admin_only",
+		"target=c,bogus",
+		"target=c,attributes=admin_only+nope",
+	} {
+		if _, err := run(param); err == nil {
+			t.Errorf("expected error for %q, got nil", param)
+		}
+	}
+}

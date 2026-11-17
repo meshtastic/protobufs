@@ -54,6 +54,23 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         protoCompilerContext: any ProtoCompilerContext,
         generatorOutputs: any GeneratorOutputs
     ) throws {
+        // Accept only an optional `target=swift`, so the Go plugin's invocation
+        // works unchanged. `attributes=` is implemented by the Go plugin only;
+        // rejecting it (and any other key) keeps a build from silently getting
+        // every attribute.
+        for (key, value) in parameter.parsedPairs {
+            switch key {
+            case "target":
+                guard value == "swift" else {
+                    throw GenError.message("parameter 'target=\(value)': this plugin only emits swift")
+                }
+            case "attributes":
+                throw GenError.message("parameter 'attributes' is not supported by protoc-gen-fieldmeta-swift; use protoc-gen-fieldmeta (Go) with target=swift")
+            default:
+                throw GenError.message("unknown parameter '\(key)' (only target=swift is accepted)")
+            }
+        }
+
         // Locate the FieldMetadata message descriptor (drives the emitted struct's
         // shape, so a schema-only attribute addition needs no plugin change).
         var metadataDescriptor: Descriptor?
@@ -192,14 +209,19 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         // matching the Go plugin.
         out += "public enum FieldMetadataRegistry {\n"
         out += "    // Keyed by \"\\(messageType)#\\(tag)\".\n"
-        out += "    static let registry: [String: FieldMetadata] = [\n"
         let sortedEntries = entries.sorted { a, b in
             a.protoTypeName != b.protoTypeName ? a.protoTypeName < b.protoTypeName : a.tag < b.tag
         }
-        for e in sortedEntries {
-            out += "        \"\(e.protoTypeName)#\(e.tag)\": \(try literal(for: e, shape: metadataDescriptor)),\n"
+        if sortedEntries.isEmpty {
+            // `[]` is an array literal; an empty dictionary must be `[:]`.
+            out += "    static let registry: [String: FieldMetadata] = [:]\n\n"
+        } else {
+            out += "    static let registry: [String: FieldMetadata] = [\n"
+            for e in sortedEntries {
+                out += "        \"\(e.protoTypeName)#\(e.tag)\": \(try literal(for: e, shape: metadataDescriptor)),\n"
+            }
+            out += "    ]\n\n"
         }
-        out += "    ]\n\n"
         out += "    /// Metadata for the field with `tag` on `messageType`, or nil.\n"
         out += "    public static func get(_ messageType: String, tag: Int) -> FieldMetadata? {\n"
         out += "        return registry[\"\\(messageType)#\\(tag)\"]\n"
