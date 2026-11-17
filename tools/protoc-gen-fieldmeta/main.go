@@ -131,6 +131,18 @@ func fail(err error) {
 
 func generate(req *pluginpb.CodeGeneratorRequest) (*pluginpb.CodeGeneratorResponse, error) {
 	params := parseParameter(req.GetParameter())
+	// Reject unknown keys: a misspelled `attributes` would otherwise silently
+	// emit every attribute.
+	var unknownParams []string
+	for k := range params {
+		if k != "target" && k != "attributes" {
+			unknownParams = append(unknownParams, k)
+		}
+	}
+	if len(unknownParams) > 0 {
+		sort.Strings(unknownParams)
+		return nil, fmt.Errorf("unknown parameter(s) %s (known: target, attributes)", strings.Join(unknownParams, ", "))
+	}
 	target := params["target"]
 	if target == "" {
 		return nil, fmt.Errorf("missing required parameter 'target' (one of: c, python, typescript, rust, swift)")
@@ -232,6 +244,8 @@ func generate(req *pluginpb.CodeGeneratorRequest) (*pluginpb.CodeGeneratorRespon
 // selectAttributes narrows the schema and entries to the "+"-separated attribute
 // names in sel, keeping schema order. An entry left with no attribute set is
 // dropped, so a size-constrained target carries only the rows it can use.
+// "Set" means present, not true: an explicit `sensitive: false` keeps its row
+// with `.sensitive = false`, so consumers must read the value.
 func selectAttributes(schema []schemaField, entries []entry, sel string) ([]schemaField, []entry, error) {
 	want := map[string]bool{}
 	for _, name := range strings.Split(sel, "+") {

@@ -473,7 +473,13 @@ message M {
 		`{ .message_type = "meshtastic.M", .field_tag = 1, .admin_only = true },`,
 		"#define MESHTASTIC_FIELD_METADATA_COUNT 1",
 	)
-	for _, absent := range []string{"diy_only", "unit", "deprecated", ".field_tag = 2", ".field_tag = 3"} {
+	// Member and initializer forms, so header prose can't satisfy or trip these.
+	for _, absent := range []string{
+		"bool diy_only;", ".diy_only =",
+		" unit;", ".unit =",
+		"bool deprecated;", ".deprecated =",
+		".field_tag = 2", ".field_tag = 3",
+	} {
 		if strings.Contains(out, absent) {
 			t.Errorf("select-c: %q must not appear:\n%s", absent, out)
 		}
@@ -503,6 +509,9 @@ message M {
 		"target=c,attributes=admin_only++deprecated",
 		"target=c,attributes=+admin_only",
 		"target=c,attributes=admin_only+",
+		"target=c,attribute=admin_only",
+		"target=c,attrs=admin_only",
+		"target=c,bogus",
 		"target=c,attributes=admin_only+nope",
 	} {
 		if _, err := run(param); err == nil {
