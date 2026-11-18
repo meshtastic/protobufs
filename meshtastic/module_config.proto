@@ -531,16 +531,50 @@ message ModuleConfig {
       CALTOPO = 5 [(meshtastic.enum_value_metadata) = {label: "CalTopo"}];
       // Ecowitt WS85 weather station
       WS85 = 6;
-      // VE.Direct is a serial protocol used by Victron Energy products
-      // https://beta.ivc.no/wiki/index.php/Victron_VE_Direct_DIY_Cable
-      VE_DIRECT = 7;
+      /*
+       * VE.Direct is a serial protocol used by Victron Energy products
+       * https://beta.ivc.no/wiki/index.php/Victron_VE_Direct_DIY_Cable
+       *
+       * Never implemented. Added 2025-05-04; no firmware release has ever read
+       * this value - SerialModule has no VE_DIRECT branch on any tag or on
+       * develop. No `deprecated_since`: that attribute names the release which
+       * stopped honouring a value, and none ever honoured this one.
+       */
+      VE_DIRECT = 7 [
+        deprecated = true,
+        (meshtastic.enum_value_metadata) = {description: "Never implemented in firmware. Selecting this mode has no effect."}
+      ];
       // Used to configure and view some parameters of MeshSolar.
       // https://heltec.org/project/meshsolar/
       MS_CONFIG = 8;
-      // Logs mesh traffic to the serial pins, ideal for logging via openLog or similar.
-      LOG = 9; // includes other packets
-      LOGTEXT = 10; // only text (channel & DM)
-      // Modbus-RTU master, polls an RS485 sensor and sends telemetry
+      /*
+       * Logs mesh traffic to the serial pins, ideal for logging via openLog or
+       * similar. Includes other packets, as against LOGTEXT's text only.
+       *
+       * Never implemented. Added 2026-01-11; SerialModule has no LOG branch, so
+       * the port opens at the configured baud and stays silent. No
+       * `deprecated_since`, for the reason given on VE_DIRECT.
+       */
+      LOG = 9 [
+        deprecated = true,
+        (meshtastic.enum_value_metadata) = {description: "Never implemented in firmware. Selecting this mode has no effect."}
+      ];
+      /*
+       * Text only (channel & DM), as against LOG's every packet.
+       *
+       * Never implemented, on the same terms as LOG above.
+       */
+      LOGTEXT = 10 [
+        deprecated = true,
+        (meshtastic.enum_value_metadata) = {description: "Never implemented in firmware. Selecting this mode has no effect."}
+      ];
+      /*
+       * Modbus-RTU master, polls an RS485 sensor and sends telemetry.
+       *
+       * Not yet implemented, but unlike the three above it is being written:
+       * meshtastic/firmware#12064. Do not deprecate it on an "unreferenced in
+       * firmware" sweep.
+       */
       MODBUS = 11;
     }
 
