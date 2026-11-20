@@ -81,7 +81,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api("com.squareup.wire:wire-runtime:7.2.1")
+                api("com.squareup.wire:wire-runtime:7.2.2")
             }
         }
     }
