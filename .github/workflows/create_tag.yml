@@ -102,6 +102,7 @@ jobs:
   notify-python:
     needs: increment_version
     runs-on: ubuntu-latest
+    permissions: {} # the dispatch uses only the PAT secret, not GITHUB_TOKEN
     steps:
       - name: Trigger the meshtastic/python protobuf update
         env:
