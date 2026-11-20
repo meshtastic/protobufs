@@ -91,3 +91,34 @@ jobs:
     with:
       version: ${{ needs.increment_version.outputs.new_version }}
     secrets: inherit
+
+  # A new tag also means new generated bindings downstream: the
+  # meshtastic/python "Update protobufs" workflow listens for a
+  # "protobufs-release" repository_dispatch event carrying the tag in
+  # client_payload.version, regenerates meshtastic/protobuf against it, and
+  # opens a PR for the change. Tag and release events cannot trigger that
+  # (the tag above is created with GITHUB_TOKEN, the same recursion guard the
+  # publish jobs above work around), so dispatch the event directly.
+  notify-python:
+    needs: increment_version
+    runs-on: ubuntu-latest
+    permissions: {} # the dispatch uses only the PAT secret, not GITHUB_TOKEN
+    steps:
+      - name: Trigger the meshtastic/python protobuf update
+        env:
+          # GITHUB_TOKEN is scoped to this repository and cannot dispatch
+          # into another one, so this needs a PAT: fine-grained, with
+          # contents read and write on meshtastic/python, stored as the
+          # MESHTASTIC_PYTHON_AUTOMATION_TOKEN secret.
+          GH_TOKEN: ${{ secrets.MESHTASTIC_PYTHON_AUTOMATION_TOKEN }}
+          VERSION: ${{ needs.increment_version.outputs.new_version }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GH_TOKEN}" ]; then
+            echo "::error::MESHTASTIC_PYTHON_AUTOMATION_TOKEN is not set. Store a PAT with contents write access on meshtastic/python, or the python protobuf update will never be triggered."
+            exit 1
+          fi
+          gh api -X POST repos/meshtastic/python/dispatches \
+            -f event_type=protobufs-release \
+            -f "client_payload[version]=${VERSION}"
+          echo "Dispatched protobufs-release for ${VERSION} to meshtastic/python"
