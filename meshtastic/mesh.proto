@@ -995,6 +995,11 @@ enum HardwareModel {
   HELTEC_MESH_POCKET_V2 = 152;
 
   /*
+   * Meshnology W15
+   */
+  MESHNOLOGY_W15 = 153;
+
+  /*
    * A virtual node: a phone or desktop app acting as a mesh node of its own, with no radio hardware of its own
    */
   VIRTUAL_NODE = 254;
