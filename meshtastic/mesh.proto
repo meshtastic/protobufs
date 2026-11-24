@@ -1000,6 +1000,11 @@ enum HardwareModel {
   MESHNOLOGY_W15 = 153;
 
   /*
+   * M5Stack SolarNode
+   */
+  M5STACK_SOLAR_NODE = 154;
+
+  /*
    * A virtual node: a phone or desktop app acting as a mesh node of its own, with no radio hardware of its own
    */
   VIRTUAL_NODE = 254;
