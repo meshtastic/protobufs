@@ -1106,6 +1106,11 @@ enum TelemetrySensorType {
    * TI INA228 20-bit current, voltage and power monitor
    */
   INA228 = 58;
+
+  /*
+   * Analog Devices MAX31865 RTD-to-digital converter (PT100/PT1000)
+   */
+  MAX31865 = 59;
 }
 
 /*
