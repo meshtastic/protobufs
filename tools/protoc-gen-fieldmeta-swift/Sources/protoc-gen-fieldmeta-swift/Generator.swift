@@ -54,6 +54,23 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         protoCompilerContext: any ProtoCompilerContext,
         generatorOutputs: any GeneratorOutputs
     ) throws {
+        // Accept only an optional `target=swift`, so the Go plugin's invocation
+        // works unchanged. `attributes=` is implemented by the Go plugin only;
+        // rejecting it (and any other key) keeps a build from silently getting
+        // every attribute.
+        for (key, value) in parameter.parsedPairs {
+            switch key {
+            case "target":
+                guard value == "swift" else {
+                    throw GenError.message("parameter 'target=\(value)': this plugin only emits swift")
+                }
+            case "attributes":
+                throw GenError.message("parameter 'attributes' is not supported by protoc-gen-fieldmeta-swift; use protoc-gen-fieldmeta (Go) with target=swift")
+            default:
+                throw GenError.message("unknown parameter '\(key)' (only target=swift is accepted)")
+            }
+        }
+
         // Locate the FieldMetadata message descriptor (drives the emitted struct's
         // shape, so a schema-only attribute addition needs no plugin change).
         var metadataDescriptor: Descriptor?
@@ -192,14 +209,19 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         // matching the Go plugin.
         out += "public enum FieldMetadataRegistry {\n"
         out += "    // Keyed by \"\\(messageType)#\\(tag)\".\n"
-        out += "    static let registry: [String: FieldMetadata] = [\n"
         let sortedEntries = entries.sorted { a, b in
             a.protoTypeName != b.protoTypeName ? a.protoTypeName < b.protoTypeName : a.tag < b.tag
         }
-        for e in sortedEntries {
-            out += "        \"\(e.protoTypeName)#\(e.tag)\": \(try literal(for: e, shape: metadataDescriptor)),\n"
+        if sortedEntries.isEmpty {
+            // `[]` is an array literal; an empty dictionary must be `[:]`.
+            out += "    static let registry: [String: FieldMetadata] = [:]\n\n"
+        } else {
+            out += "    static let registry: [String: FieldMetadata] = [\n"
+            for e in sortedEntries {
+                out += "        \"\(e.protoTypeName)#\(e.tag)\": \(try literal(for: e, shape: metadataDescriptor)),\n"
+            }
+            out += "    ]\n\n"
         }
-        out += "    ]\n\n"
         out += "    /// Metadata for the field with `tag` on `messageType`, or nil.\n"
         out += "    public static func get(_ messageType: String, tag: Int) -> FieldMetadata? {\n"
         out += "        return registry[\"\\(messageType)#\\(tag)\"]\n"
@@ -280,6 +302,12 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         }
     }
 
+    /// The string attributes that are NOT display text and so are emitted as plain
+    /// literals rather than handed to a localizer. See the note on string attributes
+    /// in meshtastic/field_metadata.proto: the set is closed on purpose, because every
+    /// entry is a string no translator will ever see.
+    private static let machineReadableAttributes: Set<String> = ["since_firmware", "deprecated_since"]
+
     /// Renders one attribute value. Non-string attributes become plain literals;
     /// STRING attributes are user-facing display text (see field_metadata.proto) and
     /// become `String(localized:defaultValue:comment:)`, so Xcode's string-catalog
@@ -305,6 +333,12 @@ struct FieldMetaSwiftGenerator: CodeGenerator {
         // Exact: the schema guard rejects 64-bit kinds, so this is at most UInt32.max.
         case .uint(let u): return "\(u)"
         case .string(let s):
+            // A machine-readable string is compared, not read: a translated firmware
+            // version would compare wrongly at runtime. Kept in step with the Go
+            // plugin's own copy by the parity check.
+            if Self.machineReadableAttributes.contains(attribute) {
+                return swiftStringLiteral(s)
+            }
             let full = "\(entry.protoTypeName).\(entry.protoFieldName)"
             return "String(localized: \(swiftStringLiteral("\(full).\(attribute)"))"
                 + ", defaultValue: \(swiftStringLiteral(s))"

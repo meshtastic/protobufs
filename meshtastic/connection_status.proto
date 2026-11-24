@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package meshtastic;
 
+import "meshtastic/field_metadata.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "ConnStatusProtos";
@@ -91,7 +93,7 @@ message BluetoothConnectionStatus {
   /*
    * The pairing PIN for bluetooth
    */
-  uint32 pin = 1;
+  uint32 pin = 1 [(meshtastic.field_metadata) = {sensitive: true}];
 
   /*
    * RSSI of bluetooth connection

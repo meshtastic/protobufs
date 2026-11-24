@@ -636,11 +636,16 @@ func emitSwift(schema []schemaField, entries []entry) (string, string) {
 	// Low-level table + dynamic lookup (escape hatch for generic field walking).
 	b.WriteString("public enum FieldMetadataRegistry {\n")
 	b.WriteString("    // Keyed by \"\\(messageType)#\\(tag)\".\n")
-	b.WriteString("    static let registry: [String: FieldMetadata] = [\n")
-	for _, e := range entries {
-		fmt.Fprintf(&b, "        %s: %s,\n", quoteString(fmt.Sprintf("%s#%d", e.MessageType, e.Tag)), swiftLiteral(schema, e))
+	if len(entries) == 0 {
+		// `[]` is an array literal; an empty dictionary must be `[:]`.
+		b.WriteString("    static let registry: [String: FieldMetadata] = [:]\n\n")
+	} else {
+		b.WriteString("    static let registry: [String: FieldMetadata] = [\n")
+		for _, e := range entries {
+			fmt.Fprintf(&b, "        %s: %s,\n", quoteString(fmt.Sprintf("%s#%d", e.MessageType, e.Tag)), swiftLiteral(schema, e))
+		}
+		b.WriteString("    ]\n\n")
 	}
-	b.WriteString("    ]\n\n")
 	b.WriteString("    /// Metadata for the field with `tag` on `messageType`, or nil.\n")
 	b.WriteString("    public static func get(_ messageType: String, tag: Int) -> FieldMetadata? {\n")
 	b.WriteString("        return registry[\"\\(messageType)#\\(tag)\"]\n")
@@ -666,6 +671,15 @@ func swiftLiteral(schema []schemaField, e entry) string {
 	return "FieldMetadata(" + strings.Join(parts, ", ") + ")"
 }
 
+// machineReadableAttributes are the string attributes that are NOT display text
+// and so are emitted as plain literals rather than handed to a localizer. See the
+// note on string attributes in meshtastic/field_metadata.proto: the set is closed
+// on purpose, because every entry is a string no translator will ever see.
+var machineReadableAttributes = map[string]bool{
+	"since_firmware":   true,
+	"deprecated_since": true,
+}
+
 // swiftValue renders one attribute value. Non-string attributes render as plain
 // literals; STRING attributes are user-facing display text (see
 // meshtastic/field_metadata.proto) and are emitted as
@@ -682,6 +696,12 @@ func swiftValue(e entry, f metaField) string {
 	s, isString := f.Value.(string)
 	if !isString {
 		return decimalFloatValue(f.Value)
+	}
+	// A machine-readable string is compared, not read: a translated firmware
+	// version would compare wrongly at runtime. Kept in step with the Swift
+	// plugin's own copy by the parity check.
+	if machineReadableAttributes[f.Name] {
+		return quoteString(s)
 	}
 	full := e.MessageType + "." + e.FieldName
 	return fmt.Sprintf(

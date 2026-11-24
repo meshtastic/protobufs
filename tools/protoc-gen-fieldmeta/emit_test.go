@@ -139,6 +139,9 @@ func TestEmptyEntriesAreValid(t *testing.T) {
 	if strings.Contains(r, "FIELD_METADATA: &[(&str, i32, FieldMetadata)] = &[\n];") == false {
 		t.Errorf("rust empty slice not rendered as expected:\n%s", r)
 	}
+	// Swift's empty dictionary literal is `[:]`; `[]` would not compile.
+	_, s := emitSwift(testSchema, nil)
+	mustContain(t, "swift-empty", s, "static let registry: [String: FieldMetadata] = [:]\n")
 }
 
 // TestEmitScalarValueRendering covers int values and an INTEGRAL float (2.0):
@@ -343,6 +346,43 @@ func TestSwiftLocalizesStringAttributes(t *testing.T) {
 			t.Errorf("%s: localization must not leak into non-Swift targets:\n%s", name, out)
 		}
 		mustContain(t, name, out, `"Hop Limit"`)
+	}
+}
+
+// TestSwiftLeavesMachineReadableStringsAlone pins the one exception to the rule
+// above. A firmware version is compared, not read: handing it to a localizer would
+// put it in a translator's queue, and a translated version string compares wrongly
+// at runtime - silently, and only on the locales that changed it.
+func TestSwiftLeavesMachineReadableStringsAlone(t *testing.T) {
+	schema := []schemaField{
+		{Name: "label", Kind: protoreflect.StringKind},
+		{Name: "since_firmware", Kind: protoreflect.StringKind},
+		{Name: "deprecated_since", Kind: protoreflect.StringKind},
+	}
+	entries := []entry{{
+		MessageType: "meshtastic.Config.DisplayConfig", TypePath: []string{"Config", "DisplayConfig"},
+		FieldName: "compass_orientation", Tag: 18,
+		Fields: []metaField{
+			{Name: "label", Value: "Compass Orientation"},
+			{Name: "since_firmware", Value: "2.3.13"},
+			{Name: "deprecated_since", Value: "2.9.9"},
+		},
+	}}
+
+	_, swift := emitSwift(schema, entries)
+	mustContain(t, "swift-machine-readable", swift,
+		`sinceFirmware: "2.3.13"`,
+		`deprecatedSince: "2.9.9"`,
+		// display text in the same annotation is still localized
+		`String(localized: "meshtastic.Config.DisplayConfig.compass_orientation.label"`,
+	)
+	for _, unwanted := range []string{
+		`String(localized: "meshtastic.Config.DisplayConfig.compass_orientation.since_firmware"`,
+		`String(localized: "meshtastic.Config.DisplayConfig.compass_orientation.deprecated_since"`,
+	} {
+		if strings.Contains(swift, unwanted) {
+			t.Errorf("a machine-readable attribute was handed to the localizer:\n%s", swift)
+		}
 	}
 }
 

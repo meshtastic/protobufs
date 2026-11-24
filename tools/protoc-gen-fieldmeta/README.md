@@ -140,6 +140,23 @@ go -C tools/protoc-gen-fieldmeta build ./...
 go -C tools/protoc-gen-fieldmeta test ./...
 ```
 
+## Parameters
+
+| Parameter | Required | Effect |
+| --- | --- | --- |
+| `target` | yes | Output language: `c`, `python`, `typescript`, `rust`, `swift`. |
+| `attributes` | no | `+`-separated attribute names (e.g. `sensitive` or `sensitive+diy_only`). Only these attributes are emitted; an entry that sets none of them is dropped. An empty or unknown name is an error. Default: all attributes. |
+
+Any other parameter is an error, so a misspelled `attributes` can't silently
+emit every attribute.
+
+With `attributes`, an entry is kept when it sets a selected attribute to any
+value, `false` included. Read the attribute's value: a row existing doesn't mean
+the attribute is true.
+
+`attributes` is implemented by this plugin only. `protoc-gen-fieldmeta-swift`
+rejects it.
+
 ## Integration
 
 ### TypeScript (this repo) - already wired
@@ -156,14 +173,15 @@ the `Config` message module.
 ### Firmware (nanopb / C)
 
 In `meshtastic/firmware`'s `bin/regen-protos.sh`, build the plugin and add a
-`--fieldmeta_out`:
+`--fieldmeta_out`. Firmware only needs `sensitive`, so it selects just that
+attribute (see [Parameters](#parameters)):
 
 ```bash
 go -C protobufs/tools/protoc-gen-fieldmeta build -o "$PWD/protoc-gen-fieldmeta" .
 ../nanopb-0.4.9/generator-bin/protoc --experimental_allow_proto3_optional \
   --plugin=protoc-gen-fieldmeta="$PWD/protoc-gen-fieldmeta" \
   "--nanopb_out=-S.cpp -v:../src/mesh/generated/" \
-  --fieldmeta_out=target=c:../src/mesh/generated/ \
+  --fieldmeta_out=target=c,attributes=sensitive:../src/mesh/generated/ \
   -I=../protobufs meshtastic/*.proto
 ```
 

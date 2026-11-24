@@ -1,5 +1,6 @@
 package org.meshtastic.proto.build
 
+import com.squareup.wire.schema.EnumType
 import com.squareup.wire.schema.Extend
 import com.squareup.wire.schema.Field
 import com.squareup.wire.schema.MessageType
@@ -16,13 +17,19 @@ import okio.Path
  * Wire [SchemaHandler] that generates a reflection-free `FieldMetadataRegistry` Kotlin object
  * from the `(meshtastic.field_metadata)` field options declared in the protobuf schema.
  *
- * The registry exposes two layers:
+ * The registry covers both `(meshtastic.field_metadata)` on fields and
+ * `(meshtastic.enum_value_metadata)` on enum values, and exposes two layers:
  *  - **Typed accessors** generated as extension properties on each message's companion object,
  *    e.g. `Config.PositionConfig.rx_gpio` - the everyday, autocomplete-friendly API that hangs
  *    directly off the real generated message type (no magic strings, no parallel namespace). The
  *    accessor name matches Wire's snake_case field name.
+ *    For an enum value the accessor hangs off the enum TYPE instead, dispatching on the
+ *    receiver - `role.metadata?.label`. It cannot hang off the companion: an extension named
+ *    after a value is shadowed by the enum entry itself, because Kotlin resolves members
+ *    before extensions, so it would compile and never be reachable.
  *  - **`FieldMetadataRegistry.get(messageType, tag)`** - a dynamic escape hatch for generic
- *    field walking.
+ *    walking. Enum values share this registry and its key format with fields, as in the other
+ *    generators; `forEnum`/`forEnumValue` are named aliases over it.
  *
  * The handler is GENERIC over the contents of the `FieldMetadata` message: it reads whatever
  * scalar sub-fields are set on each annotated field and re-emits them as a
@@ -43,8 +50,17 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
         val ctor: String, // rendered "FieldMetadata.Builder()...build()" call
     )
 
+    private data class EnumEntry(
+        val enumType: String, // fully-qualified, e.g. "meshtastic.Config.DeviceConfig.Role"
+        val typePath: List<String>, // package-relative, e.g. ["Config", "DeviceConfig", "Role"]
+        val valueName: String, // proto enum value name, e.g. "CLIENT"
+        val tag: Int, // the enum value number
+        val ctor: String, // rendered "FieldMetadata.Builder()...build()" call
+    )
+
     override fun handle(schema: Schema, context: Context) {
         val optionMember = ProtoMember.get(Options.FIELD_OPTIONS, FIELD_METADATA_OPTION)
+        val enumOptionMember = ProtoMember.get(Options.ENUM_VALUE_OPTIONS, ENUM_VALUE_METADATA_OPTION)
 
         // Sub-field name -> proto scalar type, read from the FieldMetadata message definition so
         // value rendering stays correct as new attributes are added.
@@ -56,25 +72,29 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
                 .orEmpty()
 
         val entries = mutableListOf<Entry>()
+        val enumEntries = mutableListOf<EnumEntry>()
         for (protoFile in schema.protoFiles) {
             if (!context.inSourcePath(protoFile)) continue
             for (type in protoFile.types) {
-                collect(type, protoFile.packageName, optionMember, metaFieldTypes, entries)
+                collect(type, protoFile.packageName, optionMember, enumOptionMember, metaFieldTypes, entries, enumEntries)
             }
         }
         entries.sortWith(compareBy({ it.messageType }, { it.tag }))
+        enumEntries.sortWith(compareBy({ it.enumType }, { it.tag }))
 
         val path = context.outDirectory.resolve(REGISTRY_RELATIVE_PATH)
         context.fileSystem.createDirectories(path.parent!!)
-        context.fileSystem.write(path) { writeUtf8(render(entries)) }
+        context.fileSystem.write(path) { writeUtf8(render(entries, enumEntries)) }
     }
 
     private fun collect(
         type: Type,
         packageName: String?,
         optionMember: ProtoMember,
+        enumOptionMember: ProtoMember,
         metaFieldTypes: Map<String, ProtoType>,
         out: MutableList<Entry>,
+        enumOut: MutableList<EnumEntry>,
     ) {
         if (type is MessageType) {
             val fqn = type.type.toString()
@@ -100,8 +120,27 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
                 out += Entry(fqn, typePath, field.name, field.tag, ctor)
             }
         }
+        if (type is EnumType) {
+            val fqn = type.type.toString()
+            val relative = if (packageName != null) fqn.removePrefix("$packageName.") else fqn
+            val typePath = relative.split(".")
+            for (constant in type.constants) {
+                val raw = constant.options.get(enumOptionMember)
+                val handSet = (raw as? Map<*, *>)?.keys?.any { key ->
+                    ((key as? ProtoMember)?.simpleName ?: key.toString()) == DEPRECATED_ATTR
+                } == true
+                check(!handSet) {
+                    "$fqn.${constant.name}: the \"$DEPRECATED_ATTR\" attribute is generator-managed and cannot " +
+                        "be set in (meshtastic.enum_value_metadata); mark the value `[deprecated = true]` instead " +
+                        "and it is mirrored automatically"
+                }
+                val ctor = renderConstructor(raw, constant.isDeprecated, metaFieldTypes)
+                    ?: continue
+                enumOut += EnumEntry(fqn, typePath, constant.name, constant.tag, ctor)
+            }
+        }
         for (nested in type.nestedTypes) {
-            collect(nested, packageName, optionMember, metaFieldTypes, out)
+            collect(nested, packageName, optionMember, enumOptionMember, metaFieldTypes, out, enumOut)
         }
     }
 
@@ -193,7 +232,7 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
         append('"')
     }
 
-    private fun render(entries: List<Entry>): String = buildString {
+    private fun render(entries: List<Entry>, enumEntries: List<EnumEntry>): String = buildString {
         appendLine("// GENERATED CODE -- DO NOT EDIT.")
         appendLine("// Produced by FieldMetadataRegistryHandler from (meshtastic.field_metadata) options.")
         appendLine()
@@ -212,23 +251,54 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
             appendLine()
         }
 
+        // Typed accessors for enum values. These hang off the enum TYPE, not its companion: an
+        // extension on the companion named after a value (`Role.Companion.CLIENT`) is shadowed by
+        // the enum entry itself, because Kotlin resolves members before extensions. It compiles and
+        // is then unreachable. Dispatching on the receiver also reads better at the call site -
+        // a UI holds a `Role`, not a reference to a field.
+        for ((typePath, values) in enumEntries.groupBy { it.typePath }) {
+            val type = typePath.joinToString(".")
+            for (v in values) {
+                appendLine("private val ${(typePath + v.valueName).joinToString("_")}: FieldMetadata = ${v.ctor}")
+            }
+            appendLine("public val $type.metadata: FieldMetadata? get() = when (this.value) {")
+            for (v in values) {
+                appendLine("    ${v.tag} -> ${(typePath + v.valueName).joinToString("_")}")
+            }
+            appendLine("    else -> null")
+            appendLine("}")
+            appendLine()
+        }
+
         appendLine("/**")
         appendLine(" * Reflection-free dynamic lookup of [FieldMetadata] declared via the")
-        appendLine(" * `(meshtastic.field_metadata)` field option. For a known field, prefer the typed")
-        appendLine(" * accessor above (e.g. `Config.PositionConfig.rx_gpio`); use [get] for generic walking.")
+        appendLine(" * `(meshtastic.field_metadata)` and `(meshtastic.enum_value_metadata)` options. For a")
+        appendLine(" * known entry prefer the typed accessor above (e.g. `Config.PositionConfig.rx_gpio`,")
+        appendLine(" * or `role.metadata`); use [get] for generic walking.")
         appendLine(" */")
         appendLine("public object FieldMetadataRegistry {")
         // Fully-qualify the stdlib Map: the schema defines a `meshtastic.Map` message generated
         // into this same package, which would otherwise shadow `kotlin.collections.Map`.
         appendLine("    private val byType: kotlin.collections.Map<String, kotlin.collections.Map<Int, FieldMetadata>> = mapOf(")
+        // Reference the backing val rather than re-rendering the constructor: the map
+        // literal would otherwise duplicate every label and description into a second
+        // constant pool entry, and the registry is already the largest generated file.
         val byType = sortedMapOf<String, MutableMap<Int, String>>()
         for (e in entries) {
-            byType.getOrPut(e.messageType) { sortedMapOf() }[e.tag] = e.ctor
+            byType.getOrPut(e.messageType) { sortedMapOf() }[e.tag] =
+                (e.typePath + e.fieldName).joinToString("_")
+        }
+        // Enum values share the registry and the key format with fields, the same way
+        // protoc-gen-fieldmeta does it. A message and an enum cannot share a fully-qualified
+        // name, so the two kinds cannot collide.
+        for (e in enumEntries) {
+            byType.getOrPut(e.enumType) { sortedMapOf() }[e.tag] =
+                (e.typePath + e.valueName).joinToString("_")
         }
         for ((typeName, fields) in byType) {
             appendLine("        ${typeName.quote()} to mapOf(")
-            for ((tag, ctor) in fields) {
-                appendLine("            $tag to $ctor,")
+            for ((tag, backing) in fields) {
+                appendLine("            $tag to $backing,")
             }
             appendLine("        ),")
         }
@@ -241,6 +311,14 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
         appendLine("    /** All metadata-annotated fields on [messageType], keyed by field tag. */")
         appendLine("    public fun forType(messageType: String): kotlin.collections.Map<Int, FieldMetadata> =")
         appendLine("        byType[messageType].orEmpty()")
+        appendLine()
+        appendLine("    /** Metadata for the value numbered [number] on proto enum [enumType], or null. */")
+        appendLine("    public fun forEnumValue(enumType: String, number: Int): FieldMetadata? =")
+        appendLine("        get(enumType, number)")
+        appendLine()
+        appendLine("    /** All metadata-annotated values on [enumType], keyed by value number. */")
+        appendLine("    public fun forEnum(enumType: String): kotlin.collections.Map<Int, FieldMetadata> =")
+        appendLine("        forType(enumType)")
         appendLine("}")
     }
 
@@ -253,6 +331,7 @@ class FieldMetadataRegistryHandler : SchemaHandler() {
 
     private companion object {
         const val FIELD_METADATA_OPTION = "meshtastic.field_metadata"
+        const val ENUM_VALUE_METADATA_OPTION = "meshtastic.enum_value_metadata"
         const val FIELD_METADATA_TYPE = "meshtastic.FieldMetadata"
         const val DEPRECATED_ATTR = "deprecated"
         const val REGISTRY_PACKAGE = "org.meshtastic.proto"

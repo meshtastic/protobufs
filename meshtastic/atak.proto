@@ -3,6 +3,8 @@ syntax = "proto3";
 /* trunk-ignore(buf-lint/PACKAGE_DIRECTORY_MATCH) */
 package meshtastic;
 
+import "meshtastic/field_metadata.proto";
+
 option csharp_namespace = "Meshtastic.Protobufs";
 option go_package = "github.com/meshtastic/go/generated";
 option java_outer_classname = "ATAKProtos";
@@ -155,63 +157,63 @@ enum Team {
   /*
    * Unspecifed
    */
-  Unspecifed_Color = 0;
+  Unspecifed_Color = 0 [(meshtastic.enum_value_metadata) = {label: "Default (Cyan)"}];
   /*
    * White
    */
-  White = 1;
+  White = 1 [(meshtastic.enum_value_metadata) = {label: "White"}];
   /*
    * Yellow
    */
-  Yellow = 2;
+  Yellow = 2 [(meshtastic.enum_value_metadata) = {label: "Yellow"}];
   /*
    * Orange
    */
-  Orange = 3;
+  Orange = 3 [(meshtastic.enum_value_metadata) = {label: "Orange"}];
   /*
    * Magenta
    */
-  Magenta = 4;
+  Magenta = 4 [(meshtastic.enum_value_metadata) = {label: "Magenta"}];
   /*
    * Red
    */
-  Red = 5;
+  Red = 5 [(meshtastic.enum_value_metadata) = {label: "Red"}];
   /*
    * Maroon
    */
-  Maroon = 6;
+  Maroon = 6 [(meshtastic.enum_value_metadata) = {label: "Maroon"}];
   /*
    * Purple
    */
-  Purple = 7;
+  Purple = 7 [(meshtastic.enum_value_metadata) = {label: "Purple"}];
   /*
    * Dark Blue
    */
-  Dark_Blue = 8;
+  Dark_Blue = 8 [(meshtastic.enum_value_metadata) = {label: "Dark Blue"}];
   /*
    * Blue
    */
-  Blue = 9;
+  Blue = 9 [(meshtastic.enum_value_metadata) = {label: "Blue"}];
   /*
    * Cyan
    */
-  Cyan = 10;
+  Cyan = 10 [(meshtastic.enum_value_metadata) = {label: "Cyan"}];
   /*
    * Teal
    */
-  Teal = 11;
+  Teal = 11 [(meshtastic.enum_value_metadata) = {label: "Teal"}];
   /*
    * Green
    */
-  Green = 12;
+  Green = 12 [(meshtastic.enum_value_metadata) = {label: "Green"}];
   /*
    * Dark Green
    */
-  Dark_Green = 13;
+  Dark_Green = 13 [(meshtastic.enum_value_metadata) = {label: "Dark Green"}];
   /*
    * Brown
    */
-  Brown = 14;
+  Brown = 14 [(meshtastic.enum_value_metadata) = {label: "Brown"}];
 }
 
 /*
@@ -221,39 +223,39 @@ enum MemberRole {
   /*
    * Unspecifed
    */
-  Unspecifed = 0;
+  Unspecifed = 0 [(meshtastic.enum_value_metadata) = {label: "Default (Team Member)"}];
   /*
    * Team Member
    */
-  TeamMember = 1;
+  TeamMember = 1 [(meshtastic.enum_value_metadata) = {label: "Team Member"}];
   /*
    * Team Lead
    */
-  TeamLead = 2;
+  TeamLead = 2 [(meshtastic.enum_value_metadata) = {label: "Team Lead"}];
   /*
    * Headquarters
    */
-  HQ = 3;
+  HQ = 3 [(meshtastic.enum_value_metadata) = {label: "HQ"}];
   /*
    * Airsoft enthusiast
    */
-  Sniper = 4;
+  Sniper = 4 [(meshtastic.enum_value_metadata) = {label: "Sniper"}];
   /*
    * Medic
    */
-  Medic = 5;
+  Medic = 5 [(meshtastic.enum_value_metadata) = {label: "Medic"}];
   /*
    * ForwardObserver
    */
-  ForwardObserver = 6;
+  ForwardObserver = 6 [(meshtastic.enum_value_metadata) = {label: "Forward Observer"}];
   /*
    * Radio Telephone Operator
    */
-  RTO = 7;
+  RTO = 7 [(meshtastic.enum_value_metadata) = {label: "RTO"}];
   /*
    * Doggo
    */
-  K9 = 8;
+  K9 = 8 [(meshtastic.enum_value_metadata) = {label: "K9"}];
 }
 
 /*
@@ -1943,6 +1945,12 @@ message TakTalkMessage {
    * icon. Proto3 only encodes when true so empty payload cost is 0 bytes.
    */
   bool from_voice = 4;
+
+  /*
+   * Voice profile to speak this message with on the receiver, matching
+   * VoiceProfile.voice_profile_id. Empty = the receiver's default voice.
+   */
+  string voice_profile_id = 5;
 }
 
 /*
@@ -1983,6 +1991,57 @@ message TakTalkRoomData {
    * which parsers split / builders join on ','.
    */
   repeated string participants = 4;
+}
+
+/*
+ * A synthetic speech profile, so receivers can render a sender's TAKTALK
+ * messages in that sender's own voice.
+ *
+ * Opaque model data, not audio: sent once per peer on request and cached,
+ * after which only text crosses the mesh. profile_data is compact binary
+ * that gains nothing from the TAK dictionary, so send it uncompressed.
+ */
+message VoiceProfile {
+  /*
+   * Stable identifier for this profile, matching
+   * TakTalkMessage.voice_profile_id and GeoChat.voice_profile_id.
+   */
+  string voice_profile_id = 1;
+
+  /*
+   * Friendly display name for the voice (e.g. "Alpha Lead").
+   */
+  string voice_profile_name = 2;
+
+  /*
+   * The profile itself, opaque to this schema.
+   */
+  bytes profile_data = 3;
+}
+
+/*
+ * Request for a peer's voice profile (CoT type y-).
+ *
+ * Addressed with Marti; the reply is a VoiceProfile.
+ */
+message VoiceProfileRequest {
+  /*
+   * Profile wanted, matching VoiceProfile.voice_profile_id. Empty = whichever
+   * profile the peer is currently using.
+   */
+  string voice_profile_id = 1;
+}
+
+/*
+ * Request for a room's name and roster (CoT type y-).
+ *
+ * Addressed with Marti; the reply is a TakTalkRoomData.
+ */
+message TakTalkRoomRequest {
+  /*
+   * Room UUID wanted, matching TakTalkRoomData.room_id.
+   */
+  string room_id = 1;
 }
 
 /*
@@ -2145,6 +2204,15 @@ message TAKPacketV2 {
    */
   optional SensorFov sensor_fov = 26;
 
+  /*
+   * Low 14 bits of the event's `start` time, as epoch seconds UTC. 14 bits rather
+   * than a full timestamp, so the field costs 4 bytes on the wire instead of 7.
+   * Order and deduplicates packets from a single sender. Valid only when within an
+   * hour of current wall time. `optional` is deliberate. It costs essentially
+   * nothing and distinguishes "sender did not populate this" from a legitimate zero.
+   */
+  optional uint32 start_epoch_lo14 = 43;
+
   reserved 27, 28, 30;
   // Tags 27, 28 reserved for future top-level annotations. Tag 29 is consumed
   // by `marti` below. Tag 30 was the former `bool pli` oneof arm - dropped
@@ -2229,5 +2297,19 @@ message TAKPacketV2 {
      * GeoChat.room_id) to display name + roster on receivers.
      */
     TakTalkRoomData taktalk_room = 42;
+    /*
+     * Sender's synthetic speech profile. See VoiceProfile.
+     */
+    VoiceProfile voice_profile = 44;
+    /*
+     * Request for a peer's voice profile (CoT type y-).
+     * See VoiceProfileRequest.
+     */
+    VoiceProfileRequest voice_profile_request = 45;
+    /*
+     * Request for a room's name and roster (CoT type y-).
+     * See TakTalkRoomRequest.
+     */
+    TakTalkRoomRequest taktalk_room_request = 46;
   }
 }
