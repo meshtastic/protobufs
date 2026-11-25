@@ -22,3 +22,10 @@
 *NodeRemoteHardwarePinsResponse.node_remote_hardware_pins max_count:16
 
 *LockdownAuth.passphrase max_size:32
+
+*NodeDBEntry.long_name max_size:25
+*NodeDBEntry.short_name max_size:5
+*NodeDBEntry.hw_model int_size:8
+*NodeDBEntry.role int_size:8
+*NodeDBEntry.public_key max_size:32
+*NodeDBEntry.hops_away int_size:8
