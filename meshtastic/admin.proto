@@ -575,6 +575,17 @@ message AdminMessage {
      * locate the node. Ignored on builds without RTTTL support.
      */
     bool play_ringtone_request = 105;
+
+    /*
+     * Request a summary of a single node from the device's NodeDB by node number.
+     * The device replies with get_nodedb_entry_response (with node_in_db = false if not found).
+     */
+    uint32 get_nodedb_entry_request = 106;
+
+    /*
+     * Summary of the requested NodeDB entry, or node_in_db = false if absent.
+     */
+    NodeDBEntry get_nodedb_entry_response = 107;
   }
 }
 
@@ -787,6 +798,100 @@ message SharedContact {
    * Set the IS_KEY_MANUALLY_VERIFIED bit
    */
   bool manually_verified = 4;
+}
+
+/*
+ * Compact summary of a single NodeDB entry returned in response to
+ * AdminMessage.get_nodedb_entry_request. Sized to stay well within the
+ * LoRa Data.payload limit (233 bytes) and existing AdminMessage union size.
+ */
+message NodeDBEntry {
+  /*
+   * The queried node number. Echoed back even when node_in_db is false.
+   */
+  uint32 num = 1;
+
+  /*
+   * True if this node exists in the device's NodeDB.
+   * When false, all remaining fields are unset / default.
+   */
+  bool node_in_db = 2;
+
+  /*
+   * Cached long display name (clamped to 24 UTF-8 bytes in NodeDB).
+   */
+  string long_name = 3;
+
+  /*
+   * Cached short display name (up to 4 UTF-8 bytes).
+   */
+  string short_name = 4;
+
+  /*
+   * Hardware model reported by the node.
+   */
+  HardwareModel hw_model = 5;
+
+  /*
+   * Mesh role reported by the node.
+   */
+  Config.DeviceConfig.Role role = 6;
+
+  /*
+   * Cached Curve25519 public key (32 bytes when present, empty if unknown).
+   */
+  bytes public_key = 7;
+
+  /*
+   * Last time the device received a packet from this node (Unix epoch seconds).
+   */
+  fixed32 last_heard = 8;
+
+  /*
+   * SNR of the last received message from this node in dB.
+   * Unset if no SNR has been measured (disambiguates unknown from 0.0 dB).
+   */
+  optional float snr = 9;
+
+  /*
+   * Number of hops away from the device (0 if direct neighbor, unset if unknown).
+   */
+  optional uint32 hops_away = 10;
+
+  /*
+   * True if the device witnessed this node over MQTT instead of LoRa RF.
+   */
+  bool via_mqtt = 11;
+
+  /*
+   * True if this node is in the device's favorites list.
+   */
+  bool is_favorite = 12;
+
+  /*
+   * True if this node is in the device's ignored list.
+   */
+  bool is_ignored = 13;
+
+  /*
+   * True if this node is muted on the device.
+   */
+  bool is_muted = 14;
+
+  /*
+   * True if this node's public key has been manually verified on the device.
+   */
+  bool is_key_manually_verified = 15;
+
+  /*
+   * True if the device has observed this node signing packets with XEdDSA.
+   */
+  bool has_xeddsa_signed = 16;
+
+  /*
+   * True if the device has heard this node over RF on its current LoRa configuration.
+   */
+  bool heard_on_current_lora = 17;
 }
 
 /*
