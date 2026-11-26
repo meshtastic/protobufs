@@ -97,6 +97,28 @@ message DeviceUIConfig {
   GpsCoordinateFormat gps_format = 19;
 
   /*
+   * How the keyboard backlight behaves, on devices that have one.
+   */
+  KeyboardBacklightMode keyboard_backlight = 20;
+
+  enum KeyboardBacklightMode {
+    /*
+     * Off, until turned on from the keyboard or the menu.
+     */
+    OFF = 0;
+
+    /*
+     * On while the screen is on.
+     */
+    ON = 1;
+
+    /*
+     * On at each key press, off again after a few seconds without one.
+     */
+    WHILE_TYPING = 2;
+  }
+
+  /*
    * How the GPS coordinates are displayed on the OLED screen.
    */
   enum GpsCoordinateFormat {
