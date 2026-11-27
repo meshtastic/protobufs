@@ -2660,8 +2660,20 @@ message FromRadio {
     LoRaRegionPresetMap region_presets = 19;
 
     /*
-     * Chunked client API payload. Only sent to clients that have opted in to
-     * chunked API transport support.
+     * One frame of a chunked FromRadio. The reassembled payload is a
+     * serialized FromRadio. See ClientApiChunkedPayload for the transfer rules.
+     *
+     * Only sent to a client that has opted in. A client opts in by completing
+     * one chunked ToRadio transfer, and the opt-in takes effect before that
+     * message is handled, so its reply is already chunked. A ToRadio
+     * want_config_id sent unchunked revokes the opt-in and drops any transfer
+     * in progress in either direction; one sent chunked keeps it. The opt-in
+     * ends with the connection.
+     *
+     * For an opted-in client, a FromRadio whose encoding is 20 bytes or less
+     * is still sent as it is; only larger ones are chunked. If an unchunked
+     * FromRadio arrives while a transfer is incomplete, the transfer was
+     * abandoned and the partial data must be discarded.
      */
     ClientApiChunkedPayload chunked_payload = 20;
 
@@ -3499,8 +3511,10 @@ message ToRadio {
     Heartbeat heartbeat = 7;
 
     /*
-     * Chunked client API payload. The reassembled payload is a serialized
-     * ToRadio message and is handled through the normal PhoneAPI path.
+     * One frame of a chunked ToRadio. The reassembled payload is a serialized
+     * ToRadio, handled exactly as if it had arrived whole. Completing one
+     * transfer opts the client in to chunked FromRadio; see
+     * FromRadio.chunked_payload and ClientApiChunkedPayload.
      */
     ClientApiChunkedPayload chunked_payload = 8;
   }
@@ -3963,18 +3977,58 @@ message ChunkedPayload {
 }
 
 /*
- * Compact ordered chunk used to transport serialized client API messages.
+ * One frame of a chunked client API transfer: a serialized ToRadio or
+ * FromRadio split across several small BLE reads or writes.
+ *
+ * This exists for BLE clients that cannot move a whole ToRadio/FromRadio in
+ * one operation and have no ATT long read/write to fall back on. Garmin
+ * Connect IQ is the motivating case: its public BLE API caps a write at 20
+ * bytes. Clients that can read and write full-size messages should not use it.
+ *
+ * Transfer rules, identical in both directions:
+ * - A transfer is one serialized message, sent as consecutive frames in
+ *   order. The first frame carries payload_size and the first bytes of the
+ *   payload; later frames carry payload_chunk only. The transfer is complete
+ *   when exactly payload_size bytes have arrived. A transfer may be a single
+ *   frame.
+ * - The link must be ordered and reliable. There is no transfer id, chunk
+ *   index or checksum, so a lost or duplicated frame cannot be detected.
+ *   Consecutive frames may be byte-identical and must not be deduplicated.
+ * - Reassembly state belongs to one connection and one direction, with at
+ *   most one transfer in progress per direction. A sender must not place
+ *   any other message between the frames of a transfer.
+ * - payload_chunk is never empty. payload_size is at least the length of the
+ *   first frame's payload_chunk and at most 512, the client API limit on a
+ *   serialized ToRadio or FromRadio.
+ * - A frame with a non-zero payload_size abandons any transfer in progress.
+ *   If it is valid it starts a new one. A frame that breaks the rules above,
+ *   or whose payload_chunk would take the transfer past payload_size, is
+ *   dropped and the transfer in progress is discarded. A frame without
+ *   payload_size is ignored when no transfer is in progress.
+ * - The reassembled message must not itself be a chunked_payload.
+ * - There is no acknowledgement or error reply. After a discard the sender
+ *   starts again from a first frame.
+ *
+ * Device behaviour:
+ * - Supported on the BLE client API only. Serial, TCP and HTTP drop these
+ *   frames silently, as does firmware built without the feature. There is no
+ *   capability flag, so a client that gets no reply to its first chunked
+ *   request should assume the device does not support it.
+ * - The device discards a partial ToRadio transfer if more than 30 seconds
+ *   pass between two of its frames.
+ * - Every chunked FromRadio frame the device sends is at most 20 bytes when
+ *   encoded, so it fits one read at the default ATT_MTU of 23. Receivers
+ *   must accept any payload_chunk length up to the maximum regardless.
  */
 message ClientApiChunkedPayload {
   /*
-   * The non-zero total size of the reassembled payload. This is sent only
-   * on the first chunk of an ordered transfer; later chunks omit it. Empty
-   * client API messages are not transported in chunked form.
+   * Total size in bytes of the reassembled message. Non-zero on the first
+   * frame of a transfer and omitted (zero) on every later frame.
    */
   uint32 payload_size = 1;
 
   /*
-   * The binary data of the current chunk
+   * The next bytes of the serialized message. Never empty.
    */
   bytes payload_chunk = 2;
 }
