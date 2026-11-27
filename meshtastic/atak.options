@@ -109,6 +109,6 @@
 *TaskRequest.note max_size:48
 
 # TAKDetection. Firmware never reads or writes detections; keep them out of the
-# stack-allocated TAKPacketV2. uas_id holds 20 characters plus the terminator.
+# stack-allocated TAKPacketV2. uas_id is a Remote ID UAS ID, at most 20 bytes.
 *TAKPacketV2.detection type:FT_IGNORE
-*TAKDetection.uas_id max_size:21
+*TAKDetection.uas_id max_size:20

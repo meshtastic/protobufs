@@ -2026,10 +2026,12 @@ message TAKDetection {
    */
   sint32 rssi_dbm = 9;
   /*
-   * UAS ID from a Remote ID broadcast, at most 20 characters. Set only when
-   * kind is Kind_Uas.
+   * UAS ID from a Remote ID broadcast, at most 20 bytes. A serial number or
+   * CAA registration (see uas_id_type) is ASCII text without the broadcast's
+   * trailing NUL fill; any other ID type carries the field's bytes as
+   * broadcast. Set only when kind is Kind_Uas.
    */
-  string uas_id = 10;
+  bytes uas_id = 10;
   /*
    * Type of uas_id.
    */
