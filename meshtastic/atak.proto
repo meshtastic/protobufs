@@ -1903,6 +1903,146 @@ message SensorFov {
 }
 
 /*
+ * Metadata for an event reporting an object found by a passive sensor: an
+ * uncrewed aircraft (UAS), its operator or home point, a person or a vehicle.
+ *
+ * Attaches to any TAKPacketV2, like TAKEnvironment and SensorFov. The event
+ * still carries the object's position, CoT type and links. Affiliation is not
+ * encoded here: the CoT type carries it, and the producer chooses it.
+ *
+ * Carries no identifier except the UAS ID that Remote ID broadcasts.
+ */
+message TAKDetection {
+  /*
+   * What the reported object is.
+   */
+  enum Kind {
+    Kind_Unspecified = 0; // kind not stated
+    Kind_Uas = 1; // uncrewed aircraft
+    Kind_UasOperator = 2; // operator or control-station position
+    Kind_UasHome = 3; // takeoff or home point
+    Kind_Person = 4; // a person
+    Kind_Vehicle = 5; // a vehicle
+    Kind_Other = 6; // any other object
+  }
+
+  /*
+   * Kind of sensing behind a report. Values are bits: `sources` is their
+   * bitwise OR.
+   */
+  enum Source {
+    Source_Unspecified = 0; // no source stated
+    Source_RemoteId = 1; // Remote ID broadcast (ASTM F3411)
+    Source_Rf = 2; // any other RF emission
+    Source_Acoustic = 4; // sound
+    Source_Radar = 8; // radar return
+    Source_Optical = 16; // visible or infrared imaging
+    Source_Thermal = 32; // PIR or thermopile
+    Source_Seismic = 64; // ground vibration
+    Source_Magnetic = 128; // magnetic field change
+  }
+
+  /*
+   * Where the reported track is in its life cycle.
+   */
+  enum State {
+    State_Unspecified = 0; // state not stated
+    State_New = 1; // first report of the object
+    State_Active = 2; // updated from a fresh measurement
+    State_Coasting = 3; // no fresh measurement; position predicted
+    State_Lost = 4; // final update; receivers may remove the object
+  }
+
+  /*
+   * How the distance between the object and the reporting sensor is changing.
+   */
+  enum Trend {
+    Trend_Unspecified = 0; // trend not stated
+    Trend_Closing = 1; // distance shrinking
+    Trend_Steady = 2; // distance holding
+    Trend_Opening = 3; // distance growing
+  }
+
+  /*
+   * Type of uas_id. Values match the ASTM F3411 UAS ID types.
+   */
+  enum UasIdType {
+    UasIdType_Unspecified = 0; // no ID type
+    UasIdType_SerialNumber = 1; // ANSI/CTA-2063-A serial number
+    UasIdType_CaaRegistration = 2; // civil aviation authority registration ID
+    UasIdType_UtmAssigned = 3; // UTM-assigned UUID
+    UasIdType_SpecificSession = 4; // specific session ID
+  }
+
+  /*
+   * Operational status of the UAS. Values match the ASTM F3411 operational
+   * status.
+   */
+  enum UasStatus {
+    UasStatus_Unspecified = 0; // status undeclared
+    UasStatus_Ground = 1; // on the ground
+    UasStatus_Airborne = 2; // in flight
+    UasStatus_Emergency = 3; // emergency declared
+    UasStatus_SystemFailure = 4; // Remote ID system failure
+  }
+
+  /*
+   * What the reported object is.
+   */
+  Kind kind = 1;
+  /*
+   * Kinds of sensing behind this report: a bitwise OR of Source values.
+   * 0 = not stated.
+   */
+  uint32 sources = 2;
+  /*
+   * Producer's confidence in the report, in percent (0-100). 0 = unknown.
+   */
+  uint32 confidence = 3;
+  /*
+   * Where the track is in its life cycle.
+   */
+  State state = 4;
+  /*
+   * Whether the object is closing on or opening from the reporting sensor.
+   */
+  Trend trend = 5;
+  /*
+   * Number of objects this event stands for. 0 = one.
+   */
+  uint32 count = 6;
+  /*
+   * True when the event's point is the reporting sensor, because the
+   * object's position is unknown.
+   */
+  bool sensor_anchored = 7;
+  /*
+   * Horizontal position uncertainty in meters, the CoT point's `ce`.
+   * 0 = unknown.
+   */
+  uint32 cep_m = 8;
+  /*
+   * Calibrated received power at the reporting sensor, in dBm. 0 = unknown.
+   */
+  sint32 rssi_dbm = 9;
+  /*
+   * UAS ID from a Remote ID broadcast, at most 20 bytes. A serial number or
+   * CAA registration (see uas_id_type) is ASCII text without the broadcast's
+   * trailing NUL fill; any other ID type carries the field's bytes as
+   * broadcast. Set only when kind is Kind_Uas.
+   */
+  bytes uas_id = 10;
+  /*
+   * Type of uas_id.
+   */
+  UasIdType uas_id_type = 11;
+  /*
+   * Operational status from a Remote ID broadcast.
+   */
+  UasStatus uas_status = 12;
+}
+
+/*
  * TAKTALK chat message payload (CoT type m-t-t).
  *
  * TAKTALK is an ATAK plugin for voice + text team messaging. The voice
@@ -2212,6 +2352,12 @@ message TAKPacketV2 {
    * nothing and distinguishes "sender did not populate this" from a legitimate zero.
    */
   optional uint32 start_epoch_lo14 = 43;
+
+  /*
+   * Passive-sensor metadata, present when this event reports an object a
+   * sensor found rather than the sender itself. See TAKDetection.
+   */
+  optional TAKDetection detection = 47;
 
   reserved 27, 28, 30;
   // Tags 27, 28 reserved for future top-level annotations. Tag 29 is consumed
