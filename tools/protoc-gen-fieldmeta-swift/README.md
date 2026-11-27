@@ -89,6 +89,10 @@ protoc --proto_path=./protobufs \
   ./protobufs/meshtastic/*.proto
 ```
 
+The plugin takes no parameters except an optional `target=swift`. The Go
+plugin's `attributes=` option is not implemented here, and passing it (or any
+other parameter) is an error.
+
 Note the output directory is in the **app target**, not in the
 `MeshtasticProtobufs` package alongside the `.pb.swift` files. String attributes
 are emitted as `String(localized:)` and are only extracted into

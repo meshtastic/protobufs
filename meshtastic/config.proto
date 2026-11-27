@@ -54,7 +54,10 @@ message Config {
 
       ROUTER_CLIENT = 3 [
         deprecated = true,
-        (meshtastic.enum_value_metadata) = {label: "Router Client"}
+        (meshtastic.enum_value_metadata) = {
+          label: "Router Client"
+          deprecated_since: "2.3.15"
+        }
       ];
 
       /*
@@ -68,6 +71,7 @@ message Config {
         (meshtastic.enum_value_metadata) = {
           label: "Repeater"
           description: "Deprecated infrastructure role that creates gaps in the mesh rebroadcast chain. Switch this node to a Router-based role (Router or Router Late)."
+          deprecated_since: "2.7.11"
         }
       ];
 
@@ -266,7 +270,10 @@ message Config {
      * Disabling this will disable the SerialConsole by not initilizing the StreamAPI
      * Moved to SecurityConfig
      */
-    bool serial_enabled = 2 [deprecated = true];
+    bool serial_enabled = 2 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.5.0"}
+    ];
 
     /*
      * For boards without a hard wired button, this is the pin number that will be used
@@ -315,7 +322,10 @@ message Config {
      * Clients should then limit available configuration and administrative options inside the user interface
      * Moved to SecurityConfig
      */
-    bool is_managed = 9 [deprecated = true];
+    bool is_managed = 9 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.5.0"}
+    ];
 
     /*
      * Disables the triple-press of user button to enable or disable GPS
@@ -475,7 +485,10 @@ message Config {
     /*
      * Is GPS enabled for this node?
      */
-    bool gps_enabled = 4 [deprecated = true];
+    bool gps_enabled = 4 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.2.21"}
+    ];
 
     /*
      * How often should we try to get GPS position (in seconds)
@@ -491,7 +504,10 @@ message Config {
     /*
      * Deprecated in favor of using smart / regular broadcast intervals as implicit attempt time
      */
-    uint32 gps_attempt_time = 6 [deprecated = true];
+    uint32 gps_attempt_time = 6 [
+      deprecated = true,
+      (meshtastic.field_metadata) = {deprecated_since: "2.2.18"}
+    ];
 
     /*
      * Bit field of boolean configuration options for POSITION messages
@@ -600,7 +616,11 @@ message Config {
      * for this value (default 1 year) or a button press
      * 0 for default of one year
      */
-    uint32 sds_secs = 6;
+    uint32 sds_secs = 6 [(meshtastic.field_metadata) = {
+      label: "Super Deep Sleep Duration"
+      description: "How long the radio stays in super deep sleep before waking, unless the button is pressed. Zero leaves the firmware default of one year."
+      unit: "s"
+    }];
 
     /*
      * Description: In light sleep the CPU is suspended, LoRa radio is on, BLE is off an GPS is on
@@ -612,12 +632,19 @@ message Config {
      * Description: While in light sleep when we receive packets on the LoRa radio we will wake and handle them and stay awake in no BLE mode for this value
      * Technical Details: ESP32 Only 0 for default of 10 seconds
      */
-    uint32 min_wake_secs = 8;
+    uint32 min_wake_secs = 8 [(meshtastic.field_metadata) = {
+      label: "Minimum Wake Time"
+      description: "How long the radio stays awake after handling a packet received during light sleep. Zero leaves the firmware default of ten seconds."
+      unit: "s"
+    }];
 
     /*
      * I2C address of INA_2XX to use for reading device battery voltage
      */
-    uint32 device_battery_ina_address = 9;
+    uint32 device_battery_ina_address = 9 [(meshtastic.field_metadata) = {
+      label: "Battery INA_2XX I2C Address"
+      description: "I2C address of the INA_2XX sensor used to read battery voltage."
+    }];
 
     /*
      * If non-zero, we want powermon log outputs.  With the particular (bitfield) sources enabled.
@@ -855,6 +882,22 @@ message Config {
     ];
 
     /*
+     * If true, the bearings and distance screen is replaced by the radar minimap.
+     */
+    bool bearings_view_radar = 15 [(meshtastic.field_metadata) = {
+      label: "Radar View"
+      description: "Show nearby nodes on a radar minimap instead of the bearings and distance list."
+    }];
+
+    /*
+     * If true, the radar minimap only plots favorite nodes.
+     */
+    bool radar_favorites_only = 16 [(meshtastic.field_metadata) = {
+      label: "Radar Favorites Only"
+      description: "Limit the radar minimap to favorite nodes."
+    }];
+
+    /*
      * Flip screen vertically, for cases that mount the screen upside down
      */
     bool flip_screen = 5 [(meshtastic.field_metadata) = {
@@ -987,12 +1030,20 @@ message Config {
      * If false (default), the device will use short names for various display screens.
      * If true, node names will show in long format
      */
-    bool use_long_node_name = 13 [(meshtastic.field_metadata) = {since_firmware: "2.7.13"}];
+    bool use_long_node_name = 13 [(meshtastic.field_metadata) = {
+      label: "Long Node Names"
+      description: "Show full node names on the device screen instead of short names."
+      since_firmware: "2.7.13"
+    }];
 
     /*
      * If true, the device will display message bubbles on screen.
      */
-    bool enable_message_bubbles = 14 [(meshtastic.field_metadata) = {since_firmware: "2.7.19"}];
+    bool enable_message_bubbles = 14 [(meshtastic.field_metadata) = {
+      label: "Message Bubbles"
+      description: "Draw messages on the device screen as bubbles."
+      since_firmware: "2.7.19"
+    }];
   }
 
   /*
@@ -1031,9 +1082,9 @@ message Config {
       JP = 5 [(meshtastic.enum_value_metadata) = {label: "Japan"}];
 
       /*
-       * Australia / New Zealand
+       * Australia / Brazil / New Zealand (915-928MHz)
        */
-      ANZ = 6 [(meshtastic.enum_value_metadata) = {label: "Australia / New Zealand"}];
+      ANZ = 6 [(meshtastic.enum_value_metadata) = {label: "Australia / Brazil / New Zealand"}];
 
       /*
        * Korea
@@ -1080,7 +1131,10 @@ message Config {
        */
       UA_868 = 15 [
         deprecated = true,
-        (meshtastic.enum_value_metadata) = {label: "Ukraine 868MHz"}
+        (meshtastic.enum_value_metadata) = {
+          label: "Ukraine 868MHz"
+          deprecated_since: "2.8.0"
+        }
       ];
 
       /*
@@ -1219,11 +1273,14 @@ message Config {
 
       /*
        * Very Long Range - Slow
-       * Deprecated in 2.5: Works only with txco and is unusably slow
+       * Deprecated: works only with a TCXO and is unusably slow.
        */
       VERY_LONG_SLOW = 2 [
         deprecated = true,
-        (meshtastic.enum_value_metadata) = {label: "Very Long Range - Slow"}
+        (meshtastic.enum_value_metadata) = {
+          label: "Very Long Range - Slow"
+          deprecated_since: "2.6.5"
+        }
       ];
 
       /*
@@ -1336,6 +1393,11 @@ message Config {
        * FEM_LNA is not present on the device
        */
       NOT_PRESENT = 2;
+
+      /*
+       * FEM_LNA is present; the firmware switches it in or bypasses it from the measured noise floor
+       */
+      AUTO = 3;
     }
 
     /*
@@ -1524,7 +1586,7 @@ message Config {
     bool config_ok_to_mqtt = 105 [(meshtastic.field_metadata) = {label: "OK to MQTT"}];
 
     /*
-     * Set where LORA FEM is enabled, disabled, or not present
+     * Set whether the LoRa FEM LNA is enabled, disabled, automatic, or not present
      */
     FEM_LNA_Mode fem_lna_mode = 106 [(meshtastic.field_metadata) = {since_firmware: "2.7.20"}];
 

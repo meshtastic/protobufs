@@ -1119,10 +1119,15 @@ enum TelemetrySensorType {
   AS3935 = 57;
 
   /*
+   * TI INA228 20-bit current, voltage and power monitor
+   */
+  INA228 = 58;
+  
+  /*
    * GeigerNode: native I2C GM-tube radiation sensor.
    * Reports count rate and estimated SI dose rate.
    */
-  GEIGERNODE = 58;
+  GEIGERNODE = 59;
 }
 
 /*
