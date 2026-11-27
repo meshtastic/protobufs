@@ -3997,9 +3997,10 @@ message ChunkedPayload {
  * - Reassembly state belongs to one connection and one direction, with at
  *   most one transfer in progress per direction. A sender must not place
  *   any other message between the frames of a transfer.
- * - payload_chunk is never empty. payload_size is at least the length of the
- *   first frame's payload_chunk and at most 512, the client API limit on a
- *   serialized ToRadio or FromRadio.
+ * - payload_chunk is never empty and is at most 228 bytes, the limit the
+ *   device enforces when decoding a frame. payload_size is at least the
+ *   length of the first frame's payload_chunk and at most 512, the client
+ *   API limit on a serialized ToRadio or FromRadio.
  * - A frame with a non-zero payload_size abandons any transfer in progress.
  *   If it is valid it starts a new one. A frame that breaks the rules above,
  *   or whose payload_chunk would take the transfer past payload_size, is
