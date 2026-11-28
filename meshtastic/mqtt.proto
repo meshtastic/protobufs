@@ -31,6 +31,16 @@ message ServiceEnvelope {
    * the globally trusted nodenum
    */
   string gateway_id = 3;
+
+  /*
+   * Node numbers of the gateways that should transmit this packet over LoRa when it is received via
+   * downlink. Empty means every gateway with downlink enabled transmits it, as before.
+   * Lets a service reply through the gateways that uplinked the request instead of every gateway.
+   * At most eight entries; firmware rejects an envelope with more as invalid.
+   * Best effort: only firmware that knows this field checks it. Older gateways ignore it and transmit
+   * the packet like any other downlink.
+   */
+  repeated fixed32 target_gateways = 4;
 }
 
 /*
